@@ -1,14 +1,24 @@
+/**
+ISSUE: sessions?
+  refresh = require('passport-oauth2-refresh')
+  app.use(passport.session());
+*/
 const discord = require('passport-discord');
 const github = require('passport-github');
 
 
 exports.makeGateway = makeGateway;
-function makeGateway(app, passport) {
-    // ISSUE: refresh = require('passport-oauth2-refresh')
+function makeGateway(app, passport, baseURL) {
     app.use(passport.initialize());
-    // ISSUE: app.use(passport.session());
+    passport.serializeUser((user, done) => done(null, user));
+    passport.deserializeUser((obj, done) => done(null, obj));
 
-    return Object.freeze({ gateway, client });
+    const strategies = {
+	github: opts => new github.Strategy(opts, verify),
+	discord: opts => new discord.Strategy(Object.assign({ scope: 'identity'}, opts), verify)
+    };
+
+    return Object.freeze({ gateway, oauthClient });
 
     function gateway(context) {
 	const state = context.state;
@@ -17,8 +27,10 @@ function makeGateway(app, passport) {
 	    state.clients = [];
 	}
 
-	function makeClient(label, path, callbackURL, id, secret, scope) {
-	    const it = context.make('gateway.client', path, callbackURL, id, secret, scope);
+	function makeClient(label, path, callbackPath, strategy, id, secret) {
+	    const it = context.make('gateway.oauthClient',
+				    path, callbackPath,
+				    strategy, id, secret);
 	    state.clients.push([label, it]);
 	    return it;
 	}
@@ -27,35 +39,60 @@ function makeGateway(app, passport) {
 	return Object.freeze({ init, makeClient, getClients });
     }
 
-
-    function client(context) {
+    function oauthClient(context) {
 	const state = context.state;
 
-	function init(path, callbackURL, id, secret, scope) {
-	    console.log('client init:', { path, callbackURL, id });
+	function init(path, callbackPath, strategy, id, secret) {
+	    // console.log('client init:', { path, callbackPath, strategy, id });
 	    state.path = path;
-	    const opts = state.opts = {
-		scope: scope || 'identify',
+	    state.strategy = strategy;
+	    state.opts = {
 		clientID: id,
 		clientSecret: secret,
-		callbackURL: callbackURL  // ISSUE: relative to server root?
+		callbackPath: callbackPath
 	    };
 
-	    function win(accessToken, refreshToken, profile, cb) {
-		console.log('@@discord auth:', {
-		    accessToken, refreshToken, profile, cb});
-	    }
+	    use();
+	}
 
-	    passport.use(new discord.Strategy(state.opts, win));
-	    app.get(path, passport.authenticate('discord', () => {
-		console.log('authenticate callback???@@');
-		return '@@check docs';
-	    }));
+	function use() {
+	    const strategy = state.strategy;
+	    if (!strategy) {
+		return; // not yet initialized
+	    }
+	    const makeStrategy = strategies[strategy];
+	    if (!makeStrategy) {
+		throw new Error(`unknown strategy: ${strategy}`);
+	    }
+	    const opts = state.opts;
+	    opts.callbackURL = baseURL + opts.callbackPath;  // ISSUE: urljoin
+
+	    passport.use(makeStrategy(opts, verify));
+	    // DEBUG: console.log('opts:', opts);
+
+	    app.get(state.path, passport.authenticate(strategy));
+
+	    app.get(opts.callbackPath,
+		    passport.authenticate(strategy,
+					  { failureRedirect: '/auth-failure-@@'  }),
+		    (req, res) => {
+			res.redirect(`/user/${req.user.username}`);
+		    });
+
 	}
 
 	const getId = () => state.id;
 
+	use();
 	return Object.freeze({ init, getId });
+    }
+
+    function verify(accessToken, refreshToken, profile, done) {
+	done(null, {
+	    username: profile.username,
+	    displayName: profile.displayName,
+	    detail: profile._json
+	});
     }
 }
 
@@ -63,26 +100,34 @@ function makeGateway(app, passport) {
 function main(argv, {express, passport}) {
     // ISSUE: refresh = require('passport-oauth2-refresh')
     const app = express();
+    const port = parseInt(argv[2]);
+    const base = `http://jambox:${port}`;
 
-    const gwApp = makeGateway(app, passport);
+    const gwApp = makeGateway(app, passport, base);
     function make(reviver, ...arg) {
 	console.log('make:', { reviver, arg });
 	const context = { state: {} };
-	const it = gwApp.client(context);
+	const it = gwApp.oauthClient(context);
 	it.init(...arg);
 	return it;
     }
     const gwContext = {state: {}, make};
     const gw = gwApp.gateway(gwContext);
+    gw.init();
 
-    const cl = gwContext.make(
-	'gateway.client',
-	'/auth/discord', 'https://rewards.rchain.coop/index.php?discord_oauth_callback=true',
+    const clgh = gw.makeClient(
+	'thing 1',
+	'/auth/github/login', '/auth/github/callback', 'github',
+	'...gh client id', '...gh secret'
+    );
+
+    const cld = gw.makeClient(
+	'thing 2',
+	'/auth/discord/login', '/auth/discord/callback', 'discord',
+	'index.php?discord_oauth_callback=true',
 	'...',
 	'...');
 
-    const port = parseInt(argv[2]);
-    console.log('starting %s on %s', argv, app, port);
     app.listen(port);
 }
 
@@ -95,5 +140,3 @@ if (require.main == module) {
 	     passport: require('passport')  // ISSUE: isolate global mutable state?
 	 });
 }
-
-
