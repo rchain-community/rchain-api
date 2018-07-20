@@ -2,6 +2,9 @@
 ISSUE: sessions?
   refresh = require('passport-oauth2-refresh')
   app.use(passport.session());
+
+rho:pubkey:ed25519
+
 */
 const URL = require('url').URL;
 
@@ -10,7 +13,14 @@ const github = require('passport-github');
 
 
 exports.makeGateway = makeGateway;
-function makeGateway(app, passport, baseURL) {
+/** makeGateway -- construct Capper app for RChain OAuth oracle.
+ * app: as from express(), with .use(), .get()
+ * passport: as from require('passport'), since it has mutable state
+ *           ISSUE: use passport constructors
+ * baseURL: base URL for mounting OAuth login, callback URLs
+ * sign: nacl.sign, with .keyPair(), .sign()
+ */
+function makeGateway(app, passport, baseURL, sign) {
     app.use(passport.initialize());
     passport.serializeUser((user, done) => done(null, user));
     passport.deserializeUser((obj, done) => done(null, obj));
@@ -26,8 +36,18 @@ function makeGateway(app, passport, baseURL) {
 	// ISSUE: clients don't revive when the server restarts.
 	const state = context.state;
 
+	const b2h = bytes => new Buffer(bytes).toString('hex');
+	const h2b = hex => new Buffer(hex, 'hex');
+	const t2b = text => new Buffer(text);
+
 	function init() {
 	    state.clients = [];
+
+	    const key = sign.keyPair();
+	    state.publicKey = b2h(key.publicKey);
+	    state.secretKey = b2h(key.secretKey);
+
+	    console.log('@@gateway public key:', state.publicKey);
 	}
 
 	function makeClient(path, callbackPath, strategy, id, secret) {
@@ -39,7 +59,17 @@ function makeGateway(app, passport, baseURL) {
 	}
 	const getClients = () => state.clients;
 
-	return Object.freeze({ init, makeClient, getClients });
+	function publicKey() {
+	    return state.publicKey;
+	}
+
+	function signText(message) {
+	    const k = sign.keyPair.fromSecretKey(h2b(state.secretKey));
+	    return b2h(sign(t2b(message), k.secretKey));
+	}
+
+	return Object.freeze({ init, makeClient, getClients,
+			       publicKey, signText });
     }
 
     function oauthClient(context) {
@@ -100,13 +130,13 @@ function makeGateway(app, passport, baseURL) {
 }
 
 
-function main(argv, {express, passport}) {
+function integrationTest(argv, {express, passport, sign}) {
     // ISSUE: refresh = require('passport-oauth2-refresh')
     const app = express();
     const port = parseInt(argv[2]);
     const base = `http://jambox:${port}`;
 
-    const gwApp = makeGateway(app, passport, base);
+    const gwApp = makeGateway(app, passport, base, sign);
     function make(reviver, ...arg) {
 	console.log('make:', { reviver, arg });
 	const context = { state: {} };
@@ -117,6 +147,9 @@ function main(argv, {express, passport}) {
     const gwContext = {state: {}, make};
     const gw = gwApp.gateway(gwContext);
     gw.init();
+
+    console.log('gateway public key:', gw.publicKey());
+    console.log('gateway public signature:', gw.signText('hello world'));
 
     const clgh = gw.makeClient(
 	'/auth/github/login', '/auth/github/callback', 'github',
@@ -135,9 +168,11 @@ function main(argv, {express, passport}) {
 
 if (require.main == module) {
     // Access ambient stuff only when invoked as main module.
-    main(process.argv,
+    integrationTest(process.argv,
          {
 	     express: require('express'),
-	     passport: require('passport')  // ISSUE: isolate global mutable state?
+	     // ISSUE: isolate global mutable state?
+	     passport: require('passport'),
+	     sign: require('tweetnacl').sign
 	 });
 }
