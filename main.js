@@ -3,6 +3,8 @@ ISSUE: sessions?
   refresh = require('passport-oauth2-refresh')
   app.use(passport.session());
 */
+const URL = require('url').URL;
+
 const discord = require('passport-discord');
 const github = require('passport-github');
 
@@ -21,17 +23,18 @@ function makeGateway(app, passport, baseURL) {
     return Object.freeze({ gateway, oauthClient });
 
     function gateway(context) {
+	// ISSUE: clients don't revive when the server restarts.
 	const state = context.state;
 
 	function init() {
 	    state.clients = [];
 	}
 
-	function makeClient(label, path, callbackPath, strategy, id, secret) {
+	function makeClient(path, callbackPath, strategy, id, secret) {
 	    const it = context.make('gateway.oauthClient',
 				    path, callbackPath,
 				    strategy, id, secret);
-	    state.clients.push([label, it]);
+	    state.clients.push(it);
 	    return it;
 	}
 	const getClients = () => state.clients;
@@ -65,10 +68,10 @@ function makeGateway(app, passport, baseURL) {
 		throw new Error(`unknown strategy: ${strategy}`);
 	    }
 	    const opts = state.opts;
-	    opts.callbackURL = baseURL + opts.callbackPath;  // ISSUE: urljoin
+	    opts.callbackURL = new URL(opts.callbackPath, baseURL).toString();
 
 	    passport.use(makeStrategy(opts, verify));
-	    // DEBUG: console.log('opts:', opts);
+	    DEBUG: console.log('opts:', opts);
 
 	    app.get(state.path, passport.authenticate(strategy));
 
@@ -116,13 +119,11 @@ function main(argv, {express, passport}) {
     gw.init();
 
     const clgh = gw.makeClient(
-	'thing 1',
 	'/auth/github/login', '/auth/github/callback', 'github',
 	'...gh client id', '...gh secret'
     );
 
     const cld = gw.makeClient(
-	'thing 2',
 	'/auth/discord/login', '/auth/discord/callback', 'discord',
 	'index.php?discord_oauth_callback=true',
 	'...',
