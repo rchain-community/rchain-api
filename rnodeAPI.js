@@ -25,6 +25,7 @@ function makeRNodeApp(grpc, clock) {
 
     function casperClient(context) {
 	const state = context.state;
+	let proto;
 	let casper;
 	let client;
 	return Object.freeze({ init, doDeploy, createBlock, addBlock });
@@ -36,7 +37,8 @@ function makeRNodeApp(grpc, clock) {
 
 	function theClient() {
 	    if (!casper) {
-		casper = grpc.load(state.protoSrc).coop.rchain.casper.protocol;
+		proto = grpc.load(state.protoSrc);
+		casper = proto.coop.rchain.casper.protocol;
 	    }
 	    if (!client) {
 		const { host, port} = state.endPoint;
@@ -56,6 +58,23 @@ function makeRNodeApp(grpc, clock) {
 		// sig: 'bytes', //signature of (hash(term) + timestamp) using private key
 		// sigAlgorithm: '???' // name of the algorithm used to sign
 	    };
+	    theClient();
+	    const emptyBitSet = new Buffer([0,0,0,0,
+					    0,0,0,0]);
+	    const parObj = {
+		exprs: [{e_list_body: {
+		    ps: [{
+			exprs: [{ g_int: 42}],
+			locallyFree: emptyBitSet
+                    }],
+                    locallyFree: emptyBitSet
+                }}],
+                locallyFree: emptyBitSet
+            };
+            const par = new proto.Par(parObj);
+            console.log('@@List serialized hex: ', par.toBuffer().toString('hex'));
+	    console.log('@@List obj: ', JSON.stringify(parObj));
+
 	    return send(theClient(), 'DoDeploy', deployString);
 	}
 
@@ -110,8 +129,11 @@ function integrationTest(argv, {grpc, clock}) {
 	console.log('doDeploy result:', result);
     });
     
-    ca.createBlock().then(result => {
-	console.log('createBlock result:', result);
+    ca.createBlock().then(maybeBlock => {
+	console.log('createBlock result:', maybeBlock);
+	ca.addBlock(maybeBlock.block).then(result => {
+	    console.log('addBlock result:', result);
+	});
     });
 }
 
