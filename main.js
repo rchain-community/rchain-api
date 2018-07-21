@@ -5,6 +5,8 @@ ISSUE: sessions?
 
 rho:pubkey:ed25519
 
+ISSUE: indirect to SecretService for CLIENT_SECRET?
+
 */
 const URL = require('url').URL;
 
