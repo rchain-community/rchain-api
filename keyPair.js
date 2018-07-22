@@ -23,10 +23,9 @@ function appFactory({ random_keyPair }) /*: CapperApp */ {
     return def({ keyPair: keyPair });
 
     function keyPair(context){
-	let state = 'publicKey' in context.state ?
-		context.state : null /* state.X throws until init() */;
+	let state = context.state ? context.state : null /* state.X throws until init() */;
 	const toString = () => `<keyPair ${state.label}: ${state.publicKey.substring(0, 12)}...>`;
-	const signBytes = bytes => sign(bytes, privateKey());
+	const signBytes = bytes => sign.detached(bytes, privateKey());
 
 	return def({
 	    init, toString, signBytes,

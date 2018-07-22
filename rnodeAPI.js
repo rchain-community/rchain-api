@@ -68,10 +68,10 @@ function appFactory(parent, {grpc, clock}) {
 		// casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
 		// d        = DeployString().withTimestamp(timestamp).withTerm(code)
 		term: term,
-		timestamp: clock()
-	    };
+                timestamp: clock().valueOf()
+            };
 
-	    return send(theClient(), 'DoDeploy', deployString);
+            return send(theClient(), 'DoDeploy', deployString);
 	}
 
 	function createBlock() {
@@ -300,6 +300,6 @@ if (require.main == module) {
 	process.argv,
 	{
 	    grpc: require('grpc'),
-	    clock: () => new Date().valueOf()
+	    clock: () => new Date()
 	});
 }

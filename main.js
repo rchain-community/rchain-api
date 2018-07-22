@@ -14,6 +14,7 @@ const discord = require('passport-discord');
 const github = require('passport-github');
 
 const keyPair = require('./keyPair');
+const rnodeAPI = require('./rnodeAPI');
 
 const def = obj => Object.freeze(obj);  // cf. ocap design note
 
@@ -125,6 +126,52 @@ function appFactory({app, passport, baseURL}) {
 }
 
 
+function trustCertTest(argv, { clock, random_keyPair, grpc }) {
+    const host = argv[2], port = parseInt(argv[3]);  // GRPC peer
+    const logged = rnodeAPI.logged, RSON = rnodeAPI.RSON;
+
+    const cert1 = {
+	voter: "dckc",
+	subject: "bob",
+	rating: 2,
+	cert_time: clock().toISOString()
+    };
+
+    const gatewayKey = keyPair.appFactory({ random_keyPair }).keyPair({ state: {} });
+    gatewayKey.init('gateway 1 key');
+    const rnodeApp = rnodeAPI.appFactory('rnode', {grpc, clock});
+
+    function make(reviver, ...arg) {
+	console.log('make stub:', { reviver, arg });
+	const context = { state: {} };
+	const it = rnodeApp.casperClient(context);
+	it.init(...arg);
+	return it;
+    }
+    const rnode1 = rnodeApp.rnode({ state: {}, make });
+    rnode1.init();
+    logged(rnode1, 'rnode1');
+
+    const rchain = rnode1.makeCasper(
+	__dirname + '/rnode_proto/CasperMessage.proto',
+	host, port);
+
+    const certSigHex = gatewayKey.signBytesHex(rchain.toByteArray(RSON.fromData(cert1)), 'R bs');
+    const certTerm = logged(
+	`@"certify"!(${RSON.stringify(RSON.fromData(cert1))}, ${JSON.stringify(certSigHex)})`,
+	'certTerm');
+    rchain.doDeploy(certTerm).then(result => {
+	console.log('doDeploy result:', result);
+
+	if (!result.success) {
+	    throw(result);
+	}
+	return rchain.createBlock().then(maybeBlock => {
+	    logged(maybeBlock, 'createBlock?');
+	});
+    }).catch(oops => { console.log(oops); });
+}
+
 function integrationTest(argv, {express, passport}) {
     // ISSUE: refresh = require('passport-oauth2-refresh')
     const app = express();
@@ -161,10 +208,20 @@ function integrationTest(argv, {express, passport}) {
 
 if (require.main == module) {
     // ocap: Import powerful references only when invoked as a main module.
+    trustCertTest(
+	process.argv,
+	{
+	    grpc: require('grpc'),
+	    clock: () => new Date(),
+	    random_keyPair: require('tweetnacl').sign.keyPair
+	});
+
+    if (0) {
     integrationTest(process.argv,
          {
 	     express: require('express'),
 	     // ISSUE: isolate global mutable state?
 	     passport: require('passport'),
 	 });
+    }
 }
