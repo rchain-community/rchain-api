@@ -1,52 +1,53 @@
-/** rnodeAPI -- RChain node gRPC API
+/** rnodeAPI -- RChain node Casper gRPC API endpoints
 
-This is patterned after the July 11 Genesis Block Demo where he signed
-transactions using the rnode command line.
+We create Capper persistent objects for rnode endpoints.
 
-https://www.youtube.com/watch?v=WzAdfjwgaQs#t=9m28s
+You can run `integrationTest()` a la `node rnodeAPI.js`.
 
-The relevant gRPC protocol is:
-https://github.com/rchain/rchain/blob/dev/models/src/main/protobuf/CasperMessage.proto
+refs:
+  - [CasperMessage.proto][1] and RhoTypes.proto.
+  - [gRPC in node.js][2]
 
-Docs on gRPC in node.js:
-https://grpc.io/docs/tutorials/basic/node.html
-
-We follow Capper conventions for persistent objects.
-See integrationTest.
-
+[1]: https://github.com/rchain/rchain/blob/dev/models/src/main/protobuf/CasperMessage.proto
+[2]: https://grpc.io/docs/tutorials/basic/node.html
 
  */
 
 'use strict';
 
-module.exports.makeRNodeApp = makeRNodeApp;
-function makeRNodeApp(grpc, clock) {
-    return Object.freeze({ rnode, casperClient });
+const def = obj => Object.freeze(obj);  // cf. ocap design note
+
+
+module.exports.appFactory = appFactory;
+function appFactory(parent, {grpc, clock}) {
+    return def({ rnode, casperClient });
 
     function rnode(context) {
-	return Object.freeze({ init, makeCasper});
+	return def({ init, makeCasper });
 
 	function init() {
 	}
 
 	function makeCasper(protoSrc, host, port) {
-	    return context.make('rnode.casperClient',
+	    return context.make(`${parent}.casperClient`,
 				protoSrc, host, port);
 	}
     }
 
     function casperClient(context) {
-	const state = context.state;
+	let state = 'endPoint' in context.state ?
+		context.state : null /* state.X throws until init() */;
 	let proto;
 	let casper;
 	let client;
-	return Object.freeze({ init,
-			       doDeploy, createBlock, addBlock, propose,
-			       rhoList, toByteArray });
+	return def({ init,
+		     doDeploy, createBlock, addBlock, propose,
+		     toRSON, toByteArray });
 
 	function init(protoSrc, host, port) {
+	    state = context.state;
 	    state.protoSrc = protoSrc;
-	    state.endPoint = { host: host, port: port};
+	    state.endPoint = { host: host, port: port };
 	}
 
 	function theClient() {
@@ -76,6 +77,7 @@ function makeRNodeApp(grpc, clock) {
 	function createBlock() {
 	    return send(theClient(), 'createBlock', {});
 	}
+
 	function addBlock(block) {
 	    // ISSUE: Error: Illegal value for Message.Field ...
 	    // .Expr.g_bool of type bool: object
@@ -83,38 +85,11 @@ function makeRNodeApp(grpc, clock) {
 	    // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
 	    return send(theClient(), 'addBlock', block);
 	}
+
 	function propose() {
 	    return createBlock().then(maybeBlock => {
-		return addBlock(logged('@@createBlock():', maybeBlock).block);
+		return addBlock(logged(maybeBlock, '@@createBlock(): ').block);
 	    });
-	}
-
-	function logged(label, obj) {
-	    console.log(label, JSON.stringify(obj, bufAsHex, 2));
-	    return obj;
-	}
-
-	function rhoList(ints) {
-	    // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
-	    // https://rchain.atlassian.net/browse/RHOL-537
-	    const bytesPerLong = 8;
-	    const emptyBitSet = new Buffer(Array(bytesPerLong).fill(0));
-
-	    // [1, 2, 2] is a process with one exprs, which is a list
-	    // The list has one 3 items, each of which is a process
-	    // with one exprs, which is an int.
-	    const parObj = {
-		exprs: [{e_list_body: {
-		    ps: [{
-			exprs: ints.map(i => ({ g_int: i })),
-			locallyFree: emptyBitSet
-                    }],
-                    locallyFree: emptyBitSet
-                }}],
-                locallyFree: emptyBitSet
-            };
-
-	    return logged('@@rhoList', parObj);
 	}
 
 	function toByteArray(termObj) {
@@ -125,10 +100,66 @@ function makeRNodeApp(grpc, clock) {
             const term = new proto.Par(termObj);
 
 	    const buf = term.toBuffer();
-            console.log('@@term serialized hex: ', buf.toString('hex'));
 	    return buf;
 	}
     }
+}
+
+
+/**
+ * "we can detail a direct representation of JSON into a
+ * fragment of the rholang syntax referred to in the diagram
+ * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
+ *
+ * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
+ */
+module.exports.toRSON = toRSON;
+function toRSON(x) {
+    // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
+    // https://rchain.atlassian.net/browse/RHOL-537
+    const bytesPerLong = 8;
+    const emptyBitSet = new Buffer(Array(bytesPerLong).fill(0));
+    const fixLF = p => Object.assign({ locallyFree: emptyBitSet }, p);
+
+    const expr1 = kv => fixLF({ exprs: [kv] });
+
+    function recur(x) {
+	switch (typeof x) {
+	case 'boolean':
+	    return expr1({ g_bool: x });
+	case 'number':
+	    // ISSUE: only integers
+	    return expr1({ g_int: x | 0 });
+	case 'string':
+	    return expr1({ g_string: x });
+	case 'object':
+	    if (x === null) {
+		return fixLF({});
+	    } else if (Array.isArray(x)) {
+		return toArry(x);
+	    } else {
+		return keysValues(x);
+	    }
+	default:
+	    throw(new Error('no mapping to RSON for ' +  typeof x));
+	};
+    }
+
+    function toArry(items) {
+	// [1, 2, 2] is a process with one exprs, which is a list
+	// The list has one 3 items, each of which is a process
+	// with one exprs, which is an int.
+	return expr1({e_list_body: fixLF({ ps: items.map(recur) }) });
+    }
+
+    function keysValues(obj) {
+	return fixLF({ sends: Object.keys(obj).map(k => {
+	    const chan = { quote: expr1({ g_string: k }) };
+	    return fixLF({ chan: chan, data: [recur(obj[k])] });
+	}) });
+    }
+
+    return recur(x);
 }
 
 
@@ -157,20 +188,38 @@ function send(obj, method, ...arg) {
 
 
 /**
- * JSON replacer: stringify Buffer data as hex
+ * log with JSON replacer: stringify Buffer data as hex
  */
-function bufAsHex(prop, val) {
-    if (prop == 'data' && typeof(val) == 'object' && val instanceof Array) {
-	return new Buffer(val).toString('hex');
+module.exports.logged = logged;
+function logged(obj, label) {
+    let bufferData = null;
+
+    console.log(label, JSON.stringify(obj, bufAsHex, 2));
+    return obj;
+
+    function bufAsHex(prop, val) {
+	if (prop == 'data' && 'type' in this && this.type == 'Buffer') {
+	    return new Buffer(val).toString('hex');
+	}
+	return val;
     }
-    return val;
+
 }
+
 
 
 function integrationTest(argv, {grpc, clock}) {
     const host = argv[2], port = parseInt(argv[3]);
 
-    const rnodeApp = makeRNodeApp(grpc, clock);
+    logged(toRSON(null), 'toRSON: null'); // ISSUE: change to unit tests.
+    logged(toRSON(123), 'toRSON: number');
+    logged(toRSON([true, 123, "abc"]), 'toRSON: list of scalars');
+    logged(toRSON({x: "abc"}), 'toRSON: object');
+    // const stuffToSign = [null, true, [42, "abc"], {x: {y: "z"}}];
+    const stuffToSign = {x: "abc"};
+    logged(toRSON(stuffToSign), 'toRSON: nested');
+
+    const rnodeApp = appFactory('rnode', {grpc, clock});
     function make(reviver, ...arg) {
 	console.log('make stub:', { reviver, arg });
 	const context = { state: {} };
@@ -186,8 +235,7 @@ function integrationTest(argv, {grpc, clock}) {
 	__dirname + '/rnode_proto/CasperMessage.proto',
 	host, port);
 
-    const stuffToSign = ca.rhoList([42]);
-    const serialized = ca.toByteArray(stuffToSign);
+    logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 
     // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
     const rhoTerm = '@"world"!("hello!")';
