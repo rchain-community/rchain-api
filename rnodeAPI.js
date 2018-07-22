@@ -106,6 +106,12 @@ function appFactory(parent, {grpc, clock}) {
 }
 
 
+const RSON = def({
+    fromData: toRSON,
+    stringify: RSONsrc
+});
+module.exports.RSON = RSON;
+
 /**
  * "we can detail a direct representation of JSON into a
  * fragment of the rholang syntax referred to in the diagram
@@ -113,7 +119,6 @@ function appFactory(parent, {grpc, clock}) {
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
  */
-module.exports.toRSON = toRSON;
 function toRSON(x) {
     // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
     // https://rchain.atlassian.net/browse/RHOL-537
@@ -129,7 +134,7 @@ function toRSON(x) {
 	    return expr1({ g_bool: x });
 	case 'number':
 	    // ISSUE: only integers
-	    return expr1({ g_int: x | 0 });
+	    return expr1({ g_int: x });
 	case 'string':
 	    return expr1({ g_string: x });
 	case 'object':
@@ -160,6 +165,38 @@ function toRSON(x) {
     }
 
     return recur(x);
+}
+
+function RSONsrc(par) {
+    const src = x => JSON.stringify(x);
+
+    function recur(p) {
+	if (p.exprs) {
+	    if (p.exprs.length != 1) {
+		throw('not implemented');
+	    }
+	    const ex = p.exprs[0];
+	    if ('g_bool' in ex) {
+		return src(ex.g_bool);
+	    } else if ('g_int' in ex) {
+		return src(ex.g_int);
+	    } else if ('g_string' in ex) {
+		return src(ex.g_string);
+	    } else if ('e_list_body' in ex) {
+		return '[' + ex.e_list_body.ps.map(recur).join(', ') + ']';
+	    } else {
+		throw(new Error(`not RSON? ${ex}`));
+	    }
+	} else if (p.sends) {
+	    const ea = s => `@${recur(s.chan.quote)}!(${s.data.map(recur).join(', ')})`;
+	    return p.sends.map(ea).join(' | ');
+	} else {
+	    // TODO: check that everything else is empty
+	    return 'Nil';
+	}
+    }
+
+    return recur(par);
 }
 
 
@@ -211,11 +248,15 @@ function logged(obj, label) {
 function integrationTest(argv, {grpc, clock}) {
     const host = argv[2], port = parseInt(argv[3]);
 
+    const d1 = [null, true, [42, "abc"], {x: {y: "z"}}];
+    console.log('par in source form: ',
+		d1,
+		RSON.stringify(toRSON(d1)));
+
     logged(toRSON(null), 'toRSON: null'); // ISSUE: change to unit tests.
     logged(toRSON(123), 'toRSON: number');
     logged(toRSON([true, 123, "abc"]), 'toRSON: list of scalars');
     logged(toRSON({x: "abc"}), 'toRSON: object');
-    // const stuffToSign = [null, true, [42, "abc"], {x: {y: "z"}}];
     const stuffToSign = {x: "abc"};
     logged(toRSON(stuffToSign), 'toRSON: nested');
 
