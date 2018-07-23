@@ -139,6 +139,8 @@ function trustCertTest(argv, { clock, random_keyPair, grpc }) {
 
     const gatewayKey = keyPair.appFactory({ random_keyPair }).keyPair({ state: {} });
     gatewayKey.init('gateway 1 key');
+    console.log(gatewayKey, gatewayKey.publicKey());
+
     const rnodeApp = rnodeAPI.appFactory('rnode', {grpc, clock});
 
     function make(reviver, ...arg) {
