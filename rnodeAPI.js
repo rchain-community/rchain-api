@@ -18,25 +18,14 @@ refs:
 const def = obj => Object.freeze(obj);  // cf. ocap design note
 
 
+/**
+ * endPoint: { host, port } of gRPC server
+ */
 module.exports.appFactory = appFactory;
-function appFactory(parent, {grpc, clock}) {
-    return def({ rnode, casperClient });
+function appFactory(protoSrc, {endPoint, grpc, clock}) {
+    return def({ casperClient });
 
-    function rnode(context) {
-	return def({ init, makeCasper });
-
-	function init() {
-	}
-
-	function makeCasper(protoSrc, host, port) {
-	    return context.make(`${parent}.casperClient`,
-				protoSrc, host, port);
-	}
-    }
-
-    function casperClient(context) {
-	let state = 'endPoint' in context.state ?
-		context.state : null /* state.X throws until init() */;
+    function casperClient(_context) {
 	let proto;
 	let casper;
 	let client;
@@ -44,19 +33,16 @@ function appFactory(parent, {grpc, clock}) {
 		     doDeploy, createBlock, addBlock, propose,
 		     toRSON, toByteArray });
 
-	function init(protoSrc, host, port) {
-	    state = context.state;
-	    state.protoSrc = protoSrc;
-	    state.endPoint = { host: host, port: port };
+	function init() {
 	}
 
 	function theClient() {
 	    if (!casper) {
-		proto = grpc.load(state.protoSrc);
+		proto = grpc.load(protoSrc);
 		casper = proto.coop.rchain.casper.protocol;
 	    }
 	    if (!client) {
-		const { host, port} = state.endPoint;
+		const { host, port} = endPoint;
 		client = new casper.DeployService(
 		    `${host}:${port}`, grpc.credentials.createInsecure());
 	    }
@@ -260,21 +246,13 @@ function integrationTest(argv, {grpc, clock}) {
     const stuffToSign = {x: "abc"};
     logged(toRSON(stuffToSign), 'toRSON: nested');
 
-    const rnodeApp = appFactory('rnode', {grpc, clock});
-    function make(reviver, ...arg) {
-	console.log('make stub:', { reviver, arg });
-	const context = { state: {} };
-	const it = rnodeApp.casperClient(context);
-	it.init(...arg);
-	return it;
-    }
-    const rnodeContext = {state: {}, make};
-    const rnode = rnodeApp.rnode(rnodeContext);
-    rnode.init();
-
-    const ca = rnode.makeCasper(
-	__dirname + '/rnode_proto/CasperMessage.proto',
-	host, port);
+    const rnodeApp = appFactory(__dirname + '/rnode_proto/CasperMessage.proto',
+				{
+				    grpc, clock,
+				    endPoint: { host, port }
+				});
+    const ctx = { state: {} };
+    const ca = rnodeApp.makeCasper(ctx);
 
     logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 

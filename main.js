@@ -28,7 +28,7 @@ const def = obj => Object.freeze(obj);  // cf. ocap design note
  * baseURL: base URL for mounting OAuth login, callback URLs
  */
 exports.appFactory = appFactory;
-function appFactory({app, passport, baseURL}) {
+function appFactory({app, passport, baseURL, setSignIn, sturdyPath}) {
     app.use(passport.initialize());
     passport.serializeUser((user, done) => done(null, user));
     passport.deserializeUser((obj, done) => done(null, obj));
@@ -38,31 +38,7 @@ function appFactory({app, passport, baseURL}) {
 	discord: opts => new discord.Strategy(Object.assign({ scope: 'identity'}, opts), verify)
     };
 
-    return def({ gateway, oauthClient });
-
-    function gateway(context) {
-	let state = 'clients' in context.state ?
-		context.state : null /* state.X throws until init() */;
-
-	return def({
-	    init, makeClient,
-	    clients: () => state.clients
-	});
-
-	function init() {
-	    state = context.state;
-	    state.clients = [];
-	}
-
-	function makeClient(path, callbackPath, strategy, id, secret) {
-	    const it = context.make('gateway.oauthClient',
-				    path, callbackPath,
-				    strategy, id, secret);
-	    state.clients.push(it);
-	    return it;
-	}
-
-    }
+    return def({ oauthClient });
 
     function oauthClient(context) {
 	let state; // state.X throws until init()
@@ -78,7 +54,7 @@ function appFactory({app, passport, baseURL}) {
 	    clientId: () => state.id
 	});
 
-	function init(path, callbackPath, strategy, id, secret) {
+	function init(path, callbackPath, strategy, id, secret, game) {
 	    state = context.state;
 	    // console.log('client init:', { path, callbackPath, strategy, id });
 	    state.path = path;
@@ -88,6 +64,7 @@ function appFactory({app, passport, baseURL}) {
 		clientSecret: secret,
 		callbackPath: callbackPath
 	    };
+	    state.game = game;
 
 	    use();
 	}
@@ -98,19 +75,23 @@ function appFactory({app, passport, baseURL}) {
 	    if (!makeStrategy) {
 		throw new Error(`unknown strategy: ${strategy}`);
 	    }
+
 	    const opts = state.opts;
 	    opts.callbackURL = new URL(opts.callbackPath, baseURL).toString();
 
 	    passport.use(makeStrategy(opts, verify));
-	    console.log('@@DEBUG: opts:', opts);
+	    // console.log('DEBUG: opts:', opts);
 
 	    app.get(state.path, passport.authenticate(strategy));
+	    setSignIn(state.path);
 
 	    app.get(opts.callbackPath,
 		    passport.authenticate(strategy,
 					  { failureRedirect: '/auth-failure-@@'  }),
 		    (req, res) => {
-			res.redirect(`/user/${req.user.username}`);
+			const session = state.game.sessionFor(req.user);
+			const sessionAddr = sturdyPath(session);
+			res.redirect(sessionAddr);
 		    });
 	}
 
@@ -158,7 +139,7 @@ function trustCertTest(argv, { clock, random_keyPair, grpc }) {
 	__dirname + '/rnode_proto/CasperMessage.proto',
 	host, port);
 
-    const certSigHex = gatewayKey.signBytesHex(rchain.toByteArray(RSON.fromData(cert1)), 'R bs');
+    const certSigHex = gatewayKey.signBytesHex(rchain.toByteArray(RSON.fromData(cert1)));
     const certTerm = logged(
 	`@"certify"!(${RSON.stringify(RSON.fromData(cert1))}, ${JSON.stringify(certSigHex)})`,
 	'certTerm');

@@ -24,6 +24,16 @@ function appFactory({ random_keyPair }) /*: CapperApp */ {
 
     function keyPair(context){
 	let state = context.state ? context.state : null /* state.X throws until init() */;
+
+	function init(label) {
+	    const key = random_keyPair();
+
+	    state = context.state;
+	    state.label = label;
+	    state.publicKey = b2h(key.publicKey);
+	    state.secretKey = b2h(key.secretKey);
+	}
+
 	const toString = () => `<keyPair ${state.label}: ${state.publicKey.substring(0, 12)}...>`;
 	const signBytes = bytes => sign.detached(bytes, privateKey());
 
@@ -36,15 +46,6 @@ function appFactory({ random_keyPair }) /*: CapperApp */ {
 	    label: () => state.label,
 	    [inspect.custom]: toString
 	});
-
-	function init(label) {
-	    const key = random_keyPair();
-
-	    state = context.state;
-	    state.label = label;
-	    state.publicKey = b2h(key.publicKey);
-	    state.secretKey = b2h(key.secretKey);
-	}
 
 	function privateKey() {
 	    return sign.keyPair.fromSecretKey(h2b(state.secretKey)).secretKey;

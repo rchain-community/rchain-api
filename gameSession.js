@@ -32,7 +32,7 @@ const mockDB = {
 
 module.exports.appFactory = appFactory;
 function appFactory(parent, { clock }) {
-    return def({ gameSession, makeGame });
+    return def({ gameSession, gameBoard });
 
     function gameSession(context) {
         let state = context.state ? context.state : null;  // state.X throws until init()
@@ -55,21 +55,30 @@ function appFactory(parent, { clock }) {
         }
     }
 
-    function makeGame(context) {
+    function gameBoard(context) {
 	let state = context.state ? context.state : null;  // state.X throws until init()
 
-	function init(rchain, gameKey) {
+	function init(label) {
             state = context.state;
-            state.rchain = rchain;
-            state.gameKey = gameKey;
+	    state.label = label;
+            state.rchain = context.make(`rnode.casperClient`);
+            state.gameKey = context.make(`keyChain.keyPair`, `for ${label}`);
 	    state.players = {};
             // ISSUE: TODO: state.peers = ... from github
 	}
 
 	return def({
-            init, select, merge, sessionFor,
-            publicKey: () => state.gameKey.publicKey()
+            init, select, merge, makeSignIn, sessionFor,
+	    label: () => state.label,
+            publicKey: () => state.gameKey.publicKey(),
+	    rchain: () => state.rchain
 	});
+
+	function makeSignIn(path, callbackPath, strategy, id, secret) {
+	    return context.make(`${parent}.oauthClient`,
+				path, callbackPath,
+				strategy, id, secret, this);
+	}
 
 	function sessionFor(userProfile) {
 	    const id = userProfile.id,
