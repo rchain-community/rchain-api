@@ -44,12 +44,17 @@ function appFactory(parent, { clock }) {
             state.created = clock().valueOf();  // persist as millis
         }
 
-        return def({ init, info });
+        return def({
+	    init, info,
+	    select: (...arg) => state.game.select(...arg),
+	    merge: (...arg) => state.game.merge(...arg)
+	});
 
         function info() {
             return def({
                 created: state.created,
                 userProfile: state.userProfile,
+		gameLabel: state.game.label(),
                 gameKey: state.game.publicKey()
             });
         }
@@ -67,17 +72,18 @@ function appFactory(parent, { clock }) {
             // ISSUE: TODO: state.peers = ... from github
 	}
 
-	return def({
+	const self = def({
             init, select, merge, makeSignIn, sessionFor,
 	    label: () => state.label,
             publicKey: () => state.gameKey.publicKey(),
 	    rchain: () => state.rchain
 	});
+	return self;
 
 	function makeSignIn(path, callbackPath, strategy, id, secret) {
-	    return context.make(`${parent}.oauthClient`,
+	    return context.make(`gateway.oauthClient`,  // ISSUE: hard-code gateway?
 				path, callbackPath,
-				strategy, id, secret, this);
+				strategy, id, secret, self);
 	}
 
 	function sessionFor(userProfile) {
@@ -85,7 +91,7 @@ function appFactory(parent, { clock }) {
 		  players = state.players;
 	    let session = players[id];
 	    if (!session) {
-		session = context.make(`${parent}.makeSession`, userProfile, this);
+		session = context.make(`${parent}.gameSession`, userProfile, self);
 		players[id] = session;
 	    }
 	    return session;
@@ -106,7 +112,7 @@ function appFactory(parent, { clock }) {
             }
 
             const table = mockDB[tablename],
-		  key = table.key.map(field => record[field]);
+		  recordKey = table.key.map(field => record[field]);
 
             const rholang = obj => RSON.stringify(RSON.fromData(obj)),
 		  rchain = state.rchain,
@@ -115,19 +121,22 @@ function appFactory(parent, { clock }) {
             const gameTerm = rholang(state.gameKey.publicKey()),
 		  turnMsg = RSON.fromData(['merge', tablename, record]),
 		  turnTerm = RSON.stringify(turnMsg),
-		  turnSigTerm = rholang(gameKey.signBytesHex(rchain.toByteArray(turnMsg))),
+		  turnSig = gameKey.signBytesHex(rchain.toByteArray(turnMsg)),
+		  turnSigTerm = rholang(turnSig),
 		  takeTurnTerm = `@"takeTurn"!(${gameTerm}, ${turnTerm}, ${turnSigTerm})`;
 
             return rchain.doDeploy(takeTurnTerm).then(result => {
-		console.log('@@doDeploy result:', result);
+		console.log('doDeploy result:', result);
 		if (!result.success) {
                     throw(result);
 		}
 
 		return rchain.createBlock().then(maybeBlock => {
-		    logged(maybeBlock, 'createBlock?');
 		    if (maybeBlock.block) {
-			return key;
+			logged(maybeBlock.block.blockHash, 'created block:');
+			return {
+			    turnSig, takeTurnTerm, recordKey
+			};
 		    } else {
 			throw new Error('createBlock failed');
 		    }
