@@ -34,12 +34,12 @@ function callMyContract(arg) {
 ```
 
 ### Run server.js on your server
-An connect to it from the browser
+And connect to it from the browser
 
 ## Key Management
 There are a few options for managing keys.
 
-*Server Stores Keys* Server creates and stores key pairs and uses something like capper or other session-related tools to communicate with the browser. This option trusts the server not to act fraudulently on your behalf.
+*Server Stores Keys* Server creates and stores key pairs and uses something like capper or other session-related tools to communicate with the browser. This option trusts the server not to act fraudulently on your behalf. Further this option is only available for web-app style frontends. For frontends that run entirely client-side, there is no server even in the picture.
 *Frontend Stores Keys* The client-side code creates and manages the keys without ever showing them to users. This only requires trusting the frontend code which in many cases is auditable.
 *User Stores Keys* The frontend presents the data to sign, the user produces that signature however he wants (GPG, hardware wallet, etc) and pastes it back into the frontend.
 *RMetaMask* We don't have [this kind of tool](https://metamask.io/) available yet, but hopefully soon. It combines the best of the latter two options.
