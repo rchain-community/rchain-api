@@ -2,14 +2,19 @@
 
 An API for dapps to communicate with the RChain blockchain.
 
-The RChain blockchain is developing a decentralized, economically sustainable public compute infrastructure. Decentralized applications or "Dapps" will run their business logic as smart contracts on the
+The RChain blockchain is developing a decentralized, economically sustainable public compute infrastructure. Decentralized applications or "Dapps" will run their business logic as smart contracts on the blockchain. Their userinterfaces will be more traditional programs that interact with the backend. This separation allows Dapp developers to create nice abstract interfaces, and allows end users to create their own sovereign interfaces should they choose to do so.
+
+## Real world meets blockchain
+In the world of rholang, we facilitate [object capabilities]() by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
+
+Public-key crypto to the rescue. The user can lock the relevant unforgeable name into "safe" a contract that anyone can call. When called the safe will give back the correct unforgeable name, but only if it is given a valid cryptographic signature. Michael Birch recently showed an [example of such a scheme](https://www.youtube.com/watch?v=WzAdfjwgaQs#t=9m28s).
 
 ## Quickstart
 ### Find an RChain node whose grpc you can use.
-At the moment that likely means running your own rnode.
+At the moment that likely means running your own rnode. We're also working on a community node at rnode-test.rhobot.net
 
 ### Write your rholang smart contract and deploy it to a blockchain of your choice.
-There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API
+There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API.
 
 ### Write your front end
 Because the library is written in js that likely means you will write HTML/CSS/JS targeting a browser or something like electron js.
@@ -29,9 +34,15 @@ function callMyContract(arg) {
 ```
 
 ### Run server.js on your server
-This is the part I'm really not clear on because in the ethereum world metamask handles it for us. What exactly does the server.js do again? Will a dapp developer need to modify it at all?
+An connect to it from the browser
 
+## Key Management
+There are a few options for managing keys.
 
+*Server Stores Keys* Server creates and stores key pairs and uses something like capper or other session-related tools to communicate with the browser. This option trusts the server not to act fraudulently on your behalf.
+*Frontend Stores Keys* The client-side code creates and manages the keys without ever showing them to users. This only requires trusting the frontend code which in many cases is auditable.
+*User Stores Keys* The frontend presents the data to sign, the user produces that signature however he wants (GPG, hardware wallet, etc) and pastes it back into the frontend.
+*RMetaMask* We don't have [this kind of tool](https://metamask.io/) available yet, but hopefully soon. It combines the best of the latter two options.
 
 
 ## Future Directions
