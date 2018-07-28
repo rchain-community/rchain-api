@@ -16,16 +16,16 @@ refs:
 'use strict';
 
 const def = obj => Object.freeze(obj);  // cf. ocap design note
-
+const protoSrc = __dirname + '/protobuf/CasperMessage.proto';
 
 /**
  * endPoint: { host, port } of gRPC server
  */
 module.exports.clientFactory = clientFactory;
-function clientFactory(protoSrc, {endPoint, grpc, clock}) {
+function clientFactory({grpc, clock}) {
     return def({ casperClient });
 
-    function casperClient() {
+    function casperClient(endPoint) {
 	let proto;
 	let casper;
 	let client;
@@ -239,12 +239,8 @@ function integrationTest(argv, {grpc, clock}) {
 
     const stuffToSign = {x: "abc"};
 
-    const maker = clientFactory(__dirname + '/protobuf/CasperMessage.proto',
-				{
-				    grpc, clock,
-				    endPoint: { host, port }
-				});
-    const ca = maker.casperClient();
+    const maker = clientFactory({ grpc, clock });
+    const ca = maker.casperClient({ host, port });
 
     logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 
