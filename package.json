@@ -1,0 +1,25 @@
+{
+  "name": "rchain-api",
+  "version": "0.1.0",
+  "description": "RChain client for node.js",
+  "main": "rnodeAPI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dckc/RChain-API.git"
+  },
+  "keywords": [
+    "rchain",
+    "grpc",
+    "blockchain",
+    "rholang"
+  ],
+  "author": "Dan Connolly",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dckc/RChain-API/issues"
+  },
+  "homepage": "https://github.com/dckc/RChain-API#readme"
+}
