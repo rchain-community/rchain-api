@@ -10,36 +10,51 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 ### Find an RChain node whose grpc you can use.
 At the moment that likely means running your own rnode.
 
-### Write your rholang smart contract and deploy it to a blockchain of your choice.
-There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API
+Make note of the hostname an gRPC port.
 
-### Write your front end
-Because the library is written in js that likely means you will write HTML/CSS/JS targeting a browser or something like electron js.
+## Run the integration test
 
-### (Optional) Write abstractions for your dApp
-The API currently exposes a direct interface to an rnode which runs as a node.js server. You may find it useful to write your own dApp-specific abstractions on top of the API.
+Run `rnodeAPI.js` with _host_ and _port_ arguments, as in: `node rnodeAPI.js jambox 50001`.
 
-```javascript
-/**
- * This function represents a call to the rholang contract on the blockchain.
- * @param arg The argument to ultimately go to the contract
- */
-function callMyContract(arg) {
-  let term = `@"myContract"!(${arg})`
-  doDeploy(term)
+You should see something like:
+
+```
+stuffToSign serialized {
+  "type": "Buffer",
+  "data": "0a300a110a0f2a031a01784a08000000000000000012112a051a036162634a0800000000000000002a0800000000000000004a080000000000000000"
 }
+...
+doDeploy result: { success: true, message: 'Success!' }
+@@createBlock():  {
+  "block": {
+    "blockHash": {
+      "type": "Buffer",
+      "data": "3c5d97e2627432026b6d4a17c8027afb95b72e8d08a936d785b58459eff5859e"
 ```
 
-### Run server.js on your server
-This is the part I'm really not clear on because in the ethereum world metamask handles it for us. What exactly does the server.js do again? Will a dApp developer need to modify it at all?
+## Theory of Operation
+
+_Note: this is aspirational. The start of one such application is in
+development in https://github.com/dckc/rchain-dbr._
+
+### Write your rholang smart contract and deploy it to an RChain network of your choice.
+There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API
+
+### ISSUE: how to connect to front end?
+
+Options we're aware of:
+  1. https://github.com/grpc/grpc-web
+  1. Capper (e.g. https://github.com/dckc/rchain-dbr )
+
+Both of these seem to involve a proxy between the browser and any
+RChain rnode services.
 
 
+## Other RChain rnode API clients: scala, python
 
-
-## Future Directions
-At the moment the API is for javascript only because it seems the be in highest demand from the community and in our own work. If the project is successful it would be great to write similar libraries for other languages like the ethereum community has.
-
-(I vote for python next)
+The https://github.com/rchain/rchain repository has other rnode gRPC clients.
+The `rnode` command-line itself is a gRPC client. As of this writing,
+there are also a couple python clients under `node-client/`.
 
 
 ## License
