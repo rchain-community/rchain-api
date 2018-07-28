@@ -21,11 +21,11 @@ const def = obj => Object.freeze(obj);  // cf. ocap design note
 /**
  * endPoint: { host, port } of gRPC server
  */
-module.exports.appFactory = appFactory;
-function appFactory(protoSrc, {endPoint, grpc, clock}) {
+module.exports.clientFactory = clientFactory;
+function clientFactory(protoSrc, {endPoint, grpc, clock}) {
     return def({ casperClient });
 
-    function casperClient(_context) {
+    function casperClient() {
 	let proto;
 	let casper;
 	let client;
@@ -232,27 +232,19 @@ function logged(obj, label) {
 
 
 function integrationTest(argv, {grpc, clock}) {
+    if (argv.length < 4) {
+	throw new Error('usage: node SCRIPT host port');
+    }
     const host = argv[2], port = parseInt(argv[3]);
 
-    const d1 = [null, true, [42, "abc"], {x: {y: "z"}}];
-    console.log('par in source form: ',
-		d1,
-		RSON.stringify(toRSON(d1)));
-
-    logged(toRSON(null), 'toRSON: null'); // ISSUE: change to unit tests.
-    logged(toRSON(123), 'toRSON: number');
-    logged(toRSON([true, 123, "abc"]), 'toRSON: list of scalars');
-    logged(toRSON({x: "abc"}), 'toRSON: object');
     const stuffToSign = {x: "abc"};
-    logged(toRSON(stuffToSign), 'toRSON: nested');
 
-    const rnodeApp = appFactory(__dirname + '/rnode_proto/CasperMessage.proto',
+    const maker = clientFactory(__dirname + '/protobuf/CasperMessage.proto',
 				{
 				    grpc, clock,
 				    endPoint: { host, port }
 				});
-    const ctx = { state: {} };
-    const ca = rnodeApp.makeCasper(ctx);
+    const ca = maker.casperClient();
 
     logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 
@@ -269,6 +261,22 @@ function integrationTest(argv, {grpc, clock}) {
     }).catch(oops => {
 	console.log('deploy, propose failed:', oops);
     });
+}
+
+
+// ISSUE: change to unit tests.
+function testRSON() {
+    const d1 = [null, true, [42, "abc"], {x: {y: "z"}}];
+    console.log('par in source form: ',
+		d1,
+		RSON.stringify(toRSON(d1)));
+
+    logged(toRSON(null), 'toRSON: null');
+    logged(toRSON(123), 'toRSON: number');
+    logged(toRSON([true, 123, "abc"]), 'toRSON: list of scalars');
+    logged(toRSON({x: "abc"}), 'toRSON: object');
+    const stuffToSign = {x: "abc", y: {a: true }};
+    logged(toRSON(stuffToSign), 'toRSON: nested');
 }
 
 
