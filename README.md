@@ -19,6 +19,8 @@ Make note of the hostname and gRPC port.
 
 ## Run the integration test
 
+_TODO: refine this test to tell a story._
+
 Run `rnodeAPI.js` with _host_ and _port_ arguments, as in: `node rnodeAPI.js rnode-test.rhobot.net 50000`.
 
 You should see something like:
