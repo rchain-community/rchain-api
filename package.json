@@ -1,10 +1,10 @@
 {
   "name": "rchain-api",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node rnodeAPI.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
-    "grpc": "^1.13.1"
-  }
+    "grpc": "^1.13.1",
+    "testjs": "^1.0.4"
+  },
+  "devDependencies": {}
 }

@@ -105,11 +105,11 @@ module.exports.RSON = RSON;
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
  */
+// this locallyFree: emptyBitSet stuff shouldn't be necessary; see
+// https://rchain.atlassian.net/browse/RHOL-537
+const bytesPerLong = 8;
+const emptyBitSet = new Buffer(Array(bytesPerLong).fill(0));
 function toRSON(x) {
-    // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
-    // https://rchain.atlassian.net/browse/RHOL-537
-    const bytesPerLong = 8;
-    const emptyBitSet = new Buffer(Array(bytesPerLong).fill(0));
     const fixLF = p => Object.assign({ locallyFree: emptyBitSet }, p);
 
     const expr1 = kv => fixLF({ exprs: [kv] });
@@ -144,10 +144,11 @@ function toRSON(x) {
     }
 
     function keysValues(obj) {
-	return fixLF({ sends: Object.keys(obj).map(k => {
+	const sends = Object.keys(obj).sort().map(k => {
 	    const chan = { quote: expr1({ g_string: k }) };
 	    return fixLF({ chan: chan, data: [recur(obj[k])] });
-	}) });
+	});
+	return fixLF({ sends });
     }
 
     return recur(x);
@@ -219,14 +220,12 @@ function logged(obj, label) {
 
     console.log(label, JSON.stringify(obj, bufAsHex, 2));
     return obj;
-
-    function bufAsHex(prop, val) {
-	if (prop == 'data' && 'type' in this && this.type == 'Buffer') {
-	    return new Buffer(val).toString('hex');
-	}
-	return val;
+}
+function bufAsHex(prop, val) {
+    if (prop == 'data' && 'type' in this && this.type == 'Buffer') {
+	return new Buffer(val).toString('hex');
     }
-
+    return val;
 }
 
 
@@ -260,28 +259,92 @@ function integrationTest(argv, {grpc, clock}) {
 }
 
 
-// ISSUE: change to unit tests.
+// ISSUE: move to test file
 function testRSON() {
-    const d1 = [null, true, [42, "abc"], {x: {y: "z"}}];
-    console.log('par in source form: ',
-		d1,
-		RSON.stringify(toRSON(d1)));
+    const Suite = require("testjs");
 
-    logged(toRSON(null), 'toRSON: null');
-    logged(toRSON(123), 'toRSON: number');
-    logged(toRSON([true, 123, "abc"]), 'toRSON: list of scalars');
-    logged(toRSON({x: "abc"}), 'toRSON: object');
-    const stuffToSign = {x: "abc", y: {a: true }};
-    logged(toRSON(stuffToSign), 'toRSON: nested');
+    Suite.run({
+	'null': rtest({ data: null, RSON: {} }),
+	'number': rtest({ data: 123, RSON: { exprs: [ { g_int: 123 } ] } }),
+	'list of scalars': rtest({
+	    data: [true, 123, "abc"],
+	    RSON: { "exprs": [ { "e_list_body": { "ps": [
+		{ "exprs": [ { "g_bool": true } ] },
+		{ "exprs": [ { "g_int": 123 } ] },
+		{ "exprs": [ { "g_string": "abc" } ] }
+            ]}}]} }),
+	'object': rtest({
+	    data: {x: "abc"},
+	    RSON: { sends: [
+		{ chan: {quote: { exprs: [{ g_string: "x" }]}},
+		  data: [{ exprs: [{ g_string: "abc"}]}]}
+	    ]}
+	}),
+	'nested object': rtest({
+	    data: {x: "abc", y: {a: true }},
+	    RSON: { sends: [
+		{ chan: { quote: { exprs: [{ g_string: "x"}]}},
+		  data: [{ exprs: [{ g_string: "abc"}]}]},
+		{ chan: { quote: { exprs: [{ g_string: "y"}]}},
+		  data: [{ sends: [
+		      { chan: { quote: { exprs: [{ g_string: "a"}]}},
+			data: [{ exprs: [{ g_bool: true }] }] }
+		  ] }] }
+	    ]}
+	}),
+	'trust vote': rtest({
+	    data: ["merge", "trust_cert",
+		   {voter: "dckc", subject: "a1", rating: 1, cert_time: "2018-07-29T02:00:21.259Z"}],
+	    RSON: { exprs: [{ e_list_body: { ps: [
+		{ exprs: [{ g_string: "merge" }]},
+		{ exprs: [{ g_string:"trust_cert" }]},
+		{ sends: [{ chan: { quote: { exprs: [{ g_string: "cert_time"}]}},
+			    data: [{ exprs :[{ g_string: "2018-07-29T02:00:21.259Z"}]}]},
+			  { chan: { quote: { exprs: [{ g_string: "rating"}]}},
+			    data: [{ exprs: [{ g_int: 1 }]}]},
+			  { chan: { quote: { exprs: [{ g_string:  "subject"}]}},
+			    data: [{ exprs: [{ g_string: "a1" }]}]},
+			  { chan: { quote: { exprs: [{ g_string: "voter"}]}},
+			    data: [{ exprs: [{ g_string: "dckc"}]}]}]}
+	    ]}}]}
+	})
+    });
+
+    function rtest(item) {
+	return test => {
+	    // console.log(JSON.stringify(unfixLF(toRSON(item.data)), bufAsHex));
+	    test.deepEqual(unfixLF(toRSON(item.data)), item.RSON);
+	    test.done();
+	};
+    }
+
+    function unfixLF(x) {
+	if(x instanceof Array) {
+	    return x.map(unfixLF);
+	} else if (typeof x == 'object' && x !== null && x !== undefined) {
+	    const nolf = {};
+	    for (let prop in x) {
+		if (prop == 'locallyFree') { continue; }
+		nolf[prop] = unfixLF(x[prop]);
+	    }
+	    return nolf;
+	} else {
+	    return x;
+	}
+    }
 }
 
 
 if (require.main == module) {
     // Access ambient stuff only when invoked as main module.
-    integrationTest(
-	process.argv,
-	{
-	    grpc: require('grpc'),
-	    clock: () => new Date()
-	});
+    if (process.argv.length == 4) {
+	integrationTest(
+	    process.argv,
+	    {
+		grpc: require('grpc'),
+		clock: () => new Date()
+	    });
+    } else {
+	testRSON();
+    }
 }
