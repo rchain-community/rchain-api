@@ -17,6 +17,10 @@
     "rholang"
   ],
   "author": "Dan Connolly",
+  "contributors": [
+    "Dan Connolly <dckc@madmode.com> (http://www.madmode.com)",
+    "Joshy Orndorff"
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/dckc/RChain-API/issues"
