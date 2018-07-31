@@ -13,11 +13,16 @@ Public-key crypto to the rescue. The user can lock the relevant unforgeable name
 
 ## Quickstart
 ### Find an RChain node whose grpc you can use.
-At the moment that likely means running your own rnode. We're also working on a community node at rnode-test.rhobot.net
+At the moment that likely means running your own rnode. We're working on a community node at rnode-test.rhobot.net
 
 Make note of the hostname and gRPC port.
 
-## Run the integration test
+### Grab this code
+Clone the repo with eg `git clone https://github.com/JoshOrndorff/RChain-API`
+
+An install dependencies with `npm install`
+
+### Run the integration test
 
 _TODO: refine this test to tell a story._
 
