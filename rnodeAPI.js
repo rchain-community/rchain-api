@@ -26,23 +26,23 @@ function clientFactory({grpc, clock}) {
     return def({ casperClient });
 
     function casperClient(endPoint) {
-	let proto;
-	let casper;
-	let client;
-	return def({
-		     doDeploy, createBlock, addBlock, propose,
-		     toByteArray });
+        let proto;
+        let casper;
+        let client;
+        return def({
+                     doDeploy, createBlock, addBlock, propose,
+                     toByteArray });
 
-	function theClient() {
-	    if (!casper) {
-		proto = grpc.load(protoSrc);
-		casper = proto.coop.rchain.casper.protocol;
-	    }
-	    if (!client) {
-		const { host, port} = endPoint;
-		client = new casper.DeployService(
-		    `${host}:${port}`, grpc.credentials.createInsecure());
-	    }
+        function theClient() {
+            if (!casper) {
+                proto = grpc.load(protoSrc);
+                casper = proto.coop.rchain.casper.protocol;
+            }
+            if (!client) {
+                const { host, port} = endPoint;
+                client = new casper.DeployService(
+                    `${host}:${port}`, grpc.credentials.createInsecure());
+            }
             return client;
         }
 
