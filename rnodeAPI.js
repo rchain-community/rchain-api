@@ -19,20 +19,29 @@ const def = obj => Object.freeze(obj);  // cf. ocap design note
 const protoSrc = __dirname + '/protobuf/CasperMessage.proto';
 
 /**
- * endPoint: { host, port } of gRPC server
+ * TODO @dckc, I'm not clear why we need all of clientFactory, casperClient, and theClient
+ * @param grpc grpc instance from the node grpc package
+ * @param clock Some access to system time
  */
 module.exports.clientFactory = clientFactory;
 function clientFactory({grpc, clock}) {
     return def({ casperClient });
 
+    /**
+     * Generates an immutable casperClient object listening on the given endpoint
+     * @param endpoint { host, port } of gRPC server
+     * @return An immutable casperClient object
+     */
     function casperClient(endPoint) {
         let proto;
         let casper;
         let client;
-        return def({
-                     doDeploy, createBlock, addBlock, propose,
-                     toByteArray });
+        return def({ doDeploy, createBlock, addBlock, propose, toByteArray });
 
+        /**
+         * Get a reference to the casper client
+         * @return The casper client
+         */
         function theClient() {
             if (!casper) {
                 proto = grpc.load(protoSrc);
@@ -46,6 +55,11 @@ function clientFactory({grpc, clock}) {
             return client;
         }
 
+        /**
+         * Deploys a rholang term to a node
+         * @param term A string of rholang code (for example @"world"!("Hello!")  )
+         * @return A promise for a DeployServiceResponse
+         */
         function doDeploy(term) {
             const deployString = {
                 // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
@@ -57,10 +71,19 @@ function clientFactory({grpc, clock}) {
             return send(theClient(), 'DoDeploy', deployString);
         }
 
+        /**
+         * Creates a block on your node
+         * @return A promise for MaybeBlockMessage
+         */
         function createBlock() {
             return send(theClient(), 'createBlock', {});
         }
 
+        /**
+         * Adds block to local DAG and gossips block to peers on network
+         * @param block The block to be added
+         * @return A promise for a google.protobuf.Empty
+         */
         function addBlock(block) {
             // ISSUE: Error: Illegal value for Message.Field ...
             // .Expr.g_bool of type bool: object
@@ -69,12 +92,22 @@ function clientFactory({grpc, clock}) {
             return send(theClient(), 'addBlock', block);
         }
 
+        /**
+         * Create and add a block
+         * @return A promise for a google.protobuf.Empty
+         */
         function propose() {
+          //TODO Maybe test for success on create before adding.
             return createBlock().then(maybeBlock => {
                 return addBlock(logged(maybeBlock, '@@createBlock(): ').block);
             });
         }
 
+        /**
+         * Turns a rholang term into a byte-array compatible with Rholang
+         * @param termObj a rholang term object
+         * @return The byte-array
+         */
         function toByteArray(termObj) {
             theClient();  // Make sure proto is loaded. (ISSUE: refactor)
 
@@ -101,6 +134,8 @@ module.exports.RSON = RSON;
  * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
+ * @param x Any javascript object to be serialized to RSON
+ * @return A rholang term representing the object in RSON form.
  */
 // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
 // https://rchain.atlassian.net/browse/RHOL-537
@@ -151,6 +186,12 @@ function toRSON(x) {
     return recur(x);
 }
 
+/**
+ * Converts an RSON object into a JSON string
+ * Opposite of toRSON
+ * @param par A rholang term representing the object.
+ * @return A JSON string
+ */
 function RSONsrc(par) {
     const src = x => JSON.stringify(x);
 
@@ -191,6 +232,9 @@ function RSONsrc(par) {
  * use send(obj, 'method', ...arg) and get a promise.
  *
  * ISSUE: is this just Q.nfcall()?
+ * @param obj TODO
+ * @param method TODO
+ * @param ...arg TODO I don't know how to dowygen that
  */
 function send(obj, method, ...arg) {
     return new Promise(executor);
@@ -226,7 +270,9 @@ function bufAsHex(prop, val) {
 }
 
 
-
+/**
+ *
+ */
 function integrationTest(argv, {grpc, clock}) {
     if (argv.length < 4) {
         throw new Error('usage: node SCRIPT host port');
