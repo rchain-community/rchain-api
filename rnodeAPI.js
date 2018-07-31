@@ -231,10 +231,10 @@ function RSONsrc(par) {
  * Instead of obj.method(...arg, callback),
  * use send(obj, 'method', ...arg) and get a promise.
  *
- * ISSUE: is this just Q.nfcall()?
- * @param obj TODO
- * @param method TODO
- * @param ...arg TODO I don't know how to dowygen that
+ * @param obj Object whose method you want to call
+ * @param method String of method name
+ * @param arg Any arguments that method requires
+ * @return A promise of method's result
  */
 function send(obj, method, ...arg) {
     return new Promise(executor);
