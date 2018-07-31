@@ -29,12 +29,9 @@ function clientFactory({grpc, clock}) {
 	let proto;
 	let casper;
 	let client;
-	return def({ init,
+	return def({
 		     doDeploy, createBlock, addBlock, propose,
-		     toRSON, toByteArray });
-
-	function init() {
-	}
+		     toByteArray });
 
 	function theClient() {
 	    if (!casper) {
