@@ -1,8 +1,10 @@
 # RChain-API
 
-An API for dapps to communicate with the RChain blockchain.
+An API for dApps to communicate with the RChain blockchain.
 
-The RChain blockchain is developing a decentralized, economically sustainable public compute infrastructure. Decentralized applications or "Dapps" will run their business logic as smart contracts on the blockchain. Their userinterfaces will be more traditional programs that interact with the backend. This separation allows Dapp developers to create nice abstract interfaces, and allows end users to create their own sovereign interfaces should they choose to do so.
+The [RChain Cooperative][1] is developing a decentralized, economically sustainable public compute infrastructure. Decentralized applications or "dApps" will run their business logic as smart contracts on the blockchain. Their userinterfaces will be more traditional programs that interact with the backend. This separation allows dApp developers to create nice abstract interfaces, and allows end users to create their own sovereign interfaces should they choose to do so.
+
+[1]: https://www.rchain.coop/
 
 ## Real world meets blockchain
 In the world of rholang, we facilitate [object capabilities]() by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
@@ -13,28 +15,46 @@ Public-key crypto to the rescue. The user can lock the relevant unforgeable name
 ### Find an RChain node whose grpc you can use.
 At the moment that likely means running your own rnode. We're also working on a community node at rnode-test.rhobot.net
 
-### Write your rholang smart contract and deploy it to a blockchain of your choice.
-There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API.
+Make note of the hostname and gRPC port.
 
-### Write your front end
-Because the library is written in js that likely means you will write HTML/CSS/JS targeting a browser or something like electron js.
+## Run the integration test
 
-### (Optional) Write abstractions for your dapp
-The API currently exposes a direct interface to an rnode which runs as a node.js server. You may find it useful to write your own dapp-specific abstractions on top of the API.
+_TODO: refine this test to tell a story._
 
-```javascript
-/**
- * This function represents a call to the rholang contract on the blockchain.
- * @param arg The argument to ultimately go to the contract
- */
-function callMyContract(arg) {
-  let term = `@"myContract"!(${arg})`
-  doDeploy(term)
+Run `rnodeAPI.js` with _host_ and _port_ arguments, as in: `node rnodeAPI.js rnode-test.rhobot.net 50000`.
+
+You should see something like:
+
+```
+stuffToSign serialized {
+  "type": "Buffer",
+  "data": "0a300a110a0f2a031a01784a08000000000000000012112a051a036162634a0800000000000000002a0800000000000000004a080000000000000000"
 }
+...
+doDeploy result: { success: true, message: 'Success!' }
+@@createBlock():  {
+  "block": {
+    "blockHash": {
+      "type": "Buffer",
+      "data": "3c5d97e2627432026b6d4a17c8027afb95b72e8d08a936d785b58459eff5859e"
 ```
 
-### Run server.js on your server
-And connect to it from the browser
+## Theory of Operation
+
+_Note: this is aspirational. The start of one such application is in
+development in https://github.com/dckc/rchain-dbr._
+
+### Write your rholang smart contract and deploy it to an RChain network of your choice.
+There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using this very API
+
+### ISSUE: how to connect to front end?
+
+Options we're aware of:
+  1. https://github.com/grpc/grpc-web
+  1. Capper (e.g. https://github.com/dckc/rchain-dbr )
+
+Both of these seem to involve a proxy between the browser and any
+RChain rnode services.
 
 ## Key Management
 There are a few options for managing keys.
@@ -45,10 +65,11 @@ There are a few options for managing keys.
 *RMetaMask* We don't have [this kind of tool](https://metamask.io/) available yet, but hopefully soon. It combines the best of the latter two options.
 
 
-## Future Directions
-At the moment the API is for javascript only because it seems the be in highest demand from the community and in our own work. If the project is successful it would be great to write similar libraries for other languages like the ethereum community has.
+## Other RChain rnode API clients: scala, python
 
-(I vote for python next)
+The https://github.com/rchain/rchain repository has other rnode gRPC clients.
+The `rnode` command-line itself is a gRPC client. As of this writing,
+there are also a couple python clients under `node-client/`.
 
 
 ## License
