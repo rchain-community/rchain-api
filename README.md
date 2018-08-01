@@ -7,7 +7,7 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 [1]: https://www.rchain.coop/
 
 ## Real world meets blockchain
-In the world of rholang, we facilitate [object capabilities]() by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
+In the world of rholang, we facilitate [object capabilities](https://en.wikipedia.org/wiki/Object-capability_model) by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
 
 Public-key crypto to the rescue. The user can lock the relevant unforgeable name into "safe" a contract that anyone can call. When called the safe will give back the correct unforgeable name, but only if it is given a valid cryptographic signature. Michael Birch recently showed an [example of such a scheme](https://www.youtube.com/watch?v=WzAdfjwgaQs#t=9m28s).
 
