@@ -10,7 +10,7 @@ realclean:
 	rm -rf $(PROTO_SRC) *.proto
 
 RAW_GH=https://raw.githubusercontent.com
-R_SRC=$(RAW_GH)/rchain/rchain/master
+R_SRC=$(RAW_GH)/rchain/rchain/dev
 
 CasperMessage.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/CasperMessage.proto
