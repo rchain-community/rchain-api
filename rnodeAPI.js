@@ -19,36 +19,47 @@ const def = obj => Object.freeze(obj);  // cf. ocap design note
 const protoSrc = __dirname + '/protobuf/CasperMessage.proto';
 
 /**
- * endPoint: { host, port } of gRPC server
+ * TODO @dckc, I'm not clear why we need all of clientFactory, casperClient, and theClient
+ * @param grpc grpc instance from the node grpc package
+ * @param clock Some access to system time
  */
 module.exports.clientFactory = clientFactory;
 function clientFactory({grpc, clock}) {
     return def({ casperClient });
 
+    /**
+     * Generates an immutable casperClient object listening on the given endpoint
+     * @param endpoint { host, port } of gRPC server
+     * @return An immutable casperClient object
+     */
     function casperClient(endPoint) {
-	let proto;
-	let casper;
-	let client;
-	return def({ init,
-		     doDeploy, createBlock, addBlock, propose,
-		     toRSON, toByteArray });
+        let proto;
+        let casper;
+        let client;
+        return def({ doDeploy, createBlock, addBlock, propose, toByteArray });
 
-	function init() {
-	}
-
-	function theClient() {
-	    if (!casper) {
-		proto = grpc.load(protoSrc);
-		casper = proto.coop.rchain.casper.protocol;
-	    }
-	    if (!client) {
-		const { host, port} = endPoint;
-		client = new casper.DeployService(
-		    `${host}:${port}`, grpc.credentials.createInsecure());
-	    }
+        /**
+         * Get a reference to the casper client
+         * @return The casper client
+         */
+        function theClient() {
+            if (!casper) {
+                proto = grpc.load(protoSrc);
+                casper = proto.coop.rchain.casper.protocol;
+            }
+            if (!client) {
+                const { host, port} = endPoint;
+                client = new casper.DeployService(
+                    `${host}:${port}`, grpc.credentials.createInsecure());
+            }
             return client;
         }
 
+        /**
+         * Deploys a rholang term to a node
+         * @param term A string of rholang code (for example @"world"!("Hello!")  )
+         * @return A promise for a DeployServiceResponse
+         */
         function doDeploy(term) {
             const deployString = {
                 // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
@@ -60,10 +71,19 @@ function clientFactory({grpc, clock}) {
             return send(theClient(), 'DoDeploy', deployString);
         }
 
+        /**
+         * Creates a block on your node
+         * @return A promise for MaybeBlockMessage
+         */
         function createBlock() {
             return send(theClient(), 'createBlock', {});
         }
 
+        /**
+         * Adds block to local DAG and gossips block to peers on network
+         * @param block The block to be added
+         * @return A promise for a google.protobuf.Empty
+         */
         function addBlock(block) {
             // ISSUE: Error: Illegal value for Message.Field ...
             // .Expr.g_bool of type bool: object
@@ -72,12 +92,22 @@ function clientFactory({grpc, clock}) {
             return send(theClient(), 'addBlock', block);
         }
 
+        /**
+         * Create and add a block
+         * @return A promise for a google.protobuf.Empty
+         */
         function propose() {
+          //TODO Maybe test for success on create before adding.
             return createBlock().then(maybeBlock => {
                 return addBlock(logged(maybeBlock, '@@createBlock(): ').block);
             });
         }
 
+        /**
+         * Turns a rholang term into a byte-array compatible with Rholang
+         * @param termObj a rholang term object
+         * @return The byte-array
+         */
         function toByteArray(termObj) {
             theClient();  // Make sure proto is loaded. (ISSUE: refactor)
 
@@ -104,6 +134,8 @@ module.exports.RSON = RSON;
  * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
+ * @param x Any javascript object to be serialized to RSON
+ * @return A rholang term representing the object in RSON form.
  */
 // this locallyFree: emptyBitSet stuff shouldn't be necessary; see
 // https://rchain.atlassian.net/browse/RHOL-537
@@ -154,6 +186,12 @@ function toRSON(x) {
     return recur(x);
 }
 
+/**
+ * Converts an RSON object into a JSON string
+ * Opposite of toRSON
+ * @param par A rholang term representing the object.
+ * @return A JSON string
+ */
 function RSONsrc(par) {
     const src = x => JSON.stringify(x);
 
@@ -193,7 +231,10 @@ function RSONsrc(par) {
  * Instead of obj.method(...arg, callback),
  * use send(obj, 'method', ...arg) and get a promise.
  *
- * ISSUE: is this just Q.nfcall()?
+ * @param obj Object whose method you want to call
+ * @param method String of method name
+ * @param arg Any arguments that method requires
+ * @return A promise of method's result
  */
 function send(obj, method, ...arg) {
     return new Promise(executor);
@@ -229,7 +270,9 @@ function bufAsHex(prop, val) {
 }
 
 
-
+/**
+ *
+ */
 function integrationTest(argv, {grpc, clock}) {
     if (argv.length < 4) {
         throw new Error('usage: node SCRIPT host port');
@@ -259,80 +302,7 @@ function integrationTest(argv, {grpc, clock}) {
 }
 
 
-// ISSUE: move to test file
-function testRSON() {
-    const Suite = require("testjs");
 
-    Suite.run({
-        'null': rtest({ data: null, RSON: {} }),
-        'number': rtest({ data: 123, RSON: { exprs: [ { g_int: 123 } ] } }),
-        'list of scalars': rtest({
-            data: [true, 123, "abc"],
-            RSON: { "exprs": [ { "e_list_body": { "ps": [
-                { "exprs": [ { "g_bool": true } ] },
-                { "exprs": [ { "g_int": 123 } ] },
-                { "exprs": [ { "g_string": "abc" } ] }
-            ]}}]} }),
-        'object': rtest({
-            data: {x: "abc"},
-            RSON: { sends: [
-                { chan: {quote: { exprs: [{ g_string: "x" }]}},
-                  data: [{ exprs: [{ g_string: "abc"}]}]}
-            ]}
-        }),
-        'nested object': rtest({
-            data: {x: "abc", y: {a: true }},
-            RSON: { sends: [
-                { chan: { quote: { exprs: [{ g_string: "x"}]}},
-                  data: [{ exprs: [{ g_string: "abc"}]}]},
-                { chan: { quote: { exprs: [{ g_string: "y"}]}},
-                  data: [{ sends: [
-                      { chan: { quote: { exprs: [{ g_string: "a"}]}},
-                        data: [{ exprs: [{ g_bool: true }] }] }
-                  ] }] }
-            ]}
-        }),
-        'trust vote': rtest({
-            data: ["merge", "trust_cert",
-                   {voter: "dckc", subject: "a1", rating: 1, cert_time: "2018-07-29T02:00:21.259Z"}],
-            RSON: { exprs: [{ e_list_body: { ps: [
-                { exprs: [{ g_string: "merge" }]},
-                { exprs: [{ g_string:"trust_cert" }]},
-                { sends: [{ chan: { quote: { exprs: [{ g_string: "cert_time"}]}},
-                            data: [{ exprs :[{ g_string: "2018-07-29T02:00:21.259Z"}]}]},
-                          { chan: { quote: { exprs: [{ g_string: "rating"}]}},
-                            data: [{ exprs: [{ g_int: 1 }]}]},
-                          { chan: { quote: { exprs: [{ g_string:  "subject"}]}},
-                            data: [{ exprs: [{ g_string: "a1" }]}]},
-                          { chan: { quote: { exprs: [{ g_string: "voter"}]}},
-                            data: [{ exprs: [{ g_string: "dckc"}]}]}]}
-            ]}}]}
-        })
-    });
-
-    function rtest(item) {
-        return test => {
-            // console.log(JSON.stringify(unfixLF(toRSON(item.data)), bufAsHex));
-            test.deepEqual(unfixLF(toRSON(item.data)), item.RSON);
-            test.done();
-        };
-    }
-
-    function unfixLF(x) {
-        if(x instanceof Array) {
-            return x.map(unfixLF);
-        } else if (typeof x == 'object' && x !== null && x !== undefined) {
-            const nolf = {};
-            for (let prop in x) {
-                if (prop == 'locallyFree') { continue; }
-                nolf[prop] = unfixLF(x[prop]);
-            }
-            return nolf;
-        } else {
-            return x;
-        }
-    }
-}
 
 
 if (require.main == module) {
@@ -345,6 +315,6 @@ if (require.main == module) {
                 clock: () => new Date()
             });
     } else {
-	testRSON();
+        throw("usage: node rnodeAPI.js <host> <port>");
     }
 }

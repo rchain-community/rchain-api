@@ -7,17 +7,22 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 [1]: https://www.rchain.coop/
 
 ## Real world meets blockchain
-In the world of rholang, we facilitate [object capabilities]() by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
+In the world of rholang, we facilitate [object capabilities](https://en.wikipedia.org/wiki/Object-capability_model) by using unforgeable names. These names exist only on the blockchain, and cannot be saved to disk or locked in a safe in the real world. This seems to create a problem when a human wants to use an unforgeable name to eg. update her facebook-style status, then later return to her computer and update it again. How does she keep track of the unforgeable name while away from her computer?
 
 Public-key crypto to the rescue. The user can lock the relevant unforgeable name into "safe" a contract that anyone can call. When called the safe will give back the correct unforgeable name, but only if it is given a valid cryptographic signature. Michael Birch recently showed an [example of such a scheme](https://www.youtube.com/watch?v=WzAdfjwgaQs#t=9m28s).
 
 ## Quickstart
 ### Find an RChain node whose grpc you can use.
-At the moment that likely means running your own rnode. We're also working on a community node at rnode-test.rhobot.net
+At the moment that likely means running your own rnode. We're working on a community node at rnode-test.rhobot.net
 
 Make note of the hostname and gRPC port.
 
-## Run the integration test
+### Grab this code
+Clone the repo with eg `git clone https://github.com/JoshOrndorff/RChain-API`
+
+An install dependencies with `npm install`
+
+### Run the integration test
 
 _TODO: refine this test to tell a story._
 
