@@ -4,7 +4,9 @@
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
-    "test": "node test/testRSON.js"
+    "test": "node test/testRSON.js",
+    "integrationTest": "node rnodeAPI.js",
+    "lint": "eslint **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern talk/reveal.js/"
   },
   "repository": {
     "type": "git",
@@ -27,9 +29,16 @@
   },
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
-    "grpc": "^1.13.1"
+    "grpc": "^1.13.1",
+    "remote-origin-url": "^1.0.0"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
     "testjs": "^1.0.4"
+  },
+  "TODO": {
+    "documentation": "^8.0.2"
   }
 }
