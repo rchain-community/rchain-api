@@ -133,6 +133,8 @@ function clientFactory({grpc, protoLoader, clock}) {
 
             // note: if we forget new here, we get:
             // TypeError: this.$set is not a function
+            // TODO Integration test now failing with proto.Par is not a constructor.
+            // Indeed it is undefined.
             const term = new proto.Par(termObj);
 
             const buf = term.toBuffer();
@@ -293,7 +295,7 @@ function bufAsHex(prop, val) {
 /**
  *
  */
-function integrationTest(argv, {grpc, clock}) {
+function integrationTest(argv, {grpc, protoLoader, clock}) {
     if (argv.length < 4) {
         throw new Error('usage: node SCRIPT host port');
     }
@@ -301,7 +303,7 @@ function integrationTest(argv, {grpc, clock}) {
 
     const stuffToSign = {x: "abc"};
 
-    const maker = clientFactory({ grpc, clock });
+    const maker = clientFactory({ grpc, protoLoader, clock });
     const ca = maker.casperClient({ host, port });
 
     logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
@@ -332,6 +334,7 @@ if (require.main == module) {
             process.argv,
             {
                 grpc: require('grpc'),
+                protoLoader: require('@grpc/proto-loader'),
                 clock: () => new Date()
             });
     } else {
