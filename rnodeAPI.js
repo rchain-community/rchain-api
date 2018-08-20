@@ -39,7 +39,7 @@ function clientFactory({grpc, protoLoader, clock}) {
         }
         if (!endPoint.host) {
           console.log("Host not set, defaulting to localhost")
-          endPoint.host - "localhost"
+          endPoint.host = "localhost"
         }
         let proto;
         let casper;
