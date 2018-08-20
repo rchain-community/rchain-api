@@ -33,6 +33,14 @@ function clientFactory({grpc, clock}) {
      * @return An immutable casperClient object
      */
     function casperClient(endPoint) {
+        if (!endPoint.port) {
+          console.log("Port not set, defaulting to 40401")
+          endPoint.port = 40401
+        }
+        if (!endPoint.host) {
+          console.log("Host not set, defaulting to localhost")
+          endPoint.host - "localhost"
+        }
         let proto;
         let casper;
         let client;
