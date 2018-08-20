@@ -24,7 +24,7 @@ const protoSrc = __dirname + '/protobuf/CasperMessage.proto';
  * @param clock Some access to system time
  */
 module.exports.clientFactory = clientFactory;
-function clientFactory({grpc, clock}) {
+function clientFactory({grpc, protoLoader, clock}) {
     return def({ casperClient });
 
     /**
@@ -52,8 +52,20 @@ function clientFactory({grpc, clock}) {
          */
         function theClient() {
             if (!casper) {
-                proto = grpc.load(protoSrc);
-                casper = proto.coop.rchain.casper.protocol;
+              // TODO protoLoader solves the deprication warning, but requires removing
+              // scalapb related lines from proto files.
+              // Suggested options for similarity to existing grpc.load behavior
+              // https://grpc.io/docs/tutorials/basic/node.html
+              var packageDefinition = protoLoader.loadSync(
+                  protoSrc,
+                  {keepCase: true,
+                   longs: String,
+                   enums: String,
+                   defaults: true,
+                   oneofs: true
+                  });
+              proto = grpc.loadPackageDefinition(packageDefinition);
+              casper = proto.coop.rchain.casper.protocol;
             }
             if (!client) {
                 const { host, port} = endPoint;

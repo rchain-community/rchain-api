@@ -2,13 +2,8 @@ syntax = "proto3";
 package coop.rchain.casper.protocol;
 
 import "google/protobuf/empty.proto";
-import "scalapb/scalapb.proto";
 import "RhoTypes.proto";
 
-option (scalapb.options) = {
-  package_name: "coop.rchain.casper.protocol"
-  flat_package: true
-};
 
 // --------- DeployService  --------
 service DeployService {
@@ -84,7 +79,7 @@ message ApprovedBlockCandidate {
 }
 
 message UnapprovedBlock {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   int64                  timestamp = 2;
   int64                  duration  = 3;
 }
@@ -96,12 +91,12 @@ message Signature {
 }
 
 message BlockApproval {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   Signature              sig       = 2;
 }
 
 message ApprovedBlock  {
-  ApprovedBlockCandidate candidate = 1; 
+  ApprovedBlockCandidate candidate = 1;
   repeated Signature     sigs      = 2;
 }
 
@@ -195,5 +190,3 @@ message Bond {
   int32 stake     = 2;
 }
 // --------- End Core Protocol  --------
-
-
