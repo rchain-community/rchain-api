@@ -23,32 +23,19 @@ const protoSrc = __dirname + '/protobuf/CasperMessage.proto'; // eslint-disable-
  */
 module.exports.clientFactory = clientFactory;
 function clientFactory({ grpc }) {
+  const proto = grpc.load(protoSrc);
+  const casper = proto.coop.rchain.casper.protocol;
+
   /**
    * Generates an immutable casperClient object listening on the given endpoint
    * @param endpoint { host, port } of gRPC server
    * @return An immutable casperClient object
    */
   function casperClient(endPoint) {
-    let proto;
-    let casper;
-    let client;
-
-    /**
-     * Get a reference to the casper client
-     * @private
-     * @return The casper client
-     */
-    function theClient() {
-      if (!casper) {
-        proto = grpc.load(protoSrc);
-        casper = proto.coop.rchain.casper.protocol;
-      }
-      if (!client) {
-        const { host, port } = endPoint;
-        client = new casper.DeployService(`${host}:${port}`, grpc.credentials.createInsecure());
-      }
-      return client;
-    }
+    const { host, port } = endPoint;
+    const client = new casper.DeployService(
+      `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
+    );
 
     /**
      * Deploys a rholang term to a node
@@ -69,7 +56,7 @@ function clientFactory({ grpc }) {
       // See also
       // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
       // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-      return send(next => theClient().DoDeploy(deployData, next));
+      return send(next => client.DoDeploy(deployData, next));
     }
 
     /**
@@ -77,7 +64,7 @@ function clientFactory({ grpc }) {
      * @return A promise for DeployServiceResponse
      */
     function createBlock() {
-      return send(next => theClient().createBlock({}, next));
+      return send(next => client.createBlock({}, next));
     }
 
     /**
@@ -90,7 +77,7 @@ function clientFactory({ grpc }) {
       // .Expr.g_bool of type bool: object
       // (proto3 field without field presence cannot be null)
       // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-      return send(then => theClient().addBlock(block, then));
+      return send(then => client.addBlock(block, then));
     }
 
     /**
@@ -99,8 +86,6 @@ function clientFactory({ grpc }) {
      * @return The byte-array
      */
     function toByteArray(termObj) {
-      theClient(); // Make sure proto is loaded. (ISSUE: refactor)
-
       // note: if we forget new here, we get:
       // TypeError: this.$set is not a function
       const term = new proto.Par(termObj);
