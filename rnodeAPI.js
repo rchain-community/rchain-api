@@ -88,7 +88,7 @@ function RNode(grpc, endPoint) {
    * @throws Error if status is not Success
    */
   function listenForDataAtName(nameObj) {
-    const chan = { quote: toRSON(nameObj) };
+    const chan = { quote: fromJSData(nameObj) };
     return send(then => client.listenForDataAtName(chan, then))
       .then((response) => {
         if (response.status !== 'Success') {
@@ -119,11 +119,12 @@ function RNode(grpc, endPoint) {
 }
 
 
-const RSON = def({
-  fromData: toRSON,
-  stringify: RSONsrc,
+const RHOCore = def({
+  toJSData,
+  fromJSData,
+  toRholang,
 });
-module.exports.RSON = RSON;
+module.exports.RHOCore = RHOCore;
 
 /**
  * "we can detail a direct representation of JSON into a
@@ -131,21 +132,21 @@ module.exports.RSON = RSON;
  * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
- * @param x Any javascript object to be serialized to RSON
- * @return A rholang term representing the object in RSON form.
+ * @param x Any javascript object to be serialized to RHOCore
+ * @return A rholang term representing the object in RHOCore form.
  */
-function toRSON(data) {
+function fromJSData(data) {
   const expr1 = kv => fixLF({ exprs: [kv] });
 
   function recur(x) {
     switch (typeof x) {
       case 'boolean':
-        return expr1({ g_bool: x });
+        return expr1({ g_bool: x, expr_instance: 'g_bool' });
       case 'number':
         // ISSUE: only integers
-        return expr1({ g_int: x });
+        return expr1({ g_int: x, expr_instance: 'g_int' });
       case 'string':
-        return expr1({ g_string: x });
+        return expr1({ g_string: x, expr_instance: 'g_string' });
       case 'object':
         if (x === null) {
           return fixLF({});
@@ -155,7 +156,7 @@ function toRSON(data) {
         }
         return keysValues(x);
       default:
-        throw new Error(`no mapping to RSON for ${typeof x}`);
+        throw new Error(`no mapping to RHOCore for ${typeof x}`);
     }
   }
 
@@ -163,12 +164,15 @@ function toRSON(data) {
     // [1, 2, 2] is a process with one exprs, which is a list
     // The list has one 3 items, each of which is a process
     // with one exprs, which is an int.
-    return expr1({ e_list_body: fixLF({ ps: items.map(recur) }) });
+    return expr1({
+      e_list_body: fixLF({ ps: items.map(recur) }),
+      expr_instance: 'e_list_body',
+    });
   }
 
   function keysValues(obj) {
     const sends = Object.keys(obj).sort().map((k) => {
-      const chan = { quote: expr1({ g_string: k }) };
+      const chan = { quote: expr1({ g_string: k, expr_instance: 'g_string' }) };
       return fixLF({ chan, data: [recur(obj[k])] });
     });
     return fixLF({ sends });
@@ -187,12 +191,53 @@ function fixLF(p) {
 
 
 /**
- * Converts an RSON object into a JSON string
- * Opposite of toRSON
- * @param par A rholang term representing the object.
- * @return A JSON string
+ * Converts an RHOCore object back to JavaScript data
+ *
+ * @param par A RHOCore representation of a Rholang term
+ * @return JSON-serializable data
  */
-function RSONsrc(par) {
+function toJSData(par) {
+  function recur(p) {
+    if (p.exprs) {
+      if (p.exprs.length !== 1) {
+        throw new Error('not implemented');
+      }
+      const ex = p.exprs[0];
+      if (ex.expr_instance === 'g_bool') {
+        return ex.g_bool;
+      }
+      if (ex.expr_instance === 'g_int') {
+        return ex.g_int;
+      }
+      if (ex.expr_instance === 'g_string') {
+        return ex.g_string;
+      }
+      if (ex.expr_instance === 'e_list_body') {
+        return ex.e_list_body.ps.map(recur);
+      }
+      throw new Error(`not RHOCore? ${ex}`);
+    } else if (p.sends) {
+      return p.sends.reduce(
+        (acc, s) => ({ [recur(s.chan.quote)]: recur(s.data[0]), ...acc }),
+        {},
+      );
+    } else {
+      // TODO: check that everything else is empty
+      return null;
+    }
+  }
+
+  return recur(par);
+}
+
+
+/**
+ * Converts an RHOCore object into Rholang source form
+ *
+ * @param par A RHOCore representation of a Rholang term
+ * @return A rholang string
+ */
+function toRholang(par) {
   const src = x => JSON.stringify(x);
 
   function recur(p) {
@@ -214,7 +259,7 @@ function RSONsrc(par) {
         const items = ex.e_list_body.ps.map(recur).join(', ');
         return `[${items}]`;
       }
-      throw new Error(`not RSON? ${ex}`);
+      throw new Error(`not RHOCore? ${ex}`);
     } else if (p.sends) {
       const ea = s => `@${recur(s.chan.quote)}!(${s.data.map(recur).join(', ')})`;
       return p.sends.map(ea).join(' | ');
@@ -284,7 +329,7 @@ function integrationTest(argv, { grpc, clock }) {
 
   friendUpdatesStory(ca);
 
-  logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
+  logged(ca.toByteArray(fromJSData(stuffToSign)), 'stuffToSign serialized');
 
   // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
   const rhoTerm = '@"world"!("hello!")';
@@ -312,7 +357,7 @@ function friendUpdatesStory(rchain) {
     .then((blockResults) => {
       blockResults.forEach((b) => {
         b.postBlockData.forEach((d) => {
-          logged(RSONsrc(d), 'Alice said');
+          logged(RHOCoresrc(d), 'Alice said');
         });
       });
     })

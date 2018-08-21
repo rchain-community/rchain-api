@@ -1,10 +1,10 @@
 {
   "name": "rchain-api",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
-    "test": "node test/testRSON.js; node test/testRNode.js",
+    "test": "node test/testRHOCore.js; node test/testRNode.js",
     "integrationTest": "node rnodeAPI.js",
     "lint": "eslint **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern talk/reveal.js/"
   },
