@@ -64,7 +64,7 @@ function clientFactory({ grpc, clock }) {
         timestamp: clock().valueOf(),
       };
 
-      return send(theClient(), 'DoDeploy', deployString);
+      return send(next => theClient().DoDeploy(deployString, next));
     }
 
     /**
@@ -72,7 +72,7 @@ function clientFactory({ grpc, clock }) {
      * @return A promise for MaybeBlockMessage
      */
     function createBlock() {
-      return send(theClient(), 'createBlock', {});
+      return send(next => theClient().createBlock({}, next));
     }
 
     /**
@@ -85,7 +85,7 @@ function clientFactory({ grpc, clock }) {
       // .Expr.g_bool of type bool: object
       // (proto3 field without field presence cannot be null)
       // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-      return send(theClient(), 'addBlock', block);
+      return send(then => theClient().addBlock(block, then));
     }
 
     /**
@@ -232,15 +232,12 @@ function RSONsrc(par) {
  * Adapt callback-style API using Promises.
  *
  * Instead of obj.method(...arg, callback),
- * use send(obj, 'method', ...arg) and get a promise.
+ * use send(cb => obj.method(...arg, cb)) and get a promise.
  *
- * ISSUE: passing method name is awkward. refactor to take (cb) => o.m(..., cb)
- * @param obj Object whose method you want to call
- * @param method String of method name
- * @param arg Any arguments that method requires
- * @return A promise of method's result
+ * @param calling: a function of the form (cb) => o.m(..., cb)
+ * @return A promise for the result passed to cb
  */
-function send(obj, method, ...arg) {
+function send(calling) {
   function executor(resolve, reject) {
     const callback = (err, result) => {
       if (err) {
@@ -249,7 +246,7 @@ function send(obj, method, ...arg) {
       resolve(result);
     };
 
-    obj[method](...(arg.concat([callback])));
+    calling(callback);
   }
 
   return new Promise(executor);
