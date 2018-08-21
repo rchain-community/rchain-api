@@ -1,7 +1,5 @@
 /** rnodeAPI -- RChain node Casper gRPC API endpoints
 
-We create Capper persistent objects for rnode endpoints.
-
 You can run `integrationTest()` a la `node rnodeAPI.js`.
 
 refs:
@@ -13,111 +11,111 @@ refs:
 
  */
 
+const assert = require('assert');
+
 const def = obj => Object.freeze(obj); // cf. ocap design note
 // ISSUE: how to import strings? TODO: process .proto statically
 const protoSrc = __dirname + '/protobuf/CasperMessage.proto'; // eslint-disable-line
 
 /**
- * TODO @dckc, I'm not clear why we need all of clientFactory, casperClient, and theClient
- * @param grpc grpc instance from the node grpc package
+ * Connect to an RChain node (RNode).
+ *
+ * @param grpc access to the network: grpc instance from the node grpc package
+ * @param endpoint { host, port } of rnode gRPC service
+ * @return a thin wrapper around a gRPC client stub
  */
-module.exports.clientFactory = clientFactory;
-function clientFactory({ grpc }) {
+module.exports.RNode = RNode;
+function RNode(grpc, endPoint) {
+  const { host, port } = endPoint;
+  assert.ok(host, 'endPoint.host missing');
+  assert.ok(port, 'endPoint.port missing');
+
   const proto = grpc.load(protoSrc);
   const casper = proto.coop.rchain.casper.protocol;
 
+  const client = new casper.DeployService(
+    `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
+  );
+
   /**
-   * Generates an immutable casperClient object listening on the given endpoint
-   * @param endpoint { host, port } of gRPC server
-   * @return An immutable casperClient object
+   * Deploys a rholang term to a node
+   * @param deployData a DeployData (cf CasperMessage.proto)
+   * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
+   * @param deployData.purseAddress where deployment price is paid from
+   * @param deployData.timestamp millisecond timestamp
+   *        e.g. new Date().valueOf()
+   * @param deployData.nonce
+   * @param deployData.phloLimit
+   * @param deployData.phloPrice
+   * UNTESTED:
+   * @param sig signature of (hash(term) + timestamp) using private key
+   * @param deployData.sigAlgorithm name of the algorithm used to sign
+   * @return A promise for a DeployServiceResponse
    */
-  function casperClient(endPoint) {
-    const { host, port } = endPoint;
-    const client = new casper.DeployService(
-      `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
-    );
-
-    /**
-     * Deploys a rholang term to a node
-     * @param deployData a DeployData (cf CasperMessage.proto)
-     * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
-     * @param deployData.purseAddress where deployment price is paid from
-     * @param deployData.timestamp millisecond timestamp
-     *        e.g. new Date().valueOf()
-     * @param deployData.nonce
-     * @param deployData.phloLimit
-     * @param deployData.phloPrice
-     * UNTESTED:
-     * @param sig signature of (hash(term) + timestamp) using private key
-     * @param deployData.sigAlgorithm name of the algorithm used to sign
-     * @return A promise for a DeployServiceResponse
-     */
-    function doDeploy(deployData) {
-      // See also
-      // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
-      // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-      return send(next => client.DoDeploy(deployData, next));
-    }
-
-    /**
-     * Creates a block on your node
-     * @return A promise for DeployServiceResponse
-     */
-    function createBlock() {
-      return send(next => client.createBlock({}, next));
-    }
-
-    /**
-     * Adds block to local DAG and gossips block to peers on network
-     * @param block The block to be added
-     * @return A promise for a google.protobuf.Empty
-     */
-    function addBlock(block) {
-      // ISSUE: Error: Illegal value for Message.Field ...
-      // .Expr.g_bool of type bool: object
-      // (proto3 field without field presence cannot be null)
-      // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-      return send(then => client.addBlock(block, then));
-    }
-
-    /**
-     * Listen for data at a name in the RChain tuple-space.
-     *
-     * @param nameObj: JSON-ish data: string, number, {}, [], ...
-     * @return: promise for [DataWithBlockInfo]
-     * @throws Error if status is not Success
-     */
-    function listenForDataAtName(nameObj) {
-      const chan = { quote: toRSON(nameObj) };
-      return send(then => client.listenForDataAtName(chan, then))
-        .then((response) => {
-          if (response.status !== 'Success') {
-            throw new Error(response);
-          }
-          // ISSUE: make use of int32 length = 3;?
-          return response.blockResults;
-        });
-    }
-
-    /**
-     * Turns a rholang term into a byte-array compatible with Rholang
-     * @param termObj a rholang term object
-     * @return The byte-array
-     */
-    function toByteArray(termObj) {
-      // note: if we forget new here, we get:
-      // TypeError: this.$set is not a function
-      const term = new proto.Par(termObj);
-
-      const buf = term.toBuffer();
-      return buf;
-    }
-
-    return def({
-      doDeploy, createBlock, addBlock, listenForDataAtName, toByteArray,
-    });
+  function doDeploy(deployData) {
+    // See also
+    // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
+    // d        = DeployString().withTimestamp(timestamp).withTerm(code)
+    return send(next => client.DoDeploy(deployData, next));
   }
-  return def({ casperClient });
+
+  /**
+   * Creates a block on your node
+   * @return A promise for DeployServiceResponse
+   */
+  function createBlock() {
+    return send(next => client.createBlock({}, next));
+  }
+
+  /**
+   * Adds block to local DAG and gossips block to peers on network
+   * @param block The block to be added
+   * @return A promise for a google.protobuf.Empty
+   */
+  function addBlock(block) {
+    // ISSUE: Error: Illegal value for Message.Field ...
+    // .Expr.g_bool of type bool: object
+    // (proto3 field without field presence cannot be null)
+    // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
+    return send(then => client.addBlock(block, then));
+  }
+
+  /**
+   * Listen for data at a name in the RChain tuple-space.
+   *
+   * @param nameObj: JSON-ish data: string, number, {}, [], ...
+   * @return: promise for [DataWithBlockInfo]
+   * @throws Error if status is not Success
+   */
+  function listenForDataAtName(nameObj) {
+    const chan = { quote: toRSON(nameObj) };
+    return send(then => client.listenForDataAtName(chan, then))
+      .then((response) => {
+        if (response.status !== 'Success') {
+          throw new Error(response);
+        }
+        // ISSUE: make use of int32 length = 3;?
+        return response.blockResults;
+      });
+  }
+
+  /**
+   * Turns a rholang term into a byte-array compatible with Rholang
+   * @param termObj a rholang term object
+   * @return The byte-array
+   */
+  function toByteArray(termObj) {
+    // note: if we forget new here, we get:
+    // TypeError: this.$set is not a function
+    const term = new proto.Par(termObj);
+
+    const buf = term.toBuffer();
+    return buf;
+  }
+
+  return def({
+    doDeploy, createBlock, addBlock, listenForDataAtName, toByteArray,
+  });
 }
 
 
@@ -282,8 +280,7 @@ function integrationTest(argv, { grpc, clock }) {
 
   const stuffToSign = { x: 'abc' };
 
-  const maker = clientFactory({ grpc });
-  const ca = maker.casperClient({ host, port });
+  const ca = RNode(grpc, { host, port });
 
   friendUpdatesStory(ca);
 
