@@ -6,10 +6,15 @@ const { RHOCore } = require('../rnodeAPI');
 
 function testRHOCore() {
   Suite.run({
-    null: rtest({ data: null, rho: {} }),
-    number: rtest({ data: 123, rho: { exprs: [{ g_int: 123, expr_instance: 'g_int' }] } }),
+    null: rtest({ data: null, rho: {}, rholang: 'Nil' }),
+    number: rtest({
+      data: 123,
+      rho: { exprs: [{ g_int: 123, expr_instance: 'g_int' }] },
+      rholang: '123',
+    }),
     'list of scalars': rtest({
       data: [true, 123, 'abc'],
+      rholang: '[true, 123, "abc"]',
       rho: {
         exprs: [{
           expr_instance: 'e_list_body',
@@ -25,6 +30,7 @@ function testRHOCore() {
     }),
     object: rtest({
       data: { x: 'abc' },
+      rholang: '@"x"!("abc")',
       rho: {
         sends: [
           {
@@ -36,6 +42,7 @@ function testRHOCore() {
     }),
     'nested object': rtest({
       data: { x: 'abc', y: { a: true } },
+      rholang: '@"x"!("abc") | @"y"!(@"a"!(true))',
       rho: {
         sends: [
           {
@@ -61,6 +68,7 @@ function testRHOCore() {
         {
           voter: 'dckc', subject: 'a1', rating: 1, cert_time: '2018-07-29T02:00:21.259Z',
         }],
+      rholang: '["merge", "trust_cert", @"cert_time"!("2018-07-29T02:00:21.259Z") | @"rating"!(1) | @"subject"!("a1") | @"voter"!("dckc")]',
       rho: {
         exprs: [{
           expr_instance: 'e_list_body',
@@ -107,6 +115,7 @@ function testRHOCore() {
       // console.log(JSON.stringify(unfixLF(toRSON(item.data)), bufAsHex));
       test.deepEqual(unfixLF(RHOCore.fromJSData(item.data)), item.rho);
       test.deepEqual(RHOCore.toJSData(item.rho), item.data);
+      test.deepEqual(RHOCore.toRholang(item.rho), item.rholang);
 
       test.done();
     };
