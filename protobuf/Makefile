@@ -2,6 +2,10 @@
 
 WGET=wget
 
+REV=v0.6.1
+# REV=master
+# REV=dev
+
 PROTO_SRC=CasperMessage.proto RhoTypes.proto google/protobuf/empty.proto scalapb/scalapb.proto
 
 all: $(PROTO_SRC)
@@ -20,9 +24,9 @@ RhoTypes.proto:
 
 google/protobuf/empty.proto:
 	mkdir -p google/protobuf
-	$(WGET) -O $@ $(RAW_GH)/google/protobuf/master/src/google/protobuf/empty.proto
+	$(WGET) -O $@ $(RAW_GH)/google/protobuf/$(REV)/src/google/protobuf/empty.proto
 
 scalapb/scalapb.proto:
 	mkdir -p scalapb
-	$(WGET) -O $@ $(RAW_GH)/scalapb/ScalaPB/master/protobuf/scalapb/scalapb.proto
+	$(WGET) -O $@ $(RAW_GH)/scalapb/ScalaPB/$(REV)/protobuf/scalapb/scalapb.proto
 

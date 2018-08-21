@@ -20,10 +20,9 @@ const protoSrc = __dirname + '/protobuf/CasperMessage.proto'; // eslint-disable-
 /**
  * TODO @dckc, I'm not clear why we need all of clientFactory, casperClient, and theClient
  * @param grpc grpc instance from the node grpc package
- * @param clock Some access to system time
  */
 module.exports.clientFactory = clientFactory;
-function clientFactory({ grpc, clock }) {
+function clientFactory({ grpc }) {
   /**
    * Generates an immutable casperClient object listening on the given endpoint
    * @param endpoint { host, port } of gRPC server
@@ -53,23 +52,29 @@ function clientFactory({ grpc, clock }) {
 
     /**
      * Deploys a rholang term to a node
-     * @param term A string of rholang code (for example @"world"!("Hello!")  )
+     * @param deployData a DeployData (cf CasperMessage.proto)
+     * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
+     * @param deployData.purseAddress where deployment price is paid from
+     * @param deployData.timestamp millisecond timestamp
+     *        e.g. new Date().valueOf()
+     * @param deployData.nonce
+     * @param deployData.phloLimit
+     * @param deployData.phloPrice
+     * UNTESTED:
+     * @param sig signature of (hash(term) + timestamp) using private key
+     * @param deployData.sigAlgorithm name of the algorithm used to sign
      * @return A promise for a DeployServiceResponse
      */
-    function doDeploy(term) {
-      const deployString = {
-        // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
-        // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-        term,
-        timestamp: clock().valueOf(),
-      };
-
-      return send(next => theClient().DoDeploy(deployString, next));
+    function doDeploy(deployData) {
+      // See also
+      // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
+      // d        = DeployString().withTimestamp(timestamp).withTerm(code)
+      return send(next => theClient().DoDeploy(deployData, next));
     }
 
     /**
      * Creates a block on your node
-     * @return A promise for MaybeBlockMessage
+     * @return A promise for DeployServiceResponse
      */
     function createBlock() {
       return send(next => theClient().createBlock({}, next));
@@ -89,16 +94,6 @@ function clientFactory({ grpc, clock }) {
     }
 
     /**
-     * Create and add a block
-     * @return A promise for a google.protobuf.Empty
-     */
-    function propose() {
-      // TODO Maybe test for success on create before adding.
-      return createBlock()
-        .then(maybeBlock => addBlock(logged(maybeBlock, '@@createBlock(): ').block));
-    }
-
-    /**
      * Turns a rholang term into a byte-array compatible with Rholang
      * @param termObj a rholang term object
      * @return The byte-array
@@ -115,7 +110,7 @@ function clientFactory({ grpc, clock }) {
     }
 
     return def({
-      doDeploy, createBlock, addBlock, propose, toByteArray,
+      doDeploy, createBlock, addBlock, toByteArray,
     });
   }
   return def({ casperClient });
@@ -280,21 +275,26 @@ function integrationTest(argv, { grpc, clock }) {
 
   const stuffToSign = { x: 'abc' };
 
-  const maker = clientFactory({ grpc, clock });
+  const maker = clientFactory({ grpc });
   const ca = maker.casperClient({ host, port });
 
   logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 
   // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
   const rhoTerm = '@"world"!("hello!")';
-  ca.doDeploy(rhoTerm).then((result) => {
+  ca.doDeploy({
+    term: rhoTerm,
+    timestamp: clock().valueOf(),
+    // from: '0x1',
+    // nonce: 0,
+  }).then((result) => {
     console.log('doDeploy result:', result);
 
     if (!result.success) {
       throw result;
     }
 
-    return ca.propose();
+    return ca.createBlock();
   }).catch((oops) => {
     console.log('deploy, propose failed:', oops);
   });
