@@ -81,6 +81,25 @@ function clientFactory({ grpc }) {
     }
 
     /**
+     * Listen for data at a name in the RChain tuple-space.
+     *
+     * @param nameObj: JSON-ish data: string, number, {}, [], ...
+     * @return: promise for [DataWithBlockInfo]
+     * @throws Error if status is not Success
+     */
+    function listenForDataAtName(nameObj) {
+      const chan = { quote: toRSON(nameObj) };
+      return send(then => client.listenForDataAtName(chan, then))
+        .then((response) => {
+          if (response.status !== 'Success') {
+            throw new Error(response);
+          }
+          // ISSUE: make use of int32 length = 3;?
+          return response.blockResults;
+        });
+    }
+
+    /**
      * Turns a rholang term into a byte-array compatible with Rholang
      * @param termObj a rholang term object
      * @return The byte-array
@@ -95,7 +114,7 @@ function clientFactory({ grpc }) {
     }
 
     return def({
-      doDeploy, createBlock, addBlock, toByteArray,
+      doDeploy, createBlock, addBlock, listenForDataAtName, toByteArray,
     });
   }
   return def({ casperClient });
@@ -117,13 +136,7 @@ module.exports.RSON = RSON;
  * @param x Any javascript object to be serialized to RSON
  * @return A rholang term representing the object in RSON form.
  */
-// this locallyFree: emptyBitSet stuff shouldn't be necessary; see
-// https://rchain.atlassian.net/browse/RHOL-537
-const bytesPerLong = 8;
-const emptyBitSet = Buffer.from(Array(bytesPerLong).fill(0));
 function toRSON(data) {
-  const fixLF = p => Object.assign({ locallyFree: emptyBitSet }, p);
-
   const expr1 = kv => fixLF({ exprs: [kv] });
 
   function recur(x) {
@@ -166,6 +179,15 @@ function toRSON(data) {
   return recur(data);
 }
 
+// this locallyFree: emptyBitSet stuff shouldn't be necessary; see
+// https://rchain.atlassian.net/browse/RHOL-537
+const bytesPerLong = 8;
+const emptyBitSet = Buffer.from(Array(bytesPerLong).fill(0));
+function fixLF(p) {
+  return Object.assign({ locallyFree: emptyBitSet }, p);
+}
+
+
 /**
  * Converts an RSON object into a JSON string
  * Opposite of toRSON
@@ -181,16 +203,16 @@ function RSONsrc(par) {
         throw new Error('not implemented');
       }
       const ex = p.exprs[0];
-      if ('g_bool' in ex) {
+      if (ex.expr_instance === 'g_bool') {
         return src(ex.g_bool);
       }
-      if ('g_int' in ex) {
+      if (ex.expr_instance === 'g_int') {
         return src(ex.g_int);
       }
-      if ('g_string' in ex) {
+      if (ex.expr_instance === 'g_string') {
         return src(ex.g_string);
       }
-      if ('e_list_body' in ex) {
+      if (ex.expr_instance === 'e_list_body') {
         const items = ex.e_list_body.ps.map(recur).join(', ');
         return `[${items}]`;
       }
@@ -263,6 +285,8 @@ function integrationTest(argv, { grpc, clock }) {
   const maker = clientFactory({ grpc });
   const ca = maker.casperClient({ host, port });
 
+  friendUpdatesStory(ca);
+
   logged(ca.toByteArray(toRSON(stuffToSign)), 'stuffToSign serialized');
 
   // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
@@ -283,6 +307,21 @@ function integrationTest(argv, { grpc, clock }) {
   }).catch((oops) => {
     console.log('deploy, propose failed:', oops);
   });
+}
+
+
+function friendUpdatesStory(rchain) {
+  rchain.listenForDataAtName('aliceUpdates')
+    .then((blockResults) => {
+      blockResults.forEach((b) => {
+        b.postBlockData.forEach((d) => {
+          logged(RSONsrc(d), 'Alice said');
+        });
+      });
+    })
+    .catch((oops) => {
+      console.log({ oops });
+    });
 }
 
 
