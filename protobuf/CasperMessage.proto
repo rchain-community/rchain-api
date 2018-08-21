@@ -2,13 +2,7 @@ syntax = "proto3";
 package coop.rchain.casper.protocol;
 
 import "google/protobuf/empty.proto";
-import "scalapb/scalapb.proto";
 import "RhoTypes.proto";
-
-option (scalapb.options) = {
-  package_name: "coop.rchain.casper.protocol"
-  flat_package: true
-};
 
 // --------- DeployService  --------
 service DeployService {
