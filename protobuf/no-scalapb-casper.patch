@@ -1,0 +1,19 @@
+diff --git a/protobuf/CasperMessage.proto b/protobuf/CasperMessage.proto
+index 204009c..5a52e6a 100644
+--- a/protobuf/CasperMessage.proto
++++ b/protobuf/CasperMessage.proto
+@@ -2,14 +2,8 @@ syntax = "proto3";
+ package coop.rchain.casper.protocol;
+ 
+ import "google/protobuf/empty.proto";
+-import "scalapb/scalapb.proto";
+ import "RhoTypes.proto";
+ 
+-option (scalapb.options) = {
+-  package_name: "coop.rchain.casper.protocol"
+-  flat_package: true
+-};
+-
+ // --------- DeployService  --------
+ service DeployService {
+   rpc DoDeploy(DeployData) returns (DeployServiceResponse) {}

@@ -1,0 +1,20 @@
+diff --git a/protobuf/RhoTypes.proto b/protobuf/RhoTypes.proto
+index 752afff..27481ff 100644
+--- a/protobuf/RhoTypes.proto
++++ b/protobuf/RhoTypes.proto
+@@ -1,15 +1,7 @@
+ syntax = "proto3";
+ 
+-import "scalapb/scalapb.proto";
+-
+ option java_package = "coop.rchain.models";
+ 
+-option (scalapb.options) = {
+-  import: "coop.rchain.models.BitSetBytesMapper.bitSetBytesMapper"
+-  import: "coop.rchain.models.ParSetTypeMapper.parSetESetTypeMapper"
+-  import: "coop.rchain.models.ParMapTypeMapper.parMapEMapTypeMapper"
+-};
+-
+ message Par {
+     repeated Send sends = 1;
+     repeated Receive receives = 2;

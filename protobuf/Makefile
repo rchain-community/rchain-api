@@ -2,7 +2,11 @@
 
 WGET=wget
 
-PROTO_SRC=CasperMessage.proto RhoTypes.proto google/protobuf/empty.proto scalapb/scalapb.proto
+REV=v0.6.1
+# REV=master
+# REV=dev
+
+PROTO_SRC=CasperMessage.proto RhoTypes.proto google/protobuf/empty.proto
 
 all: $(PROTO_SRC)
 
@@ -14,15 +18,12 @@ R_SRC=$(RAW_GH)/rchain/rchain/dev
 
 CasperMessage.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/CasperMessage.proto
+	patch -p2 <no-scalapb-casper.patch
 
-RhoTypes.proto:
+RhoTypes.proto: no-scalapb-rhotypes.patch
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/RhoTypes.proto
+	patch -p2 <no-scalapb-rhotypes.patch
 
 google/protobuf/empty.proto:
 	mkdir -p google/protobuf
-	$(WGET) -O $@ $(RAW_GH)/google/protobuf/master/src/google/protobuf/empty.proto
-
-scalapb/scalapb.proto:
-	mkdir -p scalapb
-	$(WGET) -O $@ $(RAW_GH)/scalapb/ScalaPB/master/protobuf/scalapb/scalapb.proto
-
+	$(WGET) -O $@ $(RAW_GH)/google/protobuf/v3.5.1/src/google/protobuf/empty.proto

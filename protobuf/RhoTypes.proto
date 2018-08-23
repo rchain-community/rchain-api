@@ -2,7 +2,6 @@ syntax = "proto3";
 
 option java_package = "coop.rchain.models";
 
-
 message Par {
     repeated Send sends = 1;
     repeated Receive receives = 2;
@@ -111,8 +110,11 @@ message Receive {
 // Also for normalized form, the first use should be level+0, next use level+1
 // up to level+count for the last used variable.
 message New {
+    // Includes any uris listed below. This makes it easier to substitute or walk a term.
     sint32 bindCount = 1;
     Par p = 2 [(scalapb.field).no_box = true];
+    // For normalization, uri-referenced variables come at the end, and in lexicographical order.
+    repeated string uri = 3;
     bytes locallyFree = 4 [(scalapb.field).type = "coop.rchain.models.AlwaysEqual[scala.collection.immutable.BitSet]"];
 }
 
@@ -309,6 +311,11 @@ message Connective {
     ConnectiveBody conn_or_body = 2;
     Par conn_not_body = 3;
     VarRef var_ref_body = 4;
+    bool conn_bool = 5;
+    bool conn_int = 6;
+    bool conn_string = 7;
+    bool conn_uri = 8;
+    bool conn_byte_array = 9;
   }
 }
 
