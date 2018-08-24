@@ -70,7 +70,7 @@ function RNode(grpc, endPoint) {
   /**
    * Adds block to local DAG and gossips block to peers on network
    * @param block The block to be added
-   * @return A promise for a google.protobuf.Empty
+   * @return A promise for a DeployServiceResponse
    */
   function addBlock(block) {
     // ISSUE: Error: Illegal value for Message.Field ...
