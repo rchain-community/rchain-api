@@ -355,19 +355,15 @@ function integrationTest(argv, { grpc, clock }) {
 
 
 function friendUpdatesStory(rchain, clock) {
-
   // Alice posts and update
   rchain.doDeploy({
     term: '@"aliceUpdates"!("Having fun traveling!")',
     timestamp: clock().valueOf(),
     // from: '0x1',
     // nonce: 0,
-   }).then(result => {
-      if (!result.success) { throw(result) }
-    }).catch(oops => { console.log(oops); })
-
+  })
   // We check for it
-  rchain.listenForDataAtName('aliceUpdates')
+    .then(() => rchain.listenForDataAtName('aliceUpdates'))
     .then((blockResults) => {
       blockResults.forEach((b) => {
         b.postBlockData.forEach((d) => {
@@ -375,9 +371,7 @@ function friendUpdatesStory(rchain, clock) {
         });
       });
     })
-    .catch((oops) => {
-      console.log({ oops });
-    });
+    .catch((oops) => { console.log(oops); });
 }
 
 
