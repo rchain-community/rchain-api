@@ -318,9 +318,6 @@ function bufAsHex(prop, val) {
  *
  */
 function integrationTest(argv, { grpc, clock }) {
-  if (argv.length < 4) {
-    throw new Error('usage: node SCRIPT host port');
-  }
   const [host, port] = [argv[2], parseInt(argv[3], 10)];
 
   const stuffToSign = { x: 'abc' };
@@ -379,6 +376,7 @@ if (require.main === module) {
       },
     );
   } else {
-    throw new Error('usage: node rnodeAPI.js <host> <port>');
+    process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
+    process.exit(1);
   }
 }
