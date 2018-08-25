@@ -331,7 +331,7 @@ function integrationTest(argv, { grpc, clock }) {
 
   const ca = RNode(grpc, { host, port });
 
-  friendUpdatesStory(ca);
+  friendUpdatesStory(ca, clock);
 
   logged(ca.toByteArray(fromJSData(stuffToSign)), 'stuffToSign serialized');
 
@@ -354,12 +354,24 @@ function integrationTest(argv, { grpc, clock }) {
 }
 
 
-function friendUpdatesStory(rchain) {
+function friendUpdatesStory(rchain, clock) {
+
+  // Alice posts and update
+  rchain.doDeploy({
+    term: '@"aliceUpdates"!("Having fun traveling!")',
+    timestamp: clock().valueOf(),
+    // from: '0x1',
+    // nonce: 0,
+   }).then(result => {
+      if (!result.success) { throw(result) }
+    }).catch(oops => { console.log(oops); })
+
+  // We check for it
   rchain.listenForDataAtName('aliceUpdates')
     .then((blockResults) => {
       blockResults.forEach((b) => {
         b.postBlockData.forEach((d) => {
-          logged(RHOCore.toRholang(d), 'Alice said');
+          logged(toRholang(d), 'Alice said');
         });
       });
     })
