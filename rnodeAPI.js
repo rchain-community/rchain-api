@@ -56,7 +56,10 @@ function RNode(grpc, endPoint) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    return send(next => client.DoDeploy(deployData, next));
+    return send(next => client.DoDeploy(deployData, next))
+    .then(result => {
+      if (!result.success) { throw(result) };
+    });
   }
 
   /**
@@ -64,7 +67,10 @@ function RNode(grpc, endPoint) {
    * @return A promise for DeployServiceResponse
    */
   function createBlock() {
-    return send(next => client.createBlock({}, next));
+    return send(next => client.createBlock({}, next))
+    .then(result => {
+      if (!result.success) { throw(result) };
+    });
   }
 
   /**
@@ -77,7 +83,10 @@ function RNode(grpc, endPoint) {
     // .Expr.g_bool of type bool: object
     // (proto3 field without field presence cannot be null)
     // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-    return send(then => client.addBlock(block, then));
+    return send(then => client.addBlock(block, then))
+    .then(result => {
+      if (!result.success) { throw(result) };
+    });
   }
 
   /**
