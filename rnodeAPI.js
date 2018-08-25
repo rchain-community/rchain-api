@@ -50,34 +50,41 @@ function RNode(grpc, endPoint) {
    * UNTESTED:
    * @param sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
-   * @return A promise for a DeployServiceResponse
+   * @return A promise for a response message
    */
   function doDeploy(deployData) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    return send(next => client.DoDeploy(deployData, next));
+    return deployResponse(send(next => client.DoDeploy(deployData, next)));
   }
 
   /**
    * Creates a block on your node
-   * @return A promise for DeployServiceResponse
+   * @return A promise for response message
    */
   function createBlock() {
-    return send(next => client.createBlock({}, next));
+    return deployResponse(send(next => client.createBlock({}, next)));
   }
 
   /**
    * Adds block to local DAG and gossips block to peers on network
    * @param block The block to be added
-   * @return A promise for a google.protobuf.Empty
+   * @return A promise for response message
    */
   function addBlock(block) {
     // ISSUE: Error: Illegal value for Message.Field ...
     // .Expr.g_bool of type bool: object
     // (proto3 field without field presence cannot be null)
     // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-    return send(then => client.addBlock(block, then));
+    return deployResponse(send(then => client.addBlock(block, then)));
+  }
+
+  function deployResponse(responseP) {
+    return responseP.then((response) => {
+      if (!response.success) { throw new Error(response.message); }
+      return response.message;
+    });
   }
 
   /**
@@ -335,16 +342,14 @@ function integrationTest(argv, { grpc, clock }) {
     timestamp: clock().valueOf(),
     // from: '0x1',
     // nonce: 0,
-  }).then((result) => {
-    console.log('doDeploy result:', result);
-
-    if (!result.success) {
-      throw result;
-    }
+  }).then((deployMessage) => {
+    console.log('doDeploy result:', deployMessage);
 
     return ca.createBlock();
+  }).then((createBlockMessage) => {
+    console.log('createBlock result:', createBlockMessage);
   }).catch((oops) => {
-    console.log('deploy, propose failed:', oops);
+    console.log('deploy, createBlock failed:', oops);
   });
 }
 
@@ -354,7 +359,7 @@ function friendUpdatesStory(rchain) {
     .then((blockResults) => {
       blockResults.forEach((b) => {
         b.postBlockData.forEach((d) => {
-          logged(RHOCoresrc(d), 'Alice said');
+          logged(RHOCore.toRholang(d), 'Alice said');
         });
       });
     })
