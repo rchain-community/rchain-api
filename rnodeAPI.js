@@ -324,12 +324,11 @@ function bufAsHex(prop, val) {
 /**
  *
  */
-function integrationTest(argv, { grpc, clock }) {
-  const [host, port] = [argv[2], parseInt(argv[3], 10)];
+function integrationTest(endpoint, { grpc, clock }) {
 
   const stuffToSign = { x: 'abc' };
 
-  const ca = RNode(grpc, { host, port });
+  const ca = RNode(grpc, endpoint);
 
   friendUpdatesStory(ca, clock);
 
@@ -378,16 +377,19 @@ function friendUpdatesStory(rchain, clock) {
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
-  if (process.argv.length === 4) {
-    integrationTest(
-      process.argv,
-      {
-        grpc: require('grpc'),
-        clock: () => new Date(),
-      },
-    );
-  } else {
+  if (process.argv.length !== 4) {
     process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
     process.exit(1);
   }
+  let endpoint = {
+    host: process.argv[2],
+    port: parseInt(process.argv[3], 10),
+  }
+  integrationTest(
+    endpoint,
+    {
+      grpc: require('grpc'),
+      clock: () => new Date(),
+    },
+  );
 }
