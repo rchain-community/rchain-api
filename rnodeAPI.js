@@ -13,9 +13,15 @@ refs:
 
 const assert = require('assert');
 
+const signing = require('./signing');
+
 const def = obj => Object.freeze(obj); // cf. ocap design note
 // ISSUE: how to import strings? TODO: process .proto statically
 const protoSrc = __dirname + '/protobuf/CasperMessage.proto'; // eslint-disable-line
+
+module.exports.keyPair = signing.keyPair;
+module.exports.b2h = signing.b2h;
+module.exports.h2b = signing.h2b;
 
 /**
  * Connect to an RChain node (RNode).
