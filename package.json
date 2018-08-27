@@ -30,7 +30,8 @@
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
     "grpc": "^1.13.1",
-    "remote-origin-url": "^1.0.0"
+    "remote-origin-url": "^1.0.0",
+    "tweetnacl": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
