@@ -6,15 +6,19 @@ const { RHOCore } = require('../rnodeAPI');
 
 function testRHOCore() {
   Suite.run({
-    null: rtest({ data: null, rho: {}, rholang: 'Nil' }),
+    null: rtest({
+      data: null, rholang: 'Nil', rho: {}, hex: '',
+    }),
     number: rtest({
       data: 123,
+      hex: '2a0310f601',
       rho: { exprs: [{ g_int: 123, expr_instance: 'g_int' }] },
       rholang: '123',
     }),
     'list of scalars': rtest({
       data: [true, 123, 'abc'],
       rholang: '[true, 123, "abc"]',
+      hex: '2a19a201160a042a0208010a052a0310f6010a072a051a03616263',
       rho: {
         exprs: [{
           expr_instance: 'e_list_body',
@@ -31,6 +35,7 @@ function testRHOCore() {
     object: rtest({
       data: { x: 'abc' },
       rholang: '@"x"!("abc")',
+      hex: '0a120a070a052a031a017812072a051a03616263',
       rho: {
         sends: [
           {
@@ -43,6 +48,7 @@ function testRHOCore() {
     'nested object': rtest({
       data: { x: 'abc', y: { a: true } },
       rholang: '@"x"!("abc") | @"y"!(@"a"!(true))',
+      hex: '0a120a070a052a031a017812072a051a036162630a1c0a070a052a031a017912110a0f0a070a052a031a016112042a020801',
       rho: {
         sends: [
           {
@@ -69,6 +75,7 @@ function testRHOCore() {
           voter: 'dckc', subject: 'a1', rating: 1, cert_time: '2018-07-29T02:00:21.259Z',
         }],
       rholang: '["merge", "trust_cert", @"cert_time"!("2018-07-29T02:00:21.259Z") | @"rating"!(1) | @"subject"!("a1") | @"voter"!("dckc")]',
+      hex: '2a9a01a20196010a092a071a056d657267650a0e2a0c1a0a74727573745f636572740a790a2f0a0f0a0d2a0b1a09636572745f74696d65121c2a1a1a18323031382d30372d32395430323a30303a32312e3235395a0a140a0c0a0a2a081a06726174696e6712042a0210020a170a0d0a0b2a091a077375626a65637412062a041a0261310a170a0b0a092a071a05766f74657212082a061a0464636b63',
       rho: {
         exprs: [{
           expr_instance: 'e_list_body',
@@ -103,37 +110,13 @@ function testRHOCore() {
 
   function rtest(item) {
     return (test) => {
-      /*
-      test.log(util.inspect(
-        {
-          unfixed: unfixLF(RHOCore.fromJSData(item.data)),
-          rho: item.rho,
-          data: item.data,
-        },
-        {showHidden: false, depth: null}));
-       */
-      // console.log(JSON.stringify(unfixLF(toRSON(item.data)), bufAsHex));
-      test.deepEqual(unfixLF(RHOCore.fromJSData(item.data)), item.rho);
+      test.deepEqual(RHOCore.fromJSData(item.data), item.rho);
       test.deepEqual(RHOCore.toJSData(item.rho), item.data);
       test.deepEqual(RHOCore.toRholang(item.rho), item.rholang);
+      test.deepEqual(RHOCore.toByteArray(item.rho).toString('hex'), item.hex);
 
       test.done();
     };
-  }
-
-  function unfixLF(x) {
-    if (x instanceof Array) {
-      return x.map(unfixLF);
-    }
-    if (typeof x === 'object' && x !== null && x !== undefined) {
-      const nolf = {};
-      Object.entries(x).forEach(([property, value]) => {
-        if (property === 'locallyFree') { return; }
-        nolf[property] = unfixLF(value);
-      });
-      return nolf;
-    }
-    return x;
   }
 }
 

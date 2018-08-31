@@ -14,6 +14,7 @@ refs:
 const assert = require('assert');
 
 const signing = require('./signing');
+const { Par } = require('./protobuf/messages');
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 // ISSUE: how to import strings? TODO: process .proto statically
@@ -112,22 +113,8 @@ function RNode(grpc, endPoint) {
       });
   }
 
-  /**
-   * Turns a rholang term into a byte-array compatible with Rholang
-   * @param termObj a rholang term object
-   * @return The byte-array
-   */
-  function toByteArray(termObj) {
-    // note: if we forget new here, we get:
-    // TypeError: this.$set is not a function
-    const term = new proto.Par(termObj);
-
-    const buf = term.toBuffer();
-    return buf;
-  }
-
   return def({
-    doDeploy, createBlock, addBlock, listenForDataAtName, toByteArray,
+    doDeploy, createBlock, addBlock, listenForDataAtName,
   });
 }
 
@@ -136,6 +123,7 @@ const RHOCore = def({
   toJSData,
   fromJSData,
   toRholang,
+  toByteArray,
 });
 module.exports.RHOCore = RHOCore;
 
@@ -149,7 +137,7 @@ module.exports.RHOCore = RHOCore;
  * @return A rholang term representing the object in RHOCore form.
  */
 function fromJSData(data) {
-  const expr1 = kv => fixLF({ exprs: [kv] });
+  const expr1 = kv => ({ exprs: [kv] });
 
   function recur(x) {
     switch (typeof x) {
@@ -162,7 +150,7 @@ function fromJSData(data) {
         return expr1({ g_string: x, expr_instance: 'g_string' });
       case 'object':
         if (x === null) {
-          return fixLF({});
+          return {};
         }
         if (Array.isArray(x)) {
           return toArry(x);
@@ -178,7 +166,7 @@ function fromJSData(data) {
     // The list has one 3 items, each of which is a process
     // with one exprs, which is an int.
     return expr1({
-      e_list_body: fixLF({ ps: items.map(recur) }),
+      e_list_body: { ps: items.map(recur) },
       expr_instance: 'e_list_body',
     });
   }
@@ -186,20 +174,12 @@ function fromJSData(data) {
   function keysValues(obj) {
     const sends = Object.keys(obj).sort().map((k) => {
       const chan = { quote: expr1({ g_string: k, expr_instance: 'g_string' }) };
-      return fixLF({ chan, data: [recur(obj[k])] });
+      return { chan, data: [recur(obj[k])] };
     });
-    return fixLF({ sends });
+    return { sends };
   }
 
   return recur(data);
-}
-
-// this locallyFree: emptyBitSet stuff shouldn't be necessary; see
-// https://rchain.atlassian.net/browse/RHOL-537
-const bytesPerLong = 8;
-const emptyBitSet = Buffer.from(Array(bytesPerLong).fill(0));
-function fixLF(p) {
-  return Object.assign({ locallyFree: emptyBitSet }, p);
 }
 
 
@@ -211,9 +191,9 @@ function fixLF(p) {
  */
 function toJSData(par) {
   function recur(p) {
-    if (p.exprs) {
-      if (p.exprs.length !== 1) {
-        throw new Error('not implemented');
+    if (p.exprs && p.exprs.length > 0) {
+      if (p.exprs.length > 1) {
+        throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
       const ex = p.exprs[0];
       if (ex.expr_instance === 'g_bool') {
@@ -254,9 +234,9 @@ function toRholang(par) {
   const src = x => JSON.stringify(x);
 
   function recur(p) {
-    if (p.exprs) {
-      if (p.exprs.length !== 1) {
-        throw new Error('not implemented');
+    if (p.exprs && p.exprs.length > 0) {
+      if (p.exprs.length > 1) {
+        throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
       const ex = p.exprs[0];
       if (ex.expr_instance === 'g_bool') {
@@ -283,6 +263,21 @@ function toRholang(par) {
   }
 
   return recur(par);
+}
+
+
+/**
+ * Turns a rholang term into a byte-array compatible with Rholang
+ * @param termObj a rholang term object
+ * @return The byte-array
+ */
+function toByteArray(termObj) {
+  Par.verify(termObj);
+  // const p = Par.create(termObj);
+  // Somehow bundles and connectives don't show up unless we do this...
+  // const bytes = messages.Par.encode(p).finish();
+  // const p2 = messages.Par.decode(bytes);
+  return Par.encode(termObj).finish();
 }
 
 
@@ -338,7 +333,7 @@ function integrationTest(endpoint, { grpc, clock }) {
 
   friendUpdatesStory(ca, clock);
 
-  logged(ca.toByteArray(fromJSData(stuffToSign)), 'stuffToSign serialized');
+  logged(RHOCore.toByteArray(fromJSData(stuffToSign)), 'stuffToSign serialized');
 
   // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
   const rhoTerm = '@"world"!("hello!")';

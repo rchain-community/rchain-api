@@ -1,12 +1,12 @@
 {
   "name": "rchain-api",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node rnodeAPI.js",
-    "lint": "eslint **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern talk/reveal.js/"
+    "lint": "eslint **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern talk/reveal.js/ --ignore-pattern protobuf/"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
     "grpc": "^1.13.1",
+    "protobufjs": "^6.8.8",
     "remote-origin-url": "^1.0.0",
     "tweetnacl": "^1.0.0"
   },
