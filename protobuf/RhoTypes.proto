@@ -1,6 +1,15 @@
 syntax = "proto3";
 
+// See CapserMessage.proto if this is causing problems
+import "scalapb/scalapb.proto";
+
 option java_package = "coop.rchain.models";
+
+option (scalapb.options) = {
+  import: "coop.rchain.models.BitSetBytesMapper.bitSetBytesMapper"
+  import: "coop.rchain.models.ParSetTypeMapper.parSetESetTypeMapper"
+  import: "coop.rchain.models.ParMapTypeMapper.parMapEMapTypeMapper"
+};
 
 message Par {
     repeated Send sends = 1;
@@ -136,7 +145,7 @@ message Match {
 message Expr {
     oneof expr_instance {
         bool g_bool = 1;
-        sint32 g_int = 2;
+        sint64 g_int = 2;
         string g_string = 3;
         string g_uri = 4;
         bytes g_byte_array = 25;
@@ -188,6 +197,7 @@ message ESet {
     repeated Par ps = 1;
     bytes locallyFree = 3 [(scalapb.field).type = "coop.rchain.models.AlwaysEqual[scala.collection.immutable.BitSet]"];
     bool connective_used = 4;
+    Var remainder = 5;
 }
 
 message EMap {
