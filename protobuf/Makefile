@@ -29,7 +29,7 @@ R_SRC=$(RAW_GH)/rchain/rchain/dev
 CasperMessage.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/CasperMessage.proto
 
-RhoTypes.proto: no-scalapb-rhotypes.patch
+RhoTypes.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/RhoTypes.proto
 
 
