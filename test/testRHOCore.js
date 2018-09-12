@@ -9,6 +9,12 @@ function testRHOCore() {
     null: rtest({
       data: null, rholang: 'Nil', rho: {}, hex: '',
     }),
+    string: rtest({
+      data: 'Bob',
+      rholang: '"Bob"',
+      hex: '2a051a03426f62',
+      rho: { exprs: [{ g_string: 'Bob', expr_instance: 'g_string' }] },
+    }),
     number: rtest({
       data: 123,
       hex: '2a0310f601',
