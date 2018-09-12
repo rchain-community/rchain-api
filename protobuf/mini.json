@@ -1,0 +1,239 @@
+{
+    "package": null,
+    "syntax": "proto2",
+    "options": {
+        "java_package": "coop.rchain.models",
+        "(scalapb.options).import": [
+            "coop.rchain.models.BitSetBytesMapper.bitSetBytesMapper",
+            "coop.rchain.models.ParSetTypeMapper.parSetESetTypeMapper",
+            "coop.rchain.models.ParMapTypeMapper.parMapEMapTypeMapper"
+        ]
+    },
+    "messages": [
+        {
+            "name": "Par",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "repeated",
+                    "type": "Send",
+                    "name": "sends",
+                    "id": 1
+                },
+                {
+                    "rule": "repeated",
+                    "type": "Receive",
+                    "name": "receives",
+                    "id": 2
+                },
+                {
+                    "rule": "repeated",
+                    "type": "New",
+                    "name": "news",
+                    "id": 4
+                },
+                {
+                    "rule": "repeated",
+                    "type": "Expr",
+                    "name": "exprs",
+                    "id": 5
+                },
+                {
+                    "rule": "repeated",
+                    "type": "Match",
+                    "name": "matches",
+                    "id": 6
+                },
+                {
+                    "rule": "repeated",
+                    "type": "GPrivate",
+                    "name": "ids",
+                    "id": 7
+                },
+                {
+                    "rule": "repeated",
+                    "type": "Bundle",
+                    "name": "bundles",
+                    "id": 11
+                },
+                {
+                    "rule": "repeated",
+                    "type": "Connective",
+                    "name": "connectives",
+                    "id": 8
+                },
+                {
+                    "rule": "optional",
+                    "type": "bytes",
+                    "name": "locallyFree",
+                    "id": 9,
+                    "options": {
+                        "(scalapb.field).type": "coop.rchain.models.AlwaysEqual[scala.collection.immutable.BitSet]"
+                    }
+                },
+                {
+                    "rule": "optional",
+                    "type": "bool",
+                    "name": "connective_used",
+                    "id": 10
+                }
+            ]
+        },
+        {
+            "name": "TaggedContinuation",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "ParWithRandom",
+                    "name": "par_body",
+                    "id": 1,
+                    "oneof": "tagged_cont"
+                },
+                {
+                    "rule": "optional",
+                    "type": "int64",
+                    "name": "scala_body_ref",
+                    "id": 2,
+                    "oneof": "tagged_cont"
+                }
+            ],
+            "oneofs": {
+                "tagged_cont": [
+                    1,
+                    2
+                ]
+            }
+        },
+        {
+            "name": "ParWithRandom",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "Par",
+                    "name": "body",
+                    "id": 1,
+                    "options": {
+                        "(scalapb.field).no_box": true
+                    }
+                },
+                {
+                    "rule": "optional",
+                    "type": "bytes",
+                    "name": "randomState",
+                    "id": 2,
+                    "options": {
+                        "(scalapb.field).type": "coop.rchain.crypto.hash.Blake2b512Random"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Channel",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "Par",
+                    "name": "quote",
+                    "id": 1,
+                    "oneof": "channel_instance"
+                },
+                {
+                    "rule": "optional",
+                    "type": "Var",
+                    "name": "chanVar",
+                    "id": 2,
+                    "oneof": "channel_instance"
+                }
+            ],
+            "oneofs": {
+                "channel_instance": [
+                    1,
+                    2
+                ]
+            }
+        },
+        {
+            "name": "PCost",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "uint64",
+                    "name": "cost",
+                    "id": 1
+                },
+                {
+                    "rule": "optional",
+                    "type": "int32",
+                    "name": "iterations",
+                    "id": 2
+                }
+            ]
+        },
+        {
+            "name": "ListChannelWithRandom",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "repeated",
+                    "type": "Channel",
+                    "name": "channels",
+                    "id": 1
+                },
+                {
+                    "rule": "optional",
+                    "type": "bytes",
+                    "name": "randomState",
+                    "id": 2,
+                    "options": {
+                        "(scalapb.field).type": "coop.rchain.crypto.hash.Blake2b512Random"
+                    }
+                },
+                {
+                    "rule": "optional",
+                    "type": "PCost",
+                    "name": "cost",
+                    "id": 3
+                }
+            ]
+        },
+        {
+            "name": "Var",
+            "syntax": "proto3",
+            "fields": [
+                {
+                    "rule": "optional",
+                    "type": "sint32",
+                    "name": "bound_var",
+                    "id": 1,
+                    "oneof": "var_instance"
+                },
+                {
+                    "rule": "optional",
+                    "type": "sint32",
+                    "name": "free_var",
+                    "id": 2,
+                    "oneof": "var_instance"
+                },
+                {
+                    "rule": "optional",
+                    "type": "WildcardMsg",
+                    "name": "wildcard",
+                    "id": 3,
+                    "oneof": "var_instance"
+                }
+            ],
+            "oneofs": {
+                "var_instance": [
+                    1,
+                    2,
+                    3
+                ]
+            }
+        }
+    ],
+    "isNamespace": true
+}
