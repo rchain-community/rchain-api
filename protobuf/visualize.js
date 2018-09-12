@@ -1,3 +1,5 @@
+// Run this with node visualize.js | dot -Tpng > out.png
+
 'use strict';
 
 var rootData = require('./mini.json');
@@ -17,22 +19,17 @@ function recurse(data){
   if (data.fields){
     for (var field of data.fields){
       nodecount++;
-      console.log( `${nodecount} [label="${field.name}"];`);
+      let color = field.rule === "repeated" ? 'blue' : 'black';
 
-      // If this is a message type, add an edge
+
+      // If this is a message type, draw an arrow
       if (specialTypes.indexOf(field.type) === -1){
-        let color;
-
-        if (field.rule === "optional"){
-          color = "grey"
-        }
-        else if (field.rule === "repeated"){
-          color = "blue"
-        }
-        else {
-          color = "black"
-        }
-        edges.push(`${nodecount} ->  ${field.type} [color="${color}"];`);
+        console.log( `${nodecount} [label="${field.name}", color="${color}"];`);
+        edges.push(`${nodecount} ->  ${field.type}_dummy [lhead=${field.type}, color="${color}"];`);
+      }
+      // Otherwise list the type
+      else {
+        console.log( `${nodecount} [label="${field.name}\n(${field.type})", color="${color}"];`);
       }
     }
   }
@@ -40,7 +37,7 @@ function recurse(data){
   // Any messages are subgraphs
   if (data.messages){
     for (var message of data.messages){
-      console.log(`  subgraph cluster_${message.name} {\n  label="${message.name}";`);
+      console.log(`  subgraph cluster_${message.name} {\n  label="${message.name}";\n${message.name}_dummy [style=invisible];`);
             recurse(message)
       console.log('}')
     }
@@ -63,32 +60,7 @@ for (var edge of edges){
 // Print the epilog
 console.log("}");
 
-/*
-http://graphs.grevian.org/graph/5097838207827968
 
-
-digraph {
-    subgraph cluster_0 {
-        label="Subgraph A";
-        a;
-        b;
-        c;
-        subgraph cluster_2 {
-               label="inner";
-               x;
-               y;
-        }
-    }
-f;
-    subgraph cluster_1 {
-        label="Subgraph B";
-d;
-e;
-
-    }
-
-a -> b;
-}
-*/
+// http://graphs.grevian.org/graph/5097838207827968
 
 // https://stackoverflow.com/a/2012106/4184410
