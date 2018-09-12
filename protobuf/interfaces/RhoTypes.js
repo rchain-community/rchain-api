@@ -7,47 +7,47 @@
  */
 
 interface IPar {
-  sends?: ISend[] | null;
-  receives?: IReceive[] | null;
-  news?: INew[] | null;
-  exprs?: IExpr[] | null;
-  matches?: IMatch[] | null;
-  ids?: IGPrivate[] | null;
-  bundles?: IBundle[] | null;
-  connectives?: IConnective[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  sends?: ISend[];
+  receives?: IReceive[];
+  news?: INew[];
+  exprs?: IExpr[];
+  matches?: IMatch[];
+  ids?: IGPrivate[];
+  bundles?: IBundle[];
+  connectives?: IConnective[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class Par implements IPar {
   constructor(properties?: IPar): this;
-  sends: ISend[] | null;
-  receives: IReceive[] | null;
-  news: INew[] | null;
-  exprs: IExpr[] | null;
-  matches: IMatch[] | null;
-  ids: IGPrivate[] | null;
-  bundles: IBundle[] | null;
-  connectives: IConnective[] | null;
-  locallyFree: Uint8Array | null;
-  connective_used: boolean | null;
-  create(properties?: IPar): Par;
-  encode(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
-  encodeDelimited(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
-  decode(reader: $protobuf.Reader | Uint8Array, length?: number): Par;
-  decodeDelimited(reader: $protobuf.Reader | Uint8Array): Par;
-  verify(message: {
+  sends: ISend[];
+  receives: IReceive[];
+  news: INew[];
+  exprs: IExpr[];
+  matches: IMatch[];
+  ids: IGPrivate[];
+  bundles: IBundle[];
+  connectives: IConnective[];
+  locallyFree: Uint8Array;
+  connective_used: boolean;
+  static create(properties?: IPar): Par;
+  static encode(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
+  static encodeDelimited(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
+  static decode(reader: $protobuf.Reader | Uint8Array, length?: number): Par;
+  static decodeDelimited(reader: $protobuf.Reader | Uint8Array): Par;
+  static verify(message: {
     [k: string]: any
   }): string | null;
-  fromObject(object: {
+  static fromObject(object: {
     [k: string]: any
   }): Par;
-  toObject(
+  static toObject(
     message: Par,
     options?: $protobuf.IConversionOptions
   ): {
     [k: string]: any
   };
-  toJSON(): {
+  static toJSON(): {
     [k: string]: any
   };
 }
@@ -60,6 +60,7 @@ declare export class TaggedContinuation implements ITaggedContinuation {
   par_body: IParWithRandom | null;
   scala_body_ref: number | Long;
   tagged_cont: "par_body" | "scala_body_ref";
+  // ISSUE: create, encode, etc. in all these classes should be static.
   create(properties?: ITaggedContinuation): TaggedContinuation;
   encode(
     message: ITaggedContinuation,
