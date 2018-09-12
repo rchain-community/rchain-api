@@ -20,16 +20,16 @@ interface IPar {
 }
 declare export class Par implements IPar {
   constructor(properties?: IPar): this;
-  sends: ISend[];
-  receives: IReceive[];
-  news: INew[];
-  exprs: IExpr[];
-  matches: IMatch[];
-  ids: IGPrivate[];
-  bundles: IBundle[];
-  connectives: IConnective[];
-  locallyFree: Uint8Array;
-  connective_used: boolean;
+  sends: ISend[] | null;
+  receives: IReceive[] | null;
+  news: INew[] | null;
+  exprs: IExpr[] | null;
+  matches: IMatch[] | null;
+  ids: IGPrivate[] | null;
+  bundles: IBundle[] | null;
+  connectives: IConnective[] | null;
+  locallyFree: Uint8Array | null;
+  connective_used: boolean | null;
   create(properties?: IPar): Par;
   encode(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(message: IPar, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -53,7 +53,7 @@ declare export class Par implements IPar {
 }
 interface ITaggedContinuation {
   par_body?: IParWithRandom | null;
-  scala_body_ref?: number | Long | null;
+  scala_body_ref?: number | Long;
 }
 declare export class TaggedContinuation implements ITaggedContinuation {
   constructor(properties?: ITaggedContinuation): this;
@@ -92,7 +92,7 @@ declare export class TaggedContinuation implements ITaggedContinuation {
 }
 interface IParWithRandom {
   body?: IPar | null;
-  randomState?: Uint8Array | null;
+  randomState?: Uint8Array;
 }
 declare export class ParWithRandom implements IParWithRandom {
   constructor(properties?: IParWithRandom): this;
@@ -156,8 +156,8 @@ declare export class Channel implements IChannel {
   };
 }
 interface IPCost {
-  cost?: number | Long | null;
-  iterations?: number | null;
+  cost?: number | Long;
+  iterations?: number;
 }
 declare export class PCost implements IPCost {
   constructor(properties?: IPCost): this;
@@ -185,8 +185,8 @@ declare export class PCost implements IPCost {
   };
 }
 interface IListChannelWithRandom {
-  channels?: IChannel[] | null;
-  randomState?: Uint8Array | null;
+  channels?: IChannel[];
+  randomState?: Uint8Array;
   cost?: IPCost | null;
 }
 declare export class ListChannelWithRandom implements IListChannelWithRandom {
@@ -225,8 +225,8 @@ declare export class ListChannelWithRandom implements IListChannelWithRandom {
   };
 }
 interface IVar {
-  bound_var?: number | null;
-  free_var?: number | null;
+  bound_var?: number;
+  free_var?: number;
   wildcard?: Var$IWildcardMsg | null;
 }
 declare export class Var implements IVar {
@@ -292,8 +292,8 @@ declare class WildcardMsg implements IWildcardMsg {
 }
 interface IBundle {
   body?: IPar | null;
-  writeFlag?: boolean | null;
-  readFlag?: boolean | null;
+  writeFlag?: boolean;
+  readFlag?: boolean;
 }
 declare export class Bundle implements IBundle {
   constructor(properties?: IBundle): this;
@@ -326,10 +326,10 @@ declare export class Bundle implements IBundle {
 }
 interface ISend {
   chan?: IChannel | null;
-  data?: IPar[] | null;
-  persistent?: boolean | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  data?: IPar[];
+  persistent?: boolean;
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class Send implements ISend {
   constructor(properties?: ISend): this;
@@ -360,10 +360,10 @@ declare export class Send implements ISend {
   };
 }
 interface IReceiveBind {
-  patterns?: IChannel[] | null;
+  patterns?: IChannel[];
   source?: IChannel | null;
   remainder?: IVar | null;
-  freeCount?: number | null;
+  freeCount?: number;
 }
 declare export class ReceiveBind implements IReceiveBind {
   constructor(properties?: IReceiveBind): this;
@@ -396,9 +396,9 @@ declare export class ReceiveBind implements IReceiveBind {
   };
 }
 interface IBindPattern {
-  patterns?: IChannel[] | null;
+  patterns?: IChannel[];
   remainder?: IVar | null;
-  freeCount?: number | null;
+  freeCount?: number;
 }
 declare export class BindPattern implements IBindPattern {
   constructor(properties?: IBindPattern): this;
@@ -430,7 +430,7 @@ declare export class BindPattern implements IBindPattern {
   };
 }
 interface IListBindPatterns {
-  patterns?: IBindPattern[] | null;
+  patterns?: IBindPattern[];
 }
 declare export class ListBindPatterns implements IListBindPatterns {
   constructor(properties?: IListBindPatterns): this;
@@ -466,12 +466,12 @@ declare export class ListBindPatterns implements IListBindPatterns {
   };
 }
 interface IReceive {
-  binds?: IReceiveBind[] | null;
+  binds?: IReceiveBind[];
   body?: IPar | null;
-  persistent?: boolean | null;
-  bindCount?: number | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  persistent?: boolean;
+  bindCount?: number;
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class Receive implements IReceive {
   constructor(properties?: IReceive): this;
@@ -506,10 +506,10 @@ declare export class Receive implements IReceive {
   };
 }
 interface INew {
-  bindCount?: number | null;
+  bindCount?: number;
   p?: IPar | null;
-  uri?: string[] | null;
-  locallyFree?: Uint8Array | null;
+  uri?: string[];
+  locallyFree?: Uint8Array;
 }
 declare export class New implements INew {
   constructor(properties?: INew): this;
@@ -541,7 +541,7 @@ declare export class New implements INew {
 interface IMatchCase {
   pattern?: IPar | null;
   source?: IPar | null;
-  freeCount?: number | null;
+  freeCount?: number;
 }
 declare export class MatchCase implements IMatchCase {
   constructor(properties?: IMatchCase): this;
@@ -574,9 +574,9 @@ declare export class MatchCase implements IMatchCase {
 }
 interface IMatch {
   target?: IPar | null;
-  cases?: IMatchCase[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  cases?: IMatchCase[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class Match implements IMatch {
   constructor(properties?: IMatch): this;
@@ -606,11 +606,11 @@ declare export class Match implements IMatch {
   };
 }
 interface IExpr {
-  g_bool?: boolean | null;
-  g_int?: number | Long | null;
-  g_string?: string | null;
-  g_uri?: string | null;
-  g_byte_array?: Uint8Array | null;
+  g_bool?: boolean;
+  g_int?: number | Long;
+  g_string?: string;
+  g_uri?: string;
+  g_byte_array?: Uint8Array;
   e_not_body?: IENot | null;
   e_neg_body?: IENeg | null;
   e_mult_body?: IEMult | null;
@@ -722,9 +722,9 @@ declare export class Expr implements IExpr {
   };
 }
 interface IEList {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  ps?: IPar[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
   remainder?: IVar | null;
 }
 declare export class EList implements IEList {
@@ -755,9 +755,9 @@ declare export class EList implements IEList {
   };
 }
 interface IETuple {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  ps?: IPar[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class ETuple implements IETuple {
   constructor(properties?: IETuple): this;
@@ -789,9 +789,9 @@ declare export class ETuple implements IETuple {
   };
 }
 interface IESet {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  ps?: IPar[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
   remainder?: IVar | null;
 }
 declare export class ESet implements IESet {
@@ -822,9 +822,9 @@ declare export class ESet implements IESet {
   };
 }
 interface IEMap {
-  kvs?: IKeyValuePair[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  kvs?: IKeyValuePair[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class EMap implements IEMap {
   constructor(properties?: IEMap): this;
@@ -853,11 +853,11 @@ declare export class EMap implements IEMap {
   };
 }
 interface IEMethod {
-  methodName?: string | null;
+  methodName?: string;
   target?: IPar | null;
-  arguments?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  arguments?: IPar[];
+  locallyFree?: Uint8Array;
+  connective_used?: boolean;
 }
 declare export class EMethod implements IEMethod {
   constructor(properties?: IEMethod): this;
@@ -1392,8 +1392,8 @@ interface IEPercentPercent {
 }
 declare export class EPercentPercent implements IEPercentPercent {
   constructor(properties?: IEPercentPercent): this;
-  p1: IPar | null;
-  p2: IPar | null;
+  p1: IPar;
+  p2: IPar;
   create(properties?: IEPercentPercent): EPercentPercent;
   encode(
     message: IEPercentPercent,
@@ -1493,11 +1493,11 @@ interface IConnective {
   conn_or_body?: IConnectiveBody | null;
   conn_not_body?: IPar | null;
   var_ref_body?: IVarRef | null;
-  conn_bool?: boolean | null;
-  conn_int?: boolean | null;
-  conn_string?: boolean | null;
-  conn_uri?: boolean | null;
-  conn_byte_array?: boolean | null;
+  conn_bool?: boolean;
+  conn_int?: boolean;
+  conn_string?: boolean;
+  conn_uri?: boolean;
+  conn_byte_array?: boolean;
 }
 declare export class Connective implements IConnective {
   constructor(properties?: IConnective): this;
@@ -1545,8 +1545,8 @@ declare export class Connective implements IConnective {
   };
 }
 interface IVarRef {
-  index?: number | null;
-  depth?: number | null;
+  index?: number;
+  depth?: number;
 }
 declare export class VarRef implements IVarRef {
   constructor(properties?: IVarRef): this;
@@ -1577,7 +1577,7 @@ declare export class VarRef implements IVarRef {
   };
 }
 interface IConnectiveBody {
-  ps?: IPar[] | null;
+  ps?: IPar[];
 }
 declare export class ConnectiveBody implements IConnectiveBody {
   constructor(properties?: IConnectiveBody): this;
@@ -1610,7 +1610,7 @@ declare export class ConnectiveBody implements IConnectiveBody {
   };
 }
 interface IGPrivate {
-  id?: Uint8Array | null;
+  id?: Uint8Array;
 }
 declare export class GPrivate implements IGPrivate {
   constructor(properties?: IGPrivate): this;
