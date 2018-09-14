@@ -12,13 +12,21 @@ refs:
  */
 
 const assert = require('assert');
+const protoLoader = require('@grpc/proto-loader');
 
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
-// ISSUE: how to import strings? TODO: process .proto statically
-const protoSrc = __dirname + '/protobuf/CasperMessage.proto'; // eslint-disable-line
+
+// Options for similarity to grpc.load behavior
+// https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
+const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
+const packageDefinition = protoLoader.loadSync(
+  'protobuf/CasperMessage.proto', // eslint-disable-line
+  likeLoad,
+);
+
 
 module.exports.keyPair = signing.keyPair;
 module.exports.b2h = signing.b2h;
@@ -33,21 +41,11 @@ module.exports.RHOCore = RHOCore;
  * @return a thin wrapper around a gRPC client stub
  */
 module.exports.RNode = RNode;
-function RNode(grpc, protoLoader, endPoint) {
+function RNode(grpc, endPoint) {
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
 
-  const packageDefinition = protoLoader.loadSync(
-    protoSrc,
-    {
-      keepCase: true,
-      longs: String,
-      enums: String,
-      defaults: true,
-      oneofs: true,
-    },
-  );
   const proto = grpc.loadPackageDefinition(packageDefinition);
   const casper = proto.coop.rchain.casper.protocol;
 
@@ -172,10 +170,10 @@ function bufAsHex(prop, val) {
 /**
  *
  */
-function integrationTest({ grpc, protoLoader, endpoint, clock }) {
+function integrationTest({ grpc, endpoint, clock }) {
   const stuffToSign = { x: 'abc' };
 
-  const ca = RNode(grpc, protoLoader, endpoint);
+  const ca = RNode(grpc, endpoint);
 
   friendUpdatesStory(ca, clock);
 
@@ -236,7 +234,6 @@ if (require.main === module) {
     {
       endpoint,
       grpc: require('grpc'),
-      protoLoader: require('@grpc/proto-loader'),
       clock: () => new Date(),
     },
   );
