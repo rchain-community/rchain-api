@@ -32,12 +32,20 @@ module.exports.h2b = signing.h2b;
  * @return a thin wrapper around a gRPC client stub
  */
 module.exports.RNode = RNode;
-function RNode(grpc, endPoint) {
+function RNode(grpc, protoLoader, endPoint) {
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
 
-  const proto = grpc.load(protoSrc);
+  const packageDefinition = protoLoader.loadSync(
+    protoSrc,
+    {keepCase: true,
+     longs: String,
+     enums: String,
+     defaults: true,
+     oneofs: true,
+    });
+  const proto = grpc.loadPackageDefinition(packageDefinition);
   const casper = proto.coop.rchain.casper.protocol;
 
   const client = new casper.DeployService(
@@ -325,11 +333,11 @@ function bufAsHex(prop, val) {
 /**
  *
  */
-function integrationTest(endpoint, { grpc, clock }) {
+function integrationTest({grpc, protoLoader, endpoint, clock}) {
 
   const stuffToSign = { x: 'abc' };
 
-  const ca = RNode(grpc, endpoint);
+  const ca = RNode(grpc, protoLoader, endpoint);
 
   friendUpdatesStory(ca, clock);
 
@@ -387,9 +395,10 @@ if (require.main === module) {
     port: parseInt(process.argv[3], 10),
   }
   integrationTest(
-    endpoint,
     {
+      endpoint,
       grpc: require('grpc'),
+      protoLoader: require('@grpc/proto-loader'),
       clock: () => new Date(),
     },
   );

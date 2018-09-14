@@ -30,6 +30,7 @@
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
     "grpc": "^1.13.1",
+    "@grpc/proto-loader": "^0.3.0",
     "protobufjs": "^6.8.8",
     "remote-origin-url": "^1.0.0",
     "tweetnacl": "^1.0.0"
