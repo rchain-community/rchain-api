@@ -77,31 +77,34 @@ function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
  * @return JSON-serializable data
  */
 exports.toJSData = toJSData;
-function toJSData(par) {
-  function recur(p) {
+function toJSData(par /*: IPar */) /*: Json */{
+  function recur(p /*: IPar */) {
     if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
       const ex = p.exprs[0];
-      if (ex.expr_instance === 'g_bool') {
+      if (typeof ex.g_bool !== 'undefined') {
         return ex.g_bool;
       }
-      if (ex.expr_instance === 'g_int') {
+      if (typeof ex.g_int !== 'undefined') {
         return ex.g_int;
       }
-      if (ex.expr_instance === 'g_string') {
+      if (typeof ex.g_string !== 'undefined') {
         return ex.g_string;
       }
-      if (ex.expr_instance === 'e_list_body') {
+      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null &&
+          Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
       }
-      throw new Error(`not RHOCore? ${ex}`);
+      throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
     } else if (p.sends) {
-      return p.sends.reduce(
-        (acc, s) => ({ [recur(s.chan.quote)]: recur(s.data[0]), ...acc }),
-        {},
-      );
+      const props = p.sends.map(s => {
+        const key = recur((s.chan || {}).quote || {});
+        let val = recur((s.data || [{}])[0]);
+        return { k: key, v: val };
+      });
+      return props.reduce((acc, { k, v }) => ({ k: v, ...acc }), {});
     } else {
       // TODO: check that everything else is empty
       return null;
@@ -139,7 +142,8 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_string !== 'undefined') {
         return src(ex.g_string);
       }
-      if (typeof ex.e_list_body !== 'undefined' && Array.isArray(ex.e_list_body.ps)) {
+      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null &&
+          Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
         return `[${items.join(', ')}]`;
       }
