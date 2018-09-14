@@ -6,6 +6,8 @@
   "scripts": {
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node rnodeAPI.js",
+    "flow-check": "flow check",
+    "flow-status": "flow status",
     "lint": "eslint *.js **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern protobuf/"
   },
   "repository": {
@@ -39,6 +41,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
+    "flow-bin": "^0.81.0",
     "testjs": "^1.0.4"
   },
   "TODO": {
