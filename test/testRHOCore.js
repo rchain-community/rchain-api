@@ -2,7 +2,7 @@
 
 const Suite = require('testjs');
 
-const { RHOCore } = require('../rnodeAPI');
+const RHOCore = require('../RHOCore');
 
 function testRHOCore() {
   Suite.run({

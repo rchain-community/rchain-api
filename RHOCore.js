@@ -1,7 +1,7 @@
 // @flow strict
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
-import { Par } from './lib/RhoTypes.js';
+const { Par } = require('./protobuf/RhoTypes.js');
 
 /**
  * "we can detail a direct representation of JSON into a
@@ -12,7 +12,8 @@ import { Par } from './lib/RhoTypes.js';
  * @param x Any javascript object to be serialized to RHOCore
  * @return A rholang term representing the object in RHOCore form.
  */
-export function fromJSData(data /*: mixed */) /* : IPar */ {
+exports.fromJSData = fromJSData;
+function fromJSData(data /*: mixed */) /* : IPar */ {
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
 
   function recur(x) {
@@ -62,9 +63,52 @@ export function fromJSData(data /*: mixed */) /* : IPar */ {
 /**
  * Turns a rholang term into a byte-array compatible with Rholang
  */
-export function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
+exports.toByteArray = toByteArray;
+function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
   // Par.verify(termObj);
   return Par.encode(termObj).finish();
+}
+
+
+/**
+ * Converts an RHOCore object back to JavaScript data
+ *
+ * @param par A RHOCore representation of a Rholang term
+ * @return JSON-serializable data
+ */
+exports.toJSData = toJSData;
+function toJSData(par) {
+  function recur(p) {
+    if (p.exprs && p.exprs.length > 0) {
+      if (p.exprs.length > 1) {
+        throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
+      }
+      const ex = p.exprs[0];
+      if (ex.expr_instance === 'g_bool') {
+        return ex.g_bool;
+      }
+      if (ex.expr_instance === 'g_int') {
+        return ex.g_int;
+      }
+      if (ex.expr_instance === 'g_string') {
+        return ex.g_string;
+      }
+      if (ex.expr_instance === 'e_list_body') {
+        return ex.e_list_body.ps.map(recur);
+      }
+      throw new Error(`not RHOCore? ${ex}`);
+    } else if (p.sends) {
+      return p.sends.reduce(
+        (acc, s) => ({ [recur(s.chan.quote)]: recur(s.data[0]), ...acc }),
+        {},
+      );
+    } else {
+      // TODO: check that everything else is empty
+      return null;
+    }
+  }
+
+  return recur(par);
 }
 
 
@@ -76,7 +120,8 @@ export function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
  *
  * ISSUE: Use intersection types to constrain par param further than IPar?
  */
-export function toRholang(par /*: IPar */) /*: string */ {
+exports.toRholang = toRholang;
+function toRholang(par /*: IPar */) /*: string */ {
   const src = x => JSON.stringify(x);
 
   function recur(p) {
