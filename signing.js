@@ -57,5 +57,6 @@ function integrationTest({ randomBytes }) {
 
 if (require.main === module) {
   // ocap: Import powerful references only when invoked as a main module.
+  /* eslint-disable global-require */
   integrationTest({ randomBytes: require('crypto').randomBytes });
 }

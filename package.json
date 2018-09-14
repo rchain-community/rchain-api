@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node rnodeAPI.js",
-    "lint": "eslint **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern protobuf/"
+    "lint": "eslint *.js **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern protobuf/"
   },
   "repository": {
     "type": "git",

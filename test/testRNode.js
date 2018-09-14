@@ -12,9 +12,7 @@ function testRNode() {
     test.done();
   }
 
-  Suite.run({
-    argChecks,
-  });
+  Suite.run({ argChecks });
 }
 
 testRNode();

@@ -39,12 +39,14 @@ function RNode(grpc, protoLoader, endPoint) {
 
   const packageDefinition = protoLoader.loadSync(
     protoSrc,
-    {keepCase: true,
-     longs: String,
-     enums: String,
-     defaults: true,
-     oneofs: true,
-    });
+    {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
+    },
+  );
   const proto = grpc.loadPackageDefinition(packageDefinition);
   const casper = proto.coop.rchain.casper.protocol;
 
@@ -121,9 +123,7 @@ function RNode(grpc, protoLoader, endPoint) {
       });
   }
 
-  return def({
-    doDeploy, createBlock, addBlock, listenForDataAtName,
-  });
+  return def({ doDeploy, createBlock, addBlock, listenForDataAtName });
 }
 
 
@@ -333,8 +333,7 @@ function bufAsHex(prop, val) {
 /**
  *
  */
-function integrationTest({grpc, protoLoader, endpoint, clock}) {
-
+function integrationTest({ grpc, protoLoader, endpoint, clock }) {
   const stuffToSign = { x: 'abc' };
 
   const ca = RNode(grpc, protoLoader, endpoint);
@@ -390,10 +389,10 @@ if (require.main === module) {
     process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
     process.exit(1);
   }
-  let endpoint = {
+  const endpoint = {
     host: process.argv[2],
     port: parseInt(process.argv[3], 10),
-  }
+  };
   integrationTest(
     {
       endpoint,

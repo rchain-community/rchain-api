@@ -1,4 +1,6 @@
-// const util = require('util');
+/* ISSUE: move test data to .json file for use from python etc.? */
+/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline */
 
 const Suite = require('testjs');
 
