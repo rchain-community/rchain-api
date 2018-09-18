@@ -2,7 +2,7 @@
 
 'use strict';
 
-var rootData = require('./mini.json');
+var rootData = require('./messages.json');
 
 var nodecount = 1;
 
@@ -20,16 +20,17 @@ function recurse(data){
     for (var field of data.fields){
       nodecount++;
       let color = field.rule === "repeated" ? 'blue' : 'black';
+      let name = field.name.replace(".", "_")
 
 
-      // If this is a message type, draw an arrow
+      // If this is a message type, draw an arrow from it
       if (specialTypes.indexOf(field.type) === -1){
-        console.log( `${nodecount} [label="${field.name}", color="${color}"];`);
-        edges.push(`${nodecount} ->  ${field.type}_dummy [lhead=${field.type}, color="${color}"];`);
+        console.log( `${nodecount} [label="${name}", color="${color}"];`);
+        edges.push(`${nodecount} ->  ${field.type}_dmy [lhead="cluster_${field.type}", color="${color}"];`);
       }
-      // Otherwise list the type
+      // Otherwise list its primative type in parens below
       else {
-        console.log( `${nodecount} [label="${field.name}\n(${field.type})", color="${color}"];`);
+        console.log( `${nodecount} [label="${name}\\n(${field.type})", color="${color}"];`);
       }
     }
   }
@@ -37,7 +38,11 @@ function recurse(data){
   // Any messages are subgraphs
   if (data.messages){
     for (var message of data.messages){
-      console.log(`  subgraph cluster_${message.name} {\n  label="${message.name}";\n${message.name}_dummy [style=invisible];`);
+      // Hack to get around the errors on google.protobuf.FileOptions.
+      // These have been a problem before. I wonder if something is wrong elsewhere.
+      if (!message.name){continue}
+      let name = message.name.replace(".", "_")
+      console.log(`  subgraph cluster_${message.name} {\n  label="${message.name}";\n${message.name}_dmy [width=0, height=0, style=invis];`);
             recurse(message)
       console.log('}')
     }
@@ -47,7 +52,7 @@ function recurse(data){
 
 
 // Print the prolog
-console.log("digraph {");
+console.log("digraph {\n  compound=true;");
 
 // Recursively print the body
 recurse(rootData);
