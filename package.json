@@ -6,8 +6,8 @@
   "scripts": {
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node rnodeAPI.js",
-    "flow-check": "flow check",
-    "flow-status": "flow status",
+    "flow-check": "flow check --from emacs",
+    "flow-status": "flow status --from emacs",
     "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/"
   },
   "repository": {
