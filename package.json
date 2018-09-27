@@ -8,7 +8,7 @@
     "integrationTest": "node rnodeAPI.js",
     "flow-check": "flow check",
     "flow-status": "flow status",
-    "lint": "eslint *.js **/*.js --format unix --ignore-pattern node_modules/ --ignore-pattern protobuf/"
+    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/"
   },
   "repository": {
     "type": "git",
