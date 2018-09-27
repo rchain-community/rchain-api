@@ -10,6 +10,7 @@ refs:
 [2]: https://grpc.io/docs/tutorials/basic/node.html
 
  */
+// @flow strict
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
@@ -23,7 +24,7 @@ const def = obj => Object.freeze(obj); // cf. ocap design note
 // https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
 const packageDefinition = protoLoader.loadSync(
-  'protobuf/CasperMessage.proto', // eslint-disable-line
+  __dirname + '/protobuf/CasperMessage.proto', // eslint-disable-line
   likeLoad,
 );
 
@@ -33,6 +34,10 @@ module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
 module.exports.RHOCore = RHOCore;
 
+/*::
+import grpcT from 'grpc';
+ */
+
 /**
  * Connect to an RChain node (RNode).
  *
@@ -41,7 +46,7 @@ module.exports.RHOCore = RHOCore;
  * @return a thin wrapper around a gRPC client stub
  */
 module.exports.RNode = RNode;
-function RNode(grpc, endPoint) {
+function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: number } */) {
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
@@ -67,8 +72,10 @@ function RNode(grpc, endPoint) {
    * @param sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
    * @return A promise for a response message
+   *
+   * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData) {
+  function doDeploy(deployData /*: mixed*/) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
@@ -88,7 +95,7 @@ function RNode(grpc, endPoint) {
    * @param block The block to be added
    * @return A promise for response message
    */
-  function addBlock(block) {
+  function addBlock(block /*: mixed */) {
     // ISSUE: Error: Illegal value for Message.Field ...
     // .Expr.g_bool of type bool: object
     // (proto3 field without field presence cannot be null)
@@ -110,7 +117,7 @@ function RNode(grpc, endPoint) {
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(nameObj) {
+  function listenForDataAtName(nameObj /*: Json */) {
     const chan = { quote: RHOCore.fromJSData(nameObj) };
     return send(then => client.listenForDataAtName(chan, then))
       .then((response) => {
@@ -155,7 +162,7 @@ function send(calling) {
  * log with JSON replacer: stringify Buffer data as hex
  */
 module.exports.logged = logged;
-function logged(obj, label) {
+function logged(obj /*: mixed */, label /*: ?string */) {
   console.log(label, JSON.stringify(obj, bufAsHex, 2));
   return obj;
 }

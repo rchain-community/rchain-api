@@ -93,18 +93,19 @@ function toJSData(par /*: IPar */) /*: Json */{
       if (typeof ex.g_string !== 'undefined') {
         return ex.g_string;
       }
-      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null &&
-          Array.isArray(ex.e_list_body.ps)) {
+      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
+          && Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
       }
       throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
     } else if (p.sends) {
-      const props = p.sends.map(s => {
+      const props = p.sends.map((s) => {
         const key = recur((s.chan || {}).quote || {});
-        let val = recur((s.data || [{}])[0]);
+        if (typeof key !== 'string') { throw new Error(`not RHOCore? ${JSON.stringify(key)}`); }
+        const val = recur((s.data || [{}])[0]);
         return { k: key, v: val };
       });
-      return props.reduce((acc, { k, v }) => ({ k: v, ...acc }), {});
+      return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
     } else {
       // TODO: check that everything else is empty
       return null;
@@ -142,8 +143,8 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_string !== 'undefined') {
         return src(ex.g_string);
       }
-      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null &&
-          Array.isArray(ex.e_list_body.ps)) {
+      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
+          && Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
         return `[${items.join(', ')}]`;
       }
