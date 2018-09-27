@@ -102,9 +102,10 @@ function toJSData(par /*: IPar */) /*: Json */{
       const props = p.sends.map(s => {
         const key = recur((s.chan || {}).quote || {});
         let val = recur((s.data || [{}])[0]);
+        if (typeof key !== 'string') { throw new Error(`not RHOCore? ${JSON.stringify(key)}`); }
         return { k: key, v: val };
       });
-      return props.reduce((acc, { k, v }) => ({ k: v, ...acc }), {});
+      return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
     } else {
       // TODO: check that everything else is empty
       return null;
