@@ -23,7 +23,7 @@ const def = obj => Object.freeze(obj); // cf. ocap design note
 // https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
 const packageDefinition = protoLoader.loadSync(
-  'protobuf/CasperMessage.proto', // eslint-disable-line
+  __dirname + '/protobuf/CasperMessage.proto', // eslint-disable-line
   likeLoad,
 );
 
