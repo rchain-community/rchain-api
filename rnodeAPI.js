@@ -114,7 +114,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * Listen for data at a PUBLIC name in the RChain tuple-space.
    *
    * @param nameObj: JSON-ish data: string, number, {}, [], ...
-   * @return: promise for [DataWithBlockInfo]
+   * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
   function listenForDataAtPublicName(nameObj /*: Json */) {
@@ -124,23 +124,23 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   /**
    * Listen for data at a PRIVATE name in the RChain tuple-space.
    *
-   * @param unforgeableName: string data representing an UnforgeableName
-   * @return: promise for [DataWithBlockInfo]
+   * @param nameId: Hex string representing an UnforgeableName's Id
+   * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPrivateName(unforgeableName /*: string */) {
+  function listenForDataAtPrivateName(nameId /*: string */) {
     // Convert the UnforgeableName into a byte array
-    var nameByteArray = Buffer.from(unforgeableName, 'hex');
+    const nameByteArray = Buffer.from(nameId, 'hex');
 
     // Create the Par object with the nameByteArray as an ID
-    var channelRequest = { ids: [ { id : nameByteArray } ] };    
+    const channelRequest = { ids: [{ id: nameByteArray }] };
     return listenForDataAtName(channelRequest);
   }
 
   /**
    * Listen for data at a name in the RChain tuple-space.
    *
-   * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+   * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
@@ -160,20 +160,26 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * Convert the ack channel into a HEX-formatted unforgeable name
    *
    * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
-   * @return: string of HEX-formatted unforgeable name
-   * @throws Error if the Par does not contain a valid ACK channel
+   * @return HEX-formatted string of unforgeable name's Id
+   * @throws Error if the Par does not represent an unforgeable name
    */
-  function convertAckChannelToUnforgeableName(par /*: Json */) {
-    if ( par.ids && par.ids.length > 0 && par.ids[0].id ) {
+  function getIdFromUnforgeableName(par /*: Json */) {
+    if (par.ids && par.ids.length === 1 && par.ids[0].id) {
       return Buffer.from(par.ids[0].id).toString('hex');
-    } else {
-      throw new Error('The provided Par object does not contain an ACK channel.');
     }
+    throw new Error('Provided Par object does represent a single unforgeable name');
   }
 
 
-
-  return def({ doDeploy, createBlock, addBlock, listenForDataAtName, listenForDataAtPrivateName, listenForDataAtPublicName, convertAckChannelToUnforgeableName });
+  return def({
+    doDeploy,
+    createBlock,
+    addBlock,
+    listenForDataAtName,
+    listenForDataAtPrivateName,
+    listenForDataAtPublicName,
+    getIdFromUnforgeableName,
+  });
 }
 
 
@@ -219,54 +225,48 @@ function bufAsHex(prop, val) {
 
 
 /**
- *
+ * Integration test for major features. Requires a running node.
  */
 function integrationTest({ grpc, endpoint, clock }) {
+  // Test some serializing
   const stuffToSign = { x: 'abc' };
-
-  const ca = RNode(grpc, endpoint);
-
-  friendUpdatesStory(ca, clock);
-
   logged(RHOCore.toByteArray(RHOCore.fromJSData(stuffToSign)), 'stuffToSign serialized');
 
-  // const rhoTerm = 'contract @"certifyPeer"(peer, level) = { peer!(*level) }';
-  const rhoTerm = '@"world"!("hello!")';
-  ca.doDeploy({
-    term: rhoTerm,
+  // Now make an RNode instance
+  const rchain = RNode(grpc, endpoint);
+
+  // Test deploys and listens
+  const term = `
+  new private, print(\`rho:io:stdout\`) in {
+    print!(*private)|
+    private!("Get this text into javascript")|
+    @"public"!(*private)
+  }
+  `;
+  rchain.doDeploy({
+    term,
     timestamp: clock().valueOf(),
     // from: '0x1',
     // nonce: 0,
   }).then((deployMessage) => {
     console.log('doDeploy result:', deployMessage);
 
-    return ca.createBlock();
-  }).then((createBlockMessage) => {
-    console.log('createBlock result:', createBlockMessage);
-  }).catch((oops) => {
-    console.log('deploy, createBlock failed:', oops);
-  });
-}
-
-
-function friendUpdatesStory(rchain, clock) {
-  // Alice posts and update
-  rchain.doDeploy({
-    term: '@"aliceUpdates"!("Having fun traveling!")',
-    timestamp: clock().valueOf(),
-    // from: '0x1',
-    // nonce: 0,
+    return rchain.createBlock();
   })
-  // We check for it
-    .then(() => rchain.listenForDataAtName('aliceUpdates'))
-    .then((blockResults) => {
-      blockResults.forEach((b) => {
-        b.postBlockData.forEach((d) => {
-          logged(RHOCore.toRholang(d), 'Alice said');
-        });
+  .then(() => rchain.listenForDataAtPublicName('public'))
+  .then((blockResults) => {
+    const lastBlock = blockResults.slice(-1).pop();
+    return lastBlock.postBlockData.slice(-1).pop();
+  })
+  .then(privateName => rchain.listenForDataAtName(privateName))
+  .then((blockResults) => {
+    blockResults.forEach((b) => {
+      b.postBlockData.forEach((d) => {
+        logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
       });
-    })
-    .catch((oops) => { console.log(oops); });
+    });
+  })
+  .catch((oops) => { console.log(oops); });
 }
 
 
