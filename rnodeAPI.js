@@ -111,15 +111,42 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   }
 
   /**
-   * Listen for data at a name in the RChain tuple-space.
+   * Listen for data at a PUBLIC name in the RChain tuple-space.
    *
    * @param nameObj: JSON-ish data: string, number, {}, [], ...
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(nameObj /*: Json */) {
-    const chan = { quote: RHOCore.fromJSData(nameObj) };
-    return send(then => client.listenForDataAtName(chan, then))
+  function listenForDataAtPublicName(nameObj /*: Json */) {
+    return listenForDataAtName(RHOCore.fromJSData(nameObj));
+  }
+
+  /**
+   * Listen for data at a PRIVATE name in the RChain tuple-space.
+   *
+   * @param unforgeableName: string data representing an UnforgeableName
+   * @return: promise for [DataWithBlockInfo]
+   * @throws Error if status is not Success
+   */
+  function listenForDataAtPrivateName(unforgeableName /*: string */) {
+    // Convert the UnforgeableName into a byte array
+    var nameByteArray = Buffer.from(unforgeableName, 'hex');
+
+    // Create the Par object with the nameByteArray as an ID
+    var channelRequest = { ids: [ { id : nameByteArray } ] };    
+    return listenForDataAtName(channelRequest);
+  }
+
+  /**
+   * Listen for data at a name in the RChain tuple-space.
+   *
+   * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+   * @return: promise for [DataWithBlockInfo]
+   * @throws Error if status is not Success
+   */
+  function listenForDataAtName(par /*: Json */) {
+    const channelRequest = { quote: par };
+    return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
         if (response.status !== 'Success') {
           throw new Error(response);
@@ -129,7 +156,24 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
       });
   }
 
-  return def({ doDeploy, createBlock, addBlock, listenForDataAtName });
+  /**
+   * Convert the ack channel into a HEX-formatted unforgeable name
+   *
+   * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+   * @return: string of HEX-formatted unforgeable name
+   * @throws Error if the Par does not contain a valid ACK channel
+   */
+  function convertAckChannelToUnforgeableName(par /*: Json */) {
+    if ( par.ids && par.ids.length > 0 && par.ids[0].id ) {
+      return Buffer.from(par.ids[0].id).toString('hex');
+    } else {
+      throw new Error('The provided Par object does not contain an ACK channel.');
+    }
+  }
+
+
+
+  return def({ doDeploy, createBlock, addBlock, listenForDataAtName, listenForDataAtPrivateName, listenForDataAtPublicName, convertAckChannelToUnforgeableName });
 }
 
 
