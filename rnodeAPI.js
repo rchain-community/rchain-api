@@ -163,7 +163,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return HEX-formatted string of unforgeable name's Id
    * @throws Error if the Par does not represent an unforgeable name
    */
-  function getIdFromUnforgeableName(par /*: Json */) {
+  function getIdFromUnforgeableName(par /*: IPar */) {
     if (par.ids && par.ids.length === 1 && par.ids[0].id) {
       return Buffer.from(par.ids[0].id).toString('hex');
     }
