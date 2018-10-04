@@ -248,25 +248,26 @@ function integrationTest({ grpc, endpoint, clock }) {
     timestamp: clock().valueOf(),
     // from: '0x1',
     // nonce: 0,
-  }).then((deployMessage) => {
-    console.log('doDeploy result:', deployMessage);
+  })
+    .then((deployMessage) => {
+      console.log('doDeploy result:', deployMessage);
 
-    return rchain.createBlock();
-  })
-  .then(() => rchain.listenForDataAtPublicName('public'))
-  .then((blockResults) => {
-    const lastBlock = blockResults.slice(-1).pop();
-    return lastBlock.postBlockData.slice(-1).pop();
-  })
-  .then(privateName => rchain.listenForDataAtName(privateName))
-  .then((blockResults) => {
-    blockResults.forEach((b) => {
-      b.postBlockData.forEach((d) => {
-        logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
+      return rchain.createBlock();
+    })
+    .then(() => rchain.listenForDataAtPublicName('public'))
+    .then((blockResults) => {
+      const lastBlock = blockResults.slice(-1).pop();
+      return lastBlock.postBlockData.slice(-1).pop();
+    })
+    .then(privateName => rchain.listenForDataAtName(privateName))
+    .then((blockResults) => {
+      blockResults.forEach((b) => {
+        b.postBlockData.forEach((d) => {
+          logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
+        });
       });
-    });
-  })
-  .catch((oops) => { console.log(oops); });
+    })
+    .catch((oops) => { console.log(oops); });
 }
 
 
