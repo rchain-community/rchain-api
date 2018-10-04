@@ -1,4 +1,9 @@
-## Code Style
+## Protobuf Encoding: protobuf.js
+All of our protobuf encoding and decoding is done using [protobuf.js](https://github.com/dcodeIO/protobuf.js)
+
+![protobuf.js diagram](https://camo.githubusercontent.com/f090df881cc6c82ecb7c5d09c9fad550fdfd153e/687474703a2f2f64636f64652e696f2f70726f746f6275662e6a732f746f6f6c7365742e737667)
+
+## Code Style: airbnb
 
 We follow the airbnb style, mostly. Use:
 
@@ -7,6 +12,7 @@ We follow the airbnb style, mostly. Use:
 See .eslitrc.json for additional details.
 
 TODO: talk about ocap and def()
+
 
 ### Struggles with extracting API doc
 
@@ -25,7 +31,7 @@ We'd like to use these scripts in our `package.json`:
     "doc": "node ./node_modules/.bin/documentation build --github rnodeAPI.js -f html -o docs",
     "doc-watch": "node ./node_modules/.bin/documentation serve --watch --github rnodeAPI.js"
 
-## TODO: static typechecking
+## TODO: Static Typechecking: flow
 
 clues from https://github.com/mapbox/mapbox-gl-js/blob/master/package.json :
 
