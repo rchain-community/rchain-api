@@ -1,5 +1,5 @@
 const Suite = require('testjs');
-const { keyPair, h2b } = require('../signing.js');
+const { keyPair, h2b, verify } = require('../signing.js');
 
 function testSigning() {
   const cases = {
@@ -31,6 +31,7 @@ function testSigning() {
       const sigHex = pair1.signBytesHex(message);
       test.deepEqual(info.sigHex, sigHex);
 
+      test.deepEqual(verify(message, h2b(info.sigHex), h2b(info.pubKeyHex)), true);
       test.done();
     };
   }

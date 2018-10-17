@@ -30,6 +30,7 @@ const packageDefinition = protoLoader.loadSync(
 
 
 module.exports.keyPair = signing.keyPair;
+module.exports.verify = signing.verify;
 module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
 module.exports.RHOCore = RHOCore;
