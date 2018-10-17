@@ -11,10 +11,27 @@ We follow the airbnb style, mostly. Use:
 
 See .eslitrc.json for additional details.
 
-TODO: talk about ocap and def()
+## Object Capability Paradigm
+
+We follow the object capability design pattern. Some background is available at http://www.erights.org/elib/capability/ode/
+
+One illustrative example in the code is the signature for a creating a node instance
+```javascript
+function RNode(
+      grpc /*: typeof grpcT */,
+      endPoint /*: { host: string, port: number } */
+    )
+```
+In non-ocap style the `grpc` instance would not be passed in but we only allow our node to use authority that was explicitly given to it. Thus if it is to communicate over gRPC, we need to pass in the capability.
+
+We also define the convenience method `def`
+```javascript
+const def = obj => Object.freeze(obj)
+```
+which is used to box up the methods associated with an object like the node instance.
 
 
-### Struggles with extracting API doc
+##  Struggles with extracting API doc
 
 We don't use classes (TODO: cite explanation as to why not)
 but neither of the relevant recipies seem to work:
@@ -31,9 +48,8 @@ We'd like to use these scripts in our `package.json`:
     "doc": "node ./node_modules/.bin/documentation build --github rnodeAPI.js -f html -o docs",
     "doc-watch": "node ./node_modules/.bin/documentation serve --watch --github rnodeAPI.js"
 
-## TODO: Static Typechecking: flow
+## Static Typechecking: flow
 
-clues from https://github.com/mapbox/mapbox-gl-js/blob/master/package.json :
+We use [flow](https://flow.org/) for static typing. You can test your code with `npm run flow-check`
 
-    "flow-coverage-report": "^0.3.0",
-    "eslint-plugin-flowtype": "^2.34.0",
+There is also `npm run flow-status`
