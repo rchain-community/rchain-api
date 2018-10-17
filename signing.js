@@ -44,6 +44,12 @@ function keyPair(seed) {
 }
 
 
+module.exports.verify = verify;
+function verify(message /*: Uint8Array*/, sig /*: Uint8Array*/, publicKey /*: Uint8Array*/) {
+  return sign.detached.verify(message, sig, publicKey);
+}
+
+
 function integrationTest({ randomBytes }) {
   const seed = randomBytes(32);
 
