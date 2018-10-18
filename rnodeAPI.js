@@ -18,6 +18,8 @@ const protoLoader = require('@grpc/proto-loader');
 const crypto = require('crypto');
 const sha256 = crypto.createHash('sha256');
 const keccak256 = require('js-sha3').keccak256;
+var blake2 = require('blake2');
+var blake2b256 = blake2.createHash('blake2b', {digestLength: 32});
 
 
 const RHOCore = require('./RHOCore');
@@ -244,6 +246,12 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     return keccak256(serializedData);
   }
 
+  function blake2b256Hash( js_data /*: string*/) {
+    const serializedData = serializeJSToRholangByteArray(js_data);
+    blake2b256.update(serializedData);
+    return blake2b256.digest('hex');
+  }
+
 
   return def({
     doDeploy,
@@ -256,7 +264,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     getAllBlocks,
     getIdFromUnforgeableName,
     sha256Hash,
-    keccak256Hash
+    keccak256Hash,
+    blake2b256Hash
   });
 }
 
