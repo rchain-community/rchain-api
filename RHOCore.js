@@ -143,6 +143,9 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_string !== 'undefined') {
         return src(ex.g_string);
       }
+      if (typeof ex.g_uri !== 'undefined') {
+        return src(ex.g_uri);
+      }
       if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);

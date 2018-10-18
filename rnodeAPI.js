@@ -30,7 +30,6 @@ const packageDefinition = protoLoader.loadSync(
 
 
 module.exports.keyPair = signing.keyPair;
-module.exports.verify = signing.verify;
 module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
 module.exports.RHOCore = RHOCore;
@@ -72,15 +71,27 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * UNTESTED:
    * @param sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
+   * @param create_block automatically create a new block after deploy transaction success
    * @return A promise for a response message
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: mixed*/) {
+  function doDeploy(deployData /*: mixed*/, create_block=false /*: boolean*/) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    return deployResponse(send(next => client.DoDeploy(deployData, next)));
+    return deployResponse(
+        send(deployNext => client.DoDeploy(deployData, deployNext)).then((deployResponse) => {
+            if (create_block) {
+              return send(createBlockNext => client.createBlock({}, createBlockNext)).then((blockCreated) => {
+                return Promise.resolve(deployResponse);
+              });
+            } else {
+              return Promise.resolve(deployResponse);
+            }
+          }
+        )
+      );
   }
 
   /**
@@ -146,7 +157,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @throws Error if status is not Success
    */
   function listenForDataAtName(par /*: Json */) {
-    const channelRequest = { quote: par };
+    const channelRequest = { 
+                name : par,
+                depth : 10000
+        };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
         if (response.status !== 'Success') {
@@ -168,7 +182,49 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     if (par.ids && par.ids.length === 1 && par.ids[0].id) {
       return Buffer.from(par.ids[0].id).toString('hex');
     }
-    throw new Error('Provided Par object does represent a single unforgeable name');
+    throw new Error('Provided Par object does not represent a single unforgeable name');
+  }
+
+  /**
+   * Retrieve a block with the tuplespace for a specific block hash
+   * 
+   * @param block_hash: String of the hash for the block being requested
+   * @return BlockInfo structure that will include all metadata and also includes Tuplespace
+   * @throws Error if the hash is blank or does not correspond to an existing block
+   */
+  function getBlock( block_hash /*: string */) { 
+    if ( block_hash.trim().length == 0) { throw new Error("ERROR: block_hash is blank"); }
+
+    var request = { hash: block_hash };
+    return send(then => client.showBlock(request, then))
+      .then((blockWithTuplespace) => {
+        if (blockWithTuplespace === undefined) {
+          console.log("ERROR: Could not locate a block by hash : " + block_hash);
+          throw new Error("ERROR: Could not locate a block by hash : " + block_hash);
+        }
+        return blockWithTuplespace;
+      });
+  }
+
+  /**
+   * Retrieve the block summary for a series of blocks starting with the most recent, 
+   * including the number of blocks specified by the block_depth
+   * 
+   * @param depth: Number indicating the number of blocks to retrieve
+   * @return List of BlockInfoWithoutTuplespace structures that include metadata for each block retrieved
+   * @throws Error if block_depth < 0 or no blocks were able to be retrieved from the blockchain (network / grpc issue)
+   */
+  function getAllBlocks( block_depth=1 /*: number */) { 
+    if (block_depth < 1) { throw new Error("ERROR: block_depth parameter must be >= 1"); }
+
+    var request = { depth: block_depth };
+    return sendThenReceiveStream(() => client.showBlocks(request))
+      .then((blockList) => {
+        if (blockList.length === 0) {
+          throw new Error("ERROR: Failed to retrieve the requested blocks");
+        }
+        return blockList;
+      });
   }
 
 
@@ -179,7 +235,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
-    getIdFromUnforgeableName,
+    getBlock,
+    getAllBlocks,
+    getIdFromUnforgeableName
   });
 }
 
@@ -207,6 +265,43 @@ function send(calling) {
 
   return new Promise(executor);
 }
+
+
+
+/**
+ * Adapt streamResponse-style API using Promises.
+ *
+ * Instead of obj.method(...arg) and event handlers for 'data', 'end', 'error', and 'status',
+ * use sendThenReceiveStream(() => obj.method(...arg)) and get a promise.
+ *
+ * @param callToExecute: a function of the form () => o.m(...)
+ * @return A promise for the result of the received stream
+ */
+function sendThenReceiveStream(callToExecute) {
+  function executor(resolve, reject) {
+    var results = new Array();
+    var call = callToExecute();
+    call.on('data', function(dataChunk) {
+      results[results.length] = dataChunk;
+    });
+    call.on('end', function() {
+      resolve(results);
+    });
+    call.on('error', function(e) {
+      console.log('ERROR - Failed while receiving a stream');
+      console.log(e);
+      reject(e);
+    });
+    call.on('status', function(status) {
+      if (status.code !== 0 && status.details !== "") {
+        console.log('INFO - Stream received status : ' + status.details);
+      }
+    });
+  }
+
+  return new Promise(executor);
+}
+
 
 
 /**

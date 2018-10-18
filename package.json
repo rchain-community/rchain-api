@@ -1,6 +1,6 @@
 {
   "name": "rchain-api",
-  "version": "0.1.10",
+  "version": "0.7.1",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
@@ -23,7 +23,8 @@
   "author": "Dan Connolly",
   "contributors": [
     "Dan Connolly <dckc@madmode.com> (http://www.madmode.com)",
-    "Joshy Orndorff"
+    "Joshy Orndorff",
+    "Chris Williams"
   ],
   "license": "Apache-2.0",
   "bugs": {
