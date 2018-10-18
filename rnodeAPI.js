@@ -15,6 +15,11 @@ refs:
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
 
+const crypto = require('crypto');
+const sha256 = crypto.createHash('sha256');
+const keccak256 = require('js-sha3').keccak256;
+
+
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
 
@@ -228,6 +233,18 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   }
 
 
+  function sha256Hash( js_data /*: string*/) {
+    const serializedData = serializeJSToRholangByteArray(js_data);
+    sha256.update(serializedData);
+    return sha256.digest('hex');
+  }
+  
+  function keccak256Hash( js_data /*: string*/) {
+    const serializedData = serializeJSToRholangByteArray(js_data);
+    return keccak256(serializedData);
+  }
+
+
   return def({
     doDeploy,
     createBlock,
@@ -237,7 +254,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtPublicName,
     getBlock,
     getAllBlocks,
-    getIdFromUnforgeableName
+    getIdFromUnforgeableName,
+    sha256Hash,
+    keccak256Hash
   });
 }
 
@@ -302,6 +321,20 @@ function sendThenReceiveStream(callToExecute) {
   return new Promise(executor);
 }
 
+
+function serializeJSToRholangByteArray( js_data /*: string*/ ){
+  switch(typeof js_data) {
+    case 'string':
+      var byteArray = RHOCore.toByteArray(RHOCore.fromJSData(js_data));
+      var hexFromBytes = signing.b2h(byteArray);
+      // Something Rholang adds to serialized strings
+      hexFromBytes += "4a080000000000000000";
+      return signing.h2b(hexFromBytes);
+    default:
+      throw new Error("Only string hashing is supported at this time");
+      break;
+  }
+}
 
 
 /**
