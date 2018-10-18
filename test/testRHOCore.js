@@ -25,6 +25,27 @@ function testRHOCore() {
   }
 
   Suite.run(mapValues(testData, rtest));
+
+  const { rhol } = RHOCore;
+  Suite.run({
+    'rhol template: numbers, strings, lists, objects': (test) => {
+      test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], @"b"!(2))');
+      test.done();
+    },
+    'rhol template: string quoting': (test) => {
+      const txt = '"Hi," he said; "I\'m John."';
+      test.deepEqual(rhol`c1!(${txt})`, 'c1!("\\"Hi,\\" he said; \\"I\'m John.\\"")');
+      test.done();
+    },
+    'rhol template: begining': (test) => {
+      test.deepEqual(rhol`${'a'}!(bc)`, '"a"!(bc)');
+      test.done();
+    },
+    'rhol template: ending': (test) => {
+      test.deepEqual(rhol`0!${'a'}`, '0!"a"');
+      test.done();
+    },
+  });
 }
 
 testRHOCore();
