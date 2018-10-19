@@ -166,3 +166,17 @@ function toRholang(par /*: IPar */) /*: string */ {
 
   return recur(par);
 }
+
+
+exports.rhol = rhol;
+function rhol(template /*: string[] */, ...subs /*: Json[] */) {
+  const encoded = subs.map(it => toRholang(fromJSData(it)));
+
+  const out = [];
+  template.forEach((part, ix) => {
+    out.push(part);
+    out.push(encoded[ix]);
+  });
+
+  return out.join('');
+}
