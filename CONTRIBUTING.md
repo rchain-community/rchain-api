@@ -11,24 +11,36 @@ We follow the airbnb style, mostly. Use:
 
 See .eslitrc.json for additional details.
 
-## Object Capability Paradigm
+## Object capability (ocap) discipline
 
-We follow the object capability design pattern. Some background is available at http://www.erights.org/elib/capability/ode/
+In order to supporting robust composition and cooperation without
+vulnerability, code in this project should adhere to [object
+capability discipline][ocap].
 
-One illustrative example in the code is the signature for a creating a node instance
-```javascript
-function RNode(
-      grpc /*: typeof grpcT */,
-      endPoint /*: { host: string, port: number } */
-    )
-```
-In non-ocap style the `grpc` instance would not be passed in but we only allow our node to use authority that was explicitly given to it. Thus if it is to communicate over gRPC, we need to pass in the capability.
+  - **Memory safety and encapsulation**
+    - There is no way to get a reference to an object except by
+      creating one or being given one at creation or via a message; no
+      casting integers to pointers, for example. _JavaScript is safe
+      in this way._
 
-We also define the convenience method `def`
-```javascript
-const def = obj => Object.freeze(obj)
-```
-which is used to box up the methods associated with an object like the node instance.
+      From outside an object, there is no way to access the internal
+      state of the object without the object's consent (where consent
+      is expressed by responding to messages). _We use `def` (aka
+      `Object.freeze`) and closures rather than properties on `this`
+      to achieve this._
+
+  - **Primitive effects only via references**
+    - The only way an object can affect the world outside itself is
+      via references to other objects. All primitives for interacting
+      with the external world are embodied by primitive objects and
+      **anything globally accessible is immutable data**. There must be
+      no `open(filename)` function in the global namespace, nor may
+      such a function be imported. _It takes some discipline to use
+      modules in node.js in this way.  We use a convention
+      of only accessing ambient authority inside `if (require.main ==
+      module) { ... }`._
+
+[ocap]: http://erights.org/elib/capability/ode/ode-capabilities.html
 
 
 ##  Struggles with extracting API doc
