@@ -1,15 +1,31 @@
-## Protobuf Encoding: protobuf.js
-All of our protobuf encoding and decoding is done using [protobuf.js](https://github.com/dcodeIO/protobuf.js)
+# Code Conventions and Design Notes
 
-![protobuf.js diagram](https://camo.githubusercontent.com/f090df881cc6c82ecb7c5d09c9fad550fdfd153e/687474703a2f2f64636f64652e696f2f70726f746f6275662e6a732f746f6f6c7365742e737667)
+All contributions should pass these checks (as noted in
+`.travis.yml`):
+
+```yaml
+  - npm test
+  - npm run flow-check
+  - npm run lint
+```
+
+The `test` check is conventional unit tests.
+
+
+## Static Typechecking: flow
+
+We use [flow](https://flow.org/) for static typing. The `npm run
+flow-check` script does a complete check and `npm run flow-status`
+does an incremental check.
+
 
 ## Code Style: airbnb
 
-We follow the airbnb style, mostly. Use:
+We follow the [Airbnb JavaScript Style Guide][asg], mostly. Use `npm
+run lint`.  See `.eslitrc.json` for additional details.
 
-    npm run lint
+[asg]: https://github.com/airbnb/javascript#readme
 
-See .eslitrc.json for additional details.
 
 ## Object capability (ocap) discipline
 
@@ -43,6 +59,11 @@ capability discipline][ocap].
 [ocap]: http://erights.org/elib/capability/ode/ode-capabilities.html
 
 
+## Protobuf Encoding: protobuf.js
+All of our protobuf encoding and decoding is done using [protobuf.js](https://github.com/dcodeIO/protobuf.js)
+
+![protobuf.js diagram](https://camo.githubusercontent.com/f090df881cc6c82ecb7c5d09c9fad550fdfd153e/687474703a2f2f64636f64652e696f2f70726f746f6275662e6a732f746f6f6c7365742e737667)
+
 ##  Struggles with extracting API doc
 
 We don't use classes (TODO: cite explanation as to why not)
@@ -59,9 +80,3 @@ We'd like to use these scripts in our `package.json`:
 
     "doc": "node ./node_modules/.bin/documentation build --github rnodeAPI.js -f html -o docs",
     "doc-watch": "node ./node_modules/.bin/documentation serve --watch --github rnodeAPI.js"
-
-## Static Typechecking: flow
-
-We use [flow](https://flow.org/) for static typing. You can test your code with `npm run flow-check`
-
-There is also `npm run flow-status`
