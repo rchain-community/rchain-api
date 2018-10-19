@@ -43,7 +43,7 @@ function testRHOCore() {
     object: rtest({
       data: { x: 'abc' },
       rholang: '@"x"!("abc")',
-      hex: '0a120a070a052a031a017812072a051a03616263',
+      hex: '0a0b0a0012072a051a03616263',
       rho: {
         sends: [
           {
@@ -56,7 +56,7 @@ function testRHOCore() {
     'nested object': rtest({
       data: { x: 'abc', y: { a: true } },
       rholang: '@"x"!("abc") | @"y"!(@"a"!(true))',
-      hex: '0a120a070a052a031a017812072a051a036162630a1c0a070a052a031a017912110a0f0a070a052a031a016112042a020801',
+      hex: '0a0b0a0012072a051a036162630a0e0a00120a0a080a0012042a020801',
       rho: {
         sends: [
           {
@@ -83,7 +83,7 @@ function testRHOCore() {
           voter: 'dckc', subject: 'a1', rating: 1, cert_time: '2018-07-29T02:00:21.259Z',
         }],
       rholang: '["merge", "trust_cert", @"cert_time"!("2018-07-29T02:00:21.259Z") | @"rating"!(1) | @"subject"!("a1") | @"voter"!("dckc")]',
-      hex: '2a9a01a20196010a092a071a056d657267650a0e2a0c1a0a74727573745f636572740a790a2f0a0f0a0d2a0b1a09636572745f74696d65121c2a1a1a18323031382d30372d32395430323a30303a32312e3235395a0a140a0c0a0a2a081a06726174696e6712042a0210020a170a0d0a0b2a091a077375626a65637412062a041a0261310a170a0b0a092a071a05766f74657212082a061a0464636b63',
+      hex: '2a66a201630a092a071a056d657267650a0e2a0c1a0a74727573745f636572740a460a200a00121c2a1a1a18323031382d30372d32395430323a30303a32312',
       rho: {
         exprs: [{
           expr_instance: 'e_list_body',
