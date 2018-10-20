@@ -42,6 +42,34 @@ module.exports.RHOCore = RHOCore;
 import grpcT from 'grpc';
  */
 
+/*::
+type DeployData = {
+  user: Uint8Array ,
+  term: string,
+  timestamp: number,
+  sig: Uint8Array,
+  sigAlgorithm: string,
+  from: string,
+  phloPrice: PhloPrice,
+  phloLimit: PhloLimit,
+  nonce: number
+}
+type DeployDataInsecure = {
+  term: string,
+  timestamp: number,
+  from: string,
+  phloPrice: PhloPrice,
+  phloLimit: PhloLimit,
+  nonce: number
+}
+type PhloPrice = {
+  value: number
+}
+type PhloLimit = {
+  value: number
+}
+*/
+
 /**
  * Connect to an RChain node (RNode).
  *
@@ -80,10 +108,16 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: mixed*/, autoCreateBlock /*: boolean*/ = false) {
+  function doDeploy(deployData /*: DeployDataInsecure*/, autoCreateBlock /*: boolean*/ = false) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
+    if (deployData.phloLimit === undefined || !Number.isInteger(deployData.phloLimit.value)) {
+      throw new Error('ERROR: DeployData structure requires "phloLimit" to be specified');
+    }
+    if (deployData.phloPrice === undefined || !Number.isInteger(deployData.phloPrice.value)) {
+      throw new Error('ERROR: DeployData structure requires "phloPrice" to be specified');
+    }
     return deployResponse(
       send(deployNext => client.DoDeploy(deployData, deployNext)).then((response) => {
         if (autoCreateBlock) {
@@ -378,8 +412,10 @@ function integrationTest({ grpc, endpoint, clock }) {
   rchain.doDeploy({
     term,
     timestamp: clock().valueOf(),
-    // from: '0x1',
-    // nonce: 0,
+    from: '0x1',
+    nonce: 0,
+    phloLimit: { value: 10000000 },
+    phloPrice: { value: 1 },
   })
     .then((deployMessage) => {
       console.log('doDeploy result:', deployMessage);
