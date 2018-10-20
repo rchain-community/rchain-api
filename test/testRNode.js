@@ -4,12 +4,22 @@ const grpc = require('grpc');
 const { RNode, RHOCore, b2h } = require('../rnodeAPI');
 
 function testRNode() {
+  // mock enough of grpc
+  const casper = { DeployService: function(hostPort, chan) { } };
+  const proto = { coop: { rchain: { casper: { protocol: casper } } } };
+  const grpc0 = {
+    loadPackageDefinition(d) { return proto; },
+    credentials: {
+      createInsecure() { },
+    },
+  };
+
   Suite.run({
     'args check': (test) => {
-      test.doesNotThrow(() => RNode(grpc, { host: 'h', port: 123 }));
-      test.throws(() => RNode(null, null), Error);
-      test.throws(() => RNode(null, { host: 'hi' }), Error);
-      test.throws(() => RNode(null, { port: 123 }), Error);
+      test.doesNotThrow(() => RNode(grpc0, { host: 'h', port: 123 }));
+      test.throws(() => RNode(grpc0, null), Error);
+      test.throws(() => RNode(grpc0, { host: 'hi' }), Error);
+      test.throws(() => RNode(grpc0, { port: 123 }), Error);
       test.done();
     },
     'smart contract deploy': (test) => {
