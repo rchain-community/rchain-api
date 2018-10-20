@@ -16,14 +16,10 @@ const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
 const blake2 = require('blake2');
 const crypto = require('crypto');
-
 const { keccak256 } = require('js-sha3');
 
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
-
-const sha256 = crypto.createHash('sha256');
-const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
@@ -243,6 +239,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @throws Error if the js_data contains a non-Rholang data structure
    */
   function sha256Hash(jsData /*: mixed*/) {
+    const sha256 = crypto.createHash('sha256');
     const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
     sha256.update(Buffer.from(serializedData));
     return sha256.digest('hex');
@@ -268,6 +265,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @throws Error if the js_data contains a non-Rholang data structure
    */
   function blake2b256Hash(jsData /*: mixed*/) {
+    const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
     const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
     blake2b256.update(serializedData);
     return blake2b256.digest('hex');
