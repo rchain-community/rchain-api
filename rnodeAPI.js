@@ -14,16 +14,16 @@ refs:
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
-
-const crypto = require('crypto');
-const sha256 = crypto.createHash('sha256');
-const keccak256 = require('js-sha3').keccak256;
 const blake2 = require('blake2');
-const blake2b256 = blake2.createHash('blake2b', {digestLength: 32});
+const crypto = require('crypto');
 
+const { keccak256 } = require('js-sha3');
 
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
+
+const sha256 = crypto.createHash('sha256');
+const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
@@ -37,6 +37,7 @@ const packageDefinition = protoLoader.loadSync(
 
 
 module.exports.keyPair = signing.keyPair;
+module.exports.verify = signing.verify;
 module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
 module.exports.RHOCore = RHOCore;
@@ -78,27 +79,24 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * UNTESTED:
    * @param sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
-   * @param create_block automatically create a new block after deploy transaction success
+   * @param autoCreateBlock automatically create a new block after deploy transaction success
    * @return A promise for a response message
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: mixed*/, create_block=false /*: boolean*/) {
+  function doDeploy(deployData /*: mixed*/, autoCreateBlock = false /*: boolean*/) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
     return deployResponse(
-        send(deployNext => client.DoDeploy(deployData, deployNext)).then((deployResponse) => {
-            if (create_block) {
-              return send(createBlockNext => client.createBlock({}, createBlockNext)).then((blockCreated) => {
-                return Promise.resolve(deployResponse);
-              });
-            } else {
-              return Promise.resolve(deployResponse);
-            }
-          }
-        )
-      );
+      send(deployNext => client.DoDeploy(deployData, deployNext)).then((response) => {
+        if (autoCreateBlock) {
+          return send(createBlockNext => client.createBlock({}, createBlockNext))
+            .then(() => response);
+        }
+        return response;
+      }),
+    );
   }
 
   /**
@@ -160,14 +158,15 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * Listen for data at a name in the RChain tuple-space.
    *
    * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
+   * @param block_depth: Number of blocks to look back in for the name to listen on
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */) {
-    const channelRequest = { 
-                name : par,
-                depth : 10000
-        };
+  function listenForDataAtName(par /*: Json */, block_depth = 10000) {
+    const channelRequest = {
+      name: par,
+      depth: block_depth,
+    };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
         if (response.status !== 'Success') {
@@ -194,41 +193,42 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
 
   /**
    * Retrieve a block with the tuplespace for a specific block hash
-   * 
-   * @param block_hash: String of the hash for the block being requested
+   *
+   * @param blockHash: String of the hash for the block being requested
    * @return BlockInfo structure that will include all metadata and also includes Tuplespace
    * @throws Error if the hash is blank or does not correspond to an existing block
    */
-  function getBlock( block_hash /*: string */) { 
-    if ( block_hash.trim().length == 0) { throw new Error("ERROR: block_hash is blank"); }
+  function getBlock(blockHash /*: string */) {
+    if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
+    if (typeof blockHash === 'number' || typeof blockHash === 'boolean') { throw new Error('ERROR: blockHash must be a string value'); }
 
-    var request = { hash: block_hash };
+    const request = { hash: blockHash };
     return send(then => client.showBlock(request, then))
       .then((blockWithTuplespace) => {
-        if (blockWithTuplespace === undefined) {
-          console.log("ERROR: Could not locate a block by hash : " + block_hash);
-          throw new Error("ERROR: Could not locate a block by hash : " + block_hash);
+        if (blockWithTuplespace.blockInfo === null) {
+          throw new Error(`ERROR: Could not locate a block by hash : ${blockHash}`);
         }
         return blockWithTuplespace;
       });
   }
 
   /**
-   * Retrieve the block summary for a series of blocks starting with the most recent, 
+   * Retrieve the block summary for a series of blocks starting with the most recent,
    * including the number of blocks specified by the block_depth
-   * 
-   * @param depth: Number indicating the number of blocks to retrieve
-   * @return List of BlockInfoWithoutTuplespace structures that include metadata for each block retrieved
-   * @throws Error if block_depth < 0 or no blocks were able to be retrieved from the blockchain (network / grpc issue)
+   *
+   * @param blockDepth: Number indicating the number of blocks to retrieve
+   * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
+   * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function getAllBlocks( block_depth=1 /*: number */) { 
-    if (block_depth < 1) { throw new Error("ERROR: block_depth parameter must be >= 1"); }
+  function getAllBlocks(blockDepth = 1 /*: number */) {
+    if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
+    if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
 
-    var request = { depth: block_depth };
+    const request = { depth: blockDepth };
     return sendThenReceiveStream(() => client.showBlocks(request))
       .then((blockList) => {
         if (blockList.length === 0) {
-          throw new Error("ERROR: Failed to retrieve the requested blocks");
+          throw new Error('ERROR: Failed to retrieve the requested blocks');
         }
         return blockList;
       });
@@ -237,38 +237,38 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
 
   /**
    * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
-   * 
-   * @param js_data: JS Data compatible with Rholang, used to compute the hash
+   *
+   * @param jsData: JS Data compatible with Rholang, used to compute the hash
    * @return HEX-formatted string representing the computed hash
    * @throws Error if the js_data contains a non-Rholang data structure
    */
-  function sha256Hash( js_data /*: mixed*/) {
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(js_data));
+  function sha256Hash(jsData /*: mixed*/) {
+    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
     sha256.update(serializedData);
     return sha256.digest('hex');
   }
-  
+
   /**
    * Compute a Keccak-256 hash over some data, the way that it will be computed in Rholang
-   * 
-   * @param js_data: JS Data compatible with Rholang, used to compute the hash
+   *
+   * @param jsData: JS Data compatible with Rholang, used to compute the hash
    * @return HEX-formatted string representing the computed hash
    * @throws Error if the js_data contains a non-Rholang data structure
    */
-  function keccak256Hash( js_data /*: mixed*/) {
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(js_data));
+  function keccak256Hash(jsData /*: mixed*/) {
+    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
     return keccak256(serializedData);
   }
 
   /**
    * Compute a Blake2b-256 hash over some data, the way that it will be computed in Rholang
-   * 
-   * @param js_data: JS Data compatible with Rholang, used to compute the hash
+   *
+   * @param jsData: JS Data compatible with Rholang, used to compute the hash
    * @return HEX-formatted string representing the computed hash
    * @throws Error if the js_data contains a non-Rholang data structure
    */
-  function blake2b256Hash( js_data /*: mixed*/) {
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(js_data));
+  function blake2b256Hash(jsData /*: mixed*/) {
+    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
     blake2b256.update(serializedData);
     return blake2b256.digest('hex');
   }
@@ -286,7 +286,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     getIdFromUnforgeableName,
     sha256Hash,
     keccak256Hash,
-    blake2b256Hash
+    blake2b256Hash,
   });
 }
 
@@ -315,8 +315,6 @@ function send(calling) {
   return new Promise(executor);
 }
 
-
-
 /**
  * Adapt streamResponse-style API using Promises.
  *
@@ -328,30 +326,20 @@ function send(calling) {
  */
 function sendThenReceiveStream(callToExecute) {
   function executor(resolve, reject) {
-    var results = new Array();
-    var call = callToExecute();
-    call.on('data', function(dataChunk) {
-      results[results.length] = dataChunk;
-    });
-    call.on('end', function() {
-      resolve(results);
-    });
-    call.on('error', function(e) {
-      console.log('ERROR - Failed while receiving a stream');
-      console.log(e);
-      reject(e);
-    });
-    call.on('status', function(status) {
-      if (status.code !== 0 && status.details !== "") {
-        console.log('INFO - Stream received status : ' + status.details);
+    const results = [];
+    const call = callToExecute();
+    call.on('data', (dataChunk) => { results.push(dataChunk); });
+    call.on('end', () => { resolve(results); });
+    call.on('error', (e) => { reject(e); });
+    call.on('status', (status) => {
+      if (status.code !== 0 && status.details !== '') {
+        console.log(`INFO - Stream received status : ${status.details}`);
       }
     });
   }
 
   return new Promise(executor);
 }
-
-
 
 
 /**
