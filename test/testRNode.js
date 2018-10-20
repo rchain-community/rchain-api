@@ -1,4 +1,4 @@
-/* global require, module */
+/* global require, module, exports */
 const rnode = require('../rnodeAPI');
 const { RNode, RHOCore, b2h } = rnode;
 const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
@@ -83,16 +83,17 @@ function netTests({ grpc, clock, rng }) {
 }
 
 
+exports.runAndListen = runAndListen;
 function runAndListen(term, returnChannel, timestamp,
-                      node, test) {
+                      node, test = null) {
   // console.log("run:", { term, returnChannel });
   return node.doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
-    test.equal(results, 'Success!');
+    if (test) { test.equal(results, 'Success!'); }
 
     // Get the generated result from the channel
     return node.listenForDataAtPublicName(returnChannel);
   }).then((blockResults) => {
-    test.notEqual(blockResults.length, 0);
+    if (test) { test.notEqual(blockResults.length, 0); }
 
     const lastBlock = blockResults.slice(-1).pop();
     const lastDatum = lastBlock.postBlockData.slice(-1).pop();
