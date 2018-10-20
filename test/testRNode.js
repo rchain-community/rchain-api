@@ -1,3 +1,4 @@
+/* global require, module */
 const Suite = require('testjs');
 const grpc = require('grpc');
 
@@ -17,8 +18,11 @@ function testRNode() {
   Suite.run({
     'args check': (test) => {
       test.doesNotThrow(() => RNode(grpc0, { host: 'h', port: 123 }));
+      // $FlowFixMe args are intentionally wrong type
       test.throws(() => RNode(grpc0, null), Error);
+      // $FlowFixMe
       test.throws(() => RNode(grpc0, { host: 'hi' }), Error);
+      // $FlowFixMe
       test.throws(() => RNode(grpc0, { port: 123 }), Error);
       test.done();
     },
