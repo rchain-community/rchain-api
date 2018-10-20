@@ -1,5 +1,7 @@
 /* global require, module */
-const { RNode, RHOCore, b2h } = require('../rnodeAPI');
+const rnode = require('../rnodeAPI');
+const { RNode, RHOCore, b2h } = rnode;
+const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
 
 
 /**
@@ -39,129 +41,68 @@ function testRNode({ Suite }, suite2) {
 
 
 function netTests({ grpc, clock, rng }) {
+  const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
+
+  function hashTest(test, fn, fname) {
+    const returnChannel = rng().toString(36).substring(7);
+    const txt = 'test';
+    const hashProc = `@"${fname}"!("${txt}".toByteArray(), "${returnChannel}")`;
+
+    runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
+      .then((rholangHash) => {
+        test.equal(fn('test'), b2h(rholangHash.exprs[0].g_byte_array));
+        test.done();
+      })
+      .catch((oops) => {
+        test.equal(oops, 0);
+        test.done();
+      });
+  }
+
   return {
     'smart contract deploy': (test) => {
-      const node = RNode(grpc, { host: 'localhost', port: 40401 });
-      const smartContract = 'new test in { contract test(return) = { return!("test") } }';
-      const request = createCompleteRequest(smartContract, clock().valueOf());
+      const term = 'new test in { contract test(return) = { return!("test") } }';
+      const timestamp = clock().valueOf();
 
-      node.doDeploy(request, true).then((results) => {
+      localNode().doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
         test.equal(results, 'Success!');
         test.done();
       });
     },
     'get block by hash - error test': (test) => {
-      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const blockHash = 'thisshouldbreak';
-      node.getBlock(blockHash).catch((err) => {
+      localNode().getBlock(blockHash).catch((err) => {
         test.equal(err.message, 'ERROR: Could not locate a block by hash : thisshouldbreak');
         test.done();
       });
     },
-    'sha256 hashing': (test) => {
-      const returnChannel = rng().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: 40401 });
-      const smartContract = `new test, hashResult in { 
-                              contract test(return) = {
-                                @"sha256Hash"!("test".toByteArray(), *hashResult)
-                                |
-                                for(@hash <- hashResult) {
-                                  return!(hash)
-                                }
-                              }
-                              |
-                              test!("${returnChannel}")
-                            }`;
-      const request = createCompleteRequest(smartContract, clock().valueOf());
-
-      node.doDeploy(request, true).then((results) => {
-        test.equal(results, 'Success!');
-
-        // Get the generated result from the channel
-        return node.listenForDataAtPublicName(returnChannel);
-      }).then((blockResults) => {
-        test.notEqual(blockResults.length, 0);
-
-        const lastBlock = blockResults.slice(-1).pop();
-        const lastDatum = lastBlock.postBlockData.slice(-1).pop();
-        const rholangHash = b2h(RHOCore.toJSData(lastDatum));
-
-        test.equal(node.sha256Hash('test'), rholangHash);
-        test.done();
-      });
-    },
-    'keccak256 hashing': (test) => {
-      const returnChannel = rng().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: 40401 });
-      const smartContract = `new test, hashResult in { 
-                              contract test(return) = {
-                                @"keccak256Hash"!("test".toByteArray(), *hashResult)
-                                |
-                                for(@hash <- hashResult) {
-                                  return!(hash)
-                                }
-                              }
-                              |
-                              test!("${returnChannel}")
-                            }`;
-      const request = createCompleteRequest(smartContract, clock().valueOf());
-
-      node.doDeploy(request, true).then((results) => {
-        test.equal(results, 'Success!');
-
-        // Get the generated result from the channel
-        return node.listenForDataAtPublicName(returnChannel);
-      }).then((blockResults) => {
-        test.notEqual(blockResults.length, 0);
-
-        const lastBlock = blockResults.slice(-1).pop();
-        const lastDatum = lastBlock.postBlockData.slice(-1).pop();
-        const rholangHash = b2h(RHOCore.toJSData(lastDatum));
-
-        test.equal(node.keccak256Hash('test'), rholangHash);
-        test.done();
-      });
-    },
-    'blake2b256 hashing': (test) => {
-      const returnChannel = rng().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: 40401 });
-      const smartContract = `new test, hashResult in { 
-                              contract test(return) = {
-                                @"blake2b256Hash"!("test".toByteArray(), *hashResult)
-                                |
-                                for(@hash <- hashResult) {
-                                  return!(hash)
-                                }
-                              }
-                              |
-                              test!("${returnChannel}")
-                            }`;
-      const request = createCompleteRequest(smartContract, clock().valueOf());
-
-      node.doDeploy(request, true).then((results) => {
-        test.equal(results, 'Success!');
-
-        // Get the generated result from the channel
-        return node.listenForDataAtPublicName(returnChannel);
-      }).then((blockResults) => {
-        test.notEqual(blockResults.length, 0);
-
-        const lastBlock = blockResults.slice(-1).pop();
-        const lastDatum = lastBlock.postBlockData.slice(-1).pop();
-        const rholangHash = b2h(RHOCore.toJSData(lastDatum));
-
-        test.equal(node.blake2b256Hash('test'), rholangHash);
-        test.done();
-      });
-    },
+    'sha256 hashing': (test) => hashTest(test, sha256Hash, 'sha256Hash'),
+    'keccak256 hashing': (test) => hashTest(test, keccak256Hash, 'keccak256Hash'),
+    'blake2b256 hashing': (test) => hashTest(test, blake2b256Hash, 'blake2b256Hash'),
   };
 }
 
 
-function createCompleteRequest(term, timestamp, phloPrice = 1, phloLimit = 10000000) {
+function runAndListen(term, returnChannel, timestamp,
+                      node, test) {
+  // console.log("run:", { term, returnChannel });
+  return node.doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
+    test.equal(results, 'Success!');
+
+    // Get the generated result from the channel
+    return node.listenForDataAtPublicName(returnChannel);
+  }).then((blockResults) => {
+    test.notEqual(blockResults.length, 0);
+
+    const lastBlock = blockResults.slice(-1).pop();
+    const lastDatum = lastBlock.postBlockData.slice(-1).pop();
+    return lastDatum;
+  });
+}
+
+
+function payment(phloPrice = 1, phloLimit = 10000000) {
   return {
-    term,
-    timestamp,
     from: '0x01',
     nonce: 0,
     phloPrice: { value: phloPrice },

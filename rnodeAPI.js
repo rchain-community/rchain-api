@@ -231,47 +231,6 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   }
 
 
-  /**
-   * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
-   *
-   * @param jsData: JS Data compatible with Rholang, used to compute the hash
-   * @return HEX-formatted string representing the computed hash
-   * @throws Error if the js_data contains a non-Rholang data structure
-   */
-  function sha256Hash(jsData /*: mixed*/) {
-    const sha256 = crypto.createHash('sha256');
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
-    sha256.update(Buffer.from(serializedData));
-    return sha256.digest('hex');
-  }
-
-  /**
-   * Compute a Keccak-256 hash over some data, the way that it will be computed in Rholang
-   *
-   * @param jsData: JS Data compatible with Rholang, used to compute the hash
-   * @return HEX-formatted string representing the computed hash
-   * @throws Error if the js_data contains a non-Rholang data structure
-   */
-  function keccak256Hash(jsData /*: mixed*/) {
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
-    return keccak256(serializedData);
-  }
-
-  /**
-   * Compute a Blake2b-256 hash over some data, the way that it will be computed in Rholang
-   *
-   * @param jsData: JS Data compatible with Rholang, used to compute the hash
-   * @return HEX-formatted string representing the computed hash
-   * @throws Error if the js_data contains a non-Rholang data structure
-   */
-  function blake2b256Hash(jsData /*: mixed*/) {
-    const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
-    const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
-    blake2b256.update(serializedData);
-    return blake2b256.digest('hex');
-  }
-
-
   return def({
     doDeploy,
     createBlock,
@@ -282,10 +241,51 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     getBlock,
     getAllBlocks,
     getIdFromUnforgeableName,
-    sha256Hash,
-    keccak256Hash,
-    blake2b256Hash,
   });
+}
+
+
+/**
+ * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+exports.sha256Hash = sha256Hash;
+function sha256Hash(jsData /*: Json*/) {
+  const sha256 = crypto.createHash('sha256');
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  sha256.update(Buffer.from(serializedData));
+  return sha256.digest('hex');
+}
+
+/**
+ * Compute a Keccak-256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+exports.keccak256Hash = keccak256Hash;
+function keccak256Hash(jsData /*: Json*/) {
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  return keccak256(serializedData);
+}
+
+/**
+ * Compute a Blake2b-256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+exports.blake2b256Hash = blake2b256Hash;
+function blake2b256Hash(jsData /*: Json*/) {
+  const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  blake2b256.update(serializedData);
+  return blake2b256.digest('hex');
 }
 
 
