@@ -84,7 +84,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: mixed*/, autoCreateBlock = false /*: boolean*/) {
+  function doDeploy(deployData /*: mixed*/, autoCreateBlock /*: boolean*/ = false) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
@@ -162,10 +162,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */, block_depth = 10000) {
+  function listenForDataAtName(par /*: Json */, blockDepth /*: number */ = 10000) {
     const channelRequest = {
       name: par,
-      depth: block_depth,
+      depth: blockDepth,
     };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
@@ -200,10 +200,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    */
   function getBlock(blockHash /*: string */) {
     if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
-    if (typeof blockHash === 'number' || typeof blockHash === 'boolean') { throw new Error('ERROR: blockHash must be a string value'); }
+    if (typeof blockHash !== 'string') { throw new Error('ERROR: blockHash must be a string value'); }
 
-    const request = { hash: blockHash };
-    return send(then => client.showBlock(request, then))
+    const blockQuery = { hash: blockHash };
+    return send(then => client.showBlock(blockQuery, then))
       .then((blockWithTuplespace) => {
         if (blockWithTuplespace.blockInfo === null) {
           throw new Error(`ERROR: Could not locate a block by hash : ${blockHash}`);
@@ -220,12 +220,12 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function getAllBlocks(blockDepth = 1 /*: number */) {
+  function getAllBlocks(blockDepth /*: number */ = 1) {
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
 
-    const request = { depth: blockDepth };
-    return sendThenReceiveStream(() => client.showBlocks(request))
+    const blockQuery = { depth: blockDepth };
+    return sendThenReceiveStream(() => client.showBlocks(blockQuery))
       .then((blockList) => {
         if (blockList.length === 0) {
           throw new Error('ERROR: Failed to retrieve the requested blocks');
@@ -244,7 +244,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    */
   function sha256Hash(jsData /*: mixed*/) {
     const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
-    sha256.update(serializedData);
+    sha256.update(Buffer.from(serializedData));
     return sha256.digest('hex');
   }
 
