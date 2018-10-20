@@ -13,7 +13,7 @@ function testRNode() {
       test.done();
     },
     'smart contract deploy': (test) => {
-      const node = RNode(grpc, { host: 'localhost', port: '40401' });
+      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const smartContract = 'new test in { contract test(return) = { return!("test") } }';
       const request = createCompleteRequest(smartContract);
 
@@ -23,7 +23,7 @@ function testRNode() {
       });
     },
     'get block by hash - error test': (test) => {
-      const node = RNode(grpc, { host: 'localhost', port: '40401' });
+      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const blockHash = 'thisshouldbreak';
       node.getBlock(blockHash).catch((err) => {
         test.equal(err.message, 'ERROR: Could not locate a block by hash : thisshouldbreak');
@@ -32,7 +32,7 @@ function testRNode() {
     },
     'sha256 hashing': (test) => {
       const returnChannel = Math.random().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: '40401' });
+      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const smartContract = `new test, hashResult in { 
                               contract test(return) = {
                                 @"sha256Hash"!("test".toByteArray(), *hashResult)
@@ -64,7 +64,7 @@ function testRNode() {
     },
     'keccak256 hashing': (test) => {
       const returnChannel = Math.random().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: '40401' });
+      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const smartContract = `new test, hashResult in { 
                               contract test(return) = {
                                 @"keccak256Hash"!("test".toByteArray(), *hashResult)
@@ -96,7 +96,7 @@ function testRNode() {
     },
     'blake2b256 hashing': (test) => {
       const returnChannel = Math.random().toString(36).substring(7);
-      const node = RNode(grpc, { host: 'localhost', port: '40401' });
+      const node = RNode(grpc, { host: 'localhost', port: 40401 });
       const smartContract = `new test, hashResult in { 
                               contract test(return) = {
                                 @"blake2b256Hash"!("test".toByteArray(), *hashResult)
