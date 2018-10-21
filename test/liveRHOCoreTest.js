@@ -10,6 +10,7 @@ const { runAndListen } = require('./testRNode');
 
 
 function integrationTest({ Suite, endpoint, grpc, clock, rng }) {
+  console.log({ endpoint });
   const node = RNode(grpc, endpoint);
 
   function mapValues(obj, f) {
@@ -48,13 +49,9 @@ if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
   /* global process */
-  if (process.argv.length !== 4) {
-    process.stderr.write('usage: node liveRHOCoreTest.js <host> <port>\n');
-    process.exit(1);
-  }
   const endpoint = {
-    host: process.argv[2],
-    port: parseInt(process.argv[3], 10),
+    host: process.env.npm_config_host || 'localhost',
+    port: parseInt(process.env.npm_config_port || '40401', 10),
   };
   integrationTest(
     {

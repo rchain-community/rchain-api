@@ -360,11 +360,8 @@ function bufAsHex(prop, val) {
  * Integration test for major features. Requires a running node.
  */
 function integrationTest({ grpc, endpoint, clock }) {
-  // Test some serializing
-  const stuffToSign = { x: 'abc' };
-  logged(RHOCore.toByteArray(RHOCore.fromJSData(stuffToSign)), 'stuffToSign serialized');
-
   // Now make an RNode instance
+  console.log({ endpoint });
   const rchain = RNode(grpc, endpoint);
 
   // Test deploys and listens
@@ -378,8 +375,10 @@ function integrationTest({ grpc, endpoint, clock }) {
   rchain.doDeploy({
     term,
     timestamp: clock().valueOf(),
-    // from: '0x1',
-    // nonce: 0,
+    from: '0x1',
+    nonce: 0,
+    phloPrice: { value: 1 },
+    phloLimit: { value: 100000 },
   })
     .then((deployMessage) => {
       console.log('doDeploy result:', deployMessage);
@@ -406,13 +405,9 @@ function integrationTest({ grpc, endpoint, clock }) {
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
-  if (process.argv.length !== 4) {
-    process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
-    process.exit(1);
-  }
   const endpoint = {
-    host: process.argv[2],
-    port: parseInt(process.argv[3], 10),
+    host: process.env.npm_config_host || 'localhost',
+    port: parseInt(process.env.npm_config_port || '40401', 10),
   };
   integrationTest(
     {

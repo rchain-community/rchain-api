@@ -4,11 +4,17 @@
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
+    "prepack": "npm run check && npm run integrationTest",
+    "check": "npm run test && npm run lint && npm run flow-check",
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
-    "integrationTest": "node rnodeAPI.js",
+    "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node rnodeAPI.js",
     "flow-check": "flow check --from emacs",
     "flow-status": "flow status --from emacs",
     "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/"
+  },
+  "config": {
+    "host": "localhost",
+    "port": "40401"
   },
   "repository": {
     "type": "git",
@@ -20,7 +26,6 @@
     "blockchain",
     "rholang"
   ],
-  "author": "Dan Connolly",
   "contributors": [
     "Dan Connolly <dckc@madmode.com> (http://www.madmode.com)",
     "Joshy Orndorff",
