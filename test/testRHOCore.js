@@ -3,12 +3,16 @@
 
 const Suite = require('testjs');
 
+const { Par } = require('../protobuf/RhoTypes.js');
 const RHOCore = require('../RHOCore');
+const { h2b } = require('../signing');
 const testData = require('./RHOCoreSuite.json');
+
 
 function testRHOCore() {
   function rtest(item) {
     return (test) => {
+      test.deepEqual(Par.encode(Par.decode(h2b(item.hex))), Par.encode(item.rho));
       test.deepEqual(RHOCore.fromJSData(item.data), item.rho);
       test.deepEqual(RHOCore.toJSData(item.rho), item.data);
       test.deepEqual(RHOCore.toRholang(item.rho), item.rholang);
