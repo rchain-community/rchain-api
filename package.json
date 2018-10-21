@@ -4,7 +4,7 @@
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
-    "prepack": "npm run check && npm run integrationTest",
+    "testAll": "npm run check && npm run integrationTest",
     "check": "npm run test && npm run lint && npm run flow-check",
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node rnodeAPI.js",
