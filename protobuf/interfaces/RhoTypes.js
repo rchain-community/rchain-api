@@ -123,47 +123,14 @@ declare export class ParWithRandom implements IParWithRandom {
     [k: string]: any
   };
 }
-interface IChannel {
-  quote?: IPar | null;
-  chanVar?: IVar | null;
-}
-declare export class Channel implements IChannel {
-  constructor(properties?: IChannel): this;
-  quote: IPar | null;
-  chanVar: IVar | null;
-  channel_instance: "quote" | "chanVar";
-  create(properties?: IChannel): Channel;
-  encode(message: IChannel, writer?: $protobuf.Writer): $protobuf.Writer;
-  encodeDelimited(
-    message: IChannel,
-    writer?: $protobuf.Writer
-  ): $protobuf.Writer;
-  decode(reader: $protobuf.Reader | Uint8Array, length?: number): Channel;
-  decodeDelimited(reader: $protobuf.Reader | Uint8Array): Channel;
-  verify(message: {
-    [k: string]: any
-  }): string | null;
-  fromObject(object: {
-    [k: string]: any
-  }): Channel;
-  toObject(
-    message: Channel,
-    options?: $protobuf.IConversionOptions
-  ): {
-    [k: string]: any
-  };
-  toJSON(): {
-    [k: string]: any
-  };
-}
 interface IPCost {
-  cost?: number | Long;
-  iterations?: number;
+  iterations?: number | null;
+  cost?: number | Long | null;
 }
 declare export class PCost implements IPCost {
   constructor(properties?: IPCost): this;
+  iterations: number | null;
   cost: number | Long;
-  iterations: number;
   create(properties?: IPCost): PCost;
   encode(message: IPCost, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(message: IPCost, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -185,38 +152,79 @@ declare export class PCost implements IPCost {
     [k: string]: any
   };
 }
-interface IListChannelWithRandom {
-  channels?: IChannel[];
-  randomState?: Uint8Array;
-  cost?: IPCost | null;
+interface IListParWithRandom {
+  pars?: IPar[] | null;
+  randomState?: Uint8Array | null;
 }
-declare export class ListChannelWithRandom implements IListChannelWithRandom {
-  constructor(properties?: IListChannelWithRandom): this;
-  channels: IChannel[];
+declare export class ListParWithRandom implements IListParWithRandom {
+  constructor(properties?: IListParWithRandom): this;
+  pars: IPar[] | null;
   randomState: Uint8Array;
-  cost: IPCost | null;
-  create(properties?: IListChannelWithRandom): ListChannelWithRandom;
+  create(properties?: IListParWithRandom): ListParWithRandom;
   encode(
-    message: IListChannelWithRandom,
+    message: IListParWithRandom,
     writer?: $protobuf.Writer
   ): $protobuf.Writer;
   encodeDelimited(
-    message: IListChannelWithRandom,
+    message: IListParWithRandom,
     writer?: $protobuf.Writer
   ): $protobuf.Writer;
   decode(
     reader: $protobuf.Reader | Uint8Array,
     length?: number
-  ): ListChannelWithRandom;
-  decodeDelimited(reader: $protobuf.Reader | Uint8Array): ListChannelWithRandom;
+  ): ListParWithRandom;
+  decodeDelimited(reader: $protobuf.Reader | Uint8Array): ListParWithRandom;
   verify(message: {
     [k: string]: any
   }): string | null;
   fromObject(object: {
     [k: string]: any
-  }): ListChannelWithRandom;
+  }): ListParWithRandom;
   toObject(
-    message: ListChannelWithRandom,
+    message: ListParWithRandom,
+    options?: $protobuf.IConversionOptions
+  ): {
+    [k: string]: any
+  };
+  toJSON(): {
+    [k: string]: any
+  };
+}
+interface IListParWithRandomAndPhlos {
+  pars?: IPar[] | null;
+  randomState?: Uint8Array | null;
+  cost?: number | Long | null;
+}
+declare export class ListParWithRandomAndPhlos
+  implements IListParWithRandomAndPhlos {
+  constructor(properties?: IListParWithRandomAndPhlos): this;
+  pars: IPar[] | null;
+  randomState: Uint8Array;
+  cost: number | Long;
+  create(properties?: IListParWithRandomAndPhlos): ListParWithRandomAndPhlos;
+  encode(
+    message: IListParWithRandomAndPhlos,
+    writer?: $protobuf.Writer
+  ): $protobuf.Writer;
+  encodeDelimited(
+    message: IListParWithRandomAndPhlos,
+    writer?: $protobuf.Writer
+  ): $protobuf.Writer;
+  decode(
+    reader: $protobuf.Reader | Uint8Array,
+    length?: number
+  ): ListParWithRandomAndPhlos;
+  decodeDelimited(
+    reader: $protobuf.Reader | Uint8Array
+  ): ListParWithRandomAndPhlos;
+  verify(message: {
+    [k: string]: any
+  }): string | null;
+  fromObject(object: {
+    [k: string]: any
+  }): ListParWithRandomAndPhlos;
+  toObject(
+    message: ListParWithRandomAndPhlos,
     options?: $protobuf.IConversionOptions
   ): {
     [k: string]: any
@@ -293,14 +301,14 @@ declare class WildcardMsg implements IWildcardMsg {
 }
 interface IBundle {
   body?: IPar | null;
-  writeFlag?: boolean;
-  readFlag?: boolean;
+  writeFlag?: boolean | null;
+  readFlag?: boolean | null;
 }
 declare export class Bundle implements IBundle {
   constructor(properties?: IBundle): this;
   body: IPar | null;
-  writeFlag: boolean;
-  readFlag: boolean;
+  writeFlag: boolean | null;
+  readFlag: boolean | null;
   create(properties?: IBundle): Bundle;
   encode(message: IBundle, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -326,19 +334,19 @@ declare export class Bundle implements IBundle {
   };
 }
 interface ISend {
-  chan?: IChannel | null;
-  data?: IPar[];
-  persistent?: boolean;
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  chan?: IPar | null;
+  data?: IPar[] | null;
+  persistent?: boolean | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
 }
 declare export class Send implements ISend {
   constructor(properties?: ISend): this;
-  chan: IChannel | null;
-  data: IPar[];
-  persistent: boolean;
+  chan: IPar | null;
+  data: IPar[] | null;
+  persistent: boolean | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   create(properties?: ISend): Send;
   encode(message: ISend, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(message: ISend, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -361,17 +369,17 @@ declare export class Send implements ISend {
   };
 }
 interface IReceiveBind {
-  patterns?: IChannel[];
-  source?: IChannel | null;
+  patterns?: IPar[] | null;
+  source?: IPar | null;
   remainder?: IVar | null;
-  freeCount?: number;
+  freeCount?: number | null;
 }
 declare export class ReceiveBind implements IReceiveBind {
   constructor(properties?: IReceiveBind): this;
-  patterns: IChannel[];
-  source: IChannel | null;
+  patterns: IPar[] | null;
+  source: IPar | null;
   remainder: IVar | null;
-  freeCount: number;
+  freeCount: number | null;
   create(properties?: IReceiveBind): ReceiveBind;
   encode(message: IReceiveBind, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -397,15 +405,15 @@ declare export class ReceiveBind implements IReceiveBind {
   };
 }
 interface IBindPattern {
-  patterns?: IChannel[];
+  patterns?: IPar[] | null;
   remainder?: IVar | null;
-  freeCount?: number;
+  freeCount?: number | null;
 }
 declare export class BindPattern implements IBindPattern {
   constructor(properties?: IBindPattern): this;
-  patterns: IChannel[];
+  patterns: IPar[] | null;
   remainder: IVar | null;
-  freeCount: number;
+  freeCount: number | null;
   create(properties?: IBindPattern): BindPattern;
   encode(message: IBindPattern, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -431,11 +439,11 @@ declare export class BindPattern implements IBindPattern {
   };
 }
 interface IListBindPatterns {
-  patterns?: IBindPattern[];
+  patterns?: IBindPattern[] | null;
 }
 declare export class ListBindPatterns implements IListBindPatterns {
   constructor(properties?: IListBindPatterns): this;
-  patterns: IBindPattern[];
+  patterns: IBindPattern[] | null;
   create(properties?: IListBindPatterns): ListBindPatterns;
   encode(
     message: IListBindPatterns,
@@ -467,21 +475,21 @@ declare export class ListBindPatterns implements IListBindPatterns {
   };
 }
 interface IReceive {
-  binds?: IReceiveBind[];
+  binds?: IReceiveBind[] | null;
   body?: IPar | null;
-  persistent?: boolean;
-  bindCount?: number;
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  persistent?: boolean | null;
+  bindCount?: number | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
 }
 declare export class Receive implements IReceive {
   constructor(properties?: IReceive): this;
-  binds: IReceiveBind[];
+  binds: IReceiveBind[] | null;
   body: IPar | null;
-  persistent: boolean;
-  bindCount: number;
+  persistent: boolean | null;
+  bindCount: number | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   create(properties?: IReceive): Receive;
   encode(message: IReceive, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -507,16 +515,16 @@ declare export class Receive implements IReceive {
   };
 }
 interface INew {
-  bindCount?: number;
+  bindCount?: number | null;
   p?: IPar | null;
-  uri?: string[];
-  locallyFree?: Uint8Array;
+  uri?: string[] | null;
+  locallyFree?: Uint8Array | null;
 }
 declare export class New implements INew {
   constructor(properties?: INew): this;
-  bindCount: number;
+  bindCount: number | null;
   p: IPar | null;
-  uri: string[];
+  uri: string[] | null;
   locallyFree: Uint8Array;
   create(properties?: INew): New;
   encode(message: INew, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -542,13 +550,13 @@ declare export class New implements INew {
 interface IMatchCase {
   pattern?: IPar | null;
   source?: IPar | null;
-  freeCount?: number;
+  freeCount?: number | null;
 }
 declare export class MatchCase implements IMatchCase {
   constructor(properties?: IMatchCase): this;
   pattern: IPar | null;
   source: IPar | null;
-  freeCount: number;
+  freeCount: number | null;
   create(properties?: IMatchCase): MatchCase;
   encode(message: IMatchCase, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -575,16 +583,16 @@ declare export class MatchCase implements IMatchCase {
 }
 interface IMatch {
   target?: IPar | null;
-  cases?: IMatchCase[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  cases?: IMatchCase[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
 }
 declare export class Match implements IMatch {
   constructor(properties?: IMatch): this;
   target: IPar | null;
-  cases: IMatchCase[];
+  cases: IMatchCase[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   create(properties?: IMatch): Match;
   encode(message: IMatch, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(message: IMatch, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -606,12 +614,12 @@ declare export class Match implements IMatch {
     [k: string]: any
   };
 }
-interface IExpr {
-  g_bool?: boolean;
-  g_int?: number | Long;
-  g_string?: string;
-  g_uri?: string;
-  g_byte_array?: Uint8Array;
+export interface IExpr {
+  g_bool?: boolean | null;
+  g_int?: number | Long | null;
+  g_string?: string | null;
+  g_uri?: string | null;
+  g_byte_array?: Uint8Array | null;
   e_not_body?: IENot | null;
   e_neg_body?: IENeg | null;
   e_mult_body?: IEMult | null;
@@ -632,7 +640,6 @@ interface IExpr {
   e_set_body?: IESet | null;
   e_map_body?: IEMap | null;
   e_method_body?: IEMethod | null;
-  e_eval_body?: IChannel | null;
   e_matches_body?: IEMatches | null;
   e_percent_percent_body?: IEPercentPercent | null;
   e_plus_plus_body?: IEPlusPlus | null;
@@ -640,10 +647,10 @@ interface IExpr {
 }
 declare export class Expr implements IExpr {
   constructor(properties?: IExpr): this;
-  g_bool: boolean;
+  g_bool: boolean | null;
   g_int: number | Long;
-  g_string: string;
-  g_uri: string;
+  g_string: string | null;
+  g_uri: string | null;
   g_byte_array: Uint8Array;
   e_not_body: IENot | null;
   e_neg_body: IENeg | null;
@@ -665,7 +672,6 @@ declare export class Expr implements IExpr {
   e_set_body: IESet | null;
   e_map_body: IEMap | null;
   e_method_body: IEMethod | null;
-  e_eval_body: IChannel | null;
   e_matches_body: IEMatches | null;
   e_percent_percent_body: IEPercentPercent | null;
   e_plus_plus_body: IEPlusPlus | null;
@@ -696,7 +702,6 @@ declare export class Expr implements IExpr {
     | "e_set_body"
     | "e_map_body"
     | "e_method_body"
-    | "e_eval_body"
     | "e_matches_body"
     | "e_percent_percent_body"
     | "e_plus_plus_body"
@@ -723,16 +728,16 @@ declare export class Expr implements IExpr {
   };
 }
 interface IEList {
-  ps?: IPar[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  ps?: IPar[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
   remainder?: IVar | null;
 }
 declare export class EList implements IEList {
   constructor(properties?: IEList): this;
-  ps: IPar[];
+  ps: IPar[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   remainder: IVar | null;
   create(properties?: IEList): EList;
   encode(message: IEList, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -756,15 +761,15 @@ declare export class EList implements IEList {
   };
 }
 interface IETuple {
-  ps?: IPar[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  ps?: IPar[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
 }
 declare export class ETuple implements IETuple {
   constructor(properties?: IETuple): this;
-  ps: IPar[];
+  ps: IPar[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   create(properties?: IETuple): ETuple;
   encode(message: IETuple, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -790,16 +795,16 @@ declare export class ETuple implements IETuple {
   };
 }
 interface IESet {
-  ps?: IPar[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  ps?: IPar[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
   remainder?: IVar | null;
 }
 declare export class ESet implements IESet {
   constructor(properties?: IESet): this;
-  ps: IPar[];
+  ps: IPar[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   remainder: IVar | null;
   create(properties?: IESet): ESet;
   encode(message: IESet, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -823,15 +828,17 @@ declare export class ESet implements IESet {
   };
 }
 interface IEMap {
-  kvs?: IKeyValuePair[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  kvs?: IKeyValuePair[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
+  remainder?: IVar | null;
 }
 declare export class EMap implements IEMap {
   constructor(properties?: IEMap): this;
-  kvs: IKeyValuePair[];
+  kvs: IKeyValuePair[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
+  remainder: IVar | null;
   create(properties?: IEMap): EMap;
   encode(message: IEMap, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(message: IEMap, writer?: $protobuf.Writer): $protobuf.Writer;
@@ -854,19 +861,19 @@ declare export class EMap implements IEMap {
   };
 }
 interface IEMethod {
-  methodName?: string;
+  methodName?: string | null;
   target?: IPar | null;
-  arguments?: IPar[];
-  locallyFree?: Uint8Array;
-  connective_used?: boolean;
+  arguments?: IPar[] | null;
+  locallyFree?: Uint8Array | null;
+  connective_used?: boolean | null;
 }
 declare export class EMethod implements IEMethod {
   constructor(properties?: IEMethod): this;
-  methodName: string;
+  methodName: string | null;
   target: IPar | null;
-  arguments: IPar[];
+  arguments: IPar[] | null;
   locallyFree: Uint8Array;
-  connective_used: boolean;
+  connective_used: boolean | null;
   create(properties?: IEMethod): EMethod;
   encode(message: IEMethod, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -1393,8 +1400,8 @@ interface IEPercentPercent {
 }
 declare export class EPercentPercent implements IEPercentPercent {
   constructor(properties?: IEPercentPercent): this;
-  p1: IPar;
-  p2: IPar;
+  p1: IPar | null;
+  p2: IPar | null;
   create(properties?: IEPercentPercent): EPercentPercent;
   encode(
     message: IEPercentPercent,
@@ -1494,11 +1501,11 @@ interface IConnective {
   conn_or_body?: IConnectiveBody | null;
   conn_not_body?: IPar | null;
   var_ref_body?: IVarRef | null;
-  conn_bool?: boolean;
-  conn_int?: boolean;
-  conn_string?: boolean;
-  conn_uri?: boolean;
-  conn_byte_array?: boolean;
+  conn_bool?: boolean | null;
+  conn_int?: boolean | null;
+  conn_string?: boolean | null;
+  conn_uri?: boolean | null;
+  conn_byte_array?: boolean | null;
 }
 declare export class Connective implements IConnective {
   constructor(properties?: IConnective): this;
@@ -1506,11 +1513,11 @@ declare export class Connective implements IConnective {
   conn_or_body: IConnectiveBody | null;
   conn_not_body: IPar | null;
   var_ref_body: IVarRef | null;
-  conn_bool: boolean;
-  conn_int: boolean;
-  conn_string: boolean;
-  conn_uri: boolean;
-  conn_byte_array: boolean;
+  conn_bool: boolean | null;
+  conn_int: boolean | null;
+  conn_string: boolean | null;
+  conn_uri: boolean | null;
+  conn_byte_array: boolean | null;
   connective_instance:
     | "conn_and_body"
     | "conn_or_body"
@@ -1546,13 +1553,13 @@ declare export class Connective implements IConnective {
   };
 }
 interface IVarRef {
-  index?: number;
-  depth?: number;
+  index?: number | null;
+  depth?: number | null;
 }
 declare export class VarRef implements IVarRef {
   constructor(properties?: IVarRef): this;
-  index: number;
-  depth: number;
+  index: number | null;
+  depth: number | null;
   create(properties?: IVarRef): VarRef;
   encode(message: IVarRef, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -1578,11 +1585,11 @@ declare export class VarRef implements IVarRef {
   };
 }
 interface IConnectiveBody {
-  ps?: IPar[];
+  ps?: IPar[] | null;
 }
 declare export class ConnectiveBody implements IConnectiveBody {
   constructor(properties?: IConnectiveBody): this;
-  ps: IPar[];
+  ps: IPar[] | null;
   create(properties?: IConnectiveBody): ConnectiveBody;
   encode(message: IConnectiveBody, writer?: $protobuf.Writer): $protobuf.Writer;
   encodeDelimited(
@@ -1611,7 +1618,7 @@ declare export class ConnectiveBody implements IConnectiveBody {
   };
 }
 interface IGPrivate {
-  id?: Uint8Array;
+  id?: Uint8Array | null;
 }
 declare export class GPrivate implements IGPrivate {
   constructor(properties?: IGPrivate): this;
