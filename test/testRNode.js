@@ -1,6 +1,7 @@
 /* global require, module, exports */
 const rnode = require('../rnodeAPI');
-const { RNode, RHOCore, b2h } = rnode;
+
+const { RNode, b2h } = rnode;
 const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
 
 
@@ -15,13 +16,12 @@ const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
  */
 function testRNode({ Suite }, suite2) {
   // mock enough of grpc
-  const casper = { DeployService: function(hostPort, chan) { } };
+  function DeployService(_hostPort, _chan) { }
+  const casper = { DeployService };
   const proto = { coop: { rchain: { casper: { protocol: casper } } } };
   const grpc0 = {
-    loadPackageDefinition(d) { return proto; },
-    credentials: {
-      createInsecure() { },
-    },
+    loadPackageDefinition(_d) { return proto; },
+    credentials: { createInsecure() { } },
   };
 
   Suite.run({
@@ -35,7 +35,7 @@ function testRNode({ Suite }, suite2) {
       test.throws(() => RNode(grpc0, { port: 123 }), Error);
       test.done();
     },
-    ...suite2
+    ...suite2,
   });
 }
 
@@ -76,16 +76,18 @@ function netTests({ grpc, clock, rng }) {
         test.done();
       });
     },
-    'sha256 hashing': (test) => hashTest(test, sha256Hash, 'sha256Hash'),
-    'keccak256 hashing': (test) => hashTest(test, keccak256Hash, 'keccak256Hash'),
-    'blake2b256 hashing': (test) => hashTest(test, blake2b256Hash, 'blake2b256Hash'),
+    'sha256 hashing': test => hashTest(test, sha256Hash, 'sha256Hash'),
+    'keccak256 hashing': test => hashTest(test, keccak256Hash, 'keccak256Hash'),
+    'blake2b256 hashing': test => hashTest(test, blake2b256Hash, 'blake2b256Hash'),
   };
 }
 
 
 exports.runAndListen = runAndListen;
-function runAndListen(term, returnChannel, timestamp,
-                      node, test = null) {
+function runAndListen(
+  term, returnChannel, timestamp,
+  node, test = null,
+) {
   // console.log("run:", { term, returnChannel });
   return node.doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
     if (test) { test.equal(results, 'Success!'); }
