@@ -1,7 +1,7 @@
 /* global require, module, exports */
 const rnode = require('../rnodeAPI');
 
-const { RNode, RHOCore, b2h } = rnode;
+const { RNode, b2h, h2b } = rnode;
 const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
 const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = rnode;
 
@@ -45,16 +45,18 @@ function netTests({ grpc, clock, rng }) {
 
   function hashTest(test, fn, fname, isNormalTest = true) {
     const returnChannel = rng().toString(36).substring(7);
-    const txt = 'test';
-    const hashProc = `@"${fname}"!("${txt}".toByteArray(), "${returnChannel}")`;
+    const config = (isNormalTest)
+      ? { txt: 'deadbeef', func: 'hexToBytes' }
+      : { txt: 'testtest', func: 'toByteArray' };
+    const hashProc = `@"${fname}"!("${config.txt}".${config.func}(), "${returnChannel}")`;
 
     runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
       .then((rholangHash) => {
         if (isNormalTest) {
-          const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(txt));
+          const serializedData = h2b(config.txt);
           test.deepEqual(fn(serializedData), Uint8Array.from(rholangHash.exprs[0].g_byte_array));
         } else {
-          test.equal(fn('test'), b2h(rholangHash.exprs[0].g_byte_array));
+          test.equal(fn('testtest'), b2h(rholangHash.exprs[0].g_byte_array));
         }
         test.done();
       })
