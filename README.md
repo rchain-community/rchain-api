@@ -67,6 +67,10 @@ For now see the integration test examples in rnodeAPI.js
 * [RSign](https://github.com/dckc/RSign) A chrome extension for generating client-side signatures akin to metamask
 * [node-client](https://github.com/rchain/rchain/tree/dev/node-client) A similar but less mature RChain API written in python
 
+## RChain Protocol Buffer Dependency
+* Commit hash [27d722e](https://github.com/rchain/rchain/tree/dev/models/src/main/protobuf) 
+
+
 ## License
 Copyright 2018 RChain Cooperative
 

@@ -14,6 +14,9 @@ refs:
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
+const blake2 = require('blake2');
+const crypto = require('crypto');
+const { keccak256 } = require('js-sha3');
 
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
@@ -35,9 +38,38 @@ module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
 module.exports.RHOCore = RHOCore;
 
+
 /*::
 import grpcT from 'grpc';
  */
+
+/*::
+type DeployData = {
+  user: Uint8Array ,
+  term: string,
+  timestamp: number,
+  sig: Uint8Array,
+  sigAlgorithm: string,
+  from: string,
+  phloPrice: PhloPrice,
+  phloLimit: PhloLimit,
+  nonce: number
+}
+type DeployDataInsecure = {
+  term: string,
+  timestamp: number,
+  from: string,
+  phloPrice: PhloPrice,
+  phloLimit: PhloLimit,
+  nonce: number
+}
+type PhloPrice = {
+  value: number
+}
+type PhloLimit = {
+  value: number
+}
+*/
 
 /**
  * Connect to an RChain node (RNode).
@@ -72,15 +104,30 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * UNTESTED:
    * @param sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
+   * @param autoCreateBlock automatically create a new block after deploy transaction success
    * @return A promise for a response message
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: mixed*/) {
+  function doDeploy(deployData /*: DeployDataInsecure*/, autoCreateBlock /*: boolean*/ = false) {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    return deployResponse(send(next => client.DoDeploy(deployData, next)));
+    if (deployData.phloLimit === undefined || !Number.isInteger(deployData.phloLimit.value)) {
+      throw new Error('ERROR: DeployData structure requires "phloLimit" to be specified');
+    }
+    if (deployData.phloPrice === undefined || !Number.isInteger(deployData.phloPrice.value)) {
+      throw new Error('ERROR: DeployData structure requires "phloPrice" to be specified');
+    }
+    return deployResponse(
+      send(deployNext => client.DoDeploy(deployData, deployNext)).then((response) => {
+        if (autoCreateBlock) {
+          return send(createBlockNext => client.createBlock({}, createBlockNext))
+            .then(() => response);
+        }
+        return response;
+      }),
+    );
   }
 
   /**
@@ -142,11 +189,15 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * Listen for data at a name in the RChain tuple-space.
    *
    * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
+   * @param block_depth: Number of blocks to look back in for the name to listen on
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */) {
-    const channelRequest = { quote: par };
+  function listenForDataAtName(par /*: Json */, blockDepth /*: number */ = 10000) {
+    const channelRequest = {
+      name: par,
+      depth: blockDepth,
+    };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
         if (response.status !== 'Success') {
@@ -168,9 +219,51 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     if (par.ids && par.ids.length === 1 && par.ids[0].id) {
       return Buffer.from(par.ids[0].id).toString('hex');
     }
-    throw new Error('Provided Par object does represent a single unforgeable name');
+    throw new Error('Provided Par object does not represent a single unforgeable name');
   }
 
+  /**
+   * Retrieve a block with the tuplespace for a specific block hash
+   *
+   * @param blockHash: String of the hash for the block being requested
+   * @return BlockInfo structure that will include all metadata and also includes Tuplespace
+   * @throws Error if the hash is blank or does not correspond to an existing block
+   */
+  function getBlock(blockHash /*: string */) {
+    if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
+    if (typeof blockHash !== 'string') { throw new Error('ERROR: blockHash must be a string value'); }
+
+    const blockQuery = { hash: blockHash };
+    return send(then => client.showBlock(blockQuery, then))
+      .then((blockWithTuplespace) => {
+        if (blockWithTuplespace.blockInfo === null) {
+          throw new Error(`ERROR: Could not locate a block by hash : ${blockHash}`);
+        }
+        return blockWithTuplespace;
+      });
+  }
+
+  /**
+   * Retrieve the block summary for a series of blocks starting with the most recent,
+   * including the number of blocks specified by the block_depth
+   *
+   * @param blockDepth: Number indicating the number of blocks to retrieve
+   * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
+   * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
+   */
+  function getAllBlocks(blockDepth /*: number */ = 1) {
+    if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
+    if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
+
+    const blockQuery = { depth: blockDepth };
+    return sendThenReceiveStream(() => client.showBlocks(blockQuery))
+      .then((blockList) => {
+        if (blockList.length === 0) {
+          throw new Error('ERROR: Failed to retrieve the requested blocks');
+        }
+        return blockList;
+      });
+  }
 
   return def({
     doDeploy,
@@ -179,6 +272,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
+    getBlock,
+    getAllBlocks,
     getIdFromUnforgeableName,
   });
 }
@@ -208,6 +303,32 @@ function send(calling) {
   return new Promise(executor);
 }
 
+/**
+ * Adapt streamResponse-style API using Promises.
+ *
+ * Instead of obj.method(...arg) and event handlers for 'data', 'end', 'error', and 'status',
+ * use sendThenReceiveStream(() => obj.method(...arg)) and get a promise.
+ *
+ * @param callToExecute: a function of the form () => o.m(...)
+ * @return A promise for the result of the received stream
+ */
+function sendThenReceiveStream(callToExecute) {
+  function executor(resolve, reject) {
+    const results = [];
+    const call = callToExecute();
+    call.on('data', (dataChunk) => { results.push(dataChunk); });
+    call.on('end', () => { resolve(results); });
+    call.on('error', (e) => { reject(e); });
+    call.on('status', (status) => {
+      if (status.code !== 0 && status.details !== '') {
+        console.log(`INFO - Stream received status : ${status.details}`);
+      }
+    });
+  }
+
+  return new Promise(executor);
+}
+
 
 /**
  * log with JSON replacer: stringify Buffer data as hex
@@ -226,14 +347,95 @@ function bufAsHex(prop, val) {
 
 
 /**
+ * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
+ */
+module.exports.sha256Hash = sha256Hash;
+function sha256Hash(serializedData /*: Uint8Array*/) {
+  const sha256 = crypto.createHash('sha256');
+  sha256.update(Buffer.from(serializedData));
+  return Uint8Array.from(sha256.digest());
+}
+
+/**
+ * Compute a Keccak-256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
+ */
+module.exports.keccak256Hash = keccak256Hash;
+function keccak256Hash(serializedData /*: Uint8Array*/) {
+  return new Uint8Array(keccak256.arrayBuffer(serializedData));
+}
+
+/**
+ * Compute a Blake2b-256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
+ */
+module.exports.blake2b256Hash = blake2b256Hash;
+function blake2b256Hash(serializedData /*: Uint8Array*/) {
+  const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
+  blake2b256.update(serializedData);
+  return Uint8Array.from(blake2b256.digest());
+}
+
+/**
+ * Compute a SHA256 hash for some Rholang-compatible data, then return the
+ * string representing a HEX-encoded hash
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+module.exports.simplifiedSHA256Hash = simplifiedSHA256Hash;
+function simplifiedSHA256Hash(jsData /*: Json*/) {
+  const sha256 = crypto.createHash('sha256');
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  sha256.update(Buffer.from(serializedData));
+  return sha256.digest('hex');
+}
+
+/**
+ * Compute a Keccak-256 hash for some Rholang-compatible data, then return the
+ * string representing a HEX-encoded hash
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+module.exports.simplifiedKeccak256Hash = simplifiedKeccak256Hash;
+function simplifiedKeccak256Hash(jsData /*: Json*/) {
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  return keccak256(serializedData);
+}
+
+/**
+ * Compute a Blake2b-256 hash for some Rholang-compatible data, then return the
+ * string representing a HEX-encoded hash
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ */
+module.exports.simplifiedBlake2b256Hash = simplifiedBlake2b256Hash;
+function simplifiedBlake2b256Hash(jsData /*: Json*/) {
+  const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
+  const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
+  blake2b256.update(serializedData);
+  return blake2b256.digest('hex');
+}
+
+
+/**
  * Integration test for major features. Requires a running node.
  */
 function integrationTest({ grpc, endpoint, clock }) {
-  // Test some serializing
-  const stuffToSign = { x: 'abc' };
-  logged(RHOCore.toByteArray(RHOCore.fromJSData(stuffToSign)), 'stuffToSign serialized');
-
   // Now make an RNode instance
+  console.log({ endpoint });
   const rchain = RNode(grpc, endpoint);
 
   // Test deploys and listens
@@ -247,8 +449,10 @@ function integrationTest({ grpc, endpoint, clock }) {
   rchain.doDeploy({
     term,
     timestamp: clock().valueOf(),
-    // from: '0x1',
-    // nonce: 0,
+    from: '0x1',
+    nonce: 0,
+    phloPrice: { value: 1 },
+    phloLimit: { value: 100000 },
   })
     .then((deployMessage) => {
       console.log('doDeploy result:', deployMessage);
@@ -275,13 +479,9 @@ function integrationTest({ grpc, endpoint, clock }) {
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
-  if (process.argv.length !== 4) {
-    process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
-    process.exit(1);
-  }
   const endpoint = {
-    host: process.argv[2],
-    port: parseInt(process.argv[3], 10),
+    host: process.env.npm_config_host || 'localhost',
+    port: parseInt(process.env.npm_config_port || '40401', 10),
   };
   integrationTest(
     {

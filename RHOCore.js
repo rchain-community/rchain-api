@@ -16,15 +16,15 @@ exports.fromJSData = fromJSData;
 function fromJSData(data /*: mixed */) /* : IPar */ {
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
 
-  function recur(x) {
+  function recur(x) /*: IPar */{
     switch (typeof x) {
       case 'boolean':
-        return expr1({ g_bool: x, expr_instance: 'g_bool' });
+        return expr1({ g_bool: x });
       case 'number':
         // ISSUE: only integers
-        return expr1({ g_int: x, expr_instance: 'g_int' });
+        return expr1({ g_int: x });
       case 'string':
-        return expr1({ g_string: x, expr_instance: 'g_string' });
+        return expr1({ g_string: x });
       case 'object':
         if (x === null) {
           return {};
@@ -42,15 +42,12 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
     // [1, 2, 2] is a process with one exprs, which is a list
     // The list has one 3 items, each of which is a process
     // with one exprs, which is an int.
-    return expr1({
-      e_list_body: { ps: items.map(recur) },
-      expr_instance: 'e_list_body',
-    });
+    return expr1({ e_list_body: { ps: items.map(recur) } });
   }
 
-  function keysValues(obj) {
+  function keysValues(obj) /*: IPar */ {
     const sends /*: ISend[] */ = Object.keys(obj).sort().map((k) => {
-      const chan /*: IChannel */ = { quote: expr1({ g_string: k, expr_instance: 'g_string' }) };
+      const chan /*: IPar */ = expr1({ g_string: k });
       return { chan, data: [recur(obj[k])] };
     });
     return { sends };
@@ -100,7 +97,7 @@ function toJSData(par /*: IPar */) /*: Json */{
       throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
     } else if (p.sends) {
       const props = p.sends.map((s) => {
-        const key = recur((s.chan || {}).quote || {});
+        const key = recur(s.chan || {});
         if (typeof key !== 'string') { throw new Error(`not RHOCore? ${JSON.stringify(key)}`); }
         const val = recur((s.data || [{}])[0]);
         return { k: key, v: val };
@@ -128,7 +125,7 @@ exports.toRholang = toRholang;
 function toRholang(par /*: IPar */) /*: string */ {
   const src = x => JSON.stringify(x);
 
-  function recur(p) {
+  function recur(p /*: IPar */) {
     if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
@@ -143,6 +140,9 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_string !== 'undefined') {
         return src(ex.g_string);
       }
+      if (typeof ex.g_uri !== 'undefined') {
+        return src(ex.g_uri);
+      }
       if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
@@ -150,7 +150,7 @@ function toRholang(par /*: IPar */) /*: string */ {
       }
       throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
     } else if (p.sends) {
-      const ea = s => `@${recur((s.chan || {}).quote || {})}!(${(s.data || []).map(recur).join(', ')})`;
+      const ea = s => `@${recur(s.chan || {})}!(${(s.data || []).map(recur).join(', ')})`;
       return p.sends.map(ea).join(' | ');
     } else {
       // TODO: check that everything else is empty

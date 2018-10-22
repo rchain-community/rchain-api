@@ -1,14 +1,20 @@
 {
   "name": "rchain-api",
-  "version": "0.1.11",
+  "version": "0.7.1",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
+    "testAll": "npm run check && npm run integrationTest",
+    "check": "npm run test && npm run lint && npm run flow-check",
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
-    "integrationTest": "node rnodeAPI.js",
+    "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node rnodeAPI.js",
     "flow-check": "flow check --from emacs",
     "flow-status": "flow status --from emacs",
     "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/"
+  },
+  "config": {
+    "host": "localhost",
+    "port": "40401"
   },
   "repository": {
     "type": "git",
@@ -20,10 +26,10 @@
     "blockchain",
     "rholang"
   ],
-  "author": "Dan Connolly",
   "contributors": [
     "Dan Connolly <dckc@madmode.com> (http://www.madmode.com)",
-    "Joshy Orndorff"
+    "Joshy Orndorff",
+    "Chris Williams"
   ],
   "license": "Apache-2.0",
   "bugs": {
@@ -31,8 +37,10 @@
   },
   "homepage": "https://github.com/dckc/RChain-API#readme",
   "dependencies": {
-    "grpc": "^1.13.1",
     "@grpc/proto-loader": "^0.3.0",
+    "blake2": "^2.0.1",
+    "grpc": "^1.13.1",
+    "js-sha3": "^0.8.0",
     "protobufjs": "^6.8.8",
     "remote-origin-url": "^1.0.0",
     "tweetnacl": "^1.0.0"
