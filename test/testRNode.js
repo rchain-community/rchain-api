@@ -43,30 +43,19 @@ function testRNode({ Suite }, suite2) {
 function netTests({ grpc, clock, rng }) {
   const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
 
-  function simplifiedHashTest(test, fn, fname) {
+  function hashTest(test, fn, fname, isNormalTest = true) {
     const returnChannel = rng().toString(36).substring(7);
     const txt = 'test';
     const hashProc = `@"${fname}"!("${txt}".toByteArray(), "${returnChannel}")`;
 
     runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
       .then((rholangHash) => {
-        test.equal(fn('test'), b2h(rholangHash.exprs[0].g_byte_array));
-        test.done();
-      })
-      .catch((oops) => {
-        test.equal(oops, 0);
-        test.done();
-      });
-  }
-  function normalHashTest(test, fn, fname) {
-    const returnChannel = rng().toString(36).substring(7);
-    const txt = 'test';
-    const hashProc = `@"${fname}"!("${txt}".toByteArray(), "${returnChannel}")`;
-
-    runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
-      .then((rholangHash) => {
-        const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(txt));
-        test.deepEqual(fn(serializedData), Uint8Array.from(rholangHash.exprs[0].g_byte_array));
+        if (isNormalTest) {
+          const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(txt));
+          test.deepEqual(fn(serializedData), Uint8Array.from(rholangHash.exprs[0].g_byte_array));
+        } else {
+          test.equal(fn('test'), b2h(rholangHash.exprs[0].g_byte_array));
+        }
         test.done();
       })
       .catch((oops) => {
@@ -93,22 +82,22 @@ function netTests({ grpc, clock, rng }) {
       });
     },
     'simplified SHA256 hashing': (test) => {
-      simplifiedHashTest(test, simplifiedSHA256Hash, 'sha256Hash');
+      hashTest(test, simplifiedSHA256Hash, 'sha256Hash', false);
     },
     'simplified Keccak256 hashing': (test) => {
-      simplifiedHashTest(test, simplifiedKeccak256Hash, 'keccak256Hash');
+      hashTest(test, simplifiedKeccak256Hash, 'keccak256Hash', false);
     },
     'simplified Blake2b256 hashing': (test) => {
-      simplifiedHashTest(test, simplifiedBlake2b256Hash, 'blake2b256Hash');
+      hashTest(test, simplifiedBlake2b256Hash, 'blake2b256Hash', false);
     },
     'normal SHA256 hashing': (test) => {
-      normalHashTest(test, sha256Hash, 'sha256Hash');
+      hashTest(test, sha256Hash, 'sha256Hash', true);
     },
     'normal Keccak256 hashing': (test) => {
-      normalHashTest(test, keccak256Hash, 'keccak256Hash');
+      hashTest(test, keccak256Hash, 'keccak256Hash', true);
     },
     'normal Blake2b256 hashing': (test) => {
-      normalHashTest(test, blake2b256Hash, 'blake2b256Hash');
+      hashTest(test, blake2b256Hash, 'blake2b256Hash', true);
     },
   };
 }
