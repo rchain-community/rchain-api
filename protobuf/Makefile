@@ -1,6 +1,7 @@
 # Automatically fetch .proto files
 
 WGET=wget
+PERL=perl
 PBJS=../node_modules/.bin/pbjs
 PBTS=../node_modules/.bin/pbts
 

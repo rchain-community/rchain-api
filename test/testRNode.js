@@ -5,7 +5,6 @@ const { RNode, RHOCore, b2h } = rnode;
 const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
 const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = rnode;
 
-
 /**
  * Run unit tests plus supplemental tests.
  *
@@ -59,7 +58,6 @@ function netTests({ grpc, clock, rng }) {
         test.done();
       });
   }
-
   function normalHashTest(test, fn, fname) {
     const returnChannel = rng().toString(36).substring(7);
     const txt = 'test';

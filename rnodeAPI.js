@@ -392,7 +392,7 @@ function blake2b256Hash(serializedData /*: Uint8Array*/) {
  * @throws Error if the js_data contains a non-Rholang data structure
  */
 module.exports.simplifiedSHA256Hash = simplifiedSHA256Hash;
-function simplifiedSHA256Hash(jsData /*: mixed*/) {
+function simplifiedSHA256Hash(jsData /*: Json*/) {
   const sha256 = crypto.createHash('sha256');
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   sha256.update(Buffer.from(serializedData));
@@ -408,7 +408,7 @@ function simplifiedSHA256Hash(jsData /*: mixed*/) {
  * @throws Error if the js_data contains a non-Rholang data structure
  */
 module.exports.simplifiedKeccak256Hash = simplifiedKeccak256Hash;
-function simplifiedKeccak256Hash(jsData /*: mixed*/) {
+function simplifiedKeccak256Hash(jsData /*: Json*/) {
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   return keccak256(serializedData);
 }
@@ -422,7 +422,7 @@ function simplifiedKeccak256Hash(jsData /*: mixed*/) {
  * @throws Error if the js_data contains a non-Rholang data structure
  */
 module.exports.simplifiedBlake2b256Hash = simplifiedBlake2b256Hash;
-function simplifiedBlake2b256Hash(jsData /*: mixed*/) {
+function simplifiedBlake2b256Hash(jsData /*: Json*/) {
   const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   blake2b256.update(serializedData);
@@ -434,11 +434,8 @@ function simplifiedBlake2b256Hash(jsData /*: mixed*/) {
  * Integration test for major features. Requires a running node.
  */
 function integrationTest({ grpc, endpoint, clock }) {
-  // Test some serializing
-  const stuffToSign = { x: 'abc' };
-  logged(RHOCore.toByteArray(RHOCore.fromJSData(stuffToSign)), 'stuffToSign serialized');
-
   // Now make an RNode instance
+  console.log({ endpoint });
   const rchain = RNode(grpc, endpoint);
 
   // Test deploys and listens
@@ -454,8 +451,8 @@ function integrationTest({ grpc, endpoint, clock }) {
     timestamp: clock().valueOf(),
     from: '0x1',
     nonce: 0,
-    phloLimit: { value: 10000000 },
     phloPrice: { value: 1 },
+    phloLimit: { value: 100000 },
   })
     .then((deployMessage) => {
       console.log('doDeploy result:', deployMessage);
@@ -482,13 +479,9 @@ function integrationTest({ grpc, endpoint, clock }) {
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
-  if (process.argv.length !== 4) {
-    process.stderr.write('usage: node rnodeAPI.js <host> <port>\n');
-    process.exit(1);
-  }
   const endpoint = {
-    host: process.argv[2],
-    port: parseInt(process.argv[3], 10),
+    host: process.env.npm_config_host || 'localhost',
+    port: parseInt(process.env.npm_config_port || '40401', 10),
   };
   integrationTest(
     {
