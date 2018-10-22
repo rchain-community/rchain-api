@@ -93,9 +93,6 @@ function toJSData(par /*: IPar */) /*: Json */{
       if (typeof ex.g_string !== 'undefined') {
         return ex.g_string;
       }
-      if (typeof ex.g_byte_array !== 'undefined') {
-        return ex.g_byte_array;
-      }
       if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
