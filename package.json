@@ -1,6 +1,6 @@
 {
   "name": "rchain-api",
-  "version": "0.7.1",
+  "version": "0.7.1-beta.1",
   "description": "RChain client for node.js",
   "main": "rnodeAPI.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dckc/RChain-API.git"
+    "url": "git+https://github.com/rhcain-community/RChain-API.git"
   },
   "keywords": [
     "rchain",
@@ -33,9 +33,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/dckc/RChain-API/issues"
+    "url": "https://github.com/rchain-community/RChain-API/issues"
   },
-  "homepage": "https://github.com/dckc/RChain-API#readme",
+  "homepage": "https://github.com/rchain-community/RChain-API#readme",
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
     "blake2": "^2.0.1",
