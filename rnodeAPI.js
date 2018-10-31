@@ -208,6 +208,60 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
       });
   }
 
+
+  /**
+   * Listen for a continuation at an individual public name or
+   * JOINed set of public names in the tuplespace
+   * @param nameObjs a list of names (strings)
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPublicName(nameObjs /*: Json */, depth=1 /*: number */) {
+    return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
+  }
+
+  /**
+  * Listen for a continuation at an individual private name or
+  * JOINed set of private names in the tuplespace
+  * @param nameIds a list hex strings representing the unforgeable names' Ids
+  * @return promise for ContinuationsWithBlockInfo
+  * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPrivateName(nameIds, depth=1) {
+    console.log("ids are: " + logged(nameIds))
+    // Convert the UnforgeableNames into a byte arrays
+    const nameByteArrays = nameIds.map(nameId => Buffer.from(nameId, 'hex'));
+
+    // Create the Par objects with the nameByteArrays as IDs
+    const channelRequests = nameByteArrays.map(nameByteArray => { ids: [{ id: nameByteArray }] });
+    return listenForContinuationAtName(channelRequests, depth);
+  }
+
+
+  /**
+   * Listen for a continuation at an individual name or
+   * JOINed set of names in the tuplespace
+   * @param pars The names onwhich to listen
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtName(pars /*: Json */, depth /*: number */) {
+
+    const channelRequest = {
+                depth,
+                names: pars,
+    };
+
+    return send(then => client.listenForContinuationAtName(channelRequest, then))
+      .then((response) => {
+        if (response.status !== 'Success') {
+          throw new Error(response);
+        }
+
+        return response.blockResults;
+      });
+  }
+
   /**
    * Convert the ack channel into a HEX-formatted unforgeable name
    *
@@ -272,6 +326,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
+    listenForContinuationAtName,
+    listenForContinuationAtPrivateName,
+    listenForContinuationAtPublicName,
     getBlock,
     getAllBlocks,
     getIdFromUnforgeableName,
@@ -433,7 +490,7 @@ function simplifiedBlake2b256Hash(jsData /*: Json*/) {
 /**
  * Integration test for major features. Requires a running node.
  */
-function integrationTest({ grpc, endpoint, clock }) {
+async function integrationTest({ grpc, endpoint, clock }) {
   // Now make an RNode instance
   console.log({ endpoint });
   const rchain = RNode(grpc, endpoint);
@@ -441,38 +498,62 @@ function integrationTest({ grpc, endpoint, clock }) {
   // Test deploys and listens
   const term = `
   new private, print(\`rho:io:stdout\`) in {
-    print!(*private)|
-    private!("Get this text into javascript")|
-    @"public"!(*private)
+    print!(*private) |
+    private!("Get this text into javascript") |
+    @"public"!(*private) |
+    for(@{Int} <- private){Nil} |
+    for(_ <- @"chan1"; _ <- @"chan2"){Nil}
   }
   `;
-  rchain.doDeploy({
+  const deployData = {
     term,
     timestamp: clock().valueOf(),
     from: '0x1',
     nonce: 0,
     phloPrice: { value: 1 },
     phloLimit: { value: 100000 },
-  })
-    .then((deployMessage) => {
-      console.log('doDeploy result:', deployMessage);
+  };
 
-      return rchain.createBlock();
-    })
-    .then(() => rchain.listenForDataAtPublicName('public'))
-    .then((blockResults) => {
-      const lastBlock = blockResults.slice(-1).pop();
-      return lastBlock.postBlockData.slice(-1).pop();
-    })
-    .then(privateName => rchain.listenForDataAtName(privateName))
-    .then((blockResults) => {
-      blockResults.forEach((b) => {
-        b.postBlockData.forEach((d) => {
-          logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
-        });
+  try {
+    // Deploy term
+    const deployMessage = await rchain.doDeploy(deployData, true);
+    console.log('doDeploy result:', deployMessage);
+
+    // Listen for data at public name
+    let blockResults = await rchain.listenForDataAtPublicName('public');
+    const lastBlock = blockResults.slice(-1).pop();
+    const privateNameId = await lastBlock.postBlockData.slice(-1).pop();
+
+    // Listen for data at private name
+    blockResults = await rchain.listenForDataAtName(privateNameId);
+    blockResults.forEach((b) => {
+      b.postBlockData.forEach((d) => {
+        logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
       });
-    })
-    .catch((oops) => { console.log(oops); });
+    });
+
+    // Listen for continuation joined public names
+    blockResults = await rchain.listenForContinuationAtPublicName(["chan1", "chan2"]);
+    if (blockResults.length > 0) {
+      console.log("Got continuation at joined public names");
+    }
+    else {
+      console.log("Failed to get continuation at joined public names");
+    }
+
+    // Listen for continuation at single private name
+    blockResults = await rchain.listenForContinuationAtName([privateNameId]);
+    if (blockResults.length > 0) {
+      console.log("Got continuation at single private name");
+    }
+    else {
+      console.log("Failed to get continuation at single private name");
+    }
+
+  }
+  catch (oops) {
+    console.log(oops);
+  }
 }
 
 
