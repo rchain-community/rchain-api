@@ -19,6 +19,19 @@ flow-check` script does a complete check and `npm run flow-status`
 does an incremental check.
 
 
+## RChain Validator Node for Integration testing
+
+One way to provide a validator node for testing, provided you're OK
+with the security risks around `--net host`, is:
+
+
+```bash
+$ docker run --rm -it --net host coop.rchain/rnode:0.7.1 run -s
+```
+
+This presumes you've built `coop.rchain/rnode` per `DEVELOPER.md` in
+rchain/rchain.
+
 ## Code Style: airbnb
 
 We follow the [Airbnb JavaScript Style Guide][asg], mostly. Use `npm

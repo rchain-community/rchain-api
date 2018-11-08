@@ -29,7 +29,8 @@ function main(argv, { grpc, clock, fs }) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
 
-  const myNode = RNode(grpc, { host: cli['--host'], port: cli['--port'] });
+  const where = { host: cli['--host'], port: cli['--port'] };
+  const myNode = RNode(grpc, where);
 
   if (cli.deploy) {
     const price = { phloPrice: { value: 1 }, phloLimit: { value: 10000 }, from: '0x01' };
@@ -42,7 +43,7 @@ function main(argv, { grpc, clock, fs }) {
           .then((msg) => { console.log(msg); });
       })
       .catch((oops) => {
-        console.log(`failed to deploy ${cli.RHOLANG}: ${oops.message}`);
+        console.log(`failed to deploy ${cli.RHOLANG} to ${where.host}:${where.port}: ${oops.message}`);
       });
   }
 }
