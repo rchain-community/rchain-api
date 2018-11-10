@@ -330,21 +330,6 @@ function sendThenReceiveStream(callToExecute) {
 }
 
 
-/**
- * log with JSON replacer: stringify Buffer data as hex
- */
-module.exports.logged = logged;
-function logged(obj /*: mixed */, label /*: ?string */) {
-  console.log(label, JSON.stringify(obj, bufAsHex, 2));
-  return obj;
-}
-function bufAsHex(prop, val) {
-  if (prop === 'data' && 'type' in this && this.type === 'Buffer') {
-    return Buffer.from(val).toString('hex');
-  }
-  return val;
-}
-
 
 /**
  * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
@@ -427,67 +412,4 @@ function simplifiedBlake2b256Hash(jsData /*: Json*/) {
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   blake2b256.update(serializedData);
   return blake2b256.digest('hex');
-}
-
-
-/**
- * Integration test for major features. Requires a running node.
- */
-function integrationTest({ grpc, endpoint, clock }) {
-  // Now make an RNode instance
-  console.log({ endpoint });
-  const rchain = RNode(grpc, endpoint);
-
-  // Test deploys and listens
-  const term = `
-  new private, print(\`rho:io:stdout\`) in {
-    print!(*private)|
-    private!("Get this text into javascript")|
-    @"public"!(*private)
-  }
-  `;
-  rchain.doDeploy({
-    term,
-    timestamp: clock().valueOf(),
-    from: '0x1',
-    nonce: 0,
-    phloPrice: { value: 1 },
-    phloLimit: { value: 100000 },
-  })
-    .then((deployMessage) => {
-      console.log('doDeploy result:', deployMessage);
-
-      return rchain.createBlock();
-    })
-    .then(() => rchain.listenForDataAtPublicName('public'))
-    .then((blockResults) => {
-      const lastBlock = blockResults.slice(-1).pop();
-      return lastBlock.postBlockData.slice(-1).pop();
-    })
-    .then(privateName => rchain.listenForDataAtName(privateName))
-    .then((blockResults) => {
-      blockResults.forEach((b) => {
-        b.postBlockData.forEach((d) => {
-          logged(RHOCore.toRholang(d), 'Data Received from unforgeable name');
-        });
-      });
-    })
-    .catch((oops) => { console.log(oops); });
-}
-
-
-if (require.main === module) {
-  // Access ambient stuff only when invoked as main module.
-  /* eslint-disable global-require */
-  const endpoint = {
-    host: process.env.npm_config_host || 'localhost',
-    port: parseInt(process.env.npm_config_port || '40401', 10),
-  };
-  integrationTest(
-    {
-      endpoint,
-      grpc: require('grpc'),
-      clock: () => new Date(),
-    },
-  );
 }
