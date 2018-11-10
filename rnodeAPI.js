@@ -14,9 +14,6 @@ refs:
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
-const blake2 = require('blake2');
-const crypto = require('crypto');
-const { keccak256 } = require('js-sha3');
 
 const RHOCore = require('./RHOCore');
 const signing = require('./signing');
@@ -31,12 +28,6 @@ const packageDefinition = protoLoader.loadSync(
   likeLoad,
 );
 
-
-module.exports.keyPair = signing.keyPair;
-module.exports.verify = signing.verify;
-module.exports.b2h = signing.b2h;
-module.exports.h2b = signing.h2b;
-module.exports.RHOCore = RHOCore;
 
 
 /*::
