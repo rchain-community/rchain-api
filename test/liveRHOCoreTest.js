@@ -3,9 +3,10 @@
 /* global require, module, Buffer */
 
 const { RNode, RHOCore, b2h } = require('../index');
-const { rhol } = RHOCore;
 const testData = require('./RHOCoreSuite.json');
 const { runAndListen } = require('./testRNode');
+
+const { rhol } = RHOCore;
 
 function integrationTest({ Suite, endpoint, grpc, clock, rng }) {
   console.log({ endpoint });

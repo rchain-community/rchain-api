@@ -14,9 +14,7 @@ refs:
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
-
 const RHOCore = require('./RHOCore');
-const signing = require('./signing');
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
@@ -27,7 +25,6 @@ const packageDefinition = protoLoader.loadSync(
   __dirname + '/../protobuf/CasperMessage.proto', // eslint-disable-line
   likeLoad,
 );
-
 
 
 /*::

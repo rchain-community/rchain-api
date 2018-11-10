@@ -6,7 +6,6 @@ const { sha256Hash, keccak256Hash, blake2b256Hash } = api;
 const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = api;
 
 
-
 /**
  * Run unit tests plus supplemental tests.
  *

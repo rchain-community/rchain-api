@@ -19,7 +19,6 @@ function bufAsHex(prop, val) {
  * Integration test for major features. Requires a running node.
  */
 function integrationTest({ RHOCore, node, clock }) {
-
   // Test deploys and listens
   const term = `
   new private, print(\`rho:io:stdout\`) in {
