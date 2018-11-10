@@ -61,7 +61,7 @@ function integrationTest({ RHOCore, node, clock }) {
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
   /* eslint-disable global-require */
-  const { RNode, RHOCore } = require('./index');
+  const { RNode, RHOCore } = require('../index');
   const grpc = require('grpc');
 
   const endpoint = {

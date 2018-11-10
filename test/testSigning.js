@@ -1,5 +1,5 @@
 const Suite = require('testjs');
-const { keyPair, h2b, verify } = require('../signing.js');
+const { keyPair, h2b, verify } = require('../index');
 
 function testSigning() {
   const cases = {

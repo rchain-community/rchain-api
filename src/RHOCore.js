@@ -1,7 +1,7 @@
 // @flow strict
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
-const { Par } = require('./protobuf/RhoTypes.js');
+const { Par } = require('../protobuf/RhoTypes.js');
 
 /**
  * "we can detail a direct representation of JSON into a
