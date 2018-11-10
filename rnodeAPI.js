@@ -216,7 +216,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
    */
-  function listenForContinuationAtPublicName(nameObjs /*: Json */, depth=1 /*: number */) {
+  function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth = 1 /*: number */) {
     return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
   }
 
@@ -227,13 +227,15 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   * @return promise for ContinuationsWithBlockInfo
   * @throws Error if status is not Success
    */
-  function listenForContinuationAtPrivateName(nameIds, depth=1) {
-    console.log("ids are: " + logged(nameIds))
+  function listenForContinuationAtPrivateName(nameIds, depth = 1) {
+    console.log('ids are: ');
+    console.log(nameIds);
     // Convert the UnforgeableNames into a byte arrays
     const nameByteArrays = nameIds.map(nameId => Buffer.from(nameId, 'hex'));
 
     // Create the Par objects with the nameByteArrays as IDs
-    const channelRequests = nameByteArrays.map(nameByteArray => { ids: [{ id: nameByteArray }] });
+    const channelRequests = nameByteArrays.map(nameByteArray => ({ ids: [{ id: nameByteArray }] }));
+    //TODO Does this parse? I think x => { a: b } needs ()s, i.e. x => ({ a: b }).
     return listenForContinuationAtName(channelRequests, depth);
   }
 
@@ -245,11 +247,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
    */
-  function listenForContinuationAtName(pars /*: Json */, depth /*: number */) {
-
+  function listenForContinuationAtName(pars /*: IPar[] */, depth /*: number */) {
     const channelRequest = {
-                depth,
-                names: pars,
+      depth,
+      names: pars,
     };
 
     return send(then => client.listenForContinuationAtName(channelRequest, then))
@@ -533,25 +534,21 @@ async function integrationTest({ grpc, endpoint, clock }) {
     });
 
     // Listen for continuation joined public names
-    blockResults = await rchain.listenForContinuationAtPublicName(["chan1", "chan2"]);
+    blockResults = await rchain.listenForContinuationAtPublicName(['chan1', 'chan2']);
     if (blockResults.length > 0) {
-      console.log("Got continuation at joined public names");
-    }
-    else {
-      console.log("Failed to get continuation at joined public names");
+      console.log('Got continuation at joined public names');
+    } else {
+      console.log('Failed to get continuation at joined public names');
     }
 
     // Listen for continuation at single private name
     blockResults = await rchain.listenForContinuationAtName([privateNameId]);
     if (blockResults.length > 0) {
-      console.log("Got continuation at single private name");
+      console.log('Got continuation at single private name');
+    } else {
+      console.log('Failed to get continuation at single private name');
     }
-    else {
-      console.log("Failed to get continuation at single private name");
-    }
-
-  }
-  catch (oops) {
+  } catch (oops) {
     console.log(oops);
   }
 }
