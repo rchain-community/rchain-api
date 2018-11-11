@@ -165,8 +165,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPublicName(nameObj /*: Json */) {
-    return listenForDataAtName(RHOCore.fromJSData(nameObj));
+  function listenForDataAtPublicName(nameObj /*: Json */, depth /*: number */ = 1 ) {
+    return listenForDataAtName(RHOCore.fromJSData(nameObj), depth);
   }
 
   /**
@@ -176,13 +176,13 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPrivateName(nameId /*: string */) {
+  function listenForDataAtPrivateName(nameId /*: string */, depth /*: number */ = 1) {
     // Convert the UnforgeableName into a byte array
     const nameByteArray = Buffer.from(nameId, 'hex');
 
     // Create the Par object with the nameByteArray as an ID
     const channelRequest = { ids: [{ id: nameByteArray }] };
-    return listenForDataAtName(channelRequest);
+    return listenForDataAtName(channelRequest, depth);
   }
 
   /**
@@ -193,10 +193,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */, blockDepth /*: number */ = 10000) {
+  function listenForDataAtName(par /*: Json */, depth /*: number */ = 1) {
     const channelRequest = {
+      depth,
       name: par,
-      depth: blockDepth,
     };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
@@ -216,7 +216,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
    */
-  function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth = 1 /*: number */) {
+  function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth /*: number */ = 1) {
     return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
   }
 
@@ -227,9 +227,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   * @return promise for ContinuationsWithBlockInfo
   * @throws Error if status is not Success
    */
-  function listenForContinuationAtPrivateName(nameIds, depth = 1) {
-    console.log('ids are: ');
-    console.log(nameIds);
+  function listenForContinuationAtPrivateName(nameIds /*: string[] */, depth /*: number */ = 1) {
     // Convert the UnforgeableNames into a byte arrays
     const nameByteArrays = nameIds.map(nameId => Buffer.from(nameId, 'hex'));
 
