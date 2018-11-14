@@ -2,12 +2,11 @@
  */
 /* global require, module, Buffer */
 
-const { RNode } = require('../rnodeAPI');
-const { rhol } = require('../RHOCore');
-const { b2h } = require('../signing');
+const { RNode, RHOCore, b2h } = require('../index');
 const testData = require('./RHOCoreSuite.json');
 const { runAndListen } = require('./testRNode');
 
+const { rhol } = RHOCore;
 
 function integrationTest({ Suite, endpoint, grpc, clock, rng }) {
   console.log({ endpoint });

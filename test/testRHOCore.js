@@ -4,8 +4,7 @@
 const Suite = require('testjs');
 
 const { Par } = require('../protobuf/RhoTypes.js');
-const RHOCore = require('../RHOCore');
-const { h2b } = require('../signing');
+const { RHOCore, h2b } = require('../index');
 const testData = require('./RHOCoreSuite.json');
 
 

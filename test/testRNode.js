@@ -1,9 +1,10 @@
 /* global require, module, exports */
-const rnode = require('../rnodeAPI');
+const api = require('../index');
 
-const { RNode, b2h, h2b } = rnode;
-const { sha256Hash, keccak256Hash, blake2b256Hash } = rnode;
-const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = rnode;
+const { RNode, b2h, h2b } = api;
+const { sha256Hash, keccak256Hash, blake2b256Hash } = api;
+const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = api;
+
 
 /**
  * Run unit tests plus supplemental tests.
