@@ -39,23 +39,17 @@ type DeployData = {
   sig: Uint8Array,
   sigAlgorithm: string,
   from: string,
-  phloPrice: PhloPrice,
-  phloLimit: PhloLimit,
+  phloPrice: number,
+  phloLimit: number,
   nonce: number
 }
 type DeployDataInsecure = {
   term: string,
   timestamp: number,
   from: string,
-  phloPrice: PhloPrice,
-  phloLimit: PhloLimit,
+  phloPrice: number,
+  phloLimit: number,
   nonce: number
-}
-type PhloPrice = {
-  value: number
-}
-type PhloLimit = {
-  value: number
 }
 */
 
@@ -79,6 +73,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
   );
 
+  function previewPrivateNames({ user, timestamp, nameQty }) {
+    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
+  }
+
   /**
    * Deploys a rholang term to a node
    * @param deployData a DeployData (cf CasperMessage.proto)
@@ -101,10 +99,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    if (deployData.phloLimit === undefined || !Number.isInteger(deployData.phloLimit.value)) {
+    if (!Number.isInteger(deployData.phloLimit)) {
       throw new Error('ERROR: DeployData structure requires "phloLimit" to be specified');
     }
-    if (deployData.phloPrice === undefined || !Number.isInteger(deployData.phloPrice.value)) {
+    if (!Number.isInteger(deployData.phloPrice)) {
       throw new Error('ERROR: DeployData structure requires "phloPrice" to be specified');
     }
     return deployResponse(
@@ -181,7 +179,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */, blockDepth /*: number */ = 10000) {
+  function listenForDataAtName(par /*: IPar */, blockDepth /*: number */ = 10000) {
     const channelRequest = {
       name: par,
       depth: blockDepth,
@@ -263,6 +261,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     getBlock,
     getAllBlocks,
     getIdFromUnforgeableName,
+    previewPrivateNames,
   });
 }
 
