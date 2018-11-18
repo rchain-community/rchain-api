@@ -51,6 +51,8 @@ type DeployDataInsecure = {
   phloLimit: number,
   nonce: number
 }
+
+export type IRNode = $Call<RNode>;
 */
 
 /**
