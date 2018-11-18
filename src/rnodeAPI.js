@@ -275,7 +275,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
  * @param calling: a function of the form (cb) => o.m(..., cb)
  * @return A promise for the result passed to cb
  */
-function send(calling) {
+function send/*:: <T>*/(calling) /*: Promise<T> */{
   function executor(resolve, reject) {
     const callback = (err, result) => {
       if (err) {

@@ -54,7 +54,7 @@ async function integrationTest({ node, clock }) {
         logged(RHOCore.toJSData(d), 'Data at x');
       });
     });
-  } catch(oops) { console.log(oops); };
+  } catch (oops) { console.log(oops); }
 }
 
 
