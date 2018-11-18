@@ -94,6 +94,18 @@ function toJSData(par /*: IPar */) /*: Json */{
           && Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
       }
+      if (typeof ex.e_map_body !== 'undefined' && ex.e_map_body !== null
+          && Array.isArray(ex.e_map_body.kvs)) {
+        const props = ex.e_map_body.kvs.map((kv) => {
+          const key = recur(kv.key || {});
+          if (typeof key !== 'string') {
+            throw new Error(`not RHOCore? ${JSON.stringify(key)}`);
+          }
+          const val = recur(kv.value || {});
+          return { k: key, v: val };
+        });
+        return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
+      }
       throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
     } else if (p.sends) {
       const props = p.sends.map((s) => {
