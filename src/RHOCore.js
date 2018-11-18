@@ -85,7 +85,7 @@ function toJSData(par /*: IPar */) /*: Json */{
         return ex.g_bool;
       }
       if (typeof ex.g_int !== 'undefined') {
-        return ex.g_int;
+        return parseInt(ex.g_int, 10); // ISSUE: overflow
       }
       if (typeof ex.g_string !== 'undefined') {
         return ex.g_string;
