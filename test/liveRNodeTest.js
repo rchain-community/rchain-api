@@ -51,7 +51,7 @@ async function integrationTest({ node, clock }) {
     const blockResults = await node.listenForDataAtName(xPar);
     blockResults.forEach((b) => {
       b.postBlockData.forEach((d) => {
-        logged(RHOCore.toRholang(d), 'Data at x');
+        logged(RHOCore.toJSData(d), 'Data at x');
       });
     });
   } catch(oops) { console.log(oops); };
