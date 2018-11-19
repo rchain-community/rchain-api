@@ -81,11 +81,30 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @param d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
    */
-  function previewPrivateNames(
+  function previewPrivateIds(
     { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
     nameQty /*: number*/,
-  ) {
-    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f));
+  ) /*: Promise<Uint8Array[]> */{
+    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
+      .then(response => response.ids);
+  }
+
+  const idToPar = id => ({ ids: [{ id }] });
+
+  /**
+   * Ask rnode to compute top level private channels, given deploy parameters.
+   *
+   * @param d
+   * @param d.user - public key (of validating node?) as in doDeploy
+   * @param d.timestamp - timestamp (ms) as in doDeploy
+   * @param nameQty - how many names to preview? (max: 1024)
+   */
+  function previewPrivateChannels(
+    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
+    nameQty /*: number*/,
+  ) /*: Promise<IPar[]> */{
+    return previewPrivateIds({ user, timestamp }, nameQty).then(
+      ids => ids.map(idToPar));
   }
 
   /**
@@ -178,7 +197,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     const nameByteArray = Buffer.from(nameId, 'hex');
 
     // Create the Par object with the nameByteArray as an ID
-    const channelRequest = { ids: [{ id: nameByteArray }] };
+    const channelRequest = idToPar(nameByteArray);
     return listenForDataAtName(channelRequest);
   }
 
@@ -272,7 +291,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     getBlock,
     getAllBlocks,
     getIdFromUnforgeableName,
-    previewPrivateNames,
+    previewPrivateIds,
+    previewPrivateChannels,
   });
 }
 
