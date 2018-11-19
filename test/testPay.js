@@ -1,6 +1,6 @@
 /* global require */
 
-const { RNode, h2b, RHOCore } = require('..');
+const { RNode, h2b, RHOCore, makeProxy } = require('..');
 const { link } = require('./assets');
 
 const { toJSData } = RHOCore;
@@ -26,8 +26,25 @@ const walletContracts = {
 
 const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
 
-async function deployWalletContracts({ rnode, clock, setTimeout }) {
+async function alicePaysBob({ rnode, clock, setTimeout }) {
+  const toURI = await deployWalletContracts({ rnode, setTimeout, });
+  console.log(toURI);
 
+  const timestamp = clock().valueOf();
+  const user = h2b(walletContracts.wallet.pk); // arbitrary
+  const MakeMint = makeProxy(
+    toURI.mint, { user, timestamp, ...defaultPayment }, { rnode }
+  );
+
+  // issue: We can't pass unforgeable names back on the chain, so even
+  //        if our API didn't get in the way of returning them from
+  //        method calls, they wouldn't be much use.
+  //        We need to register each object we want to access off-chain.
+  const mint = await MakeMint['']();
+  console.log({ mint });
+}
+
+async function deployWalletContracts({ rnode, setTimeout }) {
   async function register1(info) {
     // const timestamp = clock.valueOf();
     const deploy1 = {
@@ -56,16 +73,13 @@ async function deployWalletContracts({ rnode, clock, setTimeout }) {
   return { nonNegativeNumber, mint, wallet };
 }
 
-async function alicePaysBob() {
-}
-
 // Get the first piece of data from listenForDataAtName
 function firstBlockData(blockResults) {
   // console.log('found:', JSON.stringify(blockResults, null, 2));
   const ea = [].concat(...blockResults.map(br => br.postBlockData));
-  console.log({ ea });
+  // console.log({ ea });
   const good = ea.filter(par => par.exprs.length > 0);
-  console.log({ good });
+  // console.log({ good });
   return good[0];
 }
 
@@ -87,7 +101,7 @@ if (require.main === module) {
   const rnode = RNode(require('grpc'), endpoint);
 
   try {
-    deployWalletContracts({
+    alicePaysBob({
       rnode,
       setTimeout,
       clock: () => new Date().valueOf(),

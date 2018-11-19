@@ -106,6 +106,12 @@ function callSource({ target, method, args } /*: Message*/, unary = false) {
  */
 function rhoCall({ target, method, args }) {
   const pieces = [].concat(method, args, ['*return']);
+  /*
+        // ISSUE: what comes back from the registry is
+        // a tuple if insertSigned and just the thing if insertArbitrary.
+        // is that by design?
+        for(@(_nonce, target) <- targetCh) {
+   */
   const term = `
       new return, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
         trace!("hello from remote call.") |
