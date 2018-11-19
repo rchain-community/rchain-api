@@ -16,6 +16,14 @@ function bufAsHex(prop, val) {
 }
 
 
+const defaultPayment = {
+  from: '0x1',
+  nonce: 0,
+  phloPrice: 1,
+  phloLimit: 100000,
+};
+
+
 /**
  * Integration test for major features. Requires a running node.
  */
@@ -31,30 +39,21 @@ async function integrationTest({ node, clock }) {
   }
   `;
 
-  try {
-    const deployData = {
-      timestamp,
-      user,
-      term,
-      from: '0x1',
-      nonce: 0,
-      phloPrice: 1,
-      phloLimit: 100000,
-    };
-    const preview = await node.previewPrivateNames(deployData, 3);
-    console.log(preview.ids.map(b2h));
-    const deployMessage = await node.doDeploy(deployData);
-    console.log('doDeploy result:', deployMessage);
+  const deployData = { term, user, timestamp, ...defaultPayment };
+  const preview = await node.previewPrivateIds(deployData, 3);
+  console.log(preview.map(b2h));
+  const deployMessage = await node.doDeploy(deployData);
+  console.log('doDeploy result:', deployMessage);
 
-    console.log('create: ', await node.createBlock());
-    const xPar = { ids: [{ id: preview.ids[0] }] };
-    const blockResults = await node.listenForDataAtName(xPar);
-    blockResults.forEach((b) => {
-      b.postBlockData.forEach((d) => {
-        logged(RHOCore.toJSData(d), 'Data at x');
-      });
+  console.log('create: ', await node.createBlock());
+
+  const idToPar = id => ({ ids: [{ id }] });
+  const blockResults = await node.listenForDataAtName(idToPar(preview[0]));
+  blockResults.forEach((b) => {
+    b.postBlockData.forEach((d) => {
+      logged(RHOCore.toJSData(d), 'Data at x');
     });
-  } catch (oops) { console.log(oops); }
+  });
 }
 
 
@@ -70,5 +69,7 @@ if (require.main === module) {
 
   const node = RNode(grpc, endpoint);
   const clock = () => new Date();
+  try {
   integrationTest({ node, clock });
+  } catch (oops) { console.log(oops); }
 }
