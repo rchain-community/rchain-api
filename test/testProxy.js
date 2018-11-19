@@ -41,7 +41,7 @@ const defaultPayment = {
 async function remoteTarget({ rnode, clock, user }) {
   const timestamp = clock().valueOf();
   const deployTarget = { term: remoteContract, user, timestamp, ...defaultPayment };
-  const [targetCh] = await rnode.previewPrivateNames(deployTarget, 1);
+  const [targetCh] = await rnode.previewPrivateChannels(deployTarget, 1);
   // console.log({ targetCh: JSON.stringify(targetCh) });
   await rnode.doDeploy(deployTarget, true);
   const found = await rnode.listenForDataAtName(targetCh);
@@ -63,7 +63,7 @@ function mockRNode() {
 
   const idToPar = id => ({ ids: [{ id }] });
 
-  async function previewPrivateNames({ user, timestamp }, nameQty) {
+  async function previewPrivateChannels({ user, timestamp }, nameQty) {
     const each = i => (user.length * i + timestamp) % 51;
     return [...Array(nameQty).keys()].map(each).map(idToPar);
   }
@@ -80,7 +80,7 @@ function mockRNode() {
     // console.log('listen for data at', JSON.stringify(_name));
     return [{ postBlockData: [nextAnswer] }];
   }
-  return def({ previewPrivateNames, doDeploy, listenForDataAtName });
+  return def({ previewPrivateChannels, doDeploy, listenForDataAtName });
 }
 
 /*global module, setTimeout */
