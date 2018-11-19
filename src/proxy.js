@@ -41,7 +41,7 @@ function makePeer(
   }
 
   async function returnChannel(timestamp) {
-    const ids = await rnode.previewPrivateNames({ user, timestamp, nameQty: 1 });
+    const ids = await rnode.previewPrivateNames({ user, timestamp }, 1);
     const id = ids.ids[0];
     return { ids: [{ id }] };
   }
