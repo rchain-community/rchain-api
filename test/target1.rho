@@ -1,10 +1,15 @@
 /* See testProxy.js */
 
-new insertArbitrary(`rho:registry:insertArbitrary`), target, debug(`rho:io:stderr`) in {
+new
+  ret, target,
+  insertArbitrary(`rho:registry:insertArbitrary`),
+  debug(`rho:io:stderr`)
+in {
   new uriCh in {
     insertArbitrary!(*target, *uriCh) |
     for (@uri <- uriCh) {
-      debug!({"target": uri})
+      debug!({"target": uri}) |
+      ret!("${target}" %% {"target": uri})
     }
   }
   |
