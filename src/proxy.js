@@ -40,12 +40,6 @@ function makePeer(
     return term;
   }
 
-  async function returnChannel(timestamp) {
-    const ids = await rnode.previewPrivateNames({ user, timestamp }, 1);
-    const id = ids.ids[0];
-    return { ids: [{ id }] };
-  }
-
   async function sendCall(
     target /*: string*/,
     method /*: string*/,
@@ -53,7 +47,7 @@ function makePeer(
   ) {
     const term = callSource(target, method, args);
     const timestamp = clock().valueOf();
-    const returnCh = await returnChannel(timestamp);
+    const [returnCh] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
     await rnode.doDeploy({ term, user, timestamp, ...payOpts }, true);
     if (delay) {
       await makeTimer(setTimeout)(delay);
@@ -72,7 +66,7 @@ function makePeer(
     });
   }
 
-  return def({ sendCall, makeProxy, callSource, returnChannel });
+  return def({ sendCall, makeProxy, callSource });
 }
 
 
