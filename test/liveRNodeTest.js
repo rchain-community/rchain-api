@@ -70,6 +70,6 @@ if (require.main === module) {
   const node = RNode(grpc, endpoint);
   const clock = () => new Date();
   try {
-  integrationTest({ node, clock });
+    integrationTest({ node, clock });
   } catch (oops) { console.log(oops); }
 }

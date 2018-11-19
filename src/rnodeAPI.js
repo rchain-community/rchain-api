@@ -105,8 +105,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
     nameQty /*: number*/,
   ) /*: Promise<IPar[]> */{
-    return previewPrivateIds({ user, timestamp }, nameQty).then(
-      ids => ids.map(idToPar));
+    return previewPrivateIds({ user, timestamp }, nameQty)
+      .then(ids => ids.map(idToPar));
   }
 
   /**
