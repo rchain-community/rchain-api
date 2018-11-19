@@ -87,24 +87,32 @@ function callSource({ target, method, args } /*: Message*/, unary = false) {
   return rhoCall({
     // ISSUE: assume target is injection-safe?
     target: `\`${target}\``,
-    method: rhol`${method}`,
+    method: method.length > 0 ? [rhol`${method}`] : [],
     args: (
       unary
-        ? rhol`${args}`
-        : args.map(arg => rhol`${arg}`).join(', ')),
+        ? [rhol`${args}`]
+        : args.map(arg => rhol`${arg}`)),
   });
 }
 
 
 /**
  * Caller is responsible for converting pieces to rholang.
+ *
+ * @param m: message
+ * @param m.target: a rholang URI expression: `rho:id:...`
+ * @param m.method: [] or ["eat"]
+ * @param m.args: a list of rholang terms
  */
 function rhoCall({ target, method, args }) {
+  const pieces = [].concat(method, args, ['*return']);
   const term = `
-      new return, targetCh, lookup(\`rho:registry:lookup\`) in {
+      new return, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
+        trace!("hello from remote call.") |
         lookup!(${target}, *targetCh) |
         for(target <- targetCh) {
-          target!(${method}, ${args}, *return)
+          trace!({ "target": target }) |
+          target!(${pieces.join(', ')})
         }
       }
     `;
