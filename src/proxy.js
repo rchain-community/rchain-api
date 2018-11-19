@@ -1,8 +1,6 @@
 /*global require, exports*/
 
-const { rhol, toJSData, fromJSData } = require('./RHOCore');
-const { h2b } = require('./signing');
-const { RNode } = require('./rnodeAPI');
+const { rhol, toJSData } = require('./RHOCore');
 
 const def = Object.freeze;
 
@@ -11,20 +9,24 @@ import type { IRNode } from './rnodeAPI';
 */
 
 exports.makePeer = makePeer;
-function makePeer(rnode /*: IRNode */, user /*: Uint8Array */,
-                  clock /*: () => Date */,
-                  setTimeout,
-                  // ISSUE: is 1/2 sec between createBlock and listen long enough?
-                  delay=500,
-                  payOpts={ phloLimit: 100000, phloPrice: 1, from: '0x01'}) {
-
+function makePeer(
+  rnode /*: IRNode */,
+  user /*: Uint8Array */,
+  clock /*: () => Date */,
+  setTimeout,
+  // ISSUE: is 1/2 sec between createBlock and listen long enough?
+  delay = 500,
+  payOpts = { phloLimit: 100000, phloPrice: 1, from: '0x01' },
+) {
   /**
    * Note: For better compositionality, JS args are combined into one
    * list arg on the rholang side.
    */
-  function callSource(target /*: string*/,
-                      method /*: string*/,
-                      args /*: mixed[]*/) {
+  function callSource(
+    target /*: string*/,
+    method /*: string*/,
+    args /*: mixed[]*/,
+  ) {
     // ISSUE: assume target is injection-safe?
     const term = rhol`
       new return, targetCh, lookup(\`rho:registry:lookup\`) in {
@@ -44,9 +46,11 @@ function makePeer(rnode /*: IRNode */, user /*: Uint8Array */,
     return { ids: [{ id }] };
   }
 
-  async function sendCall(target /*: string*/,
-                          method /*: string*/,
-                          args /*: mixed[]*/) {
+  async function sendCall(
+    target /*: string*/,
+    method /*: string*/,
+    args /*: mixed[]*/,
+  ) {
     const term = callSource(target, method, args);
     const timestamp = clock().valueOf();
     const returnCh = await returnChannel(timestamp);

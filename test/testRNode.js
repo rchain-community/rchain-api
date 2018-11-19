@@ -129,10 +129,10 @@ function runAndListen(
 
 function payment(phloPrice = 1, phloLimit = 10000000) {
   return {
+    phloPrice,
+    phloLimit,
     from: '0x01',
     nonce: 0,
-    phloPrice: phloPrice,
-    phloLimit: phloLimit,
   };
 }
 

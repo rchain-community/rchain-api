@@ -16,11 +16,11 @@ const def = Object.freeze;
 async function test({ rnode, clock, user, setTimeout, target }) {
   const peer = makePeer(rnode, user, clock, setTimeout);
 
-  const ansToSend = await peer.sendCall(target, "buy", ["orange", 20]);
+  const ansToSend = await peer.sendCall(target, 'buy', ['orange', 20]);
   console.log({ ansToSend });
 
   const targetProxy = peer.makeProxy(target);
-  const ansToProxy = await targetProxy.sell("banana", 20, 3);
+  const ansToProxy = await targetProxy.sell('banana', 20, 3);
   console.log({ ansToProxy });
 }
 
@@ -52,14 +52,15 @@ if (require.main === module) {
 
   try {
     /* global process */
+    /* eslint-disable global-require */
     const target = process.argv[2] || 'rho:id:egrz6o7om89jmpybhjk8foa6t1e11uqghgsrfq1chna7gszfj1g47d';
+    const rnode = RNode(require('grpc'), { host: 'localhost', port: 40401 });
 
     test({
       setTimeout,
       target,
+      rnode,
       user: h2b('deadbeef1234'),
-      rnode: RNode(require('grpc'),
-                   { host: 'localhost', port: 40401 }),
       clock: () => new Date().valueOf(),
     });
   } catch (oops) {
