@@ -22,9 +22,6 @@ function bufAsHex(prop, val) {
 async function integrationTest({ node, clock }) {
   const user = h2b('464f6780d71b724525be14348b59c53dc8795346dfd7576c9f01c397ee7523e6');
   const timestamp = clock().valueOf();
-  const nameQty = 3;
-  const preview = await node.previewPrivateNames({ user, timestamp, nameQty });
-  console.log(preview.ids.map(b2h));
 
   // Test deploys and listens
   const term = `
@@ -35,7 +32,7 @@ async function integrationTest({ node, clock }) {
   `;
 
   try {
-    const deployMessage = await node.doDeploy({
+    const deployData = {
       timestamp,
       user,
       term,
@@ -43,7 +40,10 @@ async function integrationTest({ node, clock }) {
       nonce: 0,
       phloPrice: 1,
       phloLimit: 100000,
-    });
+    };
+    const preview = await node.previewPrivateNames(deployData, 3);
+    console.log(preview.ids.map(b2h));
+    const deployMessage = await node.doDeploy(deployData);
     console.log('doDeploy result:', deployMessage);
 
     console.log('create: ', await node.createBlock());
@@ -51,10 +51,10 @@ async function integrationTest({ node, clock }) {
     const blockResults = await node.listenForDataAtName(xPar);
     blockResults.forEach((b) => {
       b.postBlockData.forEach((d) => {
-        logged(RHOCore.toRholang(d), 'Data at x');
+        logged(RHOCore.toJSData(d), 'Data at x');
       });
     });
-  } catch(oops) { console.log(oops); };
+  } catch (oops) { console.log(oops); }
 }
 
 

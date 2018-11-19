@@ -131,8 +131,8 @@ function payment(phloPrice = 1, phloLimit = 10000000) {
   return {
     from: '0x01',
     nonce: 0,
-    phloPrice: { value: phloPrice },
-    phloLimit: { value: phloLimit },
+    phloPrice: phloPrice,
+    phloLimit: phloLimit,
   };
 }
 

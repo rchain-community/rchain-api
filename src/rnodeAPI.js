@@ -75,8 +75,19 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
   );
 
-  function previewPrivateNames({ user, timestamp, nameQty }) {
-    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
+  /**
+   * Ask rnode to compute ids of top level private names, given deploy parameters.
+   *
+   * @param d
+   * @param d.user - public key (of validating node?) as in doDeploy
+   * @param d.timestamp - timestamp (ms) as in doDeploy
+   * @param nameQty - how many names to preview? (max: 1024)
+   */
+  function previewPrivateNames(
+    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
+    nameQty /*: number*/,
+  ) {
+    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f));
   }
 
   /**
@@ -277,7 +288,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
  * @param calling: a function of the form (cb) => o.m(..., cb)
  * @return A promise for the result passed to cb
  */
-function send(calling) {
+function send/*:: <T>*/(calling) /*: Promise<T> */{
   function executor(resolve, reject) {
     const callback = (err, result) => {
       if (err) {
