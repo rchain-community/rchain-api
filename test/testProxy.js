@@ -1,11 +1,17 @@
 /*global require, exports*/
 
-const { makePeer, RNode, RHOCore, h2b } = require('..');
+const { sendCall, makeProxy, RNode, RHOCore, h2b } = require('..');
 const { link } = require('./assets');
 
 const { toJSData } = RHOCore;
 const def = Object.freeze;
 const remoteContract = link('./target1.rho');
+const defaultPayment = {
+  from: '0x1',
+  nonce: 0,
+  phloPrice: 1,
+  phloLimit: 100000,
+};
 
 
 /**
@@ -15,24 +21,29 @@ const remoteContract = link('./target1.rho');
 async function test({ rnode, clock, user, setTimeout }) {
   const target = await remoteTarget({ rnode, clock, user });
 
-  const peer = makePeer(rnode, user, clock, setTimeout);
+  const timeout = clock().valueOf();
 
-  const ansToSend = await peer.sendCall(target, 'buy', ['orange', 20]);
+  const deployData = { user, timeout, ...defaultPayment };
+  const delay = () => makeTimer(setTimeout)(500);
+  const ansToSend = await sendCall(
+    { target, method: 'buy', args: ['orange', 20] },
+    deployData,
+    { rnode, delay, unary: true },
+  );
   console.log({ ansToSend });
 
-  const targetProxy = peer.makeProxy(target);
+  const targetProxy = makeProxy(target, deployData, { rnode, delay, unary: true });
   const ansToProxy = await targetProxy.sell('banana', 20, 3);
   console.log({ ansToProxy });
 
   return ansToProxy;
 }
 
-const defaultPayment = {
-  from: '0x1',
-  nonce: 0,
-  phloPrice: 1,
-  phloLimit: 100000,
-};
+function makeTimer(setTimeout) {
+  return function timer(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+}
 
 
 /**

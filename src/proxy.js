@@ -2,76 +2,112 @@
 
 const { rhol, toJSData } = require('./RHOCore');
 
-const def = Object.freeze;
-
 /*::
 import type { IRNode } from './rnodeAPI';
+
+type Message = {
+  target: string,
+  method: string,
+  args: mixed[],
+};
+
 */
 
-exports.makePeer = makePeer;
-function makePeer(
-  rnode /*: IRNode */,
-  user /*: Uint8Array */,
-  clock /*: () => Date */,
-  setTimeout,
-  // ISSUE: is 1/2 sec between createBlock and listen long enough?
-  delay = 500,
-  payOpts = { phloLimit: 100000, phloPrice: 1, from: '0x01' },
+
+/**
+ * Make an object that proxies method calls to registered RChain
+ * channels.
+ *
+ * For rholang calling conventions, see `callSource` (and unaryCallSource).
+ *
+ * @param target: URI where channel is registered.
+ * @param deployData: as in doDeploy (though term is ignored and replaced)
+ * @param opts
+ * @param opts.rnode: access to RChain node via gRPC
+ * @param opts.delay: an optional async function to call between sending
+ *                    a call and listening for the response.
+ * @param opts.unary: whether to use unary calling conventions.
+ */
+exports.makeProxy = makeProxy;
+function makeProxy(
+  target /*: string */,
+  deployData,
+  { rnode, delay = null, unary = false },
 ) {
-  /**
-   * Note: For better compositionality, JS args are combined into one
-   * list arg on the rholang side.
-   */
-  function callSource(
-    target /*: string*/,
-    method /*: string*/,
-    args /*: mixed[]*/,
-  ) {
+  const sendIt = msg => sendCall(msg, deployData, { rnode, delay, unary });
+  return new Proxy({}, {
+    get: (_, method) => (...args) => sendIt({ target, method, args }),
+    // override set to make it read-only?
+  });
+}
+
+
+/**
+ * Call a method on a registered RChain channel.
+ *
+ * For rholang calling conventions, see `callSource` (and unaryCallSource).
+ *
+ * @param target: URI where channel is registered.
+ * @param deployData: as in doDeploy (though term is ignored and replaced)
+ * @param opts
+ * @param opts.rnode: access to RChain node via gRPC
+ * @param opts.delay: an optional async function to call between sending
+ *                    a call and listening for the response.
+ * @param opts.unary: whether to use unary calling conventions.
+ */
+exports.sendCall = sendCall;
+async function sendCall(
+  { target, method, args } /*: Message*/,
+  deployData,
+  { rnode, delay = null, unary = false },
+) {
+  const term = callSource({ target, method, args }, unary);
+  const [returnCh] = await rnode.previewPrivateChannels(deployData, 1);
+  await rnode.doDeploy({ term, ...deployData }, true);
+  if (delay) {
+    await delay();
+  }
+  // ISSUE: loop until we get results?
+  const blockResults = await rnode.listenForDataAtName(returnCh);
+  // console.log({ blockResults });
+  const answerPar = blockResults[0].postBlockData[0];
+  // console.log('answerPar', JSON.stringify(answerPar, null, 2));
+  return toJSData(answerPar);
+}
+
+
+/**
+ * Make a rholang term for looking up a target and calling a method.
+ *
+ * @param unary: For better compositionality, JS args are combined into one
+ * list arg on the rholang side.
+ */
+exports.callSource = callSource;
+function callSource({ target, method, args } /*: Message*/, unary = false) {
+  return rhoCall({
     // ISSUE: assume target is injection-safe?
-    const term = rhol`
+    target: `\`${target}\``,
+    method: rhol`${method}`,
+    args: (
+      unary
+        ? rhol`${args}`
+        : args.map(arg => rhol`${arg}`).join(', ')),
+  });
+}
+
+
+/**
+ * Caller is responsible for converting pieces to rholang.
+ */
+function rhoCall({ target, method, args }) {
+  const term = `
       new return, targetCh, lookup(\`rho:registry:lookup\`) in {
-        lookup!(\`__TARGET__\`, *targetCh) |
+        lookup!(${target}, *targetCh) |
         for(target <- targetCh) {
           target!(${method}, ${args}, *return)
         }
       }
-    `.replace('__TARGET__', target);
-    console.log(term);
-    return term;
-  }
-
-  async function sendCall(
-    target /*: string*/,
-    method /*: string*/,
-    args /*: mixed[]*/,
-  ) {
-    const term = callSource(target, method, args);
-    const timestamp = clock().valueOf();
-    const [returnCh] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
-    await rnode.doDeploy({ term, user, timestamp, ...payOpts }, true);
-    if (delay) {
-      await makeTimer(setTimeout)(delay);
-    }
-    const blockResults = await rnode.listenForDataAtName(returnCh);
-    // console.log({ blockResults });
-    const answerPar = blockResults[0].postBlockData[0];
-    // console.log('answerPar', JSON.stringify(answerPar, null, 2));
-    return toJSData(answerPar);
-  }
-
-  function makeProxy(rName /*: string */) {
-    return new Proxy({}, {
-      get: (_, prop) => (...args) => sendCall(rName, prop, args),
-      // override set to make it read-only?
-    });
-  }
-
-  return def({ sendCall, makeProxy, callSource });
-}
-
-
-function makeTimer(setTimeout) {
-  return function timer(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  };
+    `;
+  console.log(term);
+  return term;
 }

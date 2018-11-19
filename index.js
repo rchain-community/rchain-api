@@ -7,9 +7,11 @@ const RNode = require('./src/rnodeAPI.js');
 
 module.exports.RNode = RNode.RNode;
 
-const { makePeer } = require('./src/proxy');
+const { sendCall, makeProxy, callSource } = require('./src/proxy');
 
-module.exports.makePeer = makePeer;
+module.exports.sendCall = sendCall;
+module.exports.makeProxy = makeProxy;
+module.exports.callSource = callSource;
 
 const signing = require('./src/signing');
 
