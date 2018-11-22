@@ -1,6 +1,6 @@
 /* global require */
 
-const { RNode, h2b, RHOCore, makeProxy } = require('..');
+const { RNode, b2h, h2b, RHOCore, makeProxy } = require('..');
 const { link } = require('./assets');
 
 const { toJSData } = RHOCore;
@@ -21,30 +21,61 @@ const walletContracts = {
     term: link('./BasicWallet.rho'),
     pk: 'd72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236',
     timestamp: 1540214070797,
-  }
+  },
+  aliceBob: {
+    term: link('./aliceBobWallets.rho'),
+  },
 };
 
 const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
+const user = h2b(walletContracts.wallet.pk); // arbitrary
 
-async function alicePaysBob({ rnode, clock, setTimeout }) {
-  const toURI = await deployWalletContracts({ rnode, setTimeout, });
-  console.log(toURI);
 
-  const timestamp = clock().valueOf();
-  const user = h2b(walletContracts.wallet.pk); // arbitrary
-  const MakeMint = makeProxy(
-    toURI.mint, { user, timestamp, ...defaultPayment }, { rnode }
-  );
-
-  // issue: We can't pass unforgeable names back on the chain, so even
-  //        if our API didn't get in the way of returning them from
-  //        method calls, they wouldn't be much use.
-  //        We need to register each object we want to access off-chain.
-  const mint = await MakeMint['']();
-  console.log({ mint });
+async function test({ rnode, clock, setTimeout }) {
+  const wallets = await genesis({ rnode, clock, setTimeout });
+  await alicePaysBob(wallets, { rnode, clock, setTimeout });
 }
 
-async function deployWalletContracts({ rnode, setTimeout }) {
+
+async function alicePaysBob(walletURIs, { rnode, clock, setTimeout }) {
+  const alicePurse = makeProxy(
+    walletURIs.alice, { user, ...defaultPayment }, { rnode, clock }
+  );
+
+  const aliceBalance = await alicePurse.getBalance();
+  console.log({ aliceBalance });
+}
+
+
+async function genesis({ rnode, clock, setTimeout }) {
+  await deploySystemContracts({ rnode, setTimeout, });
+
+  const deployMintWallets = {
+    user,
+    term: walletContracts.aliceBob.term,
+    timestamp: clock().valueOf(),
+    ...defaultPayment,
+  };
+  const walletURIs = await callContract(deployMintWallets,
+                                        { rnode, setTimeout });
+  console.log({ walletURIs });
+  return walletURIs;
+}
+
+
+async function callContract(deploy, { rnode, setTimeout }) {
+  const [ret] = await rnode.previewPrivateChannels(deploy, 1);
+  console.log('callContract ret:', b2h(ret.ids[0].id));
+  await rnode.doDeploy(deploy, true);
+  await makeTimer(setTimeout)(250);
+  const found = await rnode.listenForDataAtName(ret);
+  const par = firstBlockData(found);
+  console.log('callContract ret par JS:', toJSData(par));
+  return toJSData(par);
+}
+
+
+async function deploySystemContracts({ rnode, setTimeout }) {
   async function register1(info) {
     // const timestamp = clock.valueOf();
     const deploy1 = {
@@ -55,12 +86,12 @@ async function deployWalletContracts({ rnode, setTimeout }) {
     // new
     //   BasicWallet, rs(`rho:registry:insertSigned:ed25519`), uriOut
     const [_, uriOut] = await rnode.previewPrivateChannels(deploy1, 2);
-    console.log('uriOut:', uriOut);
+    console.log('uriOut:', b2h(uriOut.ids[0].id));
     await rnode.doDeploy(deploy1, true);
     await makeTimer(setTimeout)(250);
     const found = await rnode.listenForDataAtName(uriOut);
     const target = firstBlockData(found).exprs[0].g_uri;
-    console.log({ target });
+    // console.log({ target });
     return target;
   }
 
@@ -70,6 +101,7 @@ async function deployWalletContracts({ rnode, setTimeout }) {
   const mint = await register1(walletContracts.mint);
   console.log('wallet');
   const wallet = await register1(walletContracts.wallet);
+  console.log({ nonNegativeNumber, mint, wallet });
   return { nonNegativeNumber, mint, wallet };
 }
 
@@ -77,9 +109,10 @@ async function deployWalletContracts({ rnode, setTimeout }) {
 function firstBlockData(blockResults) {
   // console.log('found:', JSON.stringify(blockResults, null, 2));
   const ea = [].concat(...blockResults.map(br => br.postBlockData));
-  // console.log({ ea });
+  // console.log('ea: ', JSON.stringify(ea, null, 2));
   const good = ea.filter(par => par.exprs.length > 0);
-  // console.log({ good });
+  // console.log('good:');
+  // console.log(JSON.stringify(good, null, 2));
   return good[0];
 }
 
@@ -101,7 +134,7 @@ if (require.main === module) {
   const rnode = RNode(require('grpc'), endpoint);
 
   try {
-    alicePaysBob({
+    test({
       rnode,
       setTimeout,
       clock: () => new Date().valueOf(),
