@@ -24,6 +24,7 @@ type Message = {
  * @param deployData: as in doDeploy (though term is ignored and replaced)
  * @param opts
  * @param opts.rnode: access to RChain node via gRPC
+ * @param opts.clock: access to millisecond-resolution clock.
  * @param opts.delay: an optional async function to call between sending
  *                    a call and listening for the response.
  * @param opts.unary: whether to use unary calling conventions.
@@ -32,9 +33,12 @@ exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: string */,
   deployData,
-  { rnode, delay = null, unary = false },
+  { rnode, clock, delay = null, unary = false },
 ) {
-  const sendIt = msg => sendCall(msg, deployData, { rnode, delay, unary });
+  const sendIt = msg => sendCall(
+    msg, { timestamp: clock().valueOf(), ...deployData },
+    { rnode, delay, unary },
+  );
   return new Proxy({}, {
     get: (_, method) => (...args) => sendIt({ target, method, args }),
     // override set to make it read-only?
@@ -117,7 +121,7 @@ function rhoCall({ target, method, args }) {
         trace!("hello from remote call.") |
         lookup!(${target}, *targetCh) |
         for(target <- targetCh) {
-          trace!({ "target": target }) |
+          trace!({ "target": *target }) |
           target!(${pieces.join(', ')})
         }
       }

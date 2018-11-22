@@ -28,11 +28,11 @@ async function test({ rnode, clock, user, setTimeout }) {
   const ansToSend = await sendCall(
     { target, method: 'buy', args: ['orange', 20] },
     deployData,
-    { rnode, delay, unary: true },
+    { rnode, clock, delay, unary: true },
   );
   console.log({ ansToSend });
 
-  const targetProxy = makeProxy(target, deployData, { rnode, delay, unary: true });
+  const targetProxy = makeProxy(target, deployData, { rnode, clock, delay, unary: true });
   const ansToProxy = await targetProxy.sell('banana', 20, 3);
   console.log({ ansToProxy });
 
