@@ -44,6 +44,8 @@ async function alicePaysBob(walletURIs, { rnode, clock, setTimeout }) {
 
   const aliceBalance = await alicePurse.getBalance();
   console.log({ aliceBalance });
+  const aliceNonce = await alicePurse.getNonce();
+  console.log({ aliceNonce });
 }
 
 

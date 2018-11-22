@@ -1,0 +1,46 @@
+/** Create purses for Alice and Bob as part of genesis.
+  * First create a mint.
+  */
+new
+  ret, alice,
+  lookup(`rho:registry:lookup`),
+  insertArbitrary(`rho:registry:insertArbitrary`),
+  debug(`rho:io:stderr`)
+in {
+  new MakeMintCh, BasicWalletCh, mintCh, aliceCh, bobCh in {
+    // Look up MakeMint by its URI (see MakeMint.rho)
+    lookup!(`rho:id:exunyijimapk7z43g3bbr69awqdz54kyroj9q43jgu3dh567fxsftx`,
+      *MakeMintCh) |
+    lookup!(`rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms`,
+      *BasicWalletCh) |
+    for (@(_, *MakeMint) <- MakeMintCh; @(_, *BasicWallet) <- BasicWalletCh) {
+      debug!({"MakeMint": *MakeMint}) |
+      MakeMint!(*mintCh) | for (mint <- mintCh) {
+        debug!({"mint": *mint}) |
+        mint!("makePurse", 100, *aliceCh) |
+        mint!("makePurse", 0, *bobCh) |
+        for (alicePurse <- aliceCh; bobPurse <- bobCh) {
+          debug!({ "alicePurse": *alicePurse, "bob": *bobPurse }) |
+          BasicWallet!(*alicePurse, "ed25519",
+            "288755c48c3951f89c5f0ffe885088dc0970fd935bc12adfdd81f81bb63d6219".hexToBytes(), *aliceCh) |
+          BasicWallet!(*bobPurse, "ed25519",
+            "90685cf270025cddab375b3de595e9b87548c5f05f9e5bf17502d7cfcb7259f7".hexToBytes(), *bobCh) |
+          for(@[*aliceWallet] <- aliceCh; @[*bobWallet] <- bobCh) {
+            debug!({ "aliceWallet": *aliceWallet, "bob": *bobWallet }) |
+            
+            insertArbitrary!(*aliceWallet, *aliceCh) |
+            insertArbitrary!(*bobWallet, *bobCh) |
+            for (@aliceURI <- aliceCh; @bobURI <- bobCh) {
+              debug!({ "alice": aliceURI, "bob": bobURI }) |
+              ret!({
+                // convert URIs to strings for use with RHOCore
+                "alice": "${alice}" %% {"alice": aliceURI},
+                "bob": "${bob}" %% {"bob": bobURI},
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+}
