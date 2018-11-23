@@ -1,22 +1,29 @@
+/* global require, exports */
 // @flow strict
+
+const { URL } = require('url');
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
 const { Par } = require('../protobuf/RhoTypes.js');
 
+
 /**
- * "we can detail a direct representation of JSON into a
- * fragment of the rholang syntax referred to in the diagram
- * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
+ * Build Rholang expression from Javascript data.
  *
- * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
- * @param x Any javascript object to be serialized to RHOCore
- * @return A rholang term representing the object in RHOCore form.
+ * This is the inverse of `toJSData`.
+ *
+ * @param data: number, string, array, etc.; see toJSData for details.
+ * @return: A rholang term in Protobuf's JSON representation,
+ *          i.e. `IPar` derived from RhoTypes.proto.
  */
 exports.fromJSData = fromJSData;
 function fromJSData(data /*: mixed */) /* : IPar */ {
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
 
   function recur(x) /*: IPar */{
+    if (x instanceof URL) {
+      return expr1({ g_uri: x.href });
+    }
     switch (typeof x) {
       case 'boolean':
         return expr1({ g_bool: x });
@@ -58,7 +65,9 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
 
 
 /**
- * Turns a rholang term into a byte-array compatible with Rholang
+ * Serialize a rholang term from Protobuf JSON to bytes.
+ *
+ * This is compatible with `x.toByteArray()` in Rholang.
  */
 exports.toByteArray = toByteArray;
 function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
@@ -67,14 +76,44 @@ function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
 }
 
 
-/**
- * Converts an RHOCore object back to JavaScript data
- *
- * @param par A RHOCore representation of a Rholang term
- * @return JSON-serializable data
+/*:: // Get Javascript data represented by a a RHOCore object.
+
+// "we can detail a direct representation of JSON into a
+// fragment of the rholang syntax referred to in the diagram
+// below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
+//
+// [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
+
+// @param par: An extended RHOCore object in Protobuf JSON form.
+//             RHOCore is a subset of Rholang defined in [1].
+//             We extend it to include URIs.
+
+// @return: Javascript data represented by `par`; that is:
+//          Any data you might get from JSON.parse()
+//          as well as URLs.
+//          The flow type is given below:
+export type JsonExt<T> =
+    | JsonPrimitive<T>
+    | JsonArray
+    | JsonObject
+    ;
+
+export type JsonPrimitive<T> =
+    | null
+    | string
+    | number
+    | boolean
+    | T
+    ;
+
+export type JsonExtArray<T> = Array<JsonExt<T>>;
+
+export type JsonExtObject<T> = { [string]: JsonExt<T> };
+
  */
+// ack: https://github.com/facebook/flow/issues/4825#issuecomment-414605109
 exports.toJSData = toJSData;
-function toJSData(par /*: IPar */) /*: Json */{
+function toJSData(par /*: IPar */) /*: JsonExt<URL> */{
   function recur(p /*: IPar */) {
     if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
@@ -87,8 +126,11 @@ function toJSData(par /*: IPar */) /*: Json */{
       if (typeof ex.g_int !== 'undefined') {
         return parseInt(ex.g_int, 10); // ISSUE: overflow
       }
-      if (typeof ex.g_string !== 'undefined') {
+      if (typeof ex.g_string !== 'undefined' && ex.g_string !== null) {
         return ex.g_string;
+      }
+      if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
+        return new URL(ex.g_uri);
       }
       if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
@@ -149,11 +191,15 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_int !== 'undefined') {
         return src(ex.g_int);
       }
-      if (typeof ex.g_string !== 'undefined') {
+      if (typeof ex.g_string !== 'undefined' && ex.g_uri !== null) {
         return src(ex.g_string);
       }
-      if (typeof ex.g_uri !== 'undefined') {
-        return src(ex.g_uri);
+      if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
+        const uri = ex.g_uri;
+        if (uri.match(/`/g)) {
+          throw new Error(`not implemented: URIs containing back-tick: ${uri}`);
+        }
+        return `\`${uri}\``;
       }
       if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {

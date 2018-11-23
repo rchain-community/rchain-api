@@ -1,6 +1,7 @@
-/* eslint-disable object-curly-newline */
+/* global require */
 /* eslint-disable object-curly-newline */
 
+const { URL } = require('url');
 const Suite = require('testjs');
 
 const { Par } = require('../protobuf/RhoTypes.js');
@@ -11,11 +12,11 @@ const testData = require('./RHOCoreSuite.json');
 function testRHOCore() {
   function rtest(item) {
     return (test) => {
-      test.deepEqual(Par.encode(Par.decode(h2b(item.hex))), Par.encode(item.rho));
       test.deepEqual(RHOCore.fromJSData(item.data), item.rho);
       test.deepEqual(RHOCore.toJSData(item.rho), item.data);
       test.deepEqual(RHOCore.toRholang(item.rho), item.rholang);
       test.deepEqual(RHOCore.toByteArray(item.rho).toString('hex'), item.hex);
+      test.deepEqual(Par.encode(Par.decode(h2b(item.hex))), Par.encode(item.rho));
 
       test.done();
     };
@@ -46,6 +47,23 @@ function testRHOCore() {
     },
     'rhol template: ending': (test) => {
       test.deepEqual(rhol`0!${'a'}`, '0!"a"');
+      test.done();
+    },
+    'JSON extension: URI': (test) => {
+      const uri = 'rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8';
+      rtest({
+        data: new URL(uri),
+        rholang: `\`${uri}\``,
+        hex: '2a3f223d72686f3a69643a776477633336663469786136786163636b33646465706d677565756d377a756575637a677468637170363737316b6475386a6f676d38',
+        rho: { exprs: [{ g_uri: uri }] },
+      })(test);
+    },
+    'rhol template: URL': (test) => {
+      const uri = new URL('rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8');
+      test.deepEqual(
+        rhol`lookup!(${uri}, *return)`,
+        'lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *return)',
+      );
       test.done();
     },
   });
