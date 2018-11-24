@@ -6,12 +6,15 @@ new
   sysCh, revCh, faucetCh,
   aliceCh, uriCh
 in {
+  // This URI comes from SystemInstancesRegistry.rho.
   lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
   for(@(_, sys) <- sysCh) {
     @sys!("lookup", "rev", *revCh) |
     @sys!("lookup", "faucet", *faucetCh) |
     for(faucet <- faucetCh; rev <- revCh) {
       debug!({"faucet": *faucet, "rev": *rev}) |
+      // We should use WalletCheck... but I'm not sure how to do that with the faucet.
+      // I guess I'd have to use my node's wallets.txt.
       faucet!(
         100, "ed25519",
         // Alice's public key

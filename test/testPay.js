@@ -114,6 +114,9 @@ new retCh, depositResult, bobWalletURICh, statusCh,
 
   const bobBalance = await bobWallet.getBalance();
   console.log({ bobBalance });
+
+  const aliceBalanceAfter = await aliceWallet.getBalance();
+  console.log({ aliceBalanceAfter });
 }
 
 
