@@ -1,11 +1,11 @@
-/* global require, exports */
+/* global require, exports, Buffer */
 // @flow strict
 
 const { URL } = require('url');
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
-const { Par } = require('../protobuf/RhoTypes.js');
-
+const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
+const { b2h } = require('./signing');
 
 /**
  * Build Rholang expression from Javascript data.
@@ -23,6 +23,15 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
   function recur(x) /*: IPar */{
     if (x instanceof URL) {
       return expr1({ g_uri: x.href });
+    }
+    if (x instanceof GPrivate) {
+      return { ids: [x] };
+    }
+    if (x instanceof Uint8Array) {
+      return expr1({ g_byte_array: Buffer.from(x) });
+    }
+    if (x instanceof Buffer) {
+      return expr1({ g_byte_array: x });
     }
     switch (typeof x) {
       case 'boolean':
@@ -45,7 +54,7 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
     }
   }
 
-  function toArry(items /*: JsonArray */) {
+  function toArry(items /*: mixed[] */) {
     // [1, 2, 2] is a process with one exprs, which is a list
     // The list has one 3 items, each of which is a process
     // with one exprs, which is an int.
@@ -94,8 +103,8 @@ function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
 //          The flow type is given below:
 export type JsonExt<T> =
     | JsonPrimitive<T>
-    | JsonArray
-    | JsonObject
+    | JsonExtArray<T>
+    | JsonExtObject<T>
     ;
 
 export type JsonPrimitive<T> =
@@ -113,8 +122,8 @@ export type JsonExtObject<T> = { [string]: JsonExt<T> };
  */
 // ack: https://github.com/facebook/flow/issues/4825#issuecomment-414605109
 exports.toJSData = toJSData;
-function toJSData(par /*: IPar */) /*: JsonExt<URL> */{
-  function recur(p /*: IPar */) {
+function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
+  function recur(p /*: IPar */) /*: JsonExt<URL | GPrivate> */{
     if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
@@ -129,6 +138,9 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL> */{
       if (typeof ex.g_string !== 'undefined' && ex.g_string !== null) {
         return ex.g_string;
       }
+      if (typeof ex.g_byte_array !== 'undefined' && ex.g_string !== null) {
+        return ex.g_byte_array;
+      }
       if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
         return new URL(ex.g_uri);
       }
@@ -141,22 +153,27 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL> */{
         const props = ex.e_map_body.kvs.map((kv) => {
           const key = recur(kv.key || {});
           if (typeof key !== 'string') {
-            throw new Error(`not RHOCore? ${JSON.stringify(key)}`);
+            throw new Error(`not RHOCore? map key not string: ${JSON.stringify(key)}`);
           }
           const val = recur(kv.value || {});
           return { k: key, v: val };
         });
         return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
       }
-      throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
-    } else if (p.sends) {
+      throw new Error(`not RHOCore? unknown expression type: ${JSON.stringify(ex)}`);
+    } else if (p.sends && p.sends.length) {
       const props = p.sends.map((s) => {
         const key = recur(s.chan || {});
-        if (typeof key !== 'string') { throw new Error(`not RHOCore? ${JSON.stringify(key)}`); }
+        if (typeof key !== 'string') { throw new Error(`not RHOCore? send key: ${JSON.stringify(key)}`); }
         const val = recur((s.data || [{}])[0]);
         return { k: key, v: val };
       });
       return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
+    } else if (p.ids && p.ids.length) {
+      if (p.ids.length !== 1) {
+        throw new Error(`not RHOCore? >1 ids ${JSON.stringify(p)}`);
+      }
+      return GPrivate.fromObject(p.ids[0]);
     } else {
       // TODO: check that everything else is empty
       return null;
@@ -171,16 +188,31 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL> */{
  * Converts an RHOCore object into Rholang source form
  *
  * @param par A RHOCore representation of a Rholang term
+ * @param env optional map of (hex ids of) private names to in-scope names
  * @return A rholang string
  *
  * ISSUE: Use intersection types to constrain par param further than IPar?
  */
 exports.toRholang = toRholang;
-function toRholang(par /*: IPar */) /*: string */ {
+function toRholang(par /*: IPar */, env /*: ?{ [string]: string } */) /*: string */ {
   const src = x => JSON.stringify(x);
 
   function recur(p /*: IPar */) {
-    if (p.exprs && p.exprs.length > 0) {
+    if (p.ids && p.ids.length) {
+      if (p.ids.length !== 1 || p.ids[0].id === null) {
+        throw new Error(`not RHOCore? >1 ids ${JSON.stringify(p)}`);
+      }
+      const id = p.ids[0].id;
+      if (! env) {
+        throw new Error(`Unforgeable name ${b2h(id)} has no rholang syntax: no scope given.`);
+      }
+      const name = env[b2h(p.ids[0].id)];
+      if (! name) {
+        throw new Error(`Unforgeable name ${b2h(id)} has no binding in scope ${JSON.stringify(env)}.`);
+      }
+      console.log('unforgeable toRholang:', id, name);
+      return name;
+    } else if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
@@ -191,8 +223,11 @@ function toRholang(par /*: IPar */) /*: string */ {
       if (typeof ex.g_int !== 'undefined') {
         return src(ex.g_int);
       }
-      if (typeof ex.g_string !== 'undefined' && ex.g_uri !== null) {
+      if (typeof ex.g_string !== 'undefined' && ex.g_string !== null) {
         return src(ex.g_string);
+      }
+      if (typeof ex.g_byte_array !== 'undefined' && ex.g_byte_array !== null) {
+        return `"${b2h(ex.g_byte_array)}".hexToBytes()`;
       }
       if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
         const uri = ex.g_uri;
@@ -206,8 +241,8 @@ function toRholang(par /*: IPar */) /*: string */ {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
         return `[${items.join(', ')}]`;
       }
-      throw new Error(`not RHOCore? ${JSON.stringify(ex)}`);
-    } else if (p.sends) {
+      throw new Error(`not RHOCore? unknown expr ${JSON.stringify(ex)}`);
+    } else if (p.sends && p.sends.length) {
       const ea = s => `@${recur(s.chan || {})}!(${(s.data || []).map(recur).join(', ')})`;
       return p.sends.map(ea).join(' | ');
     } else {
@@ -220,15 +255,34 @@ function toRholang(par /*: IPar */) /*: string */ {
 }
 
 
-exports.rhol = rhol;
-function rhol(template /*: string[] */, ...subs /*: Json[] */) {
-  const encoded = subs.map(it => toRholang(fromJSData(it)));
+/**
+ * Make a rholang template tag for use in a scope where certain names are bound.
+ *
+ * For example, suppose we used previewPrivateNames to determine
+ * the id for ret in `new ret { BasicWallet!("transfer", 12, 100, *ret) }`.
+ * Then BasicWallet signature is over these parameters:
+ *
+ * const [nonce, amount, ret] = [12, 100, ret];
+ * const rhol1 = RHOCore.rholInScope({ [b2h(id)]: 'name1'});
+ *
+ * rhol1`[${nonce}, ${amount}, ${ret}]`
+ * // => '[12, 100, name1]'
+ */
+exports.rholInScope = rholInScope;
+function rholInScope(env /*: { [string]: string }*/) {
+  function rhol(template /*: string[] */, ...subs /*: JsonExt<URL | GPrivate>[] */) {
+    const encoded = subs.map(it => toRholang(fromJSData(it), env));
 
-  const out = [];
-  template.forEach((part, ix) => {
-    out.push(part);
-    out.push(encoded[ix]);
-  });
+    const out = [];
+    template.forEach((part, ix) => {
+      out.push(part);
+      out.push(encoded[ix]);
+    });
 
-  return out.join('');
+    return out.join('');
+  }
+  return rhol;
 }
+
+
+exports.rhol = rholInScope({});

@@ -29,6 +29,7 @@ const packageDefinition = protoLoader.loadSync(
 
 /*::
 import grpcT from 'grpc';
+import type JsonExt from './RHOCore';
  */
 
 /*::
@@ -183,7 +184,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPublicName(nameObj /*: Json */) {
+  function listenForDataAtPublicName(nameObj /*: JsonExt<URL | GPrivate> */) {
     return listenForDataAtName(RHOCore.fromJSData(nameObj));
   }
 
