@@ -5,7 +5,7 @@ const { URL } = require('url');
 const Suite = require('testjs');
 
 const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
-const { RHOCore, h2b, b2h, keyPair } = require('../index');
+const { RHOCore, h2b, keyPair } = require('../index');
 const testData = require('./RHOCoreSuite.json');
 
 function testRHOCore() {
@@ -29,10 +29,8 @@ function testRHOCore() {
     );
   }
 
-  Suite.run(mapValues(testData, rtest));
-
   const { rhol } = RHOCore;
-  Suite.run({
+  const rhoTests = {
     'rhol template: numbers, strings, lists, objects': (test) => {
       test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], @"b"!(2))');
       test.done();
@@ -50,7 +48,7 @@ function testRHOCore() {
       test.deepEqual(rhol`0!${'a'}`, '0!"a"');
       test.done();
     },
-    'JSON extension: URI': (test) => {
+    'RHOCore extension: URI': (test) => {
       const uri = 'rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8';
       rtest({
         data: new URL(uri),
@@ -67,7 +65,7 @@ function testRHOCore() {
       );
       test.done();
     },
-    'JSON extension: bytes': (test) => {
+    'RHOCore extension: bytes': (test) => {
       const hex = 'deadbeef';
       rtest({
         data: h2b(hex),
@@ -76,32 +74,9 @@ function testRHOCore() {
         rho: { exprs: [{ g_byte_array: h2b(hex) }] },
       })(test);
     },
-    'JSON extension: unforgeable names': (test) => {
-      const [destid, statusid] = [
-        h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4'),
-        h2b('fc4af4925456aec1b3b1bf003ded72a04557cce8ed0a367b5e1c4021e9adf9de'),
-      ];
-      const k1 = keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
-
-      // BasicWallet.transfer signature is over these params:
-      const [nonce, amount, destination] = [12, 100, GPrivate.fromObject({ id: destid })];
-      const status = GPrivate.fromObject({ id: statusid });
-      test.log('destination:', destination);
-      const sig = k1.signBytes(
-        RHOCore.toByteArray(RHOCore.fromJSData([nonce, amount, destination]))
-      );
-      const rholWithDest = RHOCore.rholInScope({
-        [b2h(destid)]: 'destination',
-        [b2h(statusid)]: 'status',
-      });
-      test.equal(
-        rholWithDest`new destination, status in {
-          BasicWallet!("transfer", ${amount}, ${nonce}, ${sig}, ${destination}, ${status})
-        }`,
-        '@@TODO',
-      );
-
-      const par = { ids: [destid] };
+    'RHOCore extension: private names': (test) => {
+      const destid = h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4');
+      const par = { ids: [{ id: destid }] };
       rtest({
         rho: par,
         data: GPrivate.fromObject({ id: destid }),
@@ -109,7 +84,22 @@ function testRHOCore() {
         hex: '3a220a20476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4',
       })(test);
     },
-  });
+    'BasicWallet transfer signature': (test) => {
+      const destid = h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4');
+      const k1 = keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
+
+      // BasicWallet.transfer signature is over these params:
+      const [nonce, amount, dest] = [12, 100, GPrivate.fromObject({ id: destid })];
+      const sig = k1.signData([nonce, amount, dest]);
+      test.equal(
+        rhol`new dest, status in { BasicWallet!("transfer", ${amount}, ${nonce}, ${sig}, dest, status) }`,
+        'new dest, status in { BasicWallet!("transfer", 100, 12, "6a6e8ea7d13ad1e7cd676eee62081f9c6b36cfaef4d41d533127a56e7f48ad1378ae93e59b05d73cf17ce55bedf6b201cd78f6ec8ef20dd1b919b5918cc72007".hexToBytes(), dest, status) }',
+      );
+      test.done();
+    },
+  };
+
+  Suite.run({ ...mapValues(testData, rtest), ...rhoTests });
 }
 
 testRHOCore();

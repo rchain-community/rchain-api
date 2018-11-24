@@ -5,7 +5,9 @@ const { URL } = require('url');
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
 const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
-const { b2h } = require('./signing');
+
+// copied from signing.js to avoid circular imports
+const b2h = bytes => Buffer.from(bytes).toString('hex');
 
 /**
  * Build Rholang expression from Javascript data.
@@ -188,30 +190,17 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
  * Converts an RHOCore object into Rholang source form
  *
  * @param par A RHOCore representation of a Rholang term
- * @param env optional map of (hex ids of) private names to in-scope names
  * @return A rholang string
  *
  * ISSUE: Use intersection types to constrain par param further than IPar?
  */
 exports.toRholang = toRholang;
-function toRholang(par /*: IPar */, env /*: ?{ [string]: string } */) /*: string */ {
+function toRholang(par /*: IPar */) /*: string */ {
   const src = x => JSON.stringify(x);
 
   function recur(p /*: IPar */) {
     if (p.ids && p.ids.length) {
-      if (p.ids.length !== 1 || p.ids[0].id === null) {
-        throw new Error(`not RHOCore? >1 ids ${JSON.stringify(p)}`);
-      }
-      const id = p.ids[0].id;
-      if (! env) {
-        throw new Error(`Unforgeable name ${b2h(id)} has no rholang syntax: no scope given.`);
-      }
-      const name = env[b2h(p.ids[0].id)];
-      if (! name) {
-        throw new Error(`Unforgeable name ${b2h(id)} has no binding in scope ${JSON.stringify(env)}.`);
-      }
-      console.log('unforgeable toRholang:', id, name);
-      return name;
+      throw new Error('Unforgeable names have no rholang syntax.');
     } else if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
@@ -256,33 +245,17 @@ function toRholang(par /*: IPar */, env /*: ?{ [string]: string } */) /*: string
 
 
 /**
- * Make a rholang template tag for use in a scope where certain names are bound.
- *
- * For example, suppose we used previewPrivateNames to determine
- * the id for ret in `new ret { BasicWallet!("transfer", 12, 100, *ret) }`.
- * Then BasicWallet signature is over these parameters:
- *
- * const [nonce, amount, ret] = [12, 100, ret];
- * const rhol1 = RHOCore.rholInScope({ [b2h(id)]: 'name1'});
- *
- * rhol1`[${nonce}, ${amount}, ${ret}]`
- * // => '[12, 100, name1]'
+ * Rholang template tag.
  */
-exports.rholInScope = rholInScope;
-function rholInScope(env /*: { [string]: string }*/) {
-  function rhol(template /*: string[] */, ...subs /*: JsonExt<URL | GPrivate>[] */) {
-    const encoded = subs.map(it => toRholang(fromJSData(it), env));
+exports.rhol = rhol;
+function rhol(template /*: string[] */, ...subs /*: JsonExt<URL | GPrivate>[] */) {
+  const encoded = subs.map(it => toRholang(fromJSData(it)));
 
-    const out = [];
-    template.forEach((part, ix) => {
-      out.push(part);
-      out.push(encoded[ix]);
-    });
+  const out = [];
+  template.forEach((part, ix) => {
+    out.push(part);
+    out.push(encoded[ix]);
+  });
 
-    return out.join('');
-  }
-  return rhol;
+  return out.join('');
 }
-
-
-exports.rhol = rholInScope({});
