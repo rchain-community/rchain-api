@@ -11,7 +11,9 @@ const { URL } = require('url');
 
 const { GPrivate } = require('../protobuf/RhoTypes.js');
 
-const { RNode, b2h, h2b, RHOCore, makeProxy, keyPair, blake2b256Hash } = require('..');
+const {
+  RNode, b2h, h2b, RHOCore, makeProxy, keyPair, blake2b256Hash,
+} = require('..');
 const { link } = require('./assets');
 
 const { toJSData, rhol } = RHOCore;
@@ -52,7 +54,7 @@ async function alicePaysBob(aliceWalletURI, { rnode, clock, _setTimeout }) {
   console.log('preview of unforgeable name needed for signing', retId);
 
   const msg = RHOCore.toByteArray(RHOCore.fromJSData(
-    [aliceNonce + 1, amount, GPrivate.create({ id: retId })]
+    [aliceNonce + 1, amount, GPrivate.create({ id: retId })],
   ));
   console.log('transfer bytes to hash, sign', b2h(msg));
   const sigHex = aliceKey.signBytesHex(blake2b256Hash(msg));
@@ -98,7 +100,7 @@ new retCh, depositResult, bobWalletURICh, statusCh,
 
   `;
   console.log('code to pay:', dPmt.timestamp, term);
-  await rnode.doDeploy({ term, ...dPmt}, true);
+  await rnode.doDeploy({ term, ...dPmt }, true);
   const found = await rnode.listenForDataAtName({ ids: [{ id: depositResultId }] });
   const par = firstBlockData(found);
   console.log('payment result:', toJSData(par));
