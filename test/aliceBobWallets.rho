@@ -15,7 +15,7 @@ in {
       faucet!(
         100, "ed25519",
         // Alice's public key
-        "288755c48c3951f89c5f0ffe885088dc0970fd935bc12adfdd81f81bb63d6219".hexToBytes(),
+        "288755c48c3951f89c5f0ffe885088dc0970fd935bc12adfdd81f81bb63d6219",
         *aliceCh) |
       for (@[aliceWallet] <- aliceCh) {
         debug!({"aliceWallet": aliceWallet}) |
