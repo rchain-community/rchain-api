@@ -3,6 +3,7 @@
 Note also rho:pubkey:ed25519:xxxxx.
 
  */
+/* global require, exports, Buffer */
 
 // ref https://nodejs.org/api/util.html#util_custom_inspection_functions_on_objects
 // ack: https://stackoverflow.com/a/46870568
@@ -10,16 +11,18 @@ Note also rho:pubkey:ed25519:xxxxx.
 
 const { sign } = require('tweetnacl'); // ocap discpline: "hiding" keyPair
 
+const { fromJSData, toByteArray } = require('./RHOCore');
+
 const b2h = bytes => Buffer.from(bytes).toString('hex');
 const h2b = hex => Buffer.from(hex, 'hex');
 const t2b = text => Buffer.from(text);
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
-module.exports.b2h = b2h;
-module.exports.h2b = h2b;
+exports.b2h = b2h;
+exports.h2b = h2b;
 
-module.exports.keyPair = keyPair;
+exports.keyPair = keyPair;
 /**
  * Build key pair from seed.
  * @param seed: 32 bytes, as from crypto.randombytes(32)
@@ -37,6 +40,8 @@ function keyPair(seed) {
     signBytesHex: bytes => b2h(signBytes(bytes)),
     signText: text => signBytes(t2b(text)),
     signTextHex: text => b2h(signBytes(t2b(text))),
+    signData: data => signBytes(toByteArray(fromJSData(data))),
+    signDataHex: data => b2h(signBytes(toByteArray(fromJSData(data)))),
     publicKey: () => b2h(key.publicKey),
     // TODO label: () => state.label,
     // TODO [inspect.custom]: toString
@@ -44,7 +49,7 @@ function keyPair(seed) {
 }
 
 
-module.exports.verify = verify;
+exports.verify = verify;
 function verify(message /*: Uint8Array*/, sig /*: Uint8Array*/, publicKey /*: Uint8Array*/) {
   return sign.detached.verify(message, sig, publicKey);
 }
