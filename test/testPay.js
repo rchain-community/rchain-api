@@ -30,6 +30,7 @@ async function test({ rnode, clock, setTimeout }) {
 const R = {
   debug: new URL('rho:io:stderr'),
   lookup: new URL('rho:registry:lookup'),
+  insertArbitrary: new URL('rho:registry:insertArbitrary'),
   sys: new URL('rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8'),
   BasicWallet: new URL('rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms'),
 };
@@ -45,8 +46,9 @@ async function alicePaysBob(aliceWalletURI, { rnode, clock, _setTimeout }) {
 
   const amount = 10;
   const aliceKey = keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
+  const bobKey = keyPair(h2b('9217509f61d80a69627daad29796774d1b65d06e70762aa114e9aa534c0d76bb'));
   const dPmt = { user, timestamp: clock().valueOf(), ...defaultPayment };
-  const [retId] = await rnode.previewPrivateIds(dPmt, 1);
+  const [retId, depositResultId, bobWalletURIId] = await rnode.previewPrivateIds(dPmt, 3);
   console.log('preview of unforgeable name needed for signing', retId);
 
   const msg = RHOCore.toByteArray(RHOCore.fromJSData(
@@ -57,17 +59,35 @@ async function alicePaysBob(aliceWalletURI, { rnode, clock, _setTimeout }) {
   console.log('pk, sig:', aliceKey.publicKey(), sigHex);
 
   const term = rhol`
-new retCh, statusCh, debug(${R.debug}), rl(${R.lookup}), wCh, bwCh, sysCh, revCh in {
+new retCh, depositResult, bobWalletURICh, statusCh,
+    debug(${R.debug}), rl(${R.lookup}), ri(${R.insertArbitrary}),
+    wCh, bwCh, sysCh, revCh, bobwCh in {
   rl!(${aliceWalletURI}, *wCh) |
-  for(aliceWallet <- wCh) {
+  rl!(${R.sys}, *sysCh) |
+  rl!(${R.BasicWallet}, *bwCh) |
+  for(aliceWallet <- wCh; @(_, sys) <- sysCh) {
     debug!({"aliceWallet": *aliceWallet, "to hash, sign": [${aliceNonce + 1}, ${amount}, *retCh].toByteArray()}) |
+
+    @sys!("lookup", "rev", *revCh) |
+    for(@(_, BasicWallet) <- bwCh; rev <- revCh) {
+      new emptyREVPurseCh in {
+        rev!("makePurse", *emptyREVPurseCh) |
+        for(empty <- emptyREVPurseCh) {
+          debug!({"empty purse for bob's wallet": *empty}) |
+          @BasicWallet!(*empty, "ed25519", ${bobKey.publicKey()}, *bobwCh)
+        }
+      }
+    }
+    |
     // ISSUE: if you pass in bytes rather than hex for sig, nothing comes back
     aliceWallet!("transfer", ${amount}, ${aliceNonce + 1}, ${sigHex}, *retCh, *statusCh) |
     for(@status <- statusCh) {
       debug!({"transfer status": status}) |
       if (status == "Success") {
-          for(pmt <- retCh) {
-            debug!({"pmt": *pmt}) // ISSUE: purses can go out of scope and get lost forever
+          for(pmt <- retCh; @[bobWallet] <- bobwCh) {
+            debug!({"pmt": *pmt, "bob wallet": bobWallet}) | // ISSUE: purses can go out of scope and get lost forever
+            @bobWallet!("deposit", 10, *pmt, *depositResult) |
+            new ch in { ri!(bobWallet, *ch) | for (@uri <- ch) { bobWalletURICh!(uri) } }
           }
       } else {
         debug!("lose!")
@@ -79,9 +99,19 @@ new retCh, statusCh, debug(${R.debug}), rl(${R.lookup}), wCh, bwCh, sysCh, revCh
   `;
   console.log('code to pay:', dPmt.timestamp, term);
   await rnode.doDeploy({ term, ...dPmt}, true);
-  const found = await rnode.listenForDataAtName({ ids: [{ id: retId }] });
+  const found = await rnode.listenForDataAtName({ ids: [{ id: depositResultId }] });
   const par = firstBlockData(found);
-  console.log('alice payment purse:', par);
+  console.log('payment result:', toJSData(par));
+
+  const f2 = await rnode.listenForDataAtName({ ids: [{ id: bobWalletURIId }] });
+  const par2 = firstBlockData(f2);
+  const bobWalletURI = toJSData(par2);
+  console.log('bob wallet URI:', bobWalletURI);
+
+  const bobWallet = makeProxy(bobWalletURI, { user, ...defaultPayment }, { rnode, clock });
+
+  const bobBalance = await bobWallet.getBalance();
+  console.log({ bobBalance });
 }
 
 
