@@ -22,7 +22,10 @@ interface LoadAccess {
  */
 
 exports.loadRhoModule = loadRhoModule;
-async function loadRhoModule(source /*: string*/, user /*: string*/, { rnode, clock } /*: LoadAccess */) {
+async function loadRhoModule(
+  source /*: string*/, user /*: string*/,
+  { rnode, clock } /*: LoadAccess */,
+) {
   const timestamp = clock().valueOf();
   const [return_] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
   const mh = moduleHeader(source);
