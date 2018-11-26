@@ -26,16 +26,17 @@ const Scenario = {
 
 async function test({ rnode, clock }) {
   const aliceWalletURI = await genesis({ rnode, clock });
-  await alicePaysBob(aliceWalletURI, { rnode, clock });
-}
 
-
-async function alicePaysBob(aliceWalletURI, { rnode, clock }) {
   const sendURI = await loadRhoModule(
     link('./sending.rho'), user,
     { rnode, clock },
   );
 
+  await alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock });
+}
+
+
+async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   // Wrap send contract with an extra unforgeable channel.
   function sendVia(ch, timestamp, args) {
     return sendCall(
