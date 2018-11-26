@@ -34,7 +34,7 @@ exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: string */,
   deployData,
-  { rnode, clock, predeclare = null, delay = null, unary = false },
+  { rnode, clock, delay = null, unary = false },
 ) {
   const sendIt = msg => sendCall(
     msg, { timestamp: clock().valueOf(), ...deployData },

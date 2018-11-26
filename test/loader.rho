@@ -1,0 +1,13 @@
+new return, exports, trace(`rho:io:stderr`) in {
+  __SOURCE__
+  |
+  new uriCh, insertArbitrary(`rho:registry:insertArbitrary`) in {
+    for (@it <- exports) {
+      insertArbitrary!(it, *uriCh) |
+      for (@uri <- uriCh) {
+        trace!({"__NAME__ uri": uri}) |
+        return!(uri)
+      }
+    }
+  }
+}
