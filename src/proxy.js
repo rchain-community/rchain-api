@@ -1,15 +1,27 @@
 /*global require, exports*/
+// @flow
 
 const { rhol, toJSData } = require('./RHOCore');
 
 /*::
-import type { IRNode } from './rnodeAPI';
+import type { IRNode, DeployData } from './rnodeAPI';
 
 type Message = {
   target: string,
   method: ?string,
   args: mixed[],
 };
+
+interface SendOpts {
+  rnode: IRNode,
+  predeclare?: string[],
+  delay?: () => Promise<void>,
+  unary?: boolean
+};
+
+interface ProxyOpts extends SendOpts {
+  clock: () => Date
+}
 
 */
 
@@ -33,12 +45,12 @@ type Message = {
 exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: string */,
-  deployData,
-  { rnode, clock, delay = null, unary = false },
+  deployData /*: DeployData */,
+  { rnode, clock, delay, unary = false } /*: ProxyOpts */,
 ) {
   const sendIt = msg => sendCall(
     msg, { timestamp: clock().valueOf(), ...deployData },
-    { rnode, delay, unary },
+    { rnode, delay: delay || noDelay, unary },
   );
   return new Proxy({}, {
     get: (_, method) => (...args) => sendIt({ target, method, args }),
@@ -63,10 +75,10 @@ function makeProxy(
 exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
-  deployData,
-  { rnode, predeclare = null, delay = null, unary = false },
+  deployData /*: DeployData */,
+  { rnode, predeclare = [], delay, unary = false } /*: SendOpts */,
 ) {
-  const term = callSource({ target, method, args }, predeclare || [], unary);
+  const term = callSource({ target, method, args }, { predeclare: predeclare || [], unary });
   const [returnCh] = await rnode.previewPrivateChannels(deployData, 1);
   await rnode.doDeploy({ term, ...deployData }, true);
   if (delay) {
@@ -81,14 +93,24 @@ async function sendCall(
 }
 
 
+async function noDelay() {
+  return undefined;
+}
+
+
 /**
  * Make a rholang term for looking up a target and calling a method.
  *
- * @param unary: For better compositionality, JS args are combined into one
- * list arg on the rholang side.
+ * @param msg
+ * @param opts
+ * @param opts.unary: For better compositionality, JS args are combined into one
+ *                    list arg on the rholang side.
  */
 exports.callSource = callSource;
-function callSource({ target, method, args } /*: Message*/, predeclare = [], unary = false) {
+function callSource(
+  { target, method, args } /*: Message*/,
+  { predeclare = [], unary = false } /*: { predeclare: string[], unary: boolean } */,
+) {
   return rhoCall({
     // ISSUE: assume target is injection-safe?
     target: `\`${target}\``,

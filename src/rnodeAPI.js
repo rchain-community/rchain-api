@@ -33,7 +33,7 @@ import type JsonExt from './RHOCore';
  */
 
 /*::
-type DeployData = {
+export type DeployData = {
   user: Uint8Array ,
   term: string,
   timestamp: number,
@@ -53,7 +53,8 @@ type DeployDataInsecure = {
   nonce: number
 }
 
-export type IRNode = $Call<RNode>;
+type EndPoint = { host: string, port: number };
+export type IRNode = $Call<typeof RNode, grpcT, EndPoint>;
 */
 
 /**

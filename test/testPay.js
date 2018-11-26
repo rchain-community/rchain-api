@@ -6,6 +6,7 @@ ISSUE: should be: all she knows about Bob is his eth address.
 
 */
 /* global require */
+// @flow
 
 const { GPrivate } = require('../protobuf/RhoTypes.js');
 const {
@@ -115,7 +116,7 @@ if (require.main === module) {
   try {
     test({
       rnode,
-      clock: () => new Date().valueOf(),
+      clock: () => new Date(),
     });
   } catch (oops) {
     console.error(oops);

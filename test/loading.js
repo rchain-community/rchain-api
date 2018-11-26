@@ -1,4 +1,5 @@
 /* global require, exports */
+// @flow
 
 const { Writer } = require('protobufjs');
 
@@ -10,9 +11,18 @@ const LOADER_TEMPLATE = link('./loader.rho');
 
 const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
 
+/*::
+import type { IRNode } from '..';
+
+interface LoadAccess {
+  rnode: IRNode,
+  clock: () => Date,
+}
+
+ */
 
 exports.loadRhoModule = loadRhoModule;
-async function loadRhoModule(source, user, { rnode, clock }) {
+async function loadRhoModule(source /*: string*/, user /*: string*/, { rnode, clock } /*: LoadAccess */) {
   const timestamp = clock().valueOf();
   const [return_] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
   const mh = moduleHeader(source);
@@ -41,13 +51,14 @@ function moduleHeader(sourceCode) {
  * Get printable form of unforgeable name, given id.
  */
 exports.unforgeableWithId = unforgeableWithId;
-function unforgeableWithId(id) {
+function unforgeableWithId(id /*: Uint8Array */) {
   const bytes = Writer.create().bytes(id).finish().slice(1);
   return `Unforgeable(0x${b2h(bytes)})`;
 }
 
 exports.prettyPrivate = prettyPrivate;
-function prettyPrivate(par) {
+function prettyPrivate(par /*: IPar */) {
+  if (!(par.ids && par.ids.length && par.ids[0].id)) { throw new Error('expected GPrivate'); }
   return unforgeableWithId(par.ids[0].id);
 }
 
