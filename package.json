@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "testAll": "npm run check && npm run integrationTest",
+    "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/** --shallow -o docs/index.md",
+    "doc-watch": "documentation serve --watch index.js src/** --shallow",
     "check": "npm run test && npm run lint && npm run flow-check",
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
@@ -46,6 +48,7 @@
     "tweetnacl": "^1.0.0"
   },
   "devDependencies": {
+    "documentation": "^8.1.2",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",

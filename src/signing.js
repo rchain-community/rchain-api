@@ -1,8 +1,7 @@
-/** keyPair -- ed25519 signing
-
-Note also rho:pubkey:ed25519:xxxxx.
-
- */
+/* keyPair -- ed25519 signing
+*/
+/* global require, exports, Buffer */
+// @flow
 
 // ref https://nodejs.org/api/util.html#util_custom_inspection_functions_on_objects
 // ack: https://stackoverflow.com/a/46870568
@@ -10,42 +9,63 @@ Note also rho:pubkey:ed25519:xxxxx.
 
 const { sign } = require('tweetnacl'); // ocap discpline: "hiding" keyPair
 
-const b2h = bytes => Buffer.from(bytes).toString('hex');
-const h2b = hex => Buffer.from(hex, 'hex');
+function b2h(bytes /*: Uint8Array */) /*: string*/ { return Buffer.from(bytes).toString('hex'); }
+function h2b(hex /*: string*/) /*: Uint8Array*/ { return Buffer.from(hex, 'hex'); }
 const t2b = text => Buffer.from(text);
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
-module.exports.b2h = b2h;
-module.exports.h2b = h2b;
+exports.b2h = b2h;
+exports.h2b = h2b;
 
-module.exports.keyPair = keyPair;
+exports.keyPair = keyPair;
 /**
  * Build key pair from seed.
- * @param seed: 32 bytes, as from crypto.randombytes(32)
- * @return: object with .signBytes etc. methods (IOU real docs, or at least tests)
+ * @param seed 32 bytes, as from crypto.randombytes(32)
  */
-function keyPair(seed) {
+function keyPair(seed /*: Uint8Array */) {
   const key = sign.keyPair.fromSeed(seed);
 
   // TODO const toString = () => `<keyPair ${label}: ${state.publicKey.substring(0, 12)}...>`;
-  const signBytes = bytes => sign.detached(bytes, key.secretKey);
+  /**
+   * @memberof keyPair
+   */
+  const signBytes /*: (Uint8Array) => Uint8Array */ = bytes => sign.detached(bytes, key.secretKey);
 
   return def({
     // TODO toString,
     signBytes,
-    signBytesHex: bytes => b2h(signBytes(bytes)),
-    signText: text => signBytes(t2b(text)),
-    signTextHex: text => b2h(signBytes(t2b(text))),
-    publicKey: () => b2h(key.publicKey),
+    /**
+     * @memberof keyPair
+     */
+    signBytesHex(bytes /*: Uint8Array*/) /*: string */ { return b2h(signBytes(bytes)); },
+    /**
+     * @memberof keyPair
+     */
+    signText(text /*: string*/) /*: Uint8Array*/ { return signBytes(t2b(text)); },
+    /**
+     * @memberof keyPair
+     */
+    signTextHex(text /*: string*/) /*: string*/ { return b2h(signBytes(t2b(text))); },
+    /**
+     * @memberof keyPair
+     */
+    publicKey() /*: string*/ { return b2h(key.publicKey); },
     // TODO label: () => state.label,
     // TODO [inspect.custom]: toString
   });
 }
 
 
-module.exports.verify = verify;
-function verify(message /*: Uint8Array*/, sig /*: Uint8Array*/, publicKey /*: Uint8Array*/) {
+exports.verify = verify;
+/**
+ * Verify ed25519 signature
+ */
+function verify(
+  message /*: Uint8Array*/,
+  sig /*: Uint8Array*/,
+  publicKey /*: Uint8Array*/,
+) /*: Uint8Array */{
   return sign.detached.verify(message, sig, publicKey);
 }
 
@@ -61,8 +81,9 @@ function integrationTest({ randomBytes }) {
 }
 
 
+// ocap: Import powerful references only when invoked as a main module.
+/* global module */
+/* eslint-disable global-require */
 if (require.main === module) {
-  // ocap: Import powerful references only when invoked as a main module.
-  /* eslint-disable global-require */
   integrationTest({ randomBytes: require('crypto').randomBytes });
 }

@@ -53,10 +53,9 @@ rchain.doDeploy({
 })
 ```
 
-### Interact with the blockchain
-TODO Better docs would be great.
+## API
 
-For now see the integration test examples in rnodeAPI.js
+[./docs/](./docs/index.md)
 
 
 ## Examples and Related Projects

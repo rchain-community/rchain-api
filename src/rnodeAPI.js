@@ -1,6 +1,4 @@
-/** rnodeAPI -- RChain node Casper gRPC API endpoints
-
-You can run `integrationTest()` a la `node rnodeAPI.js`.
+/* rnodeAPI -- RChain node Casper gRPC API endpoints
 
 refs:
   - [CasperMessage.proto][1] and RhoTypes.proto.
@@ -28,7 +26,8 @@ const packageDefinition = protoLoader.loadSync(
 
 
 /*::
-import grpcT from 'grpc';
+import grpc from 'grpc';
+type grpcT = typeof grpc;
  */
 
 /*::
@@ -59,15 +58,16 @@ type PhloLimit = {
 }
 */
 
+
+exports.RNode = RNode;
 /**
  * Connect to an RChain node (RNode).
  *
  * @param grpc access to the network: grpc instance from the node grpc package
- * @param endpoint { host, port } of rnode gRPC service
+ * @param endPoint rnode gRPC service
  * @return a thin wrapper around a gRPC client stub
  */
-module.exports.RNode = RNode;
-function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: number } */) {
+function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */) {
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
@@ -81,6 +81,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
 
   /**
    * Deploys a rholang term to a node
+   * @memberof RNode
    * @param deployData a DeployData (cf CasperMessage.proto)
    * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
    * @param deployData.purseAddress where deployment price is paid from
@@ -90,7 +91,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @param deployData.phloLimit
    * @param deployData.phloPrice
    * UNTESTED:
-   * @param sig signature of (hash(term) + timestamp) using private key
+   * @param deployData.sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
    * @param autoCreateBlock automatically create a new block after deploy transaction success
    * @return A promise for a response message
@@ -120,6 +121,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
 
   /**
    * Creates a block on your node
+   * @memberof RNode
    * @return A promise for response message
    */
   function createBlock() {
@@ -128,6 +130,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
 
   /**
    * Adds block to local DAG and gossips block to peers on network
+   * @memberof RNode
    * @param block The block to be added
    * @return A promise for response message
    */
@@ -149,6 +152,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   /**
    * Listen for data at a PUBLIC name in the RChain tuple-space.
    *
+   * @memberof RNode
    * @param nameObj: JSON-ish data: string, number, {}, [], ...
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
@@ -160,6 +164,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   /**
    * Listen for data at a PRIVATE name in the RChain tuple-space.
    *
+   * @memberof RNode
    * @param nameId: Hex string representing an UnforgeableName's Id
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
@@ -176,8 +181,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   /**
    * Listen for data at a name in the RChain tuple-space.
    *
+   * @memberof RNode
    * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
-   * @param block_depth: Number of blocks to look back in for the name to listen on
+   * @param blockDepth: Number of blocks to look back in for the name to listen on
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
@@ -197,22 +203,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
   }
 
   /**
-   * Convert the ack channel into a HEX-formatted unforgeable name
-   *
-   * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
-   * @return HEX-formatted string of unforgeable name's Id
-   * @throws Error if the Par does not represent an unforgeable name
-   */
-  function getIdFromUnforgeableName(par /*: IPar */) {
-    if (par.ids && par.ids.length === 1 && par.ids[0].id) {
-      return Buffer.from(par.ids[0].id).toString('hex');
-    }
-    throw new Error('Provided Par object does not represent a single unforgeable name');
-  }
-
-  /**
    * Retrieve a block with the tuplespace for a specific block hash
    *
+   * @memberof RNode
    * @param blockHash: String of the hash for the block being requested
    * @return BlockInfo structure that will include all metadata and also includes Tuplespace
    * @throws Error if the hash is blank or does not correspond to an existing block
@@ -235,6 +228,7 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * Retrieve the block summary for a series of blocks starting with the most recent,
    * including the number of blocks specified by the block_depth
    *
+   * @memberof RNode
    * @param blockDepth: Number indicating the number of blocks to retrieve
    * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
@@ -262,12 +256,27 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtPublicName,
     getBlock,
     getAllBlocks,
-    getIdFromUnforgeableName,
   });
 }
 
 
+exports.getIdFromUnforgeableName = getIdFromUnforgeableName;
 /**
+ * Convert the ack channel into a HEX-formatted unforgeable name
+ *
+ * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+ * @return HEX-formatted string of unforgeable name's Id
+ * @throws Error if the Par does not represent an unforgeable name
+ */
+function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
+  if (par.ids && par.ids.length === 1 && par.ids[0].id) {
+    return Buffer.from(par.ids[0].id).toString('hex');
+  }
+  throw new Error('Provided Par object does not represent a single unforgeable name');
+}
+
+
+/*
  * Adapt callback-style API using Promises.
  *
  * Instead of obj.method(...arg, callback),
@@ -291,7 +300,7 @@ function send(calling) {
   return new Promise(executor);
 }
 
-/**
+/*
  * Adapt streamResponse-style API using Promises.
  *
  * Instead of obj.method(...arg) and event handlers for 'data', 'end', 'error', and 'status',

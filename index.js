@@ -1,3 +1,10 @@
+/**
+ * "we can detail a direct representation of JSON into a
+ * fragment of the rholang syntax referred to in the diagram
+ * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
+ *
+ * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
+ */
 const RHOCore = require('./src/RHOCore');
 
 module.exports.RHOCore = RHOCore;

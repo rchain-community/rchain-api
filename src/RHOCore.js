@@ -3,16 +3,12 @@
 // ISSUE: generated code isn't annotated. $FlowFixMe
 const { Par } = require('../protobuf/RhoTypes.js');
 
+exports.fromJSData = fromJSData;
 /**
- * "we can detail a direct representation of JSON into a
- * fragment of the rholang syntax referred to in the diagram
- * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
- *
- * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
- * @param x Any javascript object to be serialized to RHOCore
+ * @memberof RHOCore
+ * @param data Any javascript object to be serialized to RHOCore
  * @return A rholang term representing the object in RHOCore form.
  */
-exports.fromJSData = fromJSData;
 function fromJSData(data /*: mixed */) /* : IPar */ {
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
 
@@ -57,23 +53,25 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
 }
 
 
+exports.toByteArray = toByteArray;
 /**
  * Turns a rholang term into a byte-array compatible with Rholang
+ * @memberof RHOCore
  */
-exports.toByteArray = toByteArray;
 function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
   // Par.verify(termObj);
   return Par.encode(termObj).finish();
 }
 
 
+exports.toJSData = toJSData;
 /**
  * Converts an RHOCore object back to JavaScript data
  *
+ * @memberof RHOCore
  * @param par A RHOCore representation of a Rholang term
  * @return JSON-serializable data
  */
-exports.toJSData = toJSData;
 function toJSData(par /*: IPar */) /*: Json */{
   function recur(p /*: IPar */) {
     if (p.exprs && p.exprs.length > 0) {
@@ -113,15 +111,16 @@ function toJSData(par /*: IPar */) /*: Json */{
 }
 
 
+exports.toRholang = toRholang;
 /**
  * Converts an RHOCore object into Rholang source form
  *
+ * @memberof RHOCore
  * @param par A RHOCore representation of a Rholang term
  * @return A rholang string
  *
  * ISSUE: Use intersection types to constrain par param further than IPar?
  */
-exports.toRholang = toRholang;
 function toRholang(par /*: IPar */) /*: string */ {
   const src = x => JSON.stringify(x);
 
@@ -163,6 +162,11 @@ function toRholang(par /*: IPar */) /*: string */ {
 
 
 exports.rhol = rhol;
+/**
+ * Template tag for RHOCore interpolation
+ *
+ * @memberof RHOCore
+ */
 function rhol(template /*: string[] */, ...subs /*: Json[] */) {
   const encoded = subs.map(it => toRholang(fromJSData(it)));
 
