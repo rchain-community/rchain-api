@@ -1,0 +1,135 @@
+// Toward decoding ethereum signed transactions
+// https://github.com/ethereum/wiki/wiki/RLP
+new rlp, trace(`rho:io:stderr`) in {
+  contract rlp(@{input /\ ByteArray}, return) = {
+    // trace!({"rlp input": input}) |
+    new rlpAt, decodeLength, toInteger in {
+      rlpAt!(0, *return) |
+
+      contract rlpAt(@ix, return) = {
+        new pfxCh in {
+          decodeLength!(ix, *pfxCh) |
+          for (@pfx <- pfxCh) {
+            // trace!(pfx) |
+            if (pfx == Nil) {
+              trace!({"input": input, "ERROR": true})
+            } else if (pfx.get("list")) {
+              trace!({"TODO": pfx})
+            } else {
+              trace!({
+                "input": input,
+                "atom": input.slice(pfx.get("offset"), pfx.get("offset") + pfx.get("dataLen"))
+              }) |
+              return!(input.slice(pfx.get("offset"), pfx.get("offset") + pfx.get("dataLen")))
+            }
+          }
+        }
+      }
+      |
+      contract decodeLength(@ix, return) = {
+        if (ix >= input.length()) {
+          return!(Nil) // bad input
+        } else if (input.nth(ix) <= 127 /* 0x7f */) {
+          // trace!({"prefix is data": input.nth(ix), "input": input}) |
+          return!({"offset": ix, "dataLen": 1, "list": false})
+        } else if (input.nth(ix) <= 183 /* 0xb7 */ and
+          input.length() - ix > input.nth(ix) - 128 /* 0x80 */) {
+          return!({
+            "offset": ix + 1,
+            "dataLen": input.nth(ix) - 128,
+            "list": false
+          })
+        } else {
+          new qtyCh in {
+            toInteger!(ix + 1, ix + 1 + input.nth(ix) - 183, *qtyCh) |
+            for (@qty <- qtyCh) {
+              // trace!({"prefix": input.nth(ix), "qty": qty}) |
+              if (input.nth(ix) <= 191 /* 0xbf */ and
+                input.length() - ix > input.nth(ix) - 183 and
+                input.length() - ix > input.nth(ix) - 183 + qty) {
+                return!({
+                  "offset": ix + 1 + input.nth(ix) - 183,
+                  "dataLen": qty,
+                  "list": false
+                })
+              } else if (input.nth(ix) <= 247 /* 0xf7 */ and
+                input.length() - ix > input.nth(ix) - 192 /* 0xc0 */) {
+                return!({
+                  "offset": ix + 1,
+                  "dataLen": qty,
+                  "list": true
+                })
+              } else {
+                toInteger!(ix + 1, ix + 1 + input.nth(ix) - 246, *qtyCh) |
+                for (@listLen <- qtyCh) {
+                  if (input.nth(ix) <= 255 /* 0xff*/ and
+                    input.length() - ix > input.nth(ix) - 247 and
+                    input.length() - ix > input.nth(ix) - 247 + listLen) {
+                    return!({
+                      "offset": ix + 1 + input.nth(ix) - 247,
+                      "dataLen": listLen,
+                      "list": true
+                    })
+                  } else {
+                    return!(Nil) // bad input
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      |
+      contract toInteger(@lo, @hi, return) = {
+        // trace!({"lo": lo, "hi": hi}) |
+        if (input.length() - lo <= 0 or lo < 0 or lo > hi or hi > input.length()) {
+          return!(0)
+        } else if (hi - lo == 1) {
+          // trace!({"toInteger base": input.nth(lo)}) |
+          return!(input.nth(lo))
+        } else {
+          new recur in {
+            toInteger!(lo, hi - 1, *recur) |
+            for(@bb <- recur) {
+              // trace!({"toInteger recur": input.nth(hi - 1) + bb * 256, "lo": lo, "hi": hi}) |
+              return!(input.nth(hi - 1) + bb * 256)
+            }
+          }
+        }
+      }
+    }
+  }
+  |
+  // ill-formed
+  rlp!("".hexToBytes(), *trace) |
+
+  //   The string "dog" = [ 0x83, 'd', 'o', 'g' ]
+  rlp!("83646f67".hexToBytes(), *trace) |
+
+  // The empty string ('null') = [ 0x80 ]
+  rlp!("80".hexToBytes(), *trace) |
+
+  // The integer 0 = [ 0x80 ]
+  rlp!("80".hexToBytes(), *trace) |
+
+  // The empty list = [ 0xc0 ]
+  rlp!("c0".hexToBytes(), *trace) |
+
+  // The encoded integer 0 ('\x00') = [ 0x00 ]
+  rlp!("00".hexToBytes(), *trace) |
+
+  // The encoded integer 15 ('\x0f') = [ 0x0f ]
+  rlp!("0f".hexToBytes(), *trace) |
+
+  // The encoded integer 1024 ('\x04\x00') = [ 0x82, 0x04, 0x00 ]
+  rlp!("820400".hexToBytes(), *trace) |
+
+  // The string "Lorem ipsum dolor sit amet, consectetur adipisicing elit" = [ 0xb8, 0x38, 'L', 'o', 'r', 'e', 'm', ' ', ... , 'e', 'l', 'i', 't' ]
+  // >>> ''.join(hex(ord(c))[2:] for c in "Lorem ipsum dolor sit amet, consectetur adipisicing elit")
+  rlp!("b8384c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974".hexToBytes(), *trace) |
+  // The set theoretical representation of three, [ [], [[]], [ [], [[]] ] ] = [ 0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0 ]
+  rlp!("c7c0c1c0c3c0c1c0".hexToBytes(), *trace) |
+  // The list [ "cat", "dog" ] = [ 0xc8, 0x83, 'c', 'a', 't', 0x83, 'd', 'o', 'g' ]
+  rlp!("c883636174646f67".hexToBytes(), *trace) |
+  trace!("testing")
+}
