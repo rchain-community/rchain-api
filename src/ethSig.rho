@@ -16,8 +16,9 @@ sigDER, pkDER in
     *pubCh) |
 
   sigDER!(
+    "00" ++ // TODO: prevent f2 from signaling negative in sigDER
     // > tx.r.toString('hex')
-    "00f2d54d3399c9bcd3ac3482a5ffaeddfe68e9a805375f626b4f2f8cf530c2d95a",
+    "f2d54d3399c9bcd3ac3482a5ffaeddfe68e9a805375f626b4f2f8cf530c2d95a",
     // > tx.s.toString('hex')
     "5b3bb54e6e8db52083a9b674e578c843a87c292f0383ddba168573808d36dc8e",
     *sigCh) |
@@ -72,6 +73,8 @@ sigDER, pkDER in
     }
   } |
 
+  // test from
+  // https://github.com/bitcoin-core/secp256k1/blob/master/src/java/org/bitcoin/NativeSecp256k1Test.java
   // data CF80CD8AED482D5D1527D7DC72FCEFF84E6326592848447D2DC0B0E87DFC9A90
   // sig   3044022079
   //           BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F8179802
