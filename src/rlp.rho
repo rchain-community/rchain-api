@@ -52,9 +52,13 @@ new rlp, test, trace(`rho:io:stderr`) in {
         // trace!({"decode lo": lo, "hi": hi, "len": input.length()}) |
         if (lo >= hi) {
           fail!(lo)
-        } else if (input.nth(lo) <= 127 /* 0x7f */) {    // single byte
+        } else if (input.nth(lo) <= 127 /* 0x7f */) {
+          // trace!({"single byte": input.nth(lo), "at": lo}) |
+
           return!({"lo": lo, "hi": lo + 1, "list": false})
-        } else if (input.nth(lo) <= 183 /* 0xb7 */) {    // short string
+        } else if (input.nth(lo) <= 183 /* 0xb7 */) {
+          // trace!({"short string at": lo}) |
+
           if (lo + 1 + input.nth(lo) - 128 > hi) {
             fail!(lo)
           } else {
@@ -64,7 +68,9 @@ new rlp, test, trace(`rho:io:stderr`) in {
               "list": false
             })
           }
-        } else if (input.nth(lo) <= 191 /* 0xbf */) {   // long string
+        } else if (input.nth(lo) <= 191 /* 0xbf */) {
+          // trace!({"long string at": lo}) |
+
           new qtyCh in {
             if (lo + 1 + input.nth(lo) - 183 > hi) {
               fail!(lo)
@@ -83,7 +89,9 @@ new rlp, test, trace(`rho:io:stderr`) in {
               }
             }
           }
-        } else if (input.nth(lo) <= 247 /* 0xf7 */) {   // short list
+        } else if (input.nth(lo) <= 247 /* 0xf7 */) {
+          // trace!({"short list at": lo}) |
+
           if (lo + 1 + input.nth(lo) - 192 > hi) {
             fail!(lo)
           } else {
@@ -93,19 +101,24 @@ new rlp, test, trace(`rho:io:stderr`) in {
               "list": true
             })
           }
-        } else {  // long list
-          if (lo + 1 + input.nth(lo) - 246 > hi) {
-            fail!(lo)
+        } else {
+          // trace!({"long list at": lo}) |
+
+          if (lo + input.nth(lo) - 246 > hi) {
+            fail!({"at": lo, "long list length size": lo + 1 + input.nth(lo) - 246})
           } else {
             new qtyCh in {
-              toInteger!(lo + 1, lo + 1 + input.nth(lo) - 246, *qtyCh) |
+              toInteger!(lo + 1, lo + input.nth(lo) - 246, *qtyCh) |
               for (@listLen <- qtyCh) {
-                if ( lo + 1 + input.nth(lo) - 247 + listLen > hi) {
-                  fail!(lo + 1)
+                if (lo + input.nth(lo) - 246 + listLen > hi) {
+                  fail!({
+                    "at": lo + 1,
+                    "long list data size": lo + input.nth(lo) - 246 + listLen
+                  })
                 } else {
                   return!({
-                    "lo": lo + 1 + input.nth(lo) - 247,
-                    "hi": lo + 1 + input.nth(lo) - 247 + listLen,
+                    "lo": lo + input.nth(lo) - 246,
+                    "hi": lo + input.nth(lo) - 246 + listLen,
                     "list": true
                   })
                 }
@@ -151,6 +164,7 @@ new rlp, test, trace(`rho:io:stderr`) in {
     }
   }
   |
+
   test!("ill-formed", "", Nil, Nil) |
   test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
   test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
@@ -166,6 +180,20 @@ new rlp, test, trace(`rho:io:stderr`) in {
    "c7c0c1c0c3c0c1c0", [ [], [[]], [ [], [[]] ] ], Nil) |
   test!("The list [ \"cat\", \"dog\" ]", "c88363617483646f67",
     ["636174".hexToBytes(), "646f67".hexToBytes()], Nil) |
+
+  test!("EIP155 test case",
+    "f864808504a817c800825208943535353535353535353535353535353535353535808025a0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116da0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d",
+    [
+      "".hexToBytes(),        // nonce
+      "4a817c800".hexToBytes(), // gasPrice
+      "5208".hexToBytes(),      // gasLimit
+      "3535353535353535353535353535353535353535".hexToBytes(),  // to
+      "".hexToBytes(), // value
+      "".hexToBytes(), // data
+      "25".hexToBytes(), // v
+      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes(),  // r
+      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
+    ], Nil) |
 
   trace!("testing")
 }
