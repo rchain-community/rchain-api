@@ -1,6 +1,7 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new rlp, test, trace(`rho:io:stderr`) in {
+new rlp, test, trace(`rho:io:stderr`), ri(`rho:registry:insertArbitrary`) in {
+  new uriCh in { ri!(*rlp, *uriCh) | for (@uri <- uriCh) { trace!({"rlp uri": uri}) } } |
   contract rlp(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
     new rlpAt, decodeLength, toInteger, outCh in {
