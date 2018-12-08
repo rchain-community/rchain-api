@@ -1,78 +1,113 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new rlp, trace(`rho:io:stderr`) in {
-  contract rlp(@{input /\ ByteArray}, return) = {
+new rlp, test, trace(`rho:io:stderr`) in {
+  contract rlp(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
-    new rlpAt, decodeLength, toInteger in {
-      rlpAt!(0, *return) |
-
-      contract rlpAt(@ix, return) = {
+    new rlpAt, decodeLength, toInteger, outCh in {
+      rlpAt!(0, input.length(), *outCh) |
+      for(@out <- outCh) {
+        // trace!({"out": out}) |
+        if(out.get("next") == input.length()) {
+          return!(out.get("item"))
+        } else {
+          fail!(out.get("next"))
+        }
+      }
+      |
+      contract rlpAt(@lo, @hi, return) = {
         new pfxCh in {
-          decodeLength!(ix, *pfxCh) |
+          decodeLength!(lo, hi, *pfxCh) |
           for (@pfx <- pfxCh) {
-            // trace!(pfx) |
-            if (pfx == Nil) {
-              trace!({"input": input, "ERROR": true})
-            } else if (pfx.get("list")) {
-              trace!({"TODO": pfx})
+            // trace!({"decodeLength ->": pfx}) |
+            if (pfx.get("list")) {
+              new loop in {
+                loop!([], pfx.get("lo"), pfx.get("hi")) |
+                contract loop(@items, @here, @end) = {
+                  // trace!({"list loop": [here, end], "items": items}) |
+                  if (here == end) {
+                    return!({"item": items, "next": end})
+                  } else {
+                    new stepCh in {
+                      // trace!({"sub rlp lo": here, "hi": end,
+                      //  "input length": input.length(), "items": items}) |
+                      rlpAt!(here, end, *stepCh) |
+                      for(@step <- stepCh) {
+                        loop!(items ++ [step.get("item")], step.get("next"), end)
+                      }
+                    }
+                  }
+                }
+              }
             } else {
-              trace!({
-                "input": input,
-                "atom": input.slice(pfx.get("offset"), pfx.get("offset") + pfx.get("dataLen"))
-              }) |
-              return!(input.slice(pfx.get("offset"), pfx.get("offset") + pfx.get("dataLen")))
+              return!({
+                "item": input.slice(pfx.get("lo"), pfx.get("hi")),
+                "next": pfx.get("hi")
+              })
             }
           }
         }
       }
       |
-      contract decodeLength(@ix, return) = {
-        if (ix >= input.length()) {
-          return!(Nil) // bad input
-        } else if (input.nth(ix) <= 127 /* 0x7f */) {
-          // trace!({"prefix is data": input.nth(ix), "input": input}) |
-          return!({"offset": ix, "dataLen": 1, "list": false})
-        } else if (input.nth(ix) <= 183 /* 0xb7 */ and
-          input.length() - ix > input.nth(ix) - 128 /* 0x80 */) {
-          return!({
-            "offset": ix + 1,
-            "dataLen": input.nth(ix) - 128,
-            "list": false
-          })
-        } else {
+      contract decodeLength(@lo, @hi, return) = {
+        // trace!({"decode lo": lo, "hi": hi, "len": input.length()}) |
+        if (lo >= hi) {
+          fail!(lo)
+        } else if (input.nth(lo) <= 127 /* 0x7f */) {    // single byte
+          return!({"lo": lo, "hi": lo + 1, "list": false})
+        } else if (input.nth(lo) <= 183 /* 0xb7 */) {    // short string
+          if (lo + 1 + input.nth(lo) - 128 > hi) {
+            fail!(lo)
+          } else {
+            return!({
+              "lo": lo + 1,
+              "hi": lo + 1 + input.nth(lo) - 128,
+              "list": false
+            })
+          }
+        } else if (input.nth(lo) <= 191 /* 0xbf */) {   // long string
           new qtyCh in {
-            toInteger!(ix + 1, ix + 1 + input.nth(ix) - 183, *qtyCh) |
-            for (@qty <- qtyCh) {
-              // trace!({"prefix": input.nth(ix), "qty": qty}) |
-              if (input.nth(ix) <= 191 /* 0xbf */ and
-                input.length() - ix > input.nth(ix) - 183 and
-                input.length() - ix > input.nth(ix) - 183 + qty) {
-                return!({
-                  "offset": ix + 1 + input.nth(ix) - 183,
-                  "dataLen": qty,
-                  "list": false
-                })
-              } else if (input.nth(ix) <= 247 /* 0xf7 */ and
-                input.length() - ix > input.nth(ix) - 192 /* 0xc0 */) {
-                return!({
-                  "offset": ix + 1,
-                  "dataLen": qty,
-                  "list": true
-                })
-              } else {
-                toInteger!(ix + 1, ix + 1 + input.nth(ix) - 246, *qtyCh) |
-                for (@listLen <- qtyCh) {
-                  if (input.nth(ix) <= 255 /* 0xff*/ and
-                    input.length() - ix > input.nth(ix) - 247 and
-                    input.length() - ix > input.nth(ix) - 247 + listLen) {
-                    return!({
-                      "offset": ix + 1 + input.nth(ix) - 247,
-                      "dataLen": listLen,
-                      "list": true
-                    })
-                  } else {
-                    return!(Nil) // bad input
-                  }
+            if (lo + 1 + input.nth(lo) - 183 > hi) {
+              fail!(lo)
+            } else {
+              toInteger!(lo + 1, lo + 1 + input.nth(lo) - 183, *qtyCh) |
+              for (@qty <- qtyCh) {
+                if (lo + 1 + input.nth(lo) - 183 + qty > hi) {
+                  fail!(lo + 1)
+                } else {
+                  return!({
+                    "lo": lo + 1 + input.nth(lo) - 183,
+                    "hi": lo + 1 + input.nth(lo) - 183 + qty,
+                    "list": false
+                  })
+                }
+              }
+            }
+          }
+        } else if (input.nth(lo) <= 247 /* 0xf7 */) {   // short list
+          if (lo + 1 + input.nth(lo) - 192 > hi) {
+            fail!(lo)
+          } else {
+            return!({
+              "lo": lo + 1,
+              "hi": lo + 1 + input.nth(lo) - 192,
+              "list": true
+            })
+          }
+        } else {  // long list
+          if (lo + 1 + input.nth(lo) - 246 > hi) {
+            fail!(lo)
+          } else {
+            new qtyCh in {
+              toInteger!(lo + 1, lo + 1 + input.nth(lo) - 246, *qtyCh) |
+              for (@listLen <- qtyCh) {
+                if ( lo + 1 + input.nth(lo) - 247 + listLen > hi) {
+                  fail!(lo + 1)
+                } else {
+                  return!({
+                    "lo": lo + 1 + input.nth(lo) - 247,
+                    "hi": lo + 1 + input.nth(lo) - 247 + listLen,
+                    "list": true
+                  })
                 }
               }
             }
@@ -81,8 +116,8 @@ new rlp, trace(`rho:io:stderr`) in {
       }
       |
       contract toInteger(@lo, @hi, return) = {
-        // trace!({"lo": lo, "hi": hi}) |
-        if (input.length() - lo <= 0 or lo < 0 or lo > hi or hi > input.length()) {
+        // trace!({"toInteger lo": lo, "hi": hi}) |
+        if (hi <= lo) {
           return!(0)
         } else if (hi - lo == 1) {
           // trace!({"toInteger base": input.nth(lo)}) |
@@ -91,7 +126,7 @@ new rlp, trace(`rho:io:stderr`) in {
           new recur in {
             toInteger!(lo, hi - 1, *recur) |
             for(@bb <- recur) {
-              // trace!({"toInteger recur": input.nth(hi - 1) + bb * 256, "lo": lo, "hi": hi}) |
+              // trace!({"toInteger recur": input, "lo": lo, "hi": hi}) |
               return!(input.nth(hi - 1) + bb * 256)
             }
           }
@@ -100,36 +135,37 @@ new rlp, trace(`rho:io:stderr`) in {
     }
   }
   |
-  // ill-formed
-  rlp!("".hexToBytes(), *trace) |
+  contract test(@label, @inputHex, @expected, ack) = {
+    new errCh, okCh in {
+      rlp!(inputHex.hexToBytes(), *errCh, *okCh) |
+      for (@ix <- errCh) {
+        trace!({"test": label, "failAt": ix, "input": inputHex, "expected": expected})
+      } |
+      for (@x <- okCh) {
+        if (x == expected) {
+          trace!({"pass": label})
+        } else {
+          trace!({"FAIL": label, "actual": x, "expected": expected})
+        }
+      }
+    }
+  }
+  |
+  test!("ill-formed", "", Nil, Nil) |
+  test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
+  test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
+  test!("The integer 0", "80", "".hexToBytes(), Nil) |
+  test!("The empty list", "c0", [], Nil) |
+  test!("The encoded integer 0", "00", "00".hexToBytes(), Nil) |
+  test!("The encoded integer 15", "0f", "0f".hexToBytes(), Nil) |
+  test!("The encoded integer 1024", "820400", "0400".hexToBytes(), Nil) |
+  test!("The string \"Lorem ipsum dolor sit amet, consectetur adipisicing elit\"",
+   "b8384c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974",
+   "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974".hexToBytes(), Nil) |
+  test!("The set theoretical representation of three",
+   "c7c0c1c0c3c0c1c0", [ [], [[]], [ [], [[]] ] ], Nil) |
+  test!("The list [ \"cat\", \"dog\" ]", "c88363617483646f67",
+    ["636174".hexToBytes(), "646f67".hexToBytes()], Nil) |
 
-  //   The string "dog" = [ 0x83, 'd', 'o', 'g' ]
-  rlp!("83646f67".hexToBytes(), *trace) |
-
-  // The empty string ('null') = [ 0x80 ]
-  rlp!("80".hexToBytes(), *trace) |
-
-  // The integer 0 = [ 0x80 ]
-  rlp!("80".hexToBytes(), *trace) |
-
-  // The empty list = [ 0xc0 ]
-  rlp!("c0".hexToBytes(), *trace) |
-
-  // The encoded integer 0 ('\x00') = [ 0x00 ]
-  rlp!("00".hexToBytes(), *trace) |
-
-  // The encoded integer 15 ('\x0f') = [ 0x0f ]
-  rlp!("0f".hexToBytes(), *trace) |
-
-  // The encoded integer 1024 ('\x04\x00') = [ 0x82, 0x04, 0x00 ]
-  rlp!("820400".hexToBytes(), *trace) |
-
-  // The string "Lorem ipsum dolor sit amet, consectetur adipisicing elit" = [ 0xb8, 0x38, 'L', 'o', 'r', 'e', 'm', ' ', ... , 'e', 'l', 'i', 't' ]
-  // >>> ''.join(hex(ord(c))[2:] for c in "Lorem ipsum dolor sit amet, consectetur adipisicing elit")
-  rlp!("b8384c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974".hexToBytes(), *trace) |
-  // The set theoretical representation of three, [ [], [[]], [ [], [[]] ] ] = [ 0xc7, 0xc0, 0xc1, 0xc0, 0xc3, 0xc0, 0xc1, 0xc0 ]
-  rlp!("c7c0c1c0c3c0c1c0".hexToBytes(), *trace) |
-  // The list [ "cat", "dog" ] = [ 0xc8, 0x83, 'c', 'a', 't', 0x83, 'd', 'o', 'g' ]
-  rlp!("c883636174646f67".hexToBytes(), *trace) |
   trace!("testing")
 }
