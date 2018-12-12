@@ -7,6 +7,7 @@ ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
 in {
   // TODO: only register if all tests pass
   new uriCh in {
+    // ISSUE: only export bundle+ (bummer it's not ocap-safe by default)
     ri!({"decode": *decode, "encode": *encode}, *uriCh) |
     for (@uri <- uriCh) { stdout!({"rlp uri": uri}) }
   } |
@@ -15,6 +16,7 @@ in {
   rl!(`rho:id:et17yw97tyhij463yctuxkbpes5s8xogwsbbbc54g3rm3f9g3ah3pa`, *ListOpsCh) |
   for(ListOps <- ListOpsCh) {
     trace!({"ListOps": *ListOps}) |
+
     contract encode(@item, return) = {
       // trace!({"encode item": item}) |
       match item {
@@ -40,9 +42,9 @@ in {
             ListOps!("map", items, *encode, *encodedEachCh) |
             // TODO: handle done=true
             for(@encodedEach <- encodedEachCh) {
-              trace!({"encodedEach": encodedEach}) |
+              // trace!({"encodedEach": encodedEach, "item": item}) |
               contract sum(@next, @subtot, return) = { return!(next.length() + subtot) } |
-              contract concat(@head, @tail, return) = { return!(head ++ tail) } |
+              contract concat(@tail, @head, return) = { return!(head ++ tail) } |
               ListOps!("fold", encodedEach, 0, *sum, *totalCh) |
               ListOps!("fold", encodedEach, "".hexToBytes(), *concat, *payloadCh) |
               for(@total <- totalCh; @payload <- payloadCh) {
@@ -51,7 +53,7 @@ in {
                   new lenCh in {
                     hexByte!(192 + total, *lenCh) |
                     for(@len <- lenCh) {
-                      // trace!({"total in hex": len}) |
+                      // trace!({"total in hex": len, "item": item}) |
                       return!(len ++ payload)
                     }
                   }
@@ -236,13 +238,24 @@ in {
     new errCh, okCh in {
       decode!(inputHex.hexToBytes(), *errCh, *okCh) |
       for (@ix <- errCh) {
-        trace!({"test": label, "failAt": ix, "input": inputHex, "expected": expected})
+        trace!({"test decode": label, "failAt": ix, "input": inputHex, "expected": expected})
       } |
       for (@x <- okCh) {
         if (x == expected) {
-          trace!({"pass": label})
+          trace!({"pass decode": label})
         } else {
-          trace!({"FAIL": label, "actual": x, "expected": expected})
+          trace!({"FAIL decode": label, "actual": x, "expected": expected})
+        }
+      }
+    } |
+
+    new encodedCh in {
+      encode!(expected, *encodedCh) |
+      for (@actual <- encodedCh) {
+        if (actual == inputHex.hexToBytes()) {
+          trace!({"pass encode": label})
+        } else {
+          trace!({"FAIL encode": label, "actual": actual, "expected": inputHex})
         }
       }
     }
@@ -279,22 +292,6 @@ in {
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
     ], Nil) |
 
-  contract testEncode(@label, @item, @expected, ack) = {
-    new encodedCh in {
-      encode!(item, *encodedCh) |
-      for (@actual <- encodedCh) {
-        if (actual == expected.hexToBytes()) {
-          trace!({"pass": label})
-        } else {
-          trace!({"FAIL": label, "actual": actual, "expected": expected.hexToBytes()})
-        }
-      }
-    }
-  } |
-
-  // TODO: for each case above, test both directions
-  testEncode!("list of 3", ["40".hexToBytes(), "dead".hexToBytes(), "beef".hexToBytes()],
-    "c782beef82dead40", Nil) |
   
   trace!("testing")
 }
