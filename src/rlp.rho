@@ -1,10 +1,11 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new encode, decode, test,
+new encode, decode, test, testEncode,
 ListOpsCh, hexByte,
 trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
 ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
 in {
+  // TODO: only register if all tests pass
   new uriCh in {
     ri!({"decode": *decode, "encode": *encode}, *uriCh) |
     for (@uri <- uriCh) { stdout!({"rlp uri": uri}) }
@@ -15,17 +16,17 @@ in {
   for(ListOps <- ListOpsCh) {
     trace!({"ListOps": *ListOps}) |
     contract encode(@item, return) = {
-      trace!({"encode item": item}) |
+      // trace!({"encode item": item}) |
       match item {
         ByteArray => {
-          trace!({"ByteArray": item}) |
+          // trace!({"ByteArray": item}) |
           if (item.length() == 1 and item.nth(0) <= 127) {
             return!(item)
           } else if (item.length() <= 55) {
             new lenCh in {
               hexByte!(128 + item.length(), *lenCh) |
               for(@len <- lenCh) {
-                trace!({"bytes length": len}) |
+                // trace!({"bytes length": len}) |
                 return!(len ++ item)
               }
             }
@@ -34,7 +35,7 @@ in {
           }
         }
         [...items] => {
-          trace!({"List": item}) |
+          // trace!({"List": item}) |
           new encodedEachCh, sum, totalCh, concat, payloadCh in {
             ListOps!("map", items, *encode, *encodedEachCh) |
             // TODO: handle done=true
@@ -45,12 +46,12 @@ in {
               ListOps!("fold", encodedEach, 0, *sum, *totalCh) |
               ListOps!("fold", encodedEach, "".hexToBytes(), *concat, *payloadCh) |
               for(@total <- totalCh; @payload <- payloadCh) {
-                trace!({"total length": total}) |
+                // trace!({"total length": total}) |
                 if (total <= 55) {
                   new lenCh in {
                     hexByte!(192 + total, *lenCh) |
                     for(@len <- lenCh) {
-                      trace!({"total in hex": len}) |
+                      // trace!({"total in hex": len}) |
                       return!(len ++ payload)
                     }
                   }
@@ -67,7 +68,6 @@ in {
       }
     }
   } |
-  encode!(["40".hexToBytes(), "dead".hexToBytes(), "beef".hexToBytes()], *trace) |
 
   new hexCh in {
     hexCh!({
@@ -249,7 +249,6 @@ in {
   }
   |
 
-  /*@@
   test!("ill-formed", "", Nil, Nil) |
   test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
   test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
@@ -279,7 +278,23 @@ in {
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes(),  // r
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
     ], Nil) |
-  */
 
+  contract testEncode(@label, @item, @expected, ack) = {
+    new encodedCh in {
+      encode!(item, *encodedCh) |
+      for (@actual <- encodedCh) {
+        if (actual == expected.hexToBytes()) {
+          trace!({"pass": label})
+        } else {
+          trace!({"FAIL": label, "actual": actual, "expected": expected.hexToBytes()})
+        }
+      }
+    }
+  } |
+
+  // TODO: for each case above, test both directions
+  testEncode!("list of 3", ["40".hexToBytes(), "dead".hexToBytes(), "beef".hexToBytes()],
+    "c782beef82dead40", Nil) |
+  
   trace!("testing")
 }
