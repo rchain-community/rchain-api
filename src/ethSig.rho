@@ -1,8 +1,14 @@
 new trace(`rho:io:stderr`), rl(`rho:registry:lookup`),
-verifySignature, pkDER, sigDER, rlpCh in {
-  rl!(`rho:id:epm7u46j9h7yzqsrx7kffyaxotcc1ma76z4om7ui8hiewdpjdotakh`, *rlpCh) |
-  for(rlp <- rlpCh) {
+verifySignature, sigDER, rlpCh, hexCh in {
+  rl!(`rho:id:oxob95mkmjdoesesdbn973qrjc3zpdsjxfjndh8jb5d9a1u8zznm7o`, *rlpCh) |
+  hexCh!({
+    0: "0", 1: "1", 2: "2", 3: "3",
+    4: "4", 5: "5", 6: "6", 7: "7",
+    8: "8", 9: "9", 10: "a", 11: "b",
+    12: "c", 13: "d", 14: "e", 15: "f"
+  }) |
 
+  for(rlp <- rlpCh; @hexDigit <- hexCh) {
     // Verify Signature of rlp-encoded Ethereum Transaction
     // ref https://github.com/ethereumjs/ethereumjs-tx/blob/master/docs/index.md#verifysignature
     contract verifySignature(
@@ -17,17 +23,20 @@ verifySignature, pkDER, sigDER, rlpCh in {
       return
     ) = {
       // trace!({"msg": msg, "pk": pk}) |
-      new itemsCh, sigCh, pubCh, verifyCh in {
+      new itemsCh, sigCh, verifyCh in {
         rlp!(msg, *trace, *itemsCh) |
         for(@[nonce, gasPrice, gasLimit, to, value, data, v, r, s] <- itemsCh) {
           // trace!({"tx": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]}) |
 
-          pkDER!(pk, *pubCh) |
           sigDER!(r, s, *sigCh) |
 
-          for(@sig <- sigCh; @pk <- pubCh) {
+          for(@sig <- sigCh) {
             trace!({"verifying sig": sig, "over": hash, "pubKey": pk}) |
-            @"secp256k1Verify"!(hash, sig, pk, *verifyCh) |
+            @"secp256k1Verify"!(hash, sig,
+              // ASN1 Distinguished Encoding Rules (DER) for public key
+              // 4 = OctetString tag
+              "04".hexToBytes() ++ pk,
+              *verifyCh) |
             for (@ok <- verifyCh) {
               // trace!({"sig ok?": ok}) |
               if (ok) {
@@ -41,26 +50,26 @@ verifySignature, pkDER, sigDER, rlpCh in {
       }
     } |
 
-    // ASN1 Distinguished Encoding Rules (DER) for public key
-    contract pkDER(@{pk /\ ByteArray}, return) = {
-      // trace!({"pkDER": pk}) |
-      return!("${OctetString}${pk}".toUtf8Bytes() %% { "OctetString": 4, "pk": pk })
-    } |
-
     // ASN1 Distinguished Encoding Rules (DER) for signature
     // i.e. SEQUENCE { r INTEGER, S INTEGER }
     contract sigDER(@{r /\ ByteArray}, @{s /\ ByteArray}, return) = {
       // trace!({"sigDERr": r, "s": s}) |
-      new zpad, rpCh, spCh in {
+      new zpad, hexByte, rpCh, spCh, lenRSCh, lenRCh, lenSCh in {
         zpad!(r, *rpCh) | zpad!(s, *spCh) |
         for(@rp <- rpCh; @sp <- spCh) {
-          return!("${SEQUENCE}${lenRS}${INTEGER}${lenR}${r}${INTEGER}${lenS}${s}".toUtf8Bytes() %% {
-            "SEQUENCE": 48,  // 0x20 + tag 0x10
-            "lenRS": 2 + 1 + rp.length() + 1 + sp.length(),
-            "INTEGER": 2,
-            "r": rp, "lenR": rp.length(),
-            "s": sp, "lenS": sp.length()
-          })
+          hexByte!(rp.length(), *lenRCh) |
+          hexByte!(sp.length(), *lenSCh) |
+          hexByte!(2 + 1 + rp.length() + 1 + sp.length(), *lenRSCh) |
+          for(@lenR <- lenRCh; @lenS <- lenSCh; @lenRS <- lenRSCh) {
+            // trace!({"sigDER": (rp, sp), "lenR": lenR, "lenS": lenS, "lenRS": lenRS}) |
+            return!(
+              // SEQUENCE
+              "30".hexToBytes() ++ lenRS ++
+                // INTEGER
+                "02".hexToBytes() ++ lenR ++ rp ++
+                "02".hexToBytes() ++ lenS ++ sp
+            )
+          }
         } |
         contract zpad(@{bn /\ ByteArray}, return) = {
           // trace!({"zpad": bn.nth(0)}) |
@@ -69,6 +78,11 @@ verifySignature, pkDER, sigDER, rlpCh in {
           } else {
             return!(bn)
           }
+        } |
+        // singleton byte sequence
+        contract hexByte(@{i /\ Integer}, return) = {
+          // trace!({"hexByte": i}) |
+          return!((hexDigit.get(i / 16) ++ hexDigit.get(i - (i / 16 * 16))).hexToBytes())
         }
       }
     } |
