@@ -1,8 +1,91 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new rlp, test, trace(`rho:io:stderr`), ri(`rho:registry:insertArbitrary`) in {
-  new uriCh in { ri!(*rlp, *uriCh) | for (@uri <- uriCh) { trace!({"rlp uri": uri}) } } |
-  contract rlp(@{input /\ ByteArray}, fail, return) = {
+new encode, decode, test,
+ListOpsCh, hexByte,
+trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
+ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
+in {
+  new uriCh in {
+    ri!({"decode": *decode, "encode": *encode}, *uriCh) |
+    for (@uri <- uriCh) { stdout!({"rlp uri": uri}) }
+  } |
+
+  // rl!(`rho:id:dputnspi15oxxnyymjrpu7rkaok3bjkiwq84z7cqcrx4ktqfpyapn4`, *ListOpsCh) |
+  rl!(`rho:id:et17yw97tyhij463yctuxkbpes5s8xogwsbbbc54g3rm3f9g3ah3pa`, *ListOpsCh) |
+  for(ListOps <- ListOpsCh) {
+    trace!({"ListOps": *ListOps}) |
+    contract encode(@item, return) = {
+      trace!({"encode item": item}) |
+      match item {
+        ByteArray => {
+          trace!({"ByteArray": item}) |
+          if (item.length() == 1 and item.nth(0) <= 127) {
+            return!(item)
+          } else if (item.length() <= 55) {
+            new lenCh in {
+              hexByte!(128 + item.length(), *lenCh) |
+              for(@len <- lenCh) {
+                trace!({"bytes length": len}) |
+                return!(len ++ item)
+              }
+            }
+          } else {
+            return!(("TODO: encode int length", item))
+          }
+        }
+        [...items] => {
+          trace!({"List": item}) |
+          new encodedEachCh, sum, totalCh, concat, payloadCh in {
+            ListOps!("map", items, *encode, *encodedEachCh) |
+            // TODO: handle done=true
+            for(@encodedEach <- encodedEachCh) {
+              trace!({"encodedEach": encodedEach}) |
+              contract sum(@next, @subtot, return) = { return!(next.length() + subtot) } |
+              contract concat(@head, @tail, return) = { return!(head ++ tail) } |
+              ListOps!("fold", encodedEach, 0, *sum, *totalCh) |
+              ListOps!("fold", encodedEach, "".hexToBytes(), *concat, *payloadCh) |
+              for(@total <- totalCh; @payload <- payloadCh) {
+                trace!({"total length": total}) |
+                if (total <= 55) {
+                  new lenCh in {
+                    hexByte!(192 + total, *lenCh) |
+                    for(@len <- lenCh) {
+                      trace!({"total in hex": len}) |
+                      return!(len ++ payload)
+                    }
+                  }
+                } else {
+                  return!(("TODO: encode varint", items))
+                }
+              }
+            }
+          }
+        }
+        _ => {
+          return!(("what???", item))
+        }
+      }
+    }
+  } |
+  encode!(["40".hexToBytes(), "dead".hexToBytes(), "beef".hexToBytes()], *trace) |
+
+  new hexCh in {
+    hexCh!({
+      0: "0", 1: "1", 2: "2", 3: "3",
+      4: "4", 5: "5", 6: "6", 7: "7",
+      8: "8", 9: "9", 10: "a", 11: "b",
+      12: "c", 13: "d", 14: "e", 15: "f"
+    }) |
+    for(@hexDigit <- hexCh) {
+      // singleton byte sequence
+      contract hexByte(@{i /\ Integer}, return) = {
+        // trace!({"hexByte": i}) |
+        return!((hexDigit.get(i / 16) ++ hexDigit.get(i - (i / 16 * 16))).hexToBytes())
+      }
+    }
+  } |
+
+  contract decode(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
     new rlpAt, decodeLength, toInteger, outCh in {
       rlpAt!(0, input.length(), *outCh) |
@@ -151,7 +234,7 @@ new rlp, test, trace(`rho:io:stderr`), ri(`rho:registry:insertArbitrary`) in {
   |
   contract test(@label, @inputHex, @expected, ack) = {
     new errCh, okCh in {
-      rlp!(inputHex.hexToBytes(), *errCh, *okCh) |
+      decode!(inputHex.hexToBytes(), *errCh, *okCh) |
       for (@ix <- errCh) {
         trace!({"test": label, "failAt": ix, "input": inputHex, "expected": expected})
       } |
@@ -166,6 +249,7 @@ new rlp, test, trace(`rho:io:stderr`), ri(`rho:registry:insertArbitrary`) in {
   }
   |
 
+  /*@@
   test!("ill-formed", "", Nil, Nil) |
   test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
   test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
@@ -195,6 +279,7 @@ new rlp, test, trace(`rho:io:stderr`), ri(`rho:registry:insertArbitrary`) in {
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes(),  // r
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
     ], Nil) |
+  */
 
   trace!("testing")
 }
