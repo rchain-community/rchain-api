@@ -1,5 +1,5 @@
 new trace(`rho:io:stderr`), rl(`rho:registry:lookup`),
-verifySignature, sigDER, rlpCh, rlpHash, hexByte,
+verifySignature, sigDER, rlpCh, rlpHash, bufToInt,
 EtherWallet, findOrCreateWallet, sendTransaction,
 addrToWalletCh, publicToAddr in {
   trace!("ethSig") |
@@ -20,7 +20,9 @@ addrToWalletCh, publicToAddr in {
       contract self(@"deposit", @amount, @src, success) = {
         purse!("deposit", amount, src, *success)
       } |
+
       // ISSUE: transfer method to get a purse for use outside this contract?
+
       contract self(@"sendTransaction",
         @{tx /\ ByteArray},
         // ISSUE: the public key can be recovered from the signature, but
@@ -28,7 +30,7 @@ addrToWalletCh, publicToAddr in {
         // so we have the caller supply the pk.
         @{senderPk /\ ByteArray },
         eject, return) = {
-        new senderCh in {
+        new senderCh, verifyCh, nonceCh, valueCh, sendIt in {
           publicToAddr!(senderPk, *senderCh) |
           for(@txSender <- senderCh) {
             if(txSender != addr) {
@@ -36,43 +38,47 @@ addrToWalletCh, publicToAddr in {
                 "expected": addr, "actual": txSender,
                 "actual from key": senderPk})
             } else {
-              new vCh in {
-                verifySignature!(tx, senderPk, *vCh) |
-                for(@verified <- vCh) {
-                  match verified {
-                    {"items": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]} => {
-                      // TODO: bufToInteger(value) export from rlp.rho
-                      trace!({"verified sig for value": value, "to": to}) |
-                      for(@prevNonce <- nonceCh) {
-                        // TODO: bufToInteger(nonce)
-                        if (false and nonce != (prevNonce + 1)) {
-                          nonceCh!(prevNonce) |
-                          eject!({"message": "bad nonce",
-                            "actual": nonce, "expected": prevNonce + 1})
-                        } else {
-                          nonceCh!(prevNonce + 1) |
-                          new splitResultCh, toWalletCh, depositSuccessCh in {
-                            findOrCreateWallet!(to, *toWalletCh) |
-                            purse!("split", value, *splitResultCh) |
-                            for(@[payment] <- splitResultCh; toWallet <- toWalletCh) {
-                              toWallet!("deposit", payment, value, *depositSuccessCh) |
-                              for(@true <- depositSuccessCh) {
-                                return!({"sent": value, "to": to})
-                              } |
-                              for(@false <- depositSuccessCh) {
-                                eject!({"message": "deposit failed (can't happen?)"})
-                              }
-                            } |
-                            for(@[] <- splitResultCh; _ <- toWalletCh) {
-                              eject!({"message": "Overdraft"})
-                            }
-                          }
-                        }
+              verifySignature!(tx, senderPk, *verifyCh) |
+              for(@{"success": false, ...x } <- verifyCh) { eject!({"message": "bad signature"}) } |
+              for(@{
+                "success": true,
+                "items": [nonceBuf, gasPrice, gasLimit, to, valueBuf, data, v, r, s]
+              } <- verifyCh) {
+                // TODO: bufToInteger(value) export from rlp.rho
+                trace!({"verified sig for value": valueBuf, "to": to}) |
+                for(@prevNonce <- nonceCh) {
+                  bufToInt!(nonceBuf, *nonceCh) | for (@nonce <- nonceCh) {
+                    if (nonce != (prevNonce + 1)) {
+                      nonceCh!(prevNonce) |
+                      eject!({"message": "bad nonce",
+                        "actual": nonce, "expected": prevNonce + 1})
+                    } else {
+                      nonceCh!(nonce) |
+                      bufToInt!(valueBuf, *valueCh) | for (@value <- valueCh) {
+                        sendIt!(to, value)
                       }
                     }
-                    _ => eject!({"message": "bad signature"})
                   }
                 }
+              }
+            }
+          }
+          |
+          contract sendIt(@{to /\ ByteArray}, @{value /\ Int}) = {
+            new splitResultCh, toWalletCh, depositSuccessCh in {
+              findOrCreateWallet!(to, *toWalletCh) |
+              purse!("split", value, *splitResultCh) |
+              for(@[payment] <- splitResultCh; toWallet <- toWalletCh) {
+                toWallet!("deposit", payment, value, *depositSuccessCh) |
+                for(@true <- depositSuccessCh) {
+                  return!({"sent": value, "to": to})
+                } |
+                for(@false <- depositSuccessCh) {
+                  eject!({"message": "deposit failed (can't happen?)"})
+                }
+              } |
+              for(@[] <- splitResultCh; _ <- toWalletCh) {
+                eject!({"message": "Overdraft"})
               }
             }
           }
@@ -113,25 +119,33 @@ addrToWalletCh, publicToAddr in {
   } |
 
   addrToWalletCh!({}) |
-  contract findOrCreateWallet(@{addr /\ ByteArray}, return) = {
-    trace!({"findOrCreate": addr}) |
-    for(@addrToWallet <- addrToWalletCh) {
-      match addrToWallet.get(addr) {
-        Nil => {
-          new purse, walletCh in {
-            // TODO: make purse
-            EtherWallet!(*purse, addr, *walletCh) |
-            for(@wallet <- walletCh) {
-              trace!({"add": wallet, "at": addr}) |
-              addrToWalletCh!(addrToWallet.set(addr, wallet)) |
+  new sysCh, revCh in {
+    lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
+    for(@(_, sys) <- sysCh) {
+      @sys!("lookup", "rev", *revCh) |
+
+      contract findOrCreateWallet(@{addr /\ ByteArray}, return) = {
+        trace!({"findOrCreate": addr}) |
+        for(@addrToWallet <- addrToWalletCh) {
+          match addrToWallet.get(addr) {
+            Nil => {
+              new purseCh, walletCh in {
+                rev!(*purseCh) | for(purse <- purseCh) {
+                  EtherWallet!(*purse, addr, *walletCh) |
+                  for(@wallet <- walletCh) {
+                    trace!({"add": wallet, "at": addr}) |
+                    addrToWalletCh!(addrToWallet.set(addr, wallet)) |
+                    return!(wallet)
+                  }
+                }
+              }
+            }
+            wallet => {
+              trace!({"found": wallet, "at": addr}) |
+              addrToWalletCh!(addrToWallet) |
               return!(wallet)
             }
           }
-        }
-        wallet => {
-          trace!({"found": wallet, "at": addr}) |
-          addrToWalletCh!(addrToWallet) |
-          return!(wallet)
         }
       }
     }
@@ -141,8 +155,13 @@ addrToWalletCh, publicToAddr in {
   // ISSUE: how to manage URIs in eval mode?
   rl!(`rho:id:yibjsw354knzpsapccnn56397eg5wkpf4azucehw748muawzip4rfh`, *rlpCh) |
 
-  for(@{"decode": *rlpDecode, "encode": *rlpEncode} <- rlpCh) {
+  for(@{
+    "decode": *rlpDecode, "encode": *rlpEncode,
+    "oneByte": *oneByte, "decodeVarInt": *decodeVarInt
+  } <- rlpCh) {
     trace!({"rlp": (*rlpEncode, *rlpDecode)}) |
+
+    contract bufToInt(@buf, return) = { decodeVarInt!(buf, *return) } |
 
     // Verify Signature of rlp-encoded Ethereum Transaction
     // ref https://github.com/ethereumjs/ethereumjs-tx/blob/master/docs/index.md#verifysignature
@@ -156,6 +175,7 @@ addrToWalletCh, publicToAddr in {
     ) = {
       // trace!({"verify msg": msg, "pk": pk}) |
       new itemsCh, sigCh, hashCh, chainIdCh, verifyCh in {
+        // ISSUE: handle failure from rlpDecode
         rlpDecode!(msg, *trace, *itemsCh) |
         for(@[nonce, gasPrice, gasLimit, to, value, data, v, r, s] <- itemsCh) {
           // trace!({"decoded tx": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]}) |
@@ -166,7 +186,7 @@ addrToWalletCh, publicToAddr in {
             rlpHash!([nonce, gasPrice, gasLimit, to, value, data], *hashCh)
           } else {
             // EIP155: chainId = (sigV - 35) // 2; r=0, s=0
-            hexByte!((v.nth(0) - 35) / 2, *chainIdCh) |
+            oneByte!((v.nth(0) - 35) / 2, *chainIdCh) |
             for(@chainId <- chainIdCh) {
               rlpHash!([nonce, gasPrice, gasLimit, to, value, data,
                 // EIP155: chainId = (sigV - 35) // 2; r=0, s=0
@@ -184,9 +204,12 @@ addrToWalletCh, publicToAddr in {
             for (@ok <- verifyCh) {
               // trace!({"sig ok?": ok}) |
               if (ok) {
-                return!({"items": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]})
+                return!({
+                  "success": true,
+                  "items": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
+                })
               } else {
-                return!({"ok TODO": false}) // ISSUE: find out what ethereumjs-tx returns on failure
+                return!({"success": false}) // ISSUE: find out what ethereumjs-tx returns on failure
               }
             }
           }
@@ -210,9 +233,9 @@ addrToWalletCh, publicToAddr in {
         zpad!(r, *rpCh) | zpad!(s, *spCh) |
         for(@rp <- rpCh; @sp <- spCh) {
           // trace!({"rp": rp, "sp": sp}) |
-          hexByte!(rp.length(), *lenRCh) |
-          hexByte!(sp.length(), *lenSCh) |
-          hexByte!(2 + 1 + rp.length() + 1 + sp.length(), *lenRSCh) |
+          oneByte!(rp.length(), *lenRCh) |
+          oneByte!(sp.length(), *lenSCh) |
+          oneByte!(2 + 1 + rp.length() + 1 + sp.length(), *lenRSCh) |
           for(@lenR <- lenRCh; @lenS <- lenSCh; @lenRS <- lenRSCh) {
             // trace!({"sigDER": (rp, sp), "lenR": lenR, "lenS": lenS, "lenRS": lenRS}) |
             return!(
@@ -230,23 +253,6 @@ addrToWalletCh, publicToAddr in {
             return!("00".hexToBytes() ++ bn)
           } else {
             return!(bn)
-          }
-        }
-      } |
-
-      // singleton byte sequence
-      new hexCh in {
-        hexCh!({
-          0: "0", 1: "1", 2: "2", 3: "3",
-          4: "4", 5: "5", 6: "6", 7: "7",
-          8: "8", 9: "9", 10: "a", 11: "b",
-          12: "c", 13: "d", 14: "e", 15: "f"
-        }) |
-        for(@hexDigit <- hexCh) {
-          contract hexByte(@{i /\ Int}, return) = {
-            // trace!({"hexByte": i}) |
-            if(i < 0) { trace!({"what to do with negative numbers?": i}) } else { Nil } |
-            return!((hexDigit.get(i / 16) ++ hexDigit.get(i - (i / 16 * 16))).hexToBytes())
           }
         }
       }
