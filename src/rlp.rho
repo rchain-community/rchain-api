@@ -1,7 +1,7 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
 new encode, decode, test,
-ListOpsCh, hexByte, encodeLength, toBinary,
+ListOpsCh, hexByte, encodeLength, encodeVarInt,
 trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
 ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
 in {
@@ -16,69 +16,70 @@ in {
   } |
 
   // rl!(`rho:id:dputnspi15oxxnyymjrpu7rkaok3bjkiwq84z7cqcrx4ktqfpyapn4`, *ListOpsCh) |
-  rl!(`rho:id:et17yw97tyhij463yctuxkbpes5s8xogwsbbbc54g3rm3f9g3ah3pa`, *ListOpsCh) |
+  rl!(`rho:id:aqp3rqoqmc6ymmgncnetoom6zr46uyuwnk761ombb7c3sfnms8co7j`, *ListOpsCh) |
   for(ListOps <- ListOpsCh) {
     trace!({"ListOps": *ListOps}) |
 
     contract encode(@item, return) = {
       // trace!({"encode item": item}) |
-      match item {
-        ByteArray => {
-          // trace!({"ByteArray": item}) |
-          if (item.length() <= 55) {
-            new lenCh, notShort in {
+      new shortItem, longItem, concat in {
+        match item {
+          ByteArray => {
+            if (item.length() == 1) {
               // rholang `and` does not short-circuit???
-              if (item.length() == 1) {
-                if (item.nth(0) <= 127) {
-                  return!(item)
-                } else { notShort!(Nil) }
-              } else { notShort!(Nil) }
-              |
-              hexByte!(128 + item.length(), *lenCh) |
-              for(_ <- notShort; @len <- lenCh) {
-                // trace!({"bytes length": len}) |
-                return!(len ++ item)
-              }
-            }
-          } else {
-            new llCh in {
-              encodeLength!(item.length(), 128, *llCh) |
-              for(@ll <- llCh) {
-                return!(ll ++ item)
+              if (item.nth(0) < 8 * 16) { return!(item) }
+              else { longItem!(8 * 16, item, *return) }
+            } else { longItem!(8 * 16, item, *return) }
+          }
+          [...items] => {
+            // trace!({"List": item}) |
+            new payloadCh in {
+              concat!(item, *payloadCh) |
+              for(@payload <- payloadCh) {
+                longItem!(12 * 16, payload, *return)
               }
             }
           }
-        }
-        [...items] => {
-          // trace!({"List": item}) |
-          new encodedEachCh, sum, totalCh, concat, payloadCh in {
-            ListOps!("map", items, *encode, *encodedEachCh) |
-            // TODO: handle done=true
-            for(@encodedEach <- encodedEachCh) {
-              // trace!({"encodedEach": encodedEach, "item": item}) |
-              contract sum(@next, @subtot, return) = { return!(next.length() + subtot) } |
-              contract concat(@tail, @head, return) = { return!(head ++ tail) } |
-              ListOps!("fold", encodedEach, 0, *sum, *totalCh) |
-              ListOps!("fold", encodedEach, "".hexToBytes(), *concat, *payloadCh) |
-              for(@total <- totalCh; @payload <- payloadCh) {
-                // trace!({"total length": total}) |
-                if (total <= 55) {
-                  new lenCh in {
-                    hexByte!(192 + total, *lenCh) |
-                    for(@len <- lenCh) {
-                      // trace!({"total in hex": len, "item": item}) |
-                      return!(len ++ payload)
-                    }
-                  }
-                } else {
-                  return!(("TODO: encode varint", items))
+          _ => {
+            return!(("what???", item))
+          }
+        } |
+
+        contract longItem(@{bias /\ Int}, @{payload /\ ByteArray}, return) = {
+          if (payload.length() <= 55) {
+            shortItem!(bias, payload, *return)
+          } else {
+            new encodedLengthCh, b0Ch in {
+              encodeVarInt!(payload.length(), *encodedLengthCh) |
+              for(@encodedLength <- encodedLengthCh) {
+                hexByte!(bias + 55 + encodedLength.length(), *b0Ch) |
+                for(@b0 <- b0Ch) {
+                  return!(b0 ++ encodedLength ++ payload)
                 }
               }
             }
           }
-        }
-        _ => {
-          return!(("what???", item))
+        } |
+
+        contract shortItem(@{bias /\ Int}, @{payload /\ ByteArray}, return) = {
+          new lenCh in {
+            hexByte!(bias + payload.length(), *lenCh) |
+            for(@len <- lenCh) {
+              // trace!({"bytes length": len}) |
+              return!(len ++ payload)
+            }
+          }
+        } |
+
+        contract concat(@items, return) = {
+          new encodedEachCh, step in {
+            ListOps!("map", items, *encode, *encodedEachCh) |
+            for(@encodedEach <- encodedEachCh) {
+              // trace!({"encodedEach": encodedEach, "item": item}) |
+              contract step(@tail, @head, return) = { return!(head ++ tail) } |
+              ListOps!("fold", encodedEach, "".hexToBytes(), *step, *return)
+            }
+          }
         }
       }
     }
@@ -100,29 +101,12 @@ in {
     }
   } |
 
-  // ISSUE: eject on overflow?
-  contract encodeLength(@{length /\ Int}, @{bias /\ Int}, return) = {
-    trace!({"length": length, "bias": bias}) |
-    if (length < 56) {
-      hexByte!(length + bias, *return)
-    } else {
-      new b256Ch, llCh in {
-        toBinary!(length, *b256Ch) |
-        for(@b256 <- b256Ch) {
-          hexByte!(b256.length() + bias + 55, *llCh) |
-          for(@ll <- llCh) {
-            return!(ll ++ b256)
-          }
-        }
-      }
-    }
-  } |
-  contract toBinary(@{x /\ Int}, return) = {
+  contract encodeVarInt(@{x /\ Int}, return) = {
     if (x <= 0) {
       return!("".hexToBytes())
     } else {
       new initCh, tailCh in {
-        toBinary!(x / 256, *initCh) |
+        encodeVarInt!(x / 256, *initCh) |
         hexByte!(x - ((x / 256) * 256), *tailCh) |
         for(@init <- initCh; @tail <- tailCh) {
           return!(init ++ tail)
@@ -337,6 +321,6 @@ in {
       "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
     ], Nil) |
 
-  
+
   trace!("testing")
 }
