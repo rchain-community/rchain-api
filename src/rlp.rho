@@ -1,7 +1,7 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new encode, decode, test, testEncode,
-ListOpsCh, hexByte,
+new encode, decode, test,
+ListOpsCh, hexByte, encodeLength, toBinary,
 trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
 ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
 in {
@@ -9,7 +9,10 @@ in {
   new uriCh in {
     // ISSUE: only export bundle+ (bummer it's not ocap-safe by default)
     ri!({"decode": *decode, "encode": *encode}, *uriCh) |
-    for (@uri <- uriCh) { stdout!({"rlp uri": uri}) }
+    for (@uri <- uriCh) {
+      stdout!({"rlp uri": uri}) |
+      rl!(uri, *uriCh)
+    }
   } |
 
   // rl!(`rho:id:dputnspi15oxxnyymjrpu7rkaok3bjkiwq84z7cqcrx4ktqfpyapn4`, *ListOpsCh) |
@@ -22,18 +25,28 @@ in {
       match item {
         ByteArray => {
           // trace!({"ByteArray": item}) |
-          if (item.length() == 1 and item.nth(0) <= 127) {
-            return!(item)
-          } else if (item.length() <= 55) {
-            new lenCh in {
+          if (item.length() <= 55) {
+            new lenCh, notShort in {
+              // rholang `and` does not short-circuit???
+              if (item.length() == 1) {
+                if (item.nth(0) <= 127) {
+                  return!(item)
+                } else { notShort!(Nil) }
+              } else { notShort!(Nil) }
+              |
               hexByte!(128 + item.length(), *lenCh) |
-              for(@len <- lenCh) {
+              for(_ <- notShort; @len <- lenCh) {
                 // trace!({"bytes length": len}) |
                 return!(len ++ item)
               }
             }
           } else {
-            return!(("TODO: encode int length", item))
+            new llCh in {
+              encodeLength!(item.length(), 128, *llCh) |
+              for(@ll <- llCh) {
+                return!(ll ++ item)
+              }
+            }
           }
         }
         [...items] => {
@@ -86,6 +99,38 @@ in {
       }
     }
   } |
+
+  // ISSUE: eject on overflow?
+  contract encodeLength(@{length /\ Int}, @{bias /\ Int}, return) = {
+    trace!({"length": length, "bias": bias}) |
+    if (length < 56) {
+      hexByte!(length + bias, *return)
+    } else {
+      new b256Ch, llCh in {
+        toBinary!(length, *b256Ch) |
+        for(@b256 <- b256Ch) {
+          hexByte!(b256.length() + bias + 55, *llCh) |
+          for(@ll <- llCh) {
+            return!(ll ++ b256)
+          }
+        }
+      }
+    }
+  } |
+  contract toBinary(@{x /\ Int}, return) = {
+    if (x <= 0) {
+      return!("".hexToBytes())
+    } else {
+      new initCh, tailCh in {
+        toBinary!(x / 256, *initCh) |
+        hexByte!(x - ((x / 256) * 256), *tailCh) |
+        for(@init <- initCh; @tail <- tailCh) {
+          return!(init ++ tail)
+        }
+      }
+    }
+  } |
+
 
   contract decode(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
