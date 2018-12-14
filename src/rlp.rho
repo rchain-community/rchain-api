@@ -172,7 +172,7 @@ in {
               |
               contract decodeList(@lo1) = {
                 if (b0 <= 247 /* 0xf7 */) { shortList!(lo1 + b0 - 192 /* 0xc0*/) }
-                else { longString!(lo1 + b0 - 247) }
+                else { longList!(lo1 + b0 - 247) }
                 |
                 contract shortList(@end) = {
                   if (end > hi) { fail!(lo) }
@@ -184,8 +184,8 @@ in {
                   else {
                     new listLenCh in {
                       decodeVarInt!(input, lo1, lenEnd, *listLenCh) | for (@listLen <- listLenCh) {
-                        if (lo1 + listLen > hi) { fail!(lo1) }
-                        else { listItems!([], lenEnd, lo1 + lenEnd) }
+                        if (lenEnd + listLen > hi) { fail!(lo1) }
+                        else { listItems!([], lenEnd, lenEnd + listLen) }
                       }
                     }
                   }
