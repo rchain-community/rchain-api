@@ -1,14 +1,19 @@
 // Toward decoding ethereum signed transactions
 // https://github.com/ethereum/wiki/wiki/RLP
-new encode, decode, test,
-ListOpsCh, hexByte, encodeLength, encodeVarInt,
-trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
-ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
+new encode, decode, oneByte, encodeVarInt, decodeVarInt,
+    ListOpsCh, test,
+    trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
+    ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
 in {
   // TODO: only register if all tests pass
   new uriCh in {
-    // ISSUE: only export bundle+ (bummer it's not ocap-safe by default)
-    ri!({"decode": bundle+{*decode}, "encode": bundle+{*encode}}, *uriCh) |
+    ri!({
+      "decode": bundle+{*decode},
+      "encode": bundle+{*encode},
+      "encodeVarInt": bundle+{*encodeVarInt},
+      "decodeVarInt": bundle+{*decodeVarInt},
+      "oneByte": bundle+{*oneByte}
+    }, *uriCh) |
     for (@uri <- uriCh) {
       stdout!({"rlp uri": uri}) |
       rl!(uri, *uriCh)
@@ -52,7 +57,7 @@ in {
             new encodedLengthCh, b0Ch in {
               encodeVarInt!(payload.length(), *encodedLengthCh) |
               for(@encodedLength <- encodedLengthCh) {
-                hexByte!(bias + 55 + encodedLength.length(), *b0Ch) |
+                oneByte!(bias + 55 + encodedLength.length(), *b0Ch) |
                 for(@b0 <- b0Ch) {
                   return!(b0 ++ encodedLength ++ payload)
                 }
@@ -63,7 +68,7 @@ in {
 
         contract shortItem(@{bias /\ Int}, @{payload /\ ByteArray}, return) = {
           new lenCh in {
-            hexByte!(bias + payload.length(), *lenCh) |
+            oneByte!(bias + payload.length(), *lenCh) |
             for(@len <- lenCh) {
               // trace!({"bytes length": len}) |
               return!(len ++ payload)
@@ -94,8 +99,8 @@ in {
     }) |
     for(@hexDigit <- hexCh) {
       // singleton byte sequence
-      contract hexByte(@{i /\ Integer}, return) = {
-        // trace!({"hexByte": i}) |
+      contract oneByte(@{i /\ Integer}, return) = {
+        // trace!({"oneByte": i}) |
         return!((hexDigit.get(i / 16) ++ hexDigit.get(i - (i / 16 * 16))).hexToBytes())
       }
     }
@@ -107,7 +112,7 @@ in {
     } else {
       new initCh, tailCh in {
         encodeVarInt!(x / 256, *initCh) |
-        hexByte!(x - ((x / 256) * 256), *tailCh) |
+        oneByte!(x - ((x / 256) * 256), *tailCh) |
         for(@init <- initCh; @tail <- tailCh) {
           return!(init ++ tail)
         }
@@ -118,146 +123,110 @@ in {
 
   contract decode(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
-    new rlpAt, decodeLength, toInteger, outCh in {
-      rlpAt!(0, input.length(), *outCh) |
-      for(@out <- outCh) {
-        // trace!({"out": out}) |
-        if(out.get("next") == input.length()) {
-          return!(out.get("item"))
+    new decodeItem, outCh in {
+      decodeItem!(0, input.length(), *outCh) |
+      for(@item, @next <- outCh) {
+        // trace!({"item": item, "next": next}) |
+        if(next == input.length()) {
+          return!(item)
         } else {
-          fail!(out.get("next"))
+          fail!(next)
         }
       }
       |
-      contract rlpAt(@lo, @hi, return) = {
-        new pfxCh in {
-          decodeLength!(lo, hi, *pfxCh) |
-          for (@pfx <- pfxCh) {
-            // trace!({"decodeLength ->": pfx}) |
-            if (pfx.get("list")) {
-              new loop in {
-                loop!([], pfx.get("lo"), pfx.get("hi")) |
-                contract loop(@items, @here, @end) = {
-                  // trace!({"list loop": [here, end], "items": items}) |
-                  if (here == end) {
-                    return!({"item": items, "next": end})
-                  } else {
-                    new stepCh in {
-                      // trace!({"sub rlp lo": here, "hi": end,
-                      //  "input length": input.length(), "items": items}) |
-                      rlpAt!(here, end, *stepCh) |
-                      for(@step <- stepCh) {
-                        loop!(items ++ [step.get("item")], step.get("next"), end)
+      contract decodeItem(@lo, @hi, return) = {
+        if (lo >= hi) { fail!(lo) }
+        else {
+          new stringOrList, returnSlice,
+          decodeString, shortString, longString,
+          decodeList, shortList, longList, listItems in {
+            stringOrList!(input.nth(lo))
+            |
+            contract stringOrList(@b0) = {
+              if (b0 <= 127 /* 0x7f */) { returnSlice!(lo, lo + 1) }
+              else if (b0 <= 191 /* 0xbf */) { decodeString!(lo + 1) }
+              else { decodeList!(lo + 1) }
+              |
+              contract returnSlice(@lo, @hi) = { return!(input.slice(lo, hi), hi) } |
+              contract decodeString(@lo1) = {
+                // trace!({"decodeString": lo1, "b0": b0}) |
+                if (b0 <= 183 /* 0xb7 */) { shortString!(lo1 + b0 - 128) }
+                else { longString!(lo1 + b0 - 183) }
+                |
+                contract shortString(@end) = {
+                  if (end > hi) { fail!(lo) }
+                  else { returnSlice!(lo1, end) }
+                }
+                |
+                contract longString(@lenEnd) = {
+                  if (lenEnd > hi) { fail!(lo1) }
+                  else {
+                    new strLenCh in {
+                      decodeVarInt!(input, lo1, lenEnd, *strLenCh) | for (@strLen <- strLenCh) {
+                        if (lenEnd + strLen > hi) { fail!(lo1) }
+                        else { returnSlice!(lenEnd, lenEnd + strLen) }
                       }
                     }
                   }
                 }
               }
-            } else {
-              return!({
-                "item": input.slice(pfx.get("lo"), pfx.get("hi")),
-                "next": pfx.get("hi")
-              })
-            }
-          }
-        }
-      }
-      |
-      contract decodeLength(@lo, @hi, return) = {
-        // trace!({"decode lo": lo, "hi": hi, "len": input.length()}) |
-        if (lo >= hi) {
-          fail!(lo)
-        } else if (input.nth(lo) <= 127 /* 0x7f */) {
-          // trace!({"single byte": input.nth(lo), "at": lo}) |
-
-          return!({"lo": lo, "hi": lo + 1, "list": false})
-        } else if (input.nth(lo) <= 183 /* 0xb7 */) {
-          // trace!({"short string at": lo}) |
-
-          if (lo + 1 + input.nth(lo) - 128 > hi) {
-            fail!(lo)
-          } else {
-            return!({
-              "lo": lo + 1,
-              "hi": lo + 1 + input.nth(lo) - 128,
-              "list": false
-            })
-          }
-        } else if (input.nth(lo) <= 191 /* 0xbf */) {
-          // trace!({"long string at": lo}) |
-
-          new qtyCh in {
-            if (lo + 1 + input.nth(lo) - 183 > hi) {
-              fail!(lo)
-            } else {
-              toInteger!(lo + 1, lo + 1 + input.nth(lo) - 183, *qtyCh) |
-              for (@qty <- qtyCh) {
-                if (lo + 1 + input.nth(lo) - 183 + qty > hi) {
-                  fail!(lo + 1)
-                } else {
-                  return!({
-                    "lo": lo + 1 + input.nth(lo) - 183,
-                    "hi": lo + 1 + input.nth(lo) - 183 + qty,
-                    "list": false
-                  })
+              |
+              contract decodeList(@lo1) = {
+                if (b0 <= 247 /* 0xf7 */) { shortList!(lo1 + b0 - 192 /* 0xc0*/) }
+                else { longString!(lo1 + b0 - 247) }
+                |
+                contract shortList(@end) = {
+                  if (end > hi) { fail!(lo) }
+                  else { listItems!([], lo1, end) }
+                }
+                |
+                contract longList(@lenEnd) = {
+                  if (lenEnd > hi) { fail!(lo1) }
+                  else {
+                    new listLenCh in {
+                      decodeVarInt!(input, lo1, lenEnd, *listLenCh) | for (@listLen <- listLenCh) {
+                        if (lo1 + listLen > hi) { fail!(lo1) }
+                        else { listItems!([], lenEnd, lo1 + lenEnd) }
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        } else if (input.nth(lo) <= 247 /* 0xf7 */) {
-          // trace!({"short list at": lo}) |
-
-          if (lo + 1 + input.nth(lo) - 192 > hi) {
-            fail!(lo)
-          } else {
-            return!({
-              "lo": lo + 1,
-              "hi": lo + 1 + input.nth(lo) - 192,
-              "list": true
-            })
-          }
-        } else {
-          // trace!({"long list at": lo}) |
-
-          if (lo + input.nth(lo) - 246 > hi) {
-            fail!({"at": lo, "long list length size": lo + 1 + input.nth(lo) - 246})
-          } else {
-            new qtyCh in {
-              toInteger!(lo + 1, lo + input.nth(lo) - 246, *qtyCh) |
-              for (@listLen <- qtyCh) {
-                if (lo + input.nth(lo) - 246 + listLen > hi) {
-                  fail!({
-                    "at": lo + 1,
-                    "long list data size": lo + input.nth(lo) - 246 + listLen
-                  })
-                } else {
-                  return!({
-                    "lo": lo + input.nth(lo) - 246,
-                    "hi": lo + input.nth(lo) - 246 + listLen,
-                    "list": true
-                  })
+              |
+              contract listItems(@items, @here, @end) = {
+                // trace!({"list loop": [here, end], "items": items}) |
+                if (here == end) { return!(items, end) }
+                else {
+                  new stepCh in {
+                    // trace!({"sub rlp lo": here, "hi": end,
+                    //  "input length": input.length(), "items": items}) |
+                    decodeItem!(here, end, *stepCh) |
+                    for(@item, @next <- stepCh) {
+                      listItems!(items ++ [item], next, end)
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-      |
-      contract toInteger(@lo, @hi, return) = {
-        // trace!({"toInteger lo": lo, "hi": hi}) |
-        if (hi <= lo) {
-          return!(0)
-        } else if (hi - lo == 1) {
-          // trace!({"toInteger base": input.nth(lo)}) |
-          return!(input.nth(lo))
-        } else {
-          new recur in {
-            toInteger!(lo, hi - 1, *recur) |
-            for(@bb <- recur) {
-              // trace!({"toInteger recur": input, "lo": lo, "hi": hi}) |
-              return!(input.nth(hi - 1) + bb * 256)
-            }
-          }
+    }
+  }
+  |
+  contract decodeVarInt(@input, @lo, @hi, return) = {
+    // trace!({"toInteger lo": lo, "hi": hi}) |
+    if (hi <= lo) {
+      return!(0)
+    } else if (hi - lo == 1) {
+      // trace!({"toInteger base": input.nth(lo)}) |
+      return!(input.nth(lo))
+    } else {
+      new recur in {
+        decodeVarInt!(lo, hi - 1, *recur) |
+        for(@bb <- recur) {
+          // trace!({"toInteger recur": input, "lo": lo, "hi": hi}) |
+          return!(input.nth(hi - 1) + bb * 256)
         }
       }
     }
