@@ -120,30 +120,31 @@ addrToWalletCh, publicToAddr in {
 
   addrToWalletCh!({}) |
   new sysCh, revCh in {
-    lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
+    rl!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
     for(@(_, sys) <- sysCh) {
-      @sys!("lookup", "rev", *revCh) |
+      @sys!("lookup", "rev", *revCh) | for (rev <- revCh) {
 
-      contract findOrCreateWallet(@{addr /\ ByteArray}, return) = {
-        trace!({"findOrCreate": addr}) |
-        for(@addrToWallet <- addrToWalletCh) {
-          match addrToWallet.get(addr) {
-            Nil => {
-              new purseCh, walletCh in {
-                rev!(*purseCh) | for(purse <- purseCh) {
-                  EtherWallet!(*purse, addr, *walletCh) |
-                  for(@wallet <- walletCh) {
-                    trace!({"add": wallet, "at": addr}) |
-                    addrToWalletCh!(addrToWallet.set(addr, wallet)) |
-                    return!(wallet)
+        contract findOrCreateWallet(@{addr /\ ByteArray}, return) = {
+          trace!({"findOrCreate": addr}) |
+          for(@addrToWallet <- addrToWalletCh) {
+            match addrToWallet.get(addr) {
+              Nil => {
+                new purseCh, walletCh in {
+                  rev!(*purseCh) | for(purse <- purseCh) {
+                    EtherWallet!(*purse, addr, *walletCh) |
+                    for(@wallet <- walletCh) {
+                      trace!({"add": wallet, "at": addr}) |
+                      addrToWalletCh!(addrToWallet.set(addr, wallet)) |
+                      return!(wallet)
+                    }
                   }
                 }
               }
-            }
-            wallet => {
-              trace!({"found": wallet, "at": addr}) |
-              addrToWalletCh!(addrToWallet) |
-              return!(wallet)
+              wallet => {
+                trace!({"found": wallet, "at": addr}) |
+                addrToWalletCh!(addrToWallet) |
+                return!(wallet)
+              }
             }
           }
         }
