@@ -8,7 +8,7 @@ in {
   // TODO: only register if all tests pass
   new uriCh in {
     // ISSUE: only export bundle+ (bummer it's not ocap-safe by default)
-    ri!({"decode": *decode, "encode": *encode}, *uriCh) |
+    ri!({"decode": bundle+{*decode}, "encode": bundle+{*encode}}, *uriCh) |
     for (@uri <- uriCh) {
       stdout!({"rlp uri": uri}) |
       rl!(uri, *uriCh)
