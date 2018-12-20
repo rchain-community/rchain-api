@@ -1,13 +1,19 @@
-// Toward decoding ethereum signed transactions
-// https://github.com/ethereum/wiki/wiki/RLP
+/** rlp.rho - Recursive Length Prefix
+  *
+  * "This is a serialisation method for encoding arbitrarily
+  * structured binary data (byte arrays)."
+  *
+  * Appendix B. of the Ethereum yellow paper
+  * https://ethereum.github.io/yellowpaper/paper.pdf
+  */
 new encode, decode, oneByte, encodeVarInt, decodeVarInt,
     ListOpsCh, test,
     trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
-    ri(`rho:registry:insertArbitrary`), rl(`rho:registry:lookup`)
+    insertArbitrary(`rho:registry:insertArbitrary`), lookup(`rho:registry:lookup`)
 in {
-  // TODO: only register if all tests pass
   new uriCh in {
-    ri!({
+    // ISSUE: only register if all tests pass?
+    insertArbitrary!({
       "decode": bundle+{*decode},
       "encode": bundle+{*encode},
       "encodeVarInt": bundle+{*encodeVarInt},
@@ -15,15 +21,138 @@ in {
       "oneByte": bundle+{*oneByte}
     }, *uriCh) |
     for (@uri <- uriCh) {
-      stdout!({"rlp uri": uri}) |
-      rl!(uri, *uriCh)
+      stdout!({"rlp uri": uri})
     }
   } |
 
-  rl!(`rho:id:dputnspi15oxxnyymjrpu7rkaok3bjkiwq84z7cqcrx4ktqfpyapn4`, *ListOpsCh) |
+
+  // Examples are taken from https://github.com/ethereum/wiki/wiki/RLP
+  // ISSUE: move tests to a separate file?
+
+  // • If the byte-array contains solely a single byte and that single
+  //   byte is less than 128, then the input is exactly equal to the
+  //   output.
+  test!("The encoded integer 0", "00", "00".hexToBytes(), Nil) |
+  test!("The encoded integer 15", "0f", "0f".hexToBytes(), Nil) |
+
+  // • If the byte-array contains fewer than 56 bytes, then the output
+  //   is equal to the input prefixed by the byte equal to the length
+  //   of the byte array plus 128.
+  test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
+  test!("The integer 0", "80", "".hexToBytes(), Nil) |
+  test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
+  test!("The encoded integer 1024", "820400", "0400".hexToBytes(), Nil) |
+
+  // • Otherwise, the output is equal to the input prefixed by the
+  //   minimal-length byte-array which when interpreted as a
+  //   big-endian integer is equal to the length of the input byte
+  //   array, which is itself prefixed by the number of bytes required
+  //   to faithfully encode this length value plus 183.
+  test!("The string \"Lorem ipsum dolor sit amet, consectetur adipisicing elit\"",
+   "b8384c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974",
+   "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974".hexToBytes(), Nil) |
+
+  // • If the concatenated serialisations of each contained item is
+  //   less than 56 bytes in length, then the output is equal to that
+  //   concatenation prefixed by the byte equal to the length of this
+  //   byte array plus 192.
+  test!("The empty list", "c0", [], Nil) |
+  test!("The list [ \"cat\", \"dog\" ]", "c88363617483646f67",
+    ["636174".hexToBytes(), "646f67".hexToBytes()], Nil) |
+  test!("The set theoretical representation of three",
+   "c7c0c1c0c3c0c1c0", [ [], [[]], [ [], [[]] ] ], Nil) |
+
+  // • Otherwise, the output is equal to the concatenated
+  //   serialisations prefixed by the minimal-length byte-array which
+  //   when interpreted as a big-endian integer is equal to the length
+  //   of the concatenated serialisations byte array, which is itself
+  //   prefixed by the number of bytes required to faithfully encode
+  //   this length value plus 247.
+  test!("EIP155 test case",
+    "f864808504a817c800825208943535353535353535353535353535353535353535808025a0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116da0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d",
+    [
+      "".hexToBytes(),        // nonce
+      "4a817c800".hexToBytes(), // gasPrice
+      "5208".hexToBytes(),      // gasLimit
+      "3535353535353535353535353535353535353535".hexToBytes(),  // to
+      "".hexToBytes(), // value
+      "".hexToBytes(), // data
+      "25".hexToBytes(), // v
+      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes(),  // r
+      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
+    ], Nil) |
+
+  test!("ill-formed", "", Nil, Nil) |
+
+  trace!("testing") | // Signal that this code is running at all.
+
+
+  // Turn Integer into singleton ByteArray.
+  new hexCh in {
+    hexCh!({
+      0: "0", 1: "1", 2: "2", 3: "3",
+      4: "4", 5: "5", 6: "6", 7: "7",
+      8: "8", 9: "9", 10: "a", 11: "b",
+      12: "c", 13: "d", 14: "e", 15: "f"
+    }) |
+    for(@hexDigit <- hexCh) {
+      contract oneByte(@{i /\ Int}, return) = {
+        // trace!({"oneByte": i}) |
+        return!((
+          hexDigit.getOrElse(i / 16, "0") ++
+            // ISSUE: coming soon? i % 16
+            hexDigit.getOrElse(i - (i / 16 * 16), "0")
+        ).hexToBytes())
+      }
+    }
+  } |
+
+  // Encode integer as big-endian ByteArray.
+  // See also toBuffer.
+  // https://github.com/ethereumjs/ethereumjs-util/blob/master/docs/index.md#tobuffer
+  contract encodeVarInt(@{x /\ Int}, return) = {
+    if (x <= 0) {
+      return!("".hexToBytes())
+    } else {
+      new initCh, tailCh in {
+        encodeVarInt!(x / 256, *initCh) |
+        oneByte!(x - ((x / 256) * 256), *tailCh) |
+        for(@init <- initCh; @tail <- tailCh) {
+          return!(init ++ tail)
+        }
+      }
+    }
+  } |
+
+  // Decode bytes [lo .. hi) of input as big-endian integer,
+  // provided lo >= 0 and hi <= input.length().
+  // See also bufferToInt
+  // https://github.com/ethereumjs/ethereumjs-util/blob/master/docs/index.md#buffertoint
+  contract decodeVarInt(@{input /\ ByteArray}, @{lo /\ Int}, @{hi /\ Int}, return) = {
+    // trace!({"toInteger lo": lo, "hi": hi}) |
+    if (hi <= lo) {
+      return!(0)
+    } else if (hi - lo == 1) {
+      // trace!({"toInteger base": input.nth(lo)}) |
+      return!(input.nth(lo))
+    } else {
+      new recur in {
+        decodeVarInt!(lo, hi - 1, *recur) |
+        for(@bb <- recur) {
+          // trace!({"toInteger recur": input, "lo": lo, "hi": hi}) |
+          return!(input.nth(hi - 1) + bb * 256)
+        }
+      }
+    }
+  } |
+
+
+  lookup!(`rho:id:pidw7mxws53r7ubyz3heebf8146ab3z1ct5zq1yw4a9mocg8387aap`, *ListOpsCh) |
   for(ListOps <- ListOpsCh) {
     trace!({"ListOps": *ListOps}) |
 
+    // ISSUE: pattern doesn't express type: data T = B ByteArray | L [T]
+    // so encode!([0], *ch) will match the pattern but hang because 0 won't match.
     contract encode(@item, return) = {
       // trace!({"encode item": item}) |
       new shortItem, longItem, concat in {
@@ -31,27 +160,27 @@ in {
           ByteArray => {
             if (item.length() == 1) {
               // rholang `and` does not short-circuit???
-              if (item.nth(0) < 8 * 16) { return!(item) }
-              else { longItem!(8 * 16, item, *return) }
-            } else { longItem!(8 * 16, item, *return) }
+              if (item.nth(0) < 128) { return!(item) }
+              else { longItem!(128, item) }
+            } else { longItem!(128, item) }
           }
           [...items] => {
             // trace!({"List": item}) |
             new payloadCh in {
               concat!(item, *payloadCh) |
               for(@payload <- payloadCh) {
-                longItem!(12 * 16, payload, *return)
+                longItem!(192, payload)
               }
             }
           }
           _ => {
-            return!(("what???", item))
+            Nil // ISSUE: signal error to caller?
           }
         } |
 
-        contract longItem(@{bias /\ Int}, @{payload /\ ByteArray}, return) = {
-          if (payload.length() <= 55) {
-            shortItem!(bias, payload, *return)
+        contract longItem(@{bias /\ Int}, @{payload /\ ByteArray}) = {
+          if (payload.length() < 56) {
+            shortItem!(bias, payload)
           } else {
             new encodedLengthCh, b0Ch in {
               encodeVarInt!(payload.length(), *encodedLengthCh) |
@@ -65,7 +194,7 @@ in {
           }
         } |
 
-        contract shortItem(@{bias /\ Int}, @{payload /\ ByteArray}, return) = {
+        contract shortItem(@{bias /\ Int}, @{payload /\ ByteArray}) = {
           new lenCh in {
             oneByte!(bias + payload.length(), *lenCh) |
             for(@len <- lenCh) {
@@ -89,37 +218,7 @@ in {
     }
   } |
 
-  new hexCh in {
-    hexCh!({
-      0: "0", 1: "1", 2: "2", 3: "3",
-      4: "4", 5: "5", 6: "6", 7: "7",
-      8: "8", 9: "9", 10: "a", 11: "b",
-      12: "c", 13: "d", 14: "e", 15: "f"
-    }) |
-    for(@hexDigit <- hexCh) {
-      // singleton byte sequence
-      contract oneByte(@{i /\ Integer}, return) = {
-        // trace!({"oneByte": i}) |
-        return!((hexDigit.get(i / 16) ++ hexDigit.get(i - (i / 16 * 16))).hexToBytes())
-      }
-    }
-  } |
-
-  contract encodeVarInt(@{x /\ Int}, return) = {
-    if (x <= 0) {
-      return!("".hexToBytes())
-    } else {
-      new initCh, tailCh in {
-        encodeVarInt!(x / 256, *initCh) |
-        oneByte!(x - ((x / 256) * 256), *tailCh) |
-        for(@init <- initCh; @tail <- tailCh) {
-          return!(init ++ tail)
-        }
-      }
-    }
-  } |
-
-
+  // Decode the input or fail and indicate where the problem is.
   contract decode(@{input /\ ByteArray}, fail, return) = {
     // trace!({"rlp input": input}) |
     new decodeItem, outCh in {
@@ -139,18 +238,17 @@ in {
           new stringOrList, returnSlice,
           decodeString, shortString, longString,
           decodeList, shortList, longList, listItems in {
-            stringOrList!(input.nth(lo))
-            |
+            stringOrList!(input.nth(lo)) |
             contract stringOrList(@b0) = {
-              if (b0 <= 127 /* 0x7f */) { returnSlice!(lo, lo + 1) }
-              else if (b0 <= 191 /* 0xbf */) { decodeString!(lo + 1) }
+              if (b0 < 128) { returnSlice!(lo, lo + 1) }
+              else if (b0 < 192) { decodeString!(lo + 1) }
               else { decodeList!(lo + 1) }
               |
               contract returnSlice(@lo, @hi) = { return!(input.slice(lo, hi), hi) } |
               contract decodeString(@lo1) = {
                 // trace!({"decodeString": lo1, "b0": b0}) |
-                if (b0 <= 183 /* 0xb7 */) { shortString!(lo1 + b0 - 128) }
-                else { longString!(lo1 + b0 - 183) }
+                if (b0 < 128 + 56) { shortString!(lo1 + b0 - 128) }
+                else { longString!(lo1 + b0 + 1 - 128 - 56) }
                 |
                 contract shortString(@end) = {
                   if (end > hi) { fail!(lo) }
@@ -171,8 +269,8 @@ in {
               }
               |
               contract decodeList(@lo1) = {
-                if (b0 <= 247 /* 0xf7 */) { shortList!(lo1 + b0 - 192 /* 0xc0*/) }
-                else { longList!(lo1 + b0 - 247) }
+                if (b0 < 192 + 56) { shortList!(lo1 + b0 - 192) }
+                else { longList!(lo1 + b0 + 1 - 192 - 56) }
                 |
                 contract shortList(@end) = {
                   if (end > hi) { fail!(lo) }
@@ -213,24 +311,6 @@ in {
     }
   }
   |
-  contract decodeVarInt(@input, @lo, @hi, return) = {
-    // trace!({"toInteger lo": lo, "hi": hi}) |
-    if (hi <= lo) {
-      return!(0)
-    } else if (hi - lo == 1) {
-      // trace!({"toInteger base": input.nth(lo)}) |
-      return!(input.nth(lo))
-    } else {
-      new recur in {
-        decodeVarInt!(lo, hi - 1, *recur) |
-        for(@bb <- recur) {
-          // trace!({"toInteger recur": input, "lo": lo, "hi": hi}) |
-          return!(input.nth(hi - 1) + bb * 256)
-        }
-      }
-    }
-  }
-  |
   contract test(@label, @inputHex, @expected, ack) = {
     new errCh, okCh in {
       decode!(inputHex.hexToBytes(), *errCh, *okCh) |
@@ -257,38 +337,4 @@ in {
       }
     }
   }
-  |
-
-  test!("ill-formed", "", Nil, Nil) |
-  test!("The string \"dog\"", "83646f67", "646f67".hexToBytes(), Nil) |
-  test!("The empty string ('null')", "80", "".hexToBytes(), Nil) |
-  test!("The integer 0", "80", "".hexToBytes(), Nil) |
-  test!("The empty list", "c0", [], Nil) |
-  test!("The encoded integer 0", "00", "00".hexToBytes(), Nil) |
-  test!("The encoded integer 15", "0f", "0f".hexToBytes(), Nil) |
-  test!("The encoded integer 1024", "820400", "0400".hexToBytes(), Nil) |
-  test!("The string \"Lorem ipsum dolor sit amet, consectetur adipisicing elit\"",
-   "b8384c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974",
-   "4c6f72656d20697073756d20646f6c6f722073697420616d65742c20636f6e7365637465747572206164697069736963696e6720656c6974".hexToBytes(), Nil) |
-  test!("The set theoretical representation of three",
-   "c7c0c1c0c3c0c1c0", [ [], [[]], [ [], [[]] ] ], Nil) |
-  test!("The list [ \"cat\", \"dog\" ]", "c88363617483646f67",
-    ["636174".hexToBytes(), "646f67".hexToBytes()], Nil) |
-
-  test!("EIP155 test case",
-    "f864808504a817c800825208943535353535353535353535353535353535353535808025a0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116da0044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d",
-    [
-      "".hexToBytes(),        // nonce
-      "4a817c800".hexToBytes(), // gasPrice
-      "5208".hexToBytes(),      // gasLimit
-      "3535353535353535353535353535353535353535".hexToBytes(),  // to
-      "".hexToBytes(), // value
-      "".hexToBytes(), // data
-      "25".hexToBytes(), // v
-      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes(),  // r
-      "044852b2a670ade5407e78fb2863c51de9fcb96542a07186fe3aeda6bb8a116d".hexToBytes()  // s
-    ], Nil) |
-
-
-  trace!("testing")
 }
