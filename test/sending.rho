@@ -2,6 +2,8 @@
  * sending - send REV from registered wallet to party identified by pk.
  */
 new send, makePayeeWallet,
+    exports(`export:`),
+    trace(`rho:io:stderr`),
     rl(`rho:registry:lookup`),
     ri(`rho:registry:insertArbitrary`)
 in {

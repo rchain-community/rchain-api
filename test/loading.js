@@ -1,3 +1,5 @@
+// ISSUE: squatting on `export:`
+
 /* global require, exports */
 // @flow
 
@@ -26,19 +28,41 @@ async function loadRhoModule(
   source /*: string*/, user /*: string*/,
   { rnode, clock } /*: LoadAccess */,
 ) {
+  const { term, name, title } = parseModule(source, mh.name);
   const timestamp = clock().valueOf();
   const [return_] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
-  const mh = moduleHeader(source);
   console.log(`Loading: ${mh.title}\n return channel: ${prettyPrivate(return_)}`);
-  const term = LOADER_TEMPLATE
-    .replace('__SOURCE__', source)
-    .replace('__NAME__', mh.name);
   const loaded = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment }, true);
   console.log({ loaded, name: mh.name });
   const found = await rnode.listenForDataAtName(return_);
   const moduleURI = firstBlockData(found);
   console.log(`${mh.name} registered at: ${moduleURI}`);
   return moduleURI;
+}
+
+
+function parseModule(sourceCode) {
+  const { name, title } = moduleHeader(sourceCode);
+
+  const topParts = sourceCode.match(/^([^{]*{)([\s\S]*)/);
+  if (!topParts) { throw new Error('bad module syntax: no {'); }
+  const [_, modtop, rest] = topParts;
+
+  const exportParts = modtop.match(/(\b\w+\b)\s*\(`export:`\)/);
+  if (!exportParts) { throw new Error('bad module syntax: no export:' + modtop); }
+  const [_2, exportVar] = exportParts;
+  const top = modtop.replace('(`export:`)', '');
+
+  const bodyEnd = rest.lastIndexOf('}');
+  if (!bodyEnd) { throw new Error('bad module syntax: no ending }'); }
+  const body = rest.slice(0, bodyEnd);
+
+  const term = LOADER_TEMPLATE
+        .replace('__TOP__', top)
+        .replace('__EXPORT__', exportVar)
+        .replace('__NAME__', name)
+        .replace('__BODY__', body);
+  return { term, name, title };
 }
 
 
@@ -79,4 +103,23 @@ function firstBlockProcess(blockResults) {
   // console.log('good:');
   // console.log(JSON.stringify(good, null, 2));
   return good[0];
+}
+
+
+function integrationTest(argv, {readFileSync}) {
+  const sourceFileName = argv[2];
+  const src = readFileSync(sourceFileName, 'utf8');
+  const mod = parseModule(src);
+  console.log({ name: mod.name, title: mod.title });
+  console.log(mod.term);
+}
+
+
+/*global module */
+if (require.main === module) {
+  /* global process */
+  /* eslint-disable global-require */
+  integrationTest(process.argv, {
+    readFileSync: require('fs').readFileSync
+  });
 }

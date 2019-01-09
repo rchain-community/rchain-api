@@ -6,8 +6,8 @@
  * put Alice's balance in wallets.txt.
  */
 new
-  return,
-  makeFaucetWallet
+  makeFaucetWallet,
+  exports(`export:`), trace(`rho:io:stderr`)
 in {
   new walletCh in {
     makeFaucetWallet!(100,
