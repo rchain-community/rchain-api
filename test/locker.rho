@@ -1,0 +1,148 @@
+/**
+ * Locker -- attenuate capabilities with digital signatures.
+
+Given a "callback function", that is: a process and an entry point
+name, we can ask the Locker contract to run the process in an
+encapsulated scope and send to the entry point, which returns a seed
+capability. The locker gives back an attenuated capability where only
+messages signed with the given public key are passed on to the seed.
+
+    contract Locker(
+      @{label /\ String},
+      @{pubKey /\ ByteArray},
+      @code, entryPoint,
+      return)
+
+The resulting locker can be published in the registry and hence
+used in dApps with off-chain components.
+
+See voterRole.rho and chairRole.rho for demo / test.
+
+In the test / demo below, for example, we call:
+
+    voterLocker!(sig, 0,
+      "voteFor", "Rick", *eject, *ack)
+
+The ack / return channel and the 0 nonce are as usual; the eject
+channel allows for partial methods (inspired by the ejector pattern
+from E); in particular, signatures may fail to verify.
+
+Provided the signature verifies, the seed capability is called as:
+
+    seed!("voteFor", "Rick", *eject, *ack)
+
+TODO: work out how seed, arg are packaged for signature. Currently,
+the signature checking algorigthm is a toy: sig == pk ++ pk.
+
+The demo below uses the Locker for two different roles in a voting
+protocol: the chair and a voter. The voter's seed process creates an
+inbox channel and shares a write-only bundle of it with the chair via
+the registry.  The chair sends a right to vote on this channel and the
+voter then excercises the vote.
+*TODO: more than one voter*
+
+The demo is also factored for use by off-chain components that pass
+plain data in and out (with the exception of return channels).
+*TODO: insertArbitrary(*chair, ...)*
+
+*/
+
+new export(`export:`), Locker, verify, toyVerify,
+trace(`rho:io:stderr`), stdout(`rho:io:stdout`),
+insertArbitrary(`rho:registry:insertArbitrary`), lookup(`rho:registry:lookup`)
+in {
+  export!(bundle+{*Locker}) |
+
+  // WARNING: if sig is the wrong size, we get a java.lang.RuntimeException,
+  // and our nonceCh is stuck.
+  contract verify(
+    @{sig /\ ByteArray},  // ed25519 signature of blakeb256Hash of ... TODO
+    @{pk /\ ByteArray},   // public key
+    @{nonce /\ Int},      // claimed next nonce
+    nonceCh,              // real nonce storage
+    @data,                // data to be signed (along with nonce)
+    eject,                // failure path (bad nonce or signature)
+    ack                   // sig OK path
+  ) = {
+    // trace!({"verify sig": sig, "pk": pk, "nonce": nonce}) |
+    for(@prevNonce <- nonceCh) {
+      // trace!({"prevNonce": prevNonce}) |
+      if (nonce == (prevNonce + 1)) {
+        new result, hashOut in {
+          // ISSUE: how to package nonce, data? tuples are nice,
+          // but they don't map easily to JSON.
+          @"blake2b256Hash"!((nonce, data).toByteArray(), *hashOut) |
+          for(@hash <- hashOut) {
+            // trace!({"hash": hash}) |
+            @"ed25519Verify"!(hash, sig, pk, *result) | for(@r <- result) {
+              // trace!({"verify": r}) |
+              if (r) { nonceCh!(nonce) | ack!(Nil) }
+              else { nonceCh!(prevNonce) | eject!("bad ed25519 signature") }
+            }
+          }
+        }
+      } else {
+        // ISSUE: having the locker's nickname in the diagnostic would be nice
+        nonceCh!(prevNonce) | eject!({"expected nonce": prevNonce + 1})
+      }
+    }
+  } |
+
+  // toy signature verification: checks that sig == pk ++ pk
+  contract toyVerify(
+    @{sig /\ ByteArray}, @{pk /\ ByteArray}, @{nonce /\ Int}, nonceCh,
+    @data,
+    eject, ack) = {
+    // trace!({"verify sig": sig, "pk": pk, "data": data}) |
+    for(@prevNonce <- nonceCh) {
+      // trace!({"prevNonce": prevNonce}) |
+      if (nonce == (prevNonce + 1)) {
+        if (pk ++ pk == sig) { nonceCh!(nonce) | ack!(Nil) }
+        else { nonceCh!(prevNonce) | eject!("bad ++ sig") }
+      } else {
+        nonceCh!(prevNonce) | eject!({"expected nonce": prevNonce + 1})
+      }
+    }
+  } |
+
+  contract Locker(
+    @{label /\ String},
+    @{pubKey /\ ByteArray},
+    @seedCode, seedEntry,
+    return) = {
+    trace!({"Locker": label, "pubKey": pubKey}) |
+
+    new self, seedCh, nonceCh in {
+      nonceCh!(-1) |
+
+      return!(*self) |
+
+      contract self(@"getNonce", return) = { for(@nonce <- nonceCh) {
+        nonceCh!(nonce) | // peek
+        return!(nonce)
+      } } |
+
+      seedCode |
+      seedEntry!(*seedCh) | for (seed <- seedCh) {
+        // trace!({"seed": *seed}) |
+
+        // unary, partial
+        contract self(
+          @{sig /\ ByteArray}, @{nonce /\ Int},
+          @{method /\ String}, @arg, eject, ret
+        ) = {
+          trace!({"Locker": label, "method": method, "param": arg }) |
+          new okCh in {
+            // TODO: replace toyVerify by real verify
+            toyVerify!(sig, pubKey, nonce, *nonceCh,
+              (method, arg, *eject, *ret), *eject, *okCh) |
+            for(_ <- okCh) {
+              // trace!({"sig ok": sig}) |
+              seed!(method, arg, *eject, *ret)
+            }
+          }
+        }
+      }
+    }
+  }
+}

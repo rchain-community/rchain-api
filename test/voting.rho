@@ -1,0 +1,331 @@
+/**
+ * Ballot -- Voting with delegation
+ * 
+ * See example / demo below.
+ * 
+ * Solidity code exerpted from
+ * https://solidity.readthedocs.io/en/develop/solidity-by-example.html#voting
+ */
+
+
+new export(`export:`), Ballot,
+trace(`rho:io:stderr`),
+stdout(`rho:io:stdout`),
+insertArbitrary(`rho:registry:insertArbitrary`)
+in {
+
+  export!(bundle+{*Ballot}) |  // see loadering.js and loader.rho
+
+/*
+contract Ballot {
+
+    address public chairperson;  // scoped differently in rholang
+
+    /// Create a new ballot to choose one of `proposalNames`.
+    constructor(bytes32[] memory proposalNames) public {
+      ...
+ */
+  // rholang: Set(hd, ...tail) is a pattern for a non-empty set.
+  contract Ballot(@{proposalNames /\ Set(hd, ...tail)}, return) = {
+     //  chairperson = msg.sender;
+     //  voters[chairperson].weight = 1; // TODO: give chair right to vote
+
+    new chairperson, winningProposalName, voterWeightCh, votedCh, countCh, delegateCh in {
+      return!(bundle+{*chairperson}, bundle+{*winningProposalName}) |
+
+/*
+    // This declares a state variable that
+    // stores a `Voter` struct for each possible address.
+    mapping(address => Voter) public voters;
+
+    // This declares a new complex type which will
+    // be used for variables later.
+    // It will represent a single voter.
+    struct Voter {
+        uint weight; // weight is accumulated by delegation
+        bool voted;  // if true, that person already voted
+        address delegate; // person delegated to
+        uint vote;   // index of the voted proposal
+    }
+ */
+      voterWeightCh!({}) | // voterId (aka bundle0{*voter}) -> Int (weight)
+      votedCh!({}) |       // voterId -> proposal
+      delegateCh!({}) |    // voterId -> (delegate) voterId
+/*
+    // This is a type for a single proposal.
+    struct Proposal {
+        bytes32 name;   // short name (up to 32 bytes)
+        uint voteCount; // number of accumulated votes
+    }
+
+    // A dynamically-sized array of `Proposal` structs.
+    Proposal[] public proposals;
+
+    constructor(...) {
+        ... // rholang: this is subsumed by use of maps and channels:
+
+        // For each of the provided proposal names,
+        // create a new proposal object and add it
+        // to the end of the array.
+        for (uint i = 0; i < proposalNames.length; i++) {
+            // `Proposal({...})` creates a temporary
+            // Proposal object and `proposals.push(...)`
+            // appends it to the end of `proposals`.
+            proposals.push(Proposal({
+                name: proposalNames[i],
+                voteCount: 0
+            }));
+        }
+ */
+      countCh!({}) |       // proposal -> votes / weight
+
+/*
+    // Give `voter` the right to vote on this ballot.
+    // May only be called by `chairperson`.
+    function giveRightToVote(address voter) public {
+      ...
+ */
+      contract chairperson(@"giveRightToVote", return) = {
+        // rholang: check not needed; chairperson is a capability:
+        // require(
+        //     msg.sender == chairperson,
+        //     "Only chairperson can give right to vote."
+        // );
+
+
+        // "voter" is perhaps a mis-nomer. "votingRight" might be better.
+        new voter in {
+          // rholang: debugging technique: trace inside each for() { ... }
+          trace!({"chair": *chairperson, "gives right to vote": *voter}) |
+          return!(bundle+{*voter}) |
+
+          // rholang: check not needed; voter is allocated inside this method:
+          // require(
+          //     !voters[voter].voted,
+          //     "The voter already voted."
+          // );
+
+          // rholang: subsumed by maps, channels
+          // require(voters[voter].weight == 0);
+
+          // voters[voter].weight = 1;
+          for (@voterWeight <- voterWeightCh) {
+            voterWeightCh!(voterWeight.set(bundle0{*voter}, 1))
+          }|
+
+/*
+    /// Give your vote (including votes delegated to you)
+    /// to proposal `proposals[proposal].name`.
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote");
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+
+        // If `proposal` is out of the range of the array,
+        // this will throw automatically and revert all
+        // changes.
+        proposals[proposal].voteCount += sender.weight;
+    }
+
+ */          
+          contract voter(@"vote", @proposal, eject, ack) = {
+            // trace!({"voter": *voter, "for": proposal}) |
+            if(proposalNames.contains(proposal) == false) { eject!({"unknown proposal": proposal}) }
+            else {
+              for (@votedFor <- votedCh) {
+                if (votedFor.contains(bundle0{*voter})) {
+                  votedCh!(votedFor) |
+                  eject!("already voted")
+                } else {
+                  for(@count <- countCh; @voterWeight <- voterWeightCh) {
+                    trace!({"voter": *voter, "weight": voterWeight.get(bundle0{*voter}),
+                      "proposal": proposal}) |
+                    voterWeightCh!(voterWeight) | // peek
+                    votedCh!(votedFor.set(bundle0{*voter}, proposal)) |
+                    countCh!(count.set(proposal,
+                      count.getOrElse(proposal, 0) +
+                        voterWeight.getOrElse(bundle0{*voter}, 0))) |
+                    ack!(Nil)
+                  }
+                }
+              }
+            }
+          } |
+
+/*
+    /// Delegate your vote to the voter `to`.
+    function delegate(address to) public {
+        // assigns reference
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        require(to != msg.sender, "Self-delegation is disallowed.");
+
+        // Forward the delegation as long as
+        // `to` also delegated.
+        // In general, such loops are very dangerous,
+        // because if they run too long, they might
+        // need more gas than is available in a block.
+        // In this case, the delegation will not be executed,
+        // but in other situations, such loops might
+        // cause a contract to get "stuck" completely.
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+
+            // We found a loop in the delegation, not allowed.
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        // Since `sender` is a reference, this
+        // modifies `voters[msg.sender].voted`
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+... below
+    }
+ */
+          contract voter(@"delegate", @to, eject, ack) = {
+            // ISSUE: precedence of {bundle{}} around ==
+            if ({bundle0{to}} == {bundle0{*voter}}) {
+              eject!("Self-delegation is disallowed.")
+            } else {
+              for (@votedFor <- votedCh) {
+                // trace!({"delegate already voted?": votedFor, "voter": *voter}) |
+                votedCh!(votedFor) | // ISSUE: peek
+
+                if(votedFor.contains(bundle0{*voter})) {
+                  eject!("You already voted.")
+                } else {
+                  for (@delegateOf <- delegateCh) {
+                    new loop, finish in {
+                      loop!(bundle0{to}) |
+                      contract loop(@whom) = {
+                        // trace!({"delegate loop": whom}) |
+                        if (whom == {bundle0{*voter}}) {
+                          eject!("Found loop in delegation.") |
+                          delegateCh!(delegateOf)
+                        } else {
+                          if (delegateOf.contains(whom)) {
+                            loop!(delegateOf.get(whom))
+                          } else {
+                            finish!(whom)
+                          }
+                        }
+                      } |
+                      contract finish(@whom) = {
+                        // trace!({"delegate finish": whom, "voter": *voter}) |
+                        delegateCh!(delegateOf.set(bundle0{*voter}, whom)) |
+                        ack!(Nil) |
+
+/*
+        if (delegate_.voted) {
+            // If the delegate already voted,
+            // directly add to the number of votes
+            proposals[delegate_.vote].voteCount += sender.weight;
+        } else {
+            // If the delegate did not vote yet,
+            // add to her weight.
+            delegate_.weight += sender.weight;
+        }
+ */                        
+                        for (@count <- countCh; @voterWeight <- voterWeightCh) {
+                          if (votedFor.contains(whom)) {
+                            trace!({"delegate already voted": whom}) |
+                            // If the delegate already voted,
+                            // directly add to the number of votes
+                            countCh!(count.set(votedFor.get(whom),
+                              count.getOrElse(votedFor.get(whom), 0) +
+                                voterWeight.getOrElse(bundle0{*voter}, 1))) |
+                            voterWeightCh!(voterWeight)
+                          } else {
+                            trace!({"add voter weight": voterWeight.get(bundle0{*voter}),
+                              "to delegate weight": voterWeight.get(whom)}) |
+                            // If the delegate did not vote yet,
+                            // add to her weight.
+                            voterWeightCh!(voterWeight.set(whom,
+                              voterWeight.getOrElse(whom, 1) +
+                                voterWeight.getOrElse(bundle0{*voter}, 1))) |
+                            countCh!(count)
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } |
+
+/*
+    /// @dev Computes the winning proposal taking all
+    /// previous votes into account.
+    function winningProposal() public view
+            returns (uint winningProposal_)
+    {
+        uint winningVoteCount = 0;
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal_ = p;
+            }
+        }
+    }
+
+ */
+      contract winningProposalName(return) = {
+        for(@count <- countCh) {
+          countCh!(count) | // peek
+          new loop in {
+            contract loop(@best, @bestCount, @rest) = {
+              match rest {
+                Set() => { return!((best, count)) }
+                Set(hd, ...tail) => {
+                  if (count.getOrElse(hd, 0) > bestCount) {
+                    loop!(hd, count.getOrElse(hd, 0), tail)
+                  } else {
+                    loop!(best, bestCount, tail)
+                  }
+                }
+              }
+            } |
+            match proposalNames {
+              Set(hd, ...tail) => { loop!(hd, count.getOrElse(hd, 0), tail) }
+            }
+          }
+        }
+      }
+    }
+  }
+  |
+  // example / demo
+  new bCh, v1Ch, v2Ch, v3Ch in {
+    Ballot!(Set("Lincoln", "Douglas"), *bCh) |
+    for (chairperson, winningProposalName <- bCh) {
+      trace!({"Ballot returned": *chairperson}) |
+      chairperson!("giveRightToVote", *v1Ch) |
+      chairperson!("giveRightToVote", *v2Ch) |
+      chairperson!("giveRightToVote", *v3Ch) |
+      for(v1 <- v1Ch; v2 <- v2Ch; v3 <- v3Ch) {
+        v3!("delegate", bundle0{*v2}, *trace, *v3Ch) |
+        v3!("delegate", bundle0{*v3}, *trace, *v3Ch) |
+        for(_ <- v3Ch) {
+          v1!("vote", "Douglas", *trace, *v1Ch) |
+          v1!("vote", "Lincoln", *trace, *v1Ch) |
+          v1!("vote", "Abe Lincoln", *trace, *v1Ch) |
+          v2!("vote", "Lincoln", *trace, *v2Ch) |
+          for(_ <- v1Ch; _ <- v2Ch) {
+            // trace!("votes done") |
+            winningProposalName!(*bCh) |
+            for(@(winner, tally) <- bCh) {
+              trace!({"winner": winner, "tally": tally})
+            }
+          }
+        }
+      }
+    }
+  }
+}

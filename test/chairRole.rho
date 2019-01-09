@@ -1,0 +1,60 @@
+/**
+ * chairRole -- coordinate an election
+ */
+new export(`export:`), chairRole,
+trace(`rho:io:stderr`),
+lookup(`rho:registry:lookup`), insertArbitrary(`rho:registry:insertArbitrary`)
+in {
+  export!(bundle+{*chairRole}) |
+
+  // Make and register chair locker; return URI.
+  contract chairRole(
+    @"makeLocker", @nickname, @pubKey, @choices,
+    @{@"Ballot"!(BallotURI) | @"Locker"!(LockerURI)},  // JSON object / record
+    return,
+  ) = {
+    new seedEntry, lockerCh, blCh, llCh, ackCh in {
+      lookup!(BallotURI, *blCh) |
+      lookup!(LockerURI, *llCh) |
+      for(Ballot <- blCh; Locker <- llCh) {
+        Locker!(nickname, pubKey,
+
+          // Note we're _sending_ this ballot seed code, not running it.
+          for(return <- seedEntry) {
+            new bCh, self in {
+              Ballot!(
+                Set(choices.nth(0), choices.nth(1)),  // ISSUE: list -> set
+                *bCh) |
+              for(chair, winner <- bCh) {
+
+                // These are 0-ary and total, but they fit in
+                // the 1-ary partial gateway
+                contract self(@"giveRightToVote", @voterInboxURI, reject, resolve) = {
+                  new inlCh, ch in {
+                    lookup!(voterInboxURI, *inlCh) |
+                    chair!("giveRightToVote", *ch) |
+                     for(inbox <- inlCh; right <- ch) {
+                      inbox!(*right) |
+                      resolve!(Nil)
+                    }
+                  }
+                } |
+
+                contract self(@"getWinner", _, reject, resolve) = {
+                  winner!(*resolve)
+                }
+              } |
+              return!(bundle+{*self})
+            }
+          },
+          *seedEntry,
+          *lockerCh)
+      } |
+
+      for (@chairLocker <- lockerCh) {
+        trace!({"chairLocker created for": nickname}) |
+        insertArbitrary!(bundle+{chairLocker}, *return)
+      }
+    }
+  }
+}
