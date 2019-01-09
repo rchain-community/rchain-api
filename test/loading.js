@@ -19,6 +19,7 @@ import type { IRNode } from '..';
 interface LoadAccess {
   rnode: IRNode,
   clock: () => Date,
+  delay: (() => Promise<void>)?
 }
 
  */
@@ -26,17 +27,22 @@ interface LoadAccess {
 exports.loadRhoModule = loadRhoModule;
 async function loadRhoModule(
   source /*: string*/, user /*: string*/,
-  { rnode, clock } /*: LoadAccess */,
+  { rnode, clock, delay } /*: LoadAccess */,
 ) {
-  const { term, name, title } = parseModule(source, mh.name);
+  const { term, name, title } = parseModule(source);
   const timestamp = clock().valueOf();
   const [return_] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
-  console.log(`Loading: ${mh.title}\n return channel: ${prettyPrivate(return_)}`);
+  console.log(`Loading: ${title}\n return channel: ${prettyPrivate(return_)}`);
   const loaded = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment }, true);
-  console.log({ loaded, name: mh.name });
+  console.log({ loaded, name });
+
+  if (delay) {
+    await delay();
+  }
+
   const found = await rnode.listenForDataAtName(return_);
   const moduleURI = firstBlockData(found);
-  console.log(`${mh.name} registered at: ${moduleURI}`);
+  console.log(`${name} registered at: ${moduleURI}`);
   return moduleURI;
 }
 
@@ -44,7 +50,7 @@ async function loadRhoModule(
 function parseModule(sourceCode) {
   const { name, title } = moduleHeader(sourceCode);
 
-  const topParts = sourceCode.match(/^([^{]*{)([\s\S]*)/);
+  const topParts = sourceCode.match(/(new [\s\S]*?\bin {)([\s\S]*)/);
   if (!topParts) { throw new Error('bad module syntax: no {'); }
   const [_, modtop, rest] = topParts;
 
@@ -58,7 +64,7 @@ function parseModule(sourceCode) {
   const body = rest.slice(0, bodyEnd);
 
   const term = LOADER_TEMPLATE
-        .replace('__TOP__', top)
+        .replace('__TOP__{', top)
         .replace('__EXPORT__', exportVar)
         .replace('__NAME__', name)
         .replace('__BODY__', body);
@@ -90,6 +96,7 @@ function prettyPrivate(par /*: IPar */) {
 }
 
 function firstBlockData(blockResults) {
+  if (!blockResults.length) { throw new Error('no blocks found'); }
   return RHOCore.toJSData(firstBlockProcess(blockResults));
 }
 
@@ -109,9 +116,9 @@ function firstBlockProcess(blockResults) {
 function integrationTest(argv, {readFileSync}) {
   const sourceFileName = argv[2];
   const src = readFileSync(sourceFileName, 'utf8');
-  const mod = parseModule(src);
-  console.log({ name: mod.name, title: mod.title });
-  console.log(mod.term);
+  const { name, title, term } = parseModule(src);
+  console.log({ name, title });
+  console.log(term);
 }
 
 

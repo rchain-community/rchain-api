@@ -1,6 +1,7 @@
-new loadedCh, trace(`rho:io:stderr`) in {
-  __TOP__
-    new uriCh, insertArbitrary(`rho:registry:insertArbitrary`) in {
+new loadedCh in {
+  __TOP__{
+    new uriCh, insertArbitrary(`rho:registry:insertArbitrary`), trace(`rho:io:stderr`)
+    in {
       for (@it <- __EXPORT__) {
         insertArbitrary!(it, *uriCh) |
         for (@uri <- uriCh) {
@@ -9,7 +10,6 @@ new loadedCh, trace(`rho:io:stderr`) in {
         }
       }
     } |
-
     __BODY__
   }
 }
