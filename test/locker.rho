@@ -127,9 +127,9 @@ in {
         // trace!({"seed": *seed}) |
 
         // unary, partial
-        contract self(
+        contract self(@{method /\ String},
           @{sig /\ ByteArray}, @{nonce /\ Int},
-          @{method /\ String}, @arg, eject, ret
+          @arg, eject, ret
         ) = {
           trace!({"Locker": label, "method": method, "param": arg }) |
           new okCh in {
