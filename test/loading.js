@@ -24,28 +24,48 @@ interface LoadAccess {
 
  */
 
-exports.loadRhoModule = loadRhoModule;
-async function loadRhoModule(
-  source /*: string*/, user /*: string*/,
-  { rnode, clock, delay } /*: LoadAccess */,
-) {
-  const { term, name, title } = parseModule(source);
-  const timestamp = clock().valueOf();
-  const [return_] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
-  console.log(`Loading: ${title}\n return channel: ${prettyPrivate(return_)}`);
-  const loaded = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment }, true);
-  console.log({ loaded, name });
 
-  if (delay) {
-    await delay();
+exports.loadRhoModules = loadRhoModules;
+async function loadRhoModules(
+  sources /*: string[]*/, user /*: string*/,
+  { rnode, clock } /*: LoadAccess */,
+) {
+  let t1 = null;
+  function monotonicClock() {
+    let t2;
+    do {
+      t2 = clock().valueOf();
+    } while (t1 !== null && t2 <= t1);
+    t1 = t2;
+    return t2;
   }
 
-  const found = await rnode.listenForDataAtName(return_);
-  const moduleURI = firstBlockData(found);
-  console.log(`${name} registered at: ${moduleURI}`);
-  return moduleURI;
-}
+  async function deploy1({name, title, term}) {
+    const timestamp = monotonicClock();
+    const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1)
+    console.log(`Deploying: ${title}\n`);
+    const deployResult = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment })
+    console.log({ deployResult, name });
+    return { name, title, term, chan };
+  }
 
+  const parts = sources.map(parseModule);
+  const deployed = await Promise.all(parts.map(deploy1));
+
+  const createdBlock = await rnode.createBlock();
+  console.log({ createdBlock, loading: deployed.map(({ name }) => name) });
+
+  async function register1({ name, title, term, chan }) {
+    console.log(`${name}: listening for URI at ${prettyPrivate(chan)}`);
+    const found = await rnode.listenForDataAtName(chan);
+    const URI = firstBlockData(found);
+    console.log(`${name} registered at: ${URI}`);
+    return { name, title, term, URI };
+  }
+
+  const registered = await Promise.all(deployed.map(register1));
+  return registered;
+}
 
 function parseModule(sourceCode) {
   const { name, title } = moduleHeader(sourceCode);

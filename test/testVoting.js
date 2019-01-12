@@ -2,7 +2,7 @@
 const { RNode, makeProxy, h2b, keyPair } = require('..');
 
 const { link } = require('./assets');
-const { loadRhoModule, unforgeableWithId } = require('./loading');
+const { loadRhoModules, unforgeableWithId } = require('./loading');
 
 const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
@@ -22,31 +22,44 @@ const Scenario = {
 
 
 async function test({ rnode, clock }) {
-  const load = src => loadRhoModule(src, user, { rnode, clock });
+  const [BallotMod, LockerMod,
+         chairRoleMod, voterRoleMod] = await loadRhoModules([
+           link('./voting.rho'), link('./locker.rho'),
+           link('./chairRole.rho'), link('./voterRole.rho')
+         ], user, { rnode, clock });
 
-  const BallotURI = await load(link('./voting.rho'));
-  const LockerURI = await load(link('./locker.rho'));
+  const chairRole  = makeProxy(chairRoleMod.URI, { user, ...defaultPayment }, { rnode, clock });
+  const voterRole = makeProxy(voterRoleMod.URI, { user, ...defaultPayment }, { rnode, clock });
 
-  const chairRoleURI = await load(link('./chairRole.rho'));
-  const voterRoleURI = await load(link('./voterRole.rho'));
-
-  const chairRole = makeProxy(chairRoleURI, { user, ...defaultPayment }, { rnode, clock });
-  const voterRole = makeProxy(voterRoleURI, { user, ...defaultPayment }, { rnode, clock });
-
+  // There's no data dependency between the following two calls, so we should
+  // be able to do them concurrently, but our proxy mechanism expects replies
+  // to be available on chain right away and isn't smart enough to wait around
+  // for the voter to get its right to vote before exercising it.
   const chairLockerURI = await chairRole.makeLocker(
     Scenario.chair.nickname, h2b(Scenario.chair.keyPair.publicKey()), Scenario.choices,
-    { Locker: LockerURI, Ballot: BallotURI });
-  const chairLocker = makeProxy(chairLockerURI, { user, ...defaultPayment }, { rnode, clock });
-
+    { Locker: LockerMod.URI, Ballot: BallotMod.URI });
   const { locker, inbox } = await voterRole.makeLocker(
-    Scenario.voter.nickname, h2b(Scenario.voter.keyPair.publicKey()), LockerURI);
+    Scenario.voter.nickname, h2b(Scenario.voter.keyPair.publicKey()), LockerMod.URI);
+
+  const chairLocker = makeProxy(chairLockerURI, { user, ...defaultPayment }, { rnode, clock });
   const voterLocker = makeProxy(locker, { user, ...defaultPayment }, { rnode, clock });
 
-  await chairLocker.giveRightToVote("TODO: sig", 0, inbox, "TODO: reject");
+  function toySig(kpr) {
+    const pkh = kpr.publicKey();
+    return h2b(pkh + pkh);
+  }
 
-  await voterLocker.voteFor("TODO: sig", 0, Scenario.voter.choice, "TODO: reject");
+  // again, serialization due to proxy return limitations
+  await chairLocker.giveRightToVote(toySig(Scenario.chair.keyPair), 0,
+                                    inbox,
+                                    "TODO: reject");
+  await voterLocker.voteFor(toySig(Scenario.voter.keyPair), 0,
+                            Scenario.voter.choice,
+                            "TODO: reject");
 
-  const outcome = await chairLocker.getWinner();
+  const outcome = await chairLocker.getWinner(toySig(Scenario.chair.keyPair), 1,
+                                              "dummyArg",
+                                              "TODO: reject");
 
   console.log(outcome);
 }
