@@ -76,6 +76,8 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 
 
 async function register(files, registry, _price, { rnode, clock }) {
+  // ISSUE: what to do when we restart the node?
+  // how to check that we're talking to the same chain?
   async function check1(file) {
     const src = await file.readText();
 
@@ -120,7 +122,7 @@ function KVDB(store) {
   async function put(k /*: string*/, v /*: mixed*/) {
     const info = await load();
     info[k] = v;
-    await store.writeText(JSON.stringify(info));
+    await store.writeText(JSON.stringify(info, null, 2));
     return;
   }
 
