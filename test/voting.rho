@@ -14,7 +14,7 @@ stdout(`rho:io:stdout`),
 insertArbitrary(`rho:registry:insertArbitrary`)
 in {
 
-  export!(bundle+{*Ballot}) |  // see loadering.js and loader.rho
+  export!(bundle+{*Ballot}) |  // see loading.js and loader.rho
 
 /*
 contract Ballot {
