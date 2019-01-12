@@ -19,7 +19,6 @@ import type { IRNode } from '..';
 interface LoadAccess {
   rnode: IRNode,
   clock: () => Date,
-  delay: (() => Promise<void>)?
 }
 
  */
