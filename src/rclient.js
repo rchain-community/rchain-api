@@ -16,7 +16,7 @@ const usage = `
 
 Usage:
   rclient [options] deploy RHOLANG
-  rclient [options] register RHOLANG
+  rclient [options] register RHOMODULE...
 
 Options:
  --host INT             The hostname or IPv4 address of the node
@@ -39,7 +39,8 @@ function main(argv, { grpc, clock, writeFile, readFile, join }) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
 
-  const argRd = arg => fsReadAccess(cli[arg], readFile, join);
+  const rd = path => fsReadAccess(path, readFile, join);
+  const argRd = arg => rd(cli[arg]);
   const argWr = arg => fsWriteAccess(cli[arg], writeFile, readFile, join);
 
   const where = { host: cli['--host'], port: cli['--port'] };
@@ -55,7 +56,7 @@ function main(argv, { grpc, clock, writeFile, readFile, join }) {
     deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
-    register(argRd('RHOLANG'), KVDB(argWr('--registry')),
+    register(cli['RHOMODULE'].map(rd), KVDB(argWr('--registry')),
              priceInfo(), { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   }
@@ -74,17 +75,26 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 }
 
 
-async function register(module, registry, _price, { rnode, clock }) {
-  const src = await module.readText();
+async function register(files, registry, _price, { rnode, clock }) {
+  async function check1(file) {
+    const src = await file.readText();
 
-  const srcHash = simplifiedKeccak256Hash(src);
-  const entry = await registry.get(srcHash);
-
-  if (!entry) {
-    // ISSUE: loadRhoModules should take price info
-    const [mod] = await loadRhoModules([src], user, { rnode, clock });
-    await registry.put(srcHash, mod);
+    const srcHash = simplifiedKeccak256Hash(src);
+    const mod = await registry.get(srcHash);
+    return { src, srcHash, mod };
   }
+
+  const loaded = await Promise.all(files.map(check1));
+
+  async function ensure1({ src, srcHash, mod }) {
+    if (!mod) {
+      // ISSUE: loadRhoModules should take price info
+      const [mod] = await loadRhoModules([src], user, { rnode, clock });
+      await registry.put(srcHash, mod);
+    }
+  }
+
+  return Promise.all(loaded.map(ensure1));
 }
 
 
