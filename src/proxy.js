@@ -5,12 +5,17 @@ const { rhol, toJSData } = require('./RHOCore');
 
 /*::
 import type { IRNode, DeployData } from './rnodeAPI';
+import { URL } from 'url';
 
 type Message = {
-  target: string,
+  target: URL,
   method: ?string,
   args: mixed[],
 };
+
+type Receiver = {
+  [string]: (...mixed[]) => Promise<mixed>
+}
 
 interface SendOpts {
   rnode: IRNode,
@@ -44,10 +49,10 @@ interface ProxyOpts extends SendOpts {
  */
 exports.makeProxy = makeProxy;
 function makeProxy(
-  target /*: string */,
+  target /*: URL */,
   deployData /*: DeployData */,
   { rnode, clock, delay, unary = false } /*: ProxyOpts */,
-) {
+) /*: Receiver */{
   const sendIt = msg => sendCall(
     msg, { timestamp: clock().valueOf(), ...deployData },
     { rnode, delay: delay || noDelay, unary },
@@ -113,7 +118,7 @@ function callSource(
 ) {
   return rhoCall({
     // ISSUE: assume target is injection-safe?
-    target: `\`${target}\``,
+    target: `\`${String(target)}\``,
     method: method && method.length > 0 ? [rhol`${method}`] : [],
     args: (
       unary

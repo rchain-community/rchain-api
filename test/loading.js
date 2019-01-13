@@ -3,6 +3,8 @@
 /* global require, exports */
 // @flow
 
+const { URL } = require('url');
+
 const { Writer } = require('protobufjs');
 
 const { RHOCore, b2h } = require('..');
@@ -21,14 +23,20 @@ interface LoadAccess {
   clock: () => Date,
 }
 
+export type ModuleInfo = {
+  name: string,
+  title: string,
+  term: string,
+  URI: URL,
+};
  */
 
 
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
-  sources /*: string[]*/, user /*: string*/,
+  sources /*: string[]*/, user /*: Uint8Array*/,
   { rnode, clock } /*: LoadAccess */,
-) {
+) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;
   function monotonicClock() {
     let t2;
@@ -41,9 +49,9 @@ async function loadRhoModules(
 
   async function deploy1({name, title, term}) {
     const timestamp = monotonicClock();
-    const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1)
+    const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
     console.log(`Deploying: ${title}\n`);
-    const deployResult = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment })
+    const deployResult = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment });
     console.log({ deployResult, name });
     return { name, title, term, chan };
   }
@@ -54,11 +62,13 @@ async function loadRhoModules(
   const createdBlock = await rnode.createBlock();
   console.log({ createdBlock, loading: deployed.map(({ name }) => name) });
 
-  async function register1({ name, title, term, chan }) {
+  async function register1({ name, title, term, chan }) /*: Promise<ModuleInfo> */{
     console.log(`${name}: listening for URI at ${prettyPrivate(chan)}`);
     const found = await rnode.listenForDataAtName(chan);
-    const URI = firstBlockData(found);
-    console.log(`${name} registered at: ${URI}`);
+    const d = firstBlockData(found);
+    if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${ String(d) }`); }
+    const URI = d;
+    console.log(`${name} registered at: ${String(URI)}`);
     return { name, title, term, URI };
   }
 

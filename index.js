@@ -1,11 +1,18 @@
+/* global require, exports, module */
+// @flow
+
 const RHOCore = require('./src/RHOCore');
 
 module.exports.RHOCore = RHOCore;
 
 
-const RNode = require('./src/rnodeAPI.js');
+const { RNode } = require('./src/rnodeAPI');
 
-module.exports.RNode = RNode.RNode;
+module.exports.RNode = RNode;
+/*::
+import type { IRNode } from './src/rnodeAPI';
+export type { IRNode };
+ */
 
 const { sendCall, makeProxy, callSource } = require('./src/proxy');
 
