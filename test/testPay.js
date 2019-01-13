@@ -22,8 +22,14 @@ import type { ModuleInfo } from './loading';
  */
 
 const defaultDeployInfo = {
-  from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000,
-  sig: h2b(''), sigAlgorithm: 'ed25519', term: '', timestamp: 0
+  from: '0x1',
+  nonce: 0,
+  phloPrice: 1,
+  phloLimit: 100000,
+  sig: h2b(''),
+  sigAlgorithm: 'ed25519',
+  term: '',
+  timestamp: 0,
 };
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 
@@ -73,7 +79,7 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   const bobWalletURI = await sendVia('viaCh', tPmt, [
     aliceWalletURI, Scenario.amount, aliceNonce + 1, sigHex, Scenario.bobPk,
   ]);
-  if(!(bobWalletURI instanceof URL)) { throw new Error('expected URL'); }
+  if (!(bobWalletURI instanceof URL)) { throw new Error('expected URL'); }
   console.log(`URI of wallet for Bob: ${String(bobWalletURI)}`);
 
   const bobWallet = makeProxy(bobWalletURI, { user, ...defaultDeployInfo }, { rnode, clock });

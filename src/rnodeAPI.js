@@ -9,7 +9,8 @@ refs:
 [1]: https://github.com/rchain/rchain/blob/dev/models/src/main/protobuf/CasperMessage.proto
 [2]: https://grpc.io/docs/tutorials/basic/node.html
 
- */
+*/
+/* global require, exports */
 // @flow strict
 
 const assert = require('assert');

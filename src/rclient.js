@@ -8,8 +8,7 @@ const { docopt } = require('docopt');
 
 const { RNode, simplifiedKeccak256Hash, h2b } = require('..');
 
-const { loadRhoModules } = require('../test/loading');  // ISSUE: promote to src
-const { asPromise } = require('./asPromise');
+const { loadRhoModules } = require('../test/loading'); // ISSUE: promote to src
 const { fsReadAccess, fsWriteAccess } = require('./pathlib');
 
 const usage = `
@@ -47,17 +46,19 @@ function main(argv, { grpc, clock, writeFile, readFile, join }) {
   const rnode = RNode(grpc, where);
 
   const priceInfo = () => ({
-      phloPrice: parseInt(cli['--phlo-price']),
-      phloLimit: parseInt(cli['--phlo-limit']),
-      from: '0x01' // TODO: cli arg
+    phloPrice: parseInt(cli['--phlo-price'], 10),
+    phloLimit: parseInt(cli['--phlo-limit'], 10),
+    from: '0x01', // TODO: cli arg
   });
 
   if (cli.deploy) {
     deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
-    register(cli['RHOMODULE'].map(rd), KVDB(argWr('--registry')),
-             priceInfo(), { rnode, clock })
+    register(
+      cli.RHOMODULE.map(rd), KVDB(argWr('--registry')),
+      priceInfo(), { rnode, clock },
+    )
       .catch((err) => { console.error(err); throw err; });
   }
 }
@@ -91,8 +92,8 @@ async function register(files, registry, _price, { rnode, clock }) {
   async function ensure1({ src, srcHash, mod }) {
     if (!mod) {
       // ISSUE: loadRhoModules should take price info
-      const [mod] = await loadRhoModules([src], user, { rnode, clock });
-      await registry.put(srcHash, mod);
+      const [mod1] = await loadRhoModules([src], user, { rnode, clock });
+      await registry.put(srcHash, mod1);
     }
   }
 
@@ -123,7 +124,6 @@ function KVDB(store) {
     const info = await load();
     info[k] = v;
     await store.writeText(JSON.stringify(info, null, 2));
-    return;
   }
 
   return Object.freeze({ get, put });

@@ -47,7 +47,7 @@ async function loadRhoModules(
     return t2;
   }
 
-  async function deploy1({name, title, term}) {
+  async function deploy1({ name, title, term }) {
     const timestamp = monotonicClock();
     const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
     console.log(`Deploying: ${title}\n`);
@@ -66,7 +66,7 @@ async function loadRhoModules(
     console.log(`${name}: listening for URI at ${prettyPrivate(chan)}`);
     const found = await rnode.listenForDataAtName(chan);
     const d = firstBlockData(found);
-    if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${ String(d) }`); }
+    if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${String(d)}`); }
     const URI = d;
     console.log(`${name} registered at: ${String(URI)}`);
     return { name, title, term, URI };
@@ -84,7 +84,7 @@ function parseModule(sourceCode) {
   const [_, modtop, rest] = topParts;
 
   const exportParts = modtop.match(/(\b\w+\b)\s*\(`export:`\)/);
-  if (!exportParts) { throw new Error('bad module syntax: no export:' + modtop); }
+  if (!exportParts) { throw new Error(`bad module syntax: no export: ${modtop}`); }
   const [_2, exportVar] = exportParts;
   const top = modtop.replace('(`export:`)', '');
 
@@ -93,10 +93,10 @@ function parseModule(sourceCode) {
   const body = rest.slice(0, bodyEnd);
 
   const term = LOADER_TEMPLATE
-        .replace('__TOP__{', top)
-        .replace('__EXPORT__', exportVar)
-        .replace('__NAME__', name)
-        .replace('__BODY__', body);
+    .replace('__TOP__{', top)
+    .replace('__EXPORT__', exportVar)
+    .replace('__NAME__', name)
+    .replace('__BODY__', body);
   return { term, name, title };
 }
 
@@ -142,7 +142,7 @@ function firstBlockProcess(blockResults) {
 }
 
 
-function integrationTest(argv, {readFileSync}) {
+function integrationTest(argv, { readFileSync }) {
   const sourceFileName = argv[2];
   const src = readFileSync(sourceFileName, 'utf8');
   const { name, title, term } = parseModule(src);
@@ -155,7 +155,5 @@ function integrationTest(argv, {readFileSync}) {
 if (require.main === module) {
   /* global process */
   /* eslint-disable global-require */
-  integrationTest(process.argv, {
-    readFileSync: require('fs').readFileSync
-  });
+  integrationTest(process.argv, { readFileSync: require('fs').readFileSync });
 }
