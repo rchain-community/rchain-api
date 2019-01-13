@@ -7,7 +7,8 @@
  */
 new
   makeFaucetWallet,
-  exports(`export:`), trace(`rho:io:stderr`)
+  exports(`export:`), // see loader.rho / loading.js
+  trace(`rho:io:stderr`)
 in {
   new walletCh in {
     makeFaucetWallet!(100,
@@ -16,7 +17,6 @@ in {
       *walletCh) |
     //
     for (@[aliceWallet] <- walletCh) {
-      // trace and exports are pre-declared; see loader.rho
       trace!({"aliceWallet": aliceWallet}) |
       exports!(aliceWallet)
     }

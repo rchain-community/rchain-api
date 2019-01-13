@@ -79,7 +79,7 @@ async function loadRhoModules(
 function parseModule(sourceCode) {
   const { name, title } = moduleHeader(sourceCode);
 
-  const topParts = sourceCode.match(/(new [\s\S]*?\bin {)([\s\S]*)/);
+  const topParts = sourceCode.match(/(new\s+\S[\s\S]*?\s+in {)([\s\S]*)/);
   if (!topParts) { throw new Error('bad module syntax: no {'); }
   const [_, modtop, rest] = topParts;
 
