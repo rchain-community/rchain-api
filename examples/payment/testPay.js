@@ -10,15 +10,15 @@ ISSUE: should be: all she knows about Bob is his eth address.
 
 const { URL } = require('url');
 
-const { GPrivate } = require('../protobuf/RhoTypes.js');
+const { GPrivate } = require('../../protobuf/RhoTypes.js');
 const {
   RNode, b2h, h2b, RHOCore, makeProxy, sendCall, keyPair, blake2b256Hash,
-} = require('..');
+} = require('../..');
 const { link } = require('./assets');
-const { loadRhoModules, unforgeableWithId } = require('./loading');
+const { loadRhoModules, unforgeableWithId } = require('../../src/loading');
 
 /*::
-import type { ModuleInfo } from './loading';
+import type { ModuleInfo } from '../../src/loading';
  */
 
 const defaultDeployInfo = {

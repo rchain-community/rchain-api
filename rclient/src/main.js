@@ -6,10 +6,10 @@
 /*global require, module*/
 const { docopt } = require('docopt');
 
-const { RNode, simplifiedKeccak256Hash, h2b } = require('..');
+const { RNode, simplifiedKeccak256Hash, h2b } = require('rchain-api');
 
 const { sigTool } = require('./sigTool');
-const { loadRhoModules } = require('../test/loading'); // ISSUE: promote to src
+const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage, KVDB } = require('./pathlib');
 
 const usage = `

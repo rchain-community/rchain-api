@@ -1,7 +1,7 @@
 /*global require, exports*/
 
 const { sendCall, makeProxy, RNode, RHOCore, h2b } = require('..');
-const { link } = require('./assets');
+const { link } = require('../src/assets');
 
 const { toJSData } = RHOCore;
 const def = Object.freeze;

@@ -2,10 +2,10 @@
 
 const { URL } = require('url');
 
-const { RNode, makeProxy, h2b, keyPair } = require('..');
+const { RNode, makeProxy, h2b, keyPair } = require('../..');
 
 const { link } = require('./assets');
-const { loadRhoModules } = require('./loading');
+const { loadRhoModules } = require('../../src/loading');
 
 const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
 const defaultDeployInfo = { term: '', sig: h2b(''), sigAlgorithm: 'ed25519', timestamp: 0, ...defaultPayment };

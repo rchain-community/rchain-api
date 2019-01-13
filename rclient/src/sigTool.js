@@ -3,7 +3,7 @@
  */
 /* global exports, require */
 
-const { b2h, h2b } = require('./signing');
+const { b2h, h2b } = require('rchain-api');
 
 const def = Object.freeze;
 
