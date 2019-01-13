@@ -114,8 +114,8 @@ async function newAccount(keyStore, label, password, { nacl }) {
   const tool = sigTool(store, nacl);
   // ISSUE: prompt for password
   try {
-    const signingKey = tool.generate({ label, password });
-    console.log(signingKey);
+    const _signingKey = await tool.generate({ label, password });
+    console.log({ label, savedTo: keyStore.readOnly().name() });
   } catch (oops) {
     console.error(oops);
   }
