@@ -57,7 +57,7 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   function sendVia(ch, timestamp, args) {
     return sendCall(
       { target: sendURI, args, method: '' },
-      { user, timestamp, term: '', ...defaultDeployInfo },
+      { ...defaultDeployInfo, user, timestamp, term: '' },
       { rnode, predeclare: [ch] },
     );
   }

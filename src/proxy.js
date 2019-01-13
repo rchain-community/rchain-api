@@ -54,7 +54,7 @@ function makeProxy(
   { rnode, clock, delay, unary = false } /*: ProxyOpts */,
 ) /*: Receiver */{
   const sendIt = msg => sendCall(
-    msg, { timestamp: clock().valueOf(), ...deployData },
+    msg, { ...deployData, timestamp: clock().valueOf() },
     { rnode, delay: delay || noDelay, unary },
   );
   return new Proxy({}, {
@@ -85,7 +85,7 @@ async function sendCall(
 ) {
   const term = callSource({ target, method, args }, { predeclare: predeclare || [], unary });
   const [returnCh] = await rnode.previewPrivateChannels(deployData, 1);
-  await rnode.doDeploy({ term, ...deployData }, true);
+  await rnode.doDeploy({ ...deployData, term }, true);
   if (delay) {
     await delay();
   }
