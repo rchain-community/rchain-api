@@ -112,7 +112,7 @@ function basicWalletSig(key, amount, nonce, retId) {
 
 async function genesis({ rnode, clock }) /*: Promise<URL> */ {
   const [walletMod] /*: ModuleInfo[] */= await loadRhoModules(
-    link('./aliceBobWallets.rho'), user,
+    [link('./aliceBobWallets.rho')], user,
     { rnode, clock },
   );
   return walletMod.URI;
