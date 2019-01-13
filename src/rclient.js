@@ -8,14 +8,17 @@ const { docopt } = require('docopt');
 
 const { RNode, simplifiedKeccak256Hash, h2b } = require('..');
 
+const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../test/loading'); // ISSUE: promote to src
-const { fsReadAccess, fsWriteAccess } = require('./pathlib');
+const { fsReadAccess, fsWriteAccess, FileStorage, KVDB } = require('./pathlib');
 
 const usage = `
 
 Usage:
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
+  rclient [options] account --new LABEL PASSWORD
+  rclient [options] sign MESSAGE PASSWORD
 
 Options:
  --host INT             The hostname or IPv4 address of the node
@@ -26,6 +29,7 @@ Options:
  --phlo-price=N         TODO docs [default: 1]
  --registry=FILE        where to store file / URI mappings
                         [default: registry.json]
+ --keystore=FILE        [default: keystore.json]
  -v --verbose           Verbose logging
  -h --help              show usage
 
@@ -34,7 +38,7 @@ Options:
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 
 
-function main(argv, { grpc, clock, writeFile, readFile, join }) {
+function main(argv, { grpc, clock, writeFile, readFile, join, nacl }) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
 
@@ -60,6 +64,10 @@ function main(argv, { grpc, clock, writeFile, readFile, join }) {
       priceInfo(), { rnode, clock },
     )
       .catch((err) => { console.error(err); throw err; });
+  } else if (cli.account) {
+    newAccount(argWr('--keystore'), cli.LABEL, cli.PASSWORD, { nacl });
+  } else if (cli.sign) {
+    signMessage(argWr('--keystore'), cli.MESSAGE, cli.PASSWORD, { nacl });
   }
 }
 
@@ -101,32 +109,28 @@ async function register(files, registry, _price, { rnode, clock }) {
 }
 
 
-function KVDB(store) {
-  async function load() {
-    try {
-      const txt = await store.readOnly().readText();
-      return JSON.parse(txt);
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        return {};
-      }
-      throw err;
-    }
+async function newAccount(keyStore, label, password, { nacl }) {
+  const store = FileStorage(keyStore);
+  const tool = sigTool(store, nacl);
+  // ISSUE: prompt for password
+  try {
+    const signingKey = tool.generate({ label, password });
+    console.log(signingKey);
+  } catch (oops) {
+    console.error(oops);
   }
+}
 
-  async function get(k /*: string*/) {
-    const info = await load();
-    return info[k];
+async function signMessage(keyStore, message, password, { nacl }) {
+  const store = FileStorage(keyStore);
+  const tool = sigTool(store, nacl);
+  const key = await tool.getKey();
+  if (!key) {
+    console.log('no signing key');
+    return;
   }
-
-  // ISSUE: atomic read / write
-  async function put(k /*: string*/, v /*: mixed*/) {
-    const info = await load();
-    info[k] = v;
-    await store.writeText(JSON.stringify(info, null, 2));
-  }
-
-  return Object.freeze({ get, put });
+  const sig = await tool.signMessage(h2b(message), key, password);
+  console.log(sig);
 }
 
 
@@ -140,5 +144,6 @@ if (require.main === module) {
     readFile: require('fs').readFile,
     writeFile: require('fs').writeFile,
     join: require('path').join,
+    nacl: require('tweetnacl'),
   });
 }
