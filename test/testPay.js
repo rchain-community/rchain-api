@@ -8,14 +8,23 @@ ISSUE: should be: all she knows about Bob is his eth address.
 /* global require */
 // @flow
 
+const { URL } = require('url');
+
 const { GPrivate } = require('../protobuf/RhoTypes.js');
 const {
   RNode, b2h, h2b, RHOCore, makeProxy, sendCall, keyPair, blake2b256Hash,
 } = require('..');
 const { link } = require('./assets');
-const { loadRhoModule, unforgeableWithId } = require('./loading');
+const { loadRhoModules, unforgeableWithId } = require('./loading');
 
-const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
+/*::
+import type { ModuleInfo } from './loading';
+ */
+
+const defaultDeployInfo = {
+  from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000,
+  sig: h2b(''), sigAlgorithm: 'ed25519', term: '', timestamp: 0
+};
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 
 const Scenario = {
@@ -28,12 +37,12 @@ const Scenario = {
 async function test({ rnode, clock }) {
   const aliceWalletURI = await genesis({ rnode, clock });
 
-  const sendURI = await loadRhoModule(
-    link('./sending.rho'), user,
+  const [sendMod] /*: ModuleInfo[] */ = await loadRhoModules(
+    [link('./sending.rho')], user,
     { rnode, clock },
   );
 
-  await alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock });
+  await alicePaysBob({ aliceWalletURI, sendURI: sendMod.URI }, { rnode, clock });
 }
 
 
@@ -41,17 +50,18 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   // Wrap send contract with an extra unforgeable channel.
   function sendVia(ch, timestamp, args) {
     return sendCall(
-      { target: sendURI, args },
-      { user, timestamp, ...defaultPayment },
+      { target: sendURI, args, method: '' },
+      { user, timestamp, term: '', ...defaultDeployInfo },
       { rnode, predeclare: [ch] },
     );
   }
 
-  const aliceWallet = makeProxy(aliceWalletURI, { user, ...defaultPayment }, { rnode, clock });
+  const aliceWallet = makeProxy(aliceWalletURI, { user, ...defaultDeployInfo }, { rnode, clock });
 
   const aliceBalance = await aliceWallet.getBalance();
   console.log({ aliceBalance });
   const aliceNonce = await aliceWallet.getNonce();
+  if (!(typeof aliceNonce === 'number')) { throw new Error('expected number; got: ${typeof aliceNonce'); }
   console.log({ aliceNonce });
 
   const tPmt = clock().valueOf();
@@ -63,10 +73,10 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   const bobWalletURI = await sendVia('viaCh', tPmt, [
     aliceWalletURI, Scenario.amount, aliceNonce + 1, sigHex, Scenario.bobPk,
   ]);
+  if(!(bobWalletURI instanceof URL)) { throw new Error('expected URL'); }
+  console.log(`URI of wallet for Bob: ${String(bobWalletURI)}`);
 
-  console.log(`URI of wallet for Bob: ${bobWalletURI}`);
-
-  const bobWallet = makeProxy(bobWalletURI, { user, ...defaultPayment }, { rnode, clock });
+  const bobWallet = makeProxy(bobWalletURI, { user, ...defaultDeployInfo }, { rnode, clock });
 
   const bobBalance = await bobWallet.getBalance();
   console.log({ bobBalance });
@@ -94,12 +104,12 @@ function basicWalletSig(key, amount, nonce, retId) {
 }
 
 
-async function genesis({ rnode, clock }) {
-  const walletURI = await loadRhoModule(
+async function genesis({ rnode, clock }) /*: Promise<URL> */ {
+  const [walletMod] /*: ModuleInfo[] */= await loadRhoModules(
     link('./aliceBobWallets.rho'), user,
     { rnode, clock },
   );
-  return walletURI;
+  return walletMod.URI;
 }
 
 
