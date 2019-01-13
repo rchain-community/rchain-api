@@ -30,7 +30,9 @@ const packageDefinition = protoLoader.loadSync(
 
 /*::
 import grpcT from 'grpc';
-import type JsonExt from './RHOCore';
+import type { JsonExt } from './RHOCore';
+
+type JSData = JsonExt<URL | GPrivate>;
  */
 
 /*::
@@ -186,8 +188,8 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPublicName(nameObj /*: JsonExt<URL | GPrivate> */) {
-    return listenForDataAtName(RHOCore.fromJSData(nameObj));
+  function listenForDataAtPublicName(nameObj /*: JSData */, depth /*: number */ = 1) {
+    return listenForDataAtName(RHOCore.fromJSData(nameObj), depth);
   }
 
   /**
@@ -197,13 +199,13 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPrivateName(nameId /*: string */) {
+  function listenForDataAtPrivateName(nameId /*: string */, depth /*: number */ = 1) {
     // Convert the UnforgeableName into a byte array
     const nameByteArray = Buffer.from(nameId, 'hex');
 
     // Create the Par object with the nameByteArray as an ID
     const channelRequest = idToPar(nameByteArray);
-    return listenForDataAtName(channelRequest);
+    return listenForDataAtName(channelRequest, depth);
   }
 
   /**
@@ -214,10 +216,10 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: IPar */, blockDepth /*: number */ = 10000) {
+  function listenForDataAtName(par /*: IPar */, depth /*: number */ = 1) {
     const channelRequest = {
+      depth,
       name: par,
-      depth: blockDepth,
     };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
@@ -225,6 +227,59 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
           throw new Error(response);
         }
         // ISSUE: make use of int32 length = 3;?
+        return response.blockResults;
+      });
+  }
+
+
+  /**
+   * Listen for a continuation at an individual public name or
+   * JOINed set of public names in the tuplespace
+   * @param nameObjs a list of names (strings)
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth /*: number */ = 1) {
+    return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
+  }
+
+  /**
+  * Listen for a continuation at an individual private name or
+  * JOINed set of private names in the tuplespace
+  * @param nameIds a list hex strings representing the unforgeable names' Ids
+  * @return promise for ContinuationsWithBlockInfo
+  * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPrivateName(nameIds /*: string[] */, depth /*: number */ = 1) {
+    // Convert the UnforgeableNames into a byte arrays
+    const nameByteArrays = nameIds.map(nameId => Buffer.from(nameId, 'hex'));
+
+    // Create the Par objects with the nameByteArrays as IDs
+    const channelRequests = nameByteArrays.map(nameByteArray => ({ ids: [{ id: nameByteArray }] }));
+    //TODO Does this parse? I think x => { a: b } needs ()s, i.e. x => ({ a: b }).
+    return listenForContinuationAtName(channelRequests, depth);
+  }
+
+
+  /**
+   * Listen for a continuation at an individual name or
+   * JOINed set of names in the tuplespace
+   * @param pars The names onwhich to listen
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtName(pars /*: IPar[] */, depth /*: number */) {
+    const channelRequest = {
+      depth,
+      names: pars,
+    };
+
+    return send(then => client.listenForContinuationAtName(channelRequest, then))
+      .then((response) => {
+        if (response.status !== 'Success') {
+          throw new Error(response);
+        }
+
         return response.blockResults;
       });
   }
@@ -293,6 +348,9 @@ function RNode(grpc /*: typeof grpcT */, endPoint /*: { host: string, port: numb
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
+    listenForContinuationAtName,
+    listenForContinuationAtPrivateName,
+    listenForContinuationAtPublicName,
     getBlock,
     getAllBlocks,
     getIdFromUnforgeableName,
@@ -334,7 +392,7 @@ function send/*:: <T>*/(calling) /*: Promise<T> */{
  *
  * @param callToExecute: a function of the form () => o.m(...)
  * @return A promise for the result of the received stream
- */
+*/
 function sendThenReceiveStream(callToExecute) {
   function executor(resolve, reject) {
     const results = [];
