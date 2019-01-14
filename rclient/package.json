@@ -13,6 +13,7 @@
     "grpc": "^1.17.0",
     "rchain-api": "file:..",
     "read": "^1.0.7",
+    "scrypt.js": "^0.3.0",
     "tweetnacl": "^1.0.0"
   }
 }
