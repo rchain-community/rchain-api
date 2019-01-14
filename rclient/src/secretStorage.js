@@ -2,6 +2,7 @@
 // https://github.com/ethereumjs/ethereumjs-wallet/blob/master/src/index.js
 
 /* global require, exports, Buffer */
+// @flow
 
 const scrypt = require('scrypt.js'); // ISSUE: just use crypto.script?
 const crypto = require('crypto');

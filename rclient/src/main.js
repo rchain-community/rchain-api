@@ -3,7 +3,7 @@
 
 // @flow
 
-/*global require, module*/
+/*global require, module, Buffer */
 const { docopt } = require('docopt');
 const read = require('read');
 const { RNode, RHOCore, simplifiedKeccak256Hash, h2b } = require('rchain-api');
@@ -12,11 +12,13 @@ const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
+const secretStorage = require('./secretStorage');
 
 const usage = `
 
 Usage:
   rclient [options] account --new LABEL
+  rclient [options] import LABEL JSONFILE
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -67,6 +69,14 @@ function main(
     from: '0x01', // TODO: cli arg
   });
 
+  if (cli.account) {
+    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl });
+  } else if (cli.import) {
+    importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
+  } else if (cli.sign) {
+    const input = { data: argRd('DATAFILE'), json: cli['--json'] };
+    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
+  }
   if (cli.deploy) {
     deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
@@ -76,11 +86,6 @@ function main(
       priceInfo(), { rnode, clock },
     )
       .catch((err) => { console.error(err); throw err; });
-  } else if (cli.account) {
-    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl });
-  } else if (cli.sign) {
-    const input = { data: argRd('DATAFILE'), json: cli['--json'] };
-    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
   }
 }
 
@@ -146,6 +151,39 @@ async function newAccount(keyStore, label, { getpass, nacl }) {
     console.error(oops);
   }
 }
+
+
+async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
+  const store = FileStorage(keyStore);
+
+  const password = await getpass(`Password for ${jsonKeyfile.name()}: `);
+  const code = await jsonKeyfile.readText();
+  const item = JSON.parse(code);
+
+  if (item.Crypto) {
+    item.crypto = item.Crypto;
+    delete item.Crypto;
+  }
+  if (item.crypto.kdf !== 'scrypt') {
+    console.log('unsupported kdf:', item.crypto.kdf);
+    return;
+  }
+  if (item.crypto.cipher !== 'aes-128-ctr') {
+    console.log('unsupported cipher:', item.crypto.cipher);
+    return;
+  }
+
+  // ISSUE: just check MAC?
+  try {
+    secretStorage.load(Buffer.from(password), item);
+  } catch (oops) {
+    console.error('cannot load; bad password?');
+    return;
+  }
+
+  await store.set({ [label]: item });
+}
+
 
 async function signMessage(keyStore, label, input, { getpass, nacl }) {
   const store = FileStorage(keyStore);
