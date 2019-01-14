@@ -4,6 +4,7 @@
   "description": "RChain client for node.js",
   "main": "index.js",
   "scripts": {
+    "postinstall": "cd rclient; npm install",
     "testAll": "npm run check && npm run integrationTest",
     "check": "npm run test && npm run lint && npm run flow-check",
     "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
