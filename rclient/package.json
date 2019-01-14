@@ -10,6 +10,9 @@
   "license": "Apache-2.0",
   "dependencies": {
     "docopt": "^0.6.2",
-    "rchain-api": "file:.."
+    "grpc": "^1.17.0",
+    "rchain-api": "file:..",
+    "read": "^1.0.7",
+    "tweetnacl": "^1.0.0"
   }
 }

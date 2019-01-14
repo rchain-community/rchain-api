@@ -5,20 +5,21 @@
 
 /*global require, module*/
 const { docopt } = require('docopt');
-
-const { RNode, simplifiedKeccak256Hash, h2b } = require('rchain-api');
+const read = require('read');
+const { RNode, RHOCore, simplifiedKeccak256Hash, h2b } = require('rchain-api');
 
 const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage, KVDB } = require('./pathlib');
+const { asPromise } = require('./asPromise');
 
 const usage = `
 
 Usage:
+  rclient [options] account --new LABEL
+  rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
-  rclient [options] account --new LABEL PASSWORD
-  rclient [options] sign MESSAGE PASSWORD
 
 Options:
  --host INT             The hostname or IPv4 address of the node
@@ -38,13 +39,24 @@ Options:
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 
 
-function main(argv, { grpc, clock, writeFile, readFile, join, nacl }) {
+function main(
+  argv,
+  clock,
+  { stdin, stdout },
+  { writeFile, readFile, join },
+  { nacl, grpc },
+) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
 
   const rd = path => fsReadAccess(path, readFile, join);
   const argRd = arg => rd(cli[arg]);
   const argWr = arg => fsWriteAccess(cli[arg], writeFile, readFile, join);
+  function getpass(prompt /*: string*/) {
+    return asPromise(
+      f => read({ input: stdin, output: stdout, silent: true, prompt }, f),
+    );
+  }
 
   const where = { host: cli['--host'], port: cli['--port'] };
   const rnode = RNode(grpc, where);
@@ -65,9 +77,10 @@ function main(argv, { grpc, clock, writeFile, readFile, join, nacl }) {
     )
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.account) {
-    newAccount(argWr('--keystore'), cli.LABEL, cli.PASSWORD, { nacl });
+    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl });
   } else if (cli.sign) {
-    signMessage(argWr('--keystore'), cli.MESSAGE, cli.PASSWORD, { nacl });
+    const input = { data: argRd('DATAFILE'), json: cli['--json'] };
+    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
   }
 }
 
@@ -109,28 +122,64 @@ async function register(files, registry, _price, { rnode, clock }) {
 }
 
 
-async function newAccount(keyStore, label, password, { nacl }) {
+async function newAccount(keyStore, label, { getpass, nacl }) {
   const store = FileStorage(keyStore);
   const tool = sigTool(store, nacl);
-  // ISSUE: prompt for password
+
+  const taken = await tool.getKey(label);
+  if (taken) {
+    console.error(`Key ${label} already exists.`);
+    return;
+  }
+
+  const password = await getpass(`Password for ${label}:`);
+  const passconf = await getpass(`Confirm password for ${label}:`);
+  if (password !== passconf) {
+    console.error('Passwords do not match.');
+    return;
+  }
+
   try {
-    const _signingKey = await tool.generate({ label, password });
+    await tool.generate({ label, password });
     console.log({ label, savedTo: keyStore.readOnly().name() });
   } catch (oops) {
     console.error(oops);
   }
 }
 
-async function signMessage(keyStore, message, password, { nacl }) {
+async function signMessage(keyStore, label, input, { getpass, nacl }) {
   const store = FileStorage(keyStore);
   const tool = sigTool(store, nacl);
-  const key = await tool.getKey();
+  const key = await tool.getKey(label);
   if (!key) {
     console.log('no signing key');
     return;
   }
-  const sig = await tool.signMessage(h2b(message), key, password);
-  console.log(sig);
+
+  let message;
+  if (input.json) {
+    const code = await input.data.readText();
+    const data = JSON.parse(code);
+    const par = RHOCore.fromJSData(data);
+    const rholang = RHOCore.toRholang(par);
+    console.log('JavaScript data:');
+    console.log(data);
+    console.log('Rholang data:');
+    console.log(rholang);
+    message = RHOCore.toByteArray(par);
+  } else {
+    message = await input.data.readBytes();
+  }
+  console.log('byte length:', message.length);
+
+  const password = await getpass(`Password for ${label}: `);
+
+  try {
+    const sig = await tool.signMessage(message, key, password);
+    console.log(sig);
+  } catch (oops) {
+    console.log(oops.message);
+  }
 }
 
 
@@ -138,12 +187,21 @@ if (require.main === module) {
   // Import primitive effects only when invoked as main module.
   /* eslint-disable global-require */
   /*global process*/
-  main(process.argv, {
-    grpc: require('grpc'),
-    clock: () => new Date(),
-    readFile: require('fs').readFile,
-    writeFile: require('fs').writeFile,
-    join: require('path').join,
-    nacl: require('tweetnacl'),
-  });
+  main(
+    process.argv,
+    () => new Date(), // clock
+    {
+      stdin: process.stdin,
+      stdout: process.stdout,
+    },
+    {
+      readFile: require('fs').readFile,
+      writeFile: require('fs').writeFile,
+      join: require('path').join,
+    },
+    {
+      grpc: require('grpc'),
+      nacl: require('tweetnacl'),
+    },
+  );
 }

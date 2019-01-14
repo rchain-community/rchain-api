@@ -28,7 +28,7 @@ export interface SigTool {
   // Generate and save key.
   generate({ label: string, password: string }): Promise<SigningKey>,
   // Get stored key.
-  getKey(): Promise<SigningKey | null>,
+  getKey(string): Promise<SigningKey | null>,
   // Decrypt private key and use it to sign message.
   signMessage(message: Uint8Array, signingKey: SigningKey, password: string): string
 }
@@ -37,8 +37,8 @@ export interface SigTool {
 
 exports.sigTool = sigTool;
 function sigTool(local /*: StorageArea */, nacl /*: typeof nacl*/) /*: SigTool */ {
-  function getKey() /*: Promise<SigningKey | null> */{
-    return local.get('signingKey').then(({ signingKey }) => chkKey(signingKey));
+  function getKey(label) /*: Promise<SigningKey | null> */{
+    return local.get(label).then(items => chkKey(items[label]));
   }
 
   function chkKey(it /*: mixed*/) /*: SigningKey | null */ {
@@ -59,7 +59,7 @@ function sigTool(local /*: StorageArea */, nacl /*: typeof nacl*/) /*: SigTool *
 
   function generate({ label, password }) {
     const signingKey = encryptedKey(nacl.sign.keyPair(), { label, password });
-    return local.set({ signingKey }).then(() => signingKey);
+    return local.set({ [label]: signingKey }).then(() => signingKey);
   }
 
   function encryptedKey(keyPair, { label, password }) {
