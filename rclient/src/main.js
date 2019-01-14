@@ -10,7 +10,7 @@ const { RNode, RHOCore, simplifiedKeccak256Hash, h2b } = require('rchain-api');
 
 const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
-const { fsReadAccess, fsWriteAccess, FileStorage, KVDB } = require('./pathlib');
+const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
 
 const usage = `
@@ -72,7 +72,7 @@ function main(
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
     register(
-      cli.RHOMODULE.map(rd), KVDB(argWr('--registry')),
+      cli.RHOMODULE.map(rd), FileStorage(argWr('--registry')),
       priceInfo(), { rnode, clock },
     )
       .catch((err) => { console.error(err); throw err; });
@@ -114,7 +114,7 @@ async function register(files, registry, _price, { rnode, clock }) {
     if (!mod) {
       // ISSUE: loadRhoModules should take price info
       const [mod1] = await loadRhoModules([src], user, { rnode, clock });
-      await registry.put(srcHash, mod1);
+      await registry.set({ [srcHash]: mod1 });
     }
   }
 

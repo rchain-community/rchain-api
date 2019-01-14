@@ -95,33 +95,3 @@ function FileStorage(store /*: WriteAccess*/) /*: StorageArea */ {
 
   return Object.freeze({ get, set });
 }
-
-
-exports.KVDB = KVDB;
-function KVDB(store /*: WriteAccess*/) {
-  async function load() {
-    try {
-      const txt = await store.readOnly().readText();
-      return JSON.parse(txt);
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        return {};
-      }
-      throw err;
-    }
-  }
-
-  async function get(k /*: string*/) {
-    const info = await load();
-    return info[k];
-  }
-
-  // ISSUE: atomic read / write
-  async function put(k /*: string*/, v /*: mixed*/) {
-    const info = await load();
-    info[k] = v;
-    await store.writeText(JSON.stringify(info, null, 2));
-  }
-
-  return Object.freeze({ get, put });
-}
