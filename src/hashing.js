@@ -5,6 +5,9 @@ const blake2 = require('blake2');
 const crypto = require('crypto');
 const { keccak256 } = require('js-sha3');
 const RHOCore = require('./RHOCore');
+/*::
+import type { JsonExt } from './RHOCore';
+*/
 
 exports.sha256Hash = sha256Hash;
 /**
@@ -54,7 +57,7 @@ exports.simplifiedSHA256Hash = simplifiedSHA256Hash;
  * @return HEX-formatted string representing the computed hash
  * @throws Error if the js_data contains a non-Rholang data structure
  */
-function simplifiedSHA256Hash(jsData /*: Json*/) /*: string */ {
+function simplifiedSHA256Hash(jsData /*: JsonExt<URL | GPrivate>*/) /*: string */ {
   const sha256 = crypto.createHash('sha256');
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   sha256.update(Buffer.from(serializedData));
@@ -71,7 +74,7 @@ exports.simplifiedKeccak256Hash = simplifiedKeccak256Hash;
  * @return HEX-formatted string representing the computed hash
  * @throws Error if the js_data contains a non-Rholang data structure
  */
-function simplifiedKeccak256Hash(jsData /*: Json*/) /*: string */ {
+function simplifiedKeccak256Hash(jsData /*: JsonExt<URL | GPrivate>*/) /*: string */ {
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   return keccak256(serializedData);
 }
@@ -86,7 +89,7 @@ exports.simplifiedBlake2b256Hash = simplifiedBlake2b256Hash;
  * @return HEX-formatted string representing the computed hash
  * @throws Error if the js_data contains a non-Rholang data structure
  */
-function simplifiedBlake2b256Hash(jsData /*: Json*/) /*: string */ {
+function simplifiedBlake2b256Hash(jsData /*: JsonExt<URL | GPrivate>*/) /*: string */ {
   const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
   const serializedData = RHOCore.toByteArray(RHOCore.fromJSData(jsData));
   blake2b256.update(serializedData);

@@ -1,5 +1,5 @@
 /* keyPair -- ed25519 signing
-*/
+ */
 /* global require, exports, Buffer */
 // @flow
 
@@ -9,8 +9,14 @@
 
 const { sign } = require('tweetnacl'); // ocap discpline: "hiding" keyPair
 
+const { fromJSData, toByteArray } = require('./RHOCore');
+/*::
+import type { JsonExt } from './RHOCore';
+*/
+
 function b2h(bytes /*: Uint8Array */) /*: string*/ { return Buffer.from(bytes).toString('hex'); }
 function h2b(hex /*: string*/) /*: Uint8Array*/ { return Buffer.from(hex, 'hex'); }
+
 const t2b = text => Buffer.from(text);
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
@@ -30,7 +36,9 @@ function keyPair(seed /*: Uint8Array */) {
   /**
    * @memberof keyPair
    */
-  const signBytes /*: (Uint8Array) => Uint8Array */ = bytes => sign.detached(bytes, key.secretKey);
+  function signBytes(bytes /*: (Uint8Array)*/) /*: Uint8Array */ {
+    return sign.detached(bytes, key.secretKey);
+  }
 
   return def({
     // TODO toString,
@@ -51,6 +59,19 @@ function keyPair(seed /*: Uint8Array */) {
      * @memberof keyPair
      */
     publicKey() /*: string*/ { return b2h(key.publicKey); },
+
+    /**
+     * @memberof keyPair
+     */
+    signData(data /*: JsonExt<URL | GPrivate>*/) {
+      return signBytes(toByteArray(fromJSData(data)));
+    },
+    /**
+     * @memberof keyPair
+     */
+    signDataHex(data /*: JsonExt<URL | GPrivate>*/) {
+      return b2h(signBytes(toByteArray(fromJSData(data))));
+    },
     // TODO label: () => state.label,
     // TODO [inspect.custom]: toString
   });
@@ -65,7 +86,7 @@ function verify(
   message /*: Uint8Array*/,
   sig /*: Uint8Array*/,
   publicKey /*: Uint8Array*/,
-) /*: Uint8Array */{
+) /*: Uint8Array */ {
   return sign.detached.verify(message, sig, publicKey);
 }
 

@@ -1,0 +1,67 @@
+/**
+ * sending - send REV from registered wallet to party identified by pk.
+ */
+new send, makePayeeWallet,
+    exports(`export:`),
+    trace(`rho:io:stderr`),
+    rl(`rho:registry:lookup`),
+    ri(`rho:registry:insertArbitrary`)
+in {
+  exports!(*send) |
+
+  // return: URI of wallet created for payee
+  contract send(@{walletURI /\ URI}, @{amount /\ Int},
+                @{nonce /\ Int}, @{sig /\ String},
+                @{payeePk /\ String},
+                via, return) = {
+    new wCh, statusCh, pwCh, dCh in {
+      rl!(walletURI, *wCh) |
+      for (@wallet <- wCh) {
+        trace!({
+          "wallet": wallet,
+          "secured args": [nonce, amount, *via],
+          "secured args bytes": [nonce, amount, *via].toByteArray()
+        }) |
+
+        makePayeeWallet!(payeePk, *pwCh) |
+
+        // ISSUE: if you pass in bytes rather than hex for sig, nothing comes back
+        @wallet!("transfer", amount, nonce, sig, *via, *statusCh) |
+        for(@status <- statusCh) {
+          trace!({"transfer status": status}) |
+          if (status == "Success") {
+              for(pmt <- via; @[payeeWallet] <- pwCh) {
+                trace!({"pmt": *pmt, "payee wallet": payeeWallet}) | // ISSUE: purses can go out of scope and get lost forever
+                @payeeWallet!("deposit", amount, *pmt, *dCh) |
+                for (@depositResult <- dCh) {
+                  trace!({"deposit result": depositResult}) |
+                  new ch in { ri!(payeeWallet, *ch) | for (@uri <- ch) { return!(uri) } }
+                }
+              }
+          } else {
+            trace!("lose!")
+            // TODO: return errors
+          }
+      }
+    } }
+  } |
+
+  contract makePayeeWallet(@pk, return) = {
+    new sysCh, bwCh, revCh, emptyREVPurseCh in {
+      // See casper/src/main/rholang/SystemInstancesRegistry.rho
+      rl!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
+      // See casper/src/main/rholang/BasicWallet.rho
+      rl!(`rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms`, *bwCh) |
+      for(@(_, sys) <- sysCh; @(_, BasicWallet) <- bwCh) {
+        @sys!("lookup", "rev", *revCh) |
+        for(rev <- revCh) {
+          rev!("makePurse", *emptyREVPurseCh) |
+          for(empty <- emptyREVPurseCh) {
+            trace!({"payee wallet": *return}) |
+            @BasicWallet!(*empty, "ed25519", pk, *return)
+          }
+        }
+      }
+    }
+  }
+}

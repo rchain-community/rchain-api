@@ -1,0 +1,25 @@
+/* See testProxy.js */
+
+new
+  ret, target,
+  insertArbitrary(`rho:registry:insertArbitrary`),
+  debug(`rho:io:stderr`)
+in {
+  new uriCh in {
+    insertArbitrary!(*target, *uriCh) |
+    for (@uri <- uriCh) {
+      debug!({"target": uri}) |
+      ret!("${target}" %% {"target": uri})
+    }
+  }
+  |
+  contract target(@"buy", @[thing, price], return) = {
+    debug!({"thing to buy": thing, "price": price}) |
+    return!({"thing bought": thing, "forPrice": price})
+  }
+  |
+  contract target(@"sell", @[thing, price, timeout], return) = {
+    debug!({"thing to sell": thing, "price": price, "timeout": timeout}) |
+    return!({"sold thing": thing, "for": price, "after": timeout})
+  }
+}

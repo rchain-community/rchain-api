@@ -1,0 +1,309 @@
+new trace(`rho:io:stderr`), rl(`rho:registry:lookup`),
+verifySignature, sigDER, rlpCh, rlpHash, bufToInt,
+EtherWallet, findOrCreateWallet, sendTransaction,
+addrToWalletCh, publicToAddr in {
+  trace!("ethSig") |
+
+  contract EtherWallet(purse, @{addr /\ ByteArray}, return) = {
+    new self, nonceCh in {
+      return!(bundle+{*self}) |
+      nonceCh!(-1) |
+
+      contract self(@"getNonce", return) = {
+        for(@nonce <- nonceCh) {
+          nonceCh!(nonce) | return!(nonce)
+        }
+      } |
+      contract self(@"getBalance", return) = {
+        purse!("getBalance", *return)
+      } |
+      contract self(@"deposit", @amount, @src, success) = {
+        purse!("deposit", amount, src, *success)
+      } |
+
+      // ISSUE: transfer method to get a purse for use outside this contract?
+
+      contract self(@"sendTransaction",
+        @{tx /\ ByteArray},
+        // ISSUE: the public key can be recovered from the signature, but
+        // rholang doesn't expose `ecrecover` (yet?)
+        // so we have the caller supply the pk.
+        @{senderPk /\ ByteArray },
+        eject, return) = {
+        new senderCh, verifyCh, nonceCh, valueCh, sendIt in {
+          publicToAddr!(senderPk, *senderCh) |
+          for(@txSender <- senderCh) {
+            if(txSender != addr) {
+              eject!({"message": "senderPk does not match wallet addr",
+                "expected": addr, "actual": txSender,
+                "actual from key": senderPk})
+            } else {
+              verifySignature!(tx, senderPk, *verifyCh) |
+              for(@{"success": false, ...x } <- verifyCh) { eject!({"message": "bad signature"}) } |
+              for(@{
+                "success": true,
+                "items": [nonceBuf, gasPrice, gasLimit, to, valueBuf, data, v, r, s]
+              } <- verifyCh) {
+                // TODO: bufToInteger(value) export from rlp.rho
+                trace!({"verified sig for value": valueBuf, "to": to}) |
+                for(@prevNonce <- nonceCh) {
+                  bufToInt!(nonceBuf, *nonceCh) | for (@nonce <- nonceCh) {
+                    if (nonce != (prevNonce + 1)) {
+                      nonceCh!(prevNonce) |
+                      eject!({"message": "bad nonce",
+                        "actual": nonce, "expected": prevNonce + 1})
+                    } else {
+                      nonceCh!(nonce) |
+                      bufToInt!(valueBuf, *valueCh) | for (@value <- valueCh) {
+                        sendIt!(to, value)
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          |
+          contract sendIt(@{to /\ ByteArray}, @{value /\ Int}) = {
+            new splitResultCh, toWalletCh, depositSuccessCh in {
+              findOrCreateWallet!(to, *toWalletCh) |
+              purse!("split", value, *splitResultCh) |
+              for(@[payment] <- splitResultCh; toWallet <- toWalletCh) {
+                toWallet!("deposit", payment, value, *depositSuccessCh) |
+                for(@true <- depositSuccessCh) {
+                  return!({"sent": value, "to": to})
+                } |
+                for(@false <- depositSuccessCh) {
+                  eject!({"message": "deposit failed (can't happen?)"})
+                }
+              } |
+              for(@[] <- splitResultCh; _ <- toWalletCh) {
+                eject!({"message": "Overdraft"})
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  |
+  contract publicToAddr(@{pubKey /\ ByteArray}, ret) = {
+    new hashOut in {
+      @"keccak256Hash"!(pubKey, *hashOut) |
+      for(@pkHash <- hashOut) {
+        ret!(pkHash.slice(12, 32))
+      }
+    }
+  } |
+
+  contract sendTransaction(
+    @{txBytes /\ ByteArray},
+    // ISSUE: the public key can be recovered from the signature, but
+    // rholang doesn't expose `ecrecover` (yet?)
+    // so we have the caller supply the pk.
+    @{senderPk /\ ByteArray },
+    eject,
+    return
+  ) = {
+    trace!({"sendTransaction": txBytes.slice(0, 8), "sender": senderPk.slice(0, 8)}) |
+    new senderAddrCh, senderCh in {
+      publicToAddr!(senderPk, *senderAddrCh) |
+      for(@addr <- senderAddrCh) {
+        findOrCreateWallet!(addr, *senderCh) |
+        for(senderWallet <- senderCh) {
+          trace!({"senderWallet": *senderWallet}) |
+          senderWallet!("sendTransaction", txBytes, senderPk, *eject, *return)
+        }
+      }
+    }
+  } |
+
+  addrToWalletCh!({}) |
+  new sysCh, revCh in {
+    rl!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
+    for(@(_, sys) <- sysCh) {
+      @sys!("lookup", "rev", *revCh) | for (rev <- revCh) {
+
+        contract findOrCreateWallet(@{addr /\ ByteArray}, return) = {
+          trace!({"findOrCreate": addr}) |
+          for(@addrToWallet <- addrToWalletCh) {
+            match addrToWallet.get(addr) {
+              Nil => {
+                new purseCh, walletCh in {
+                  rev!(*purseCh) | for(purse <- purseCh) {
+                    EtherWallet!(*purse, addr, *walletCh) |
+                    for(@wallet <- walletCh) {
+                      trace!({"add": wallet, "at": addr}) |
+                      addrToWalletCh!(addrToWallet.set(addr, wallet)) |
+                      return!(wallet)
+                    }
+                  }
+                }
+              }
+              wallet => {
+                trace!({"found": wallet, "at": addr}) |
+                addrToWalletCh!(addrToWallet) |
+                return!(wallet)
+              }
+            }
+          }
+        }
+      }
+    }
+  } |
+
+
+  // ISSUE: how to manage URIs in eval mode?
+  rl!(`rho:id:yibjsw354knzpsapccnn56397eg5wkpf4azucehw748muawzip4rfh`, *rlpCh) |
+
+  for(@{
+    "decode": *rlpDecode, "encode": *rlpEncode,
+    "oneByte": *oneByte, "decodeVarInt": *decodeVarInt
+  } <- rlpCh) {
+    trace!({"rlp": (*rlpEncode, *rlpDecode)}) |
+
+    contract bufToInt(@buf, return) = { decodeVarInt!(buf, *return) } |
+
+    // Verify Signature of rlp-encoded Ethereum Transaction
+    // ref https://github.com/ethereumjs/ethereumjs-tx/blob/master/docs/index.md#verifysignature
+    contract verifySignature(
+      @{msg /\ ByteArray},
+      // ISSUE: the public key can be recovered from the signature, but
+      // rholang doesn't expose `ecrecover` (yet?)
+      // so we have the caller supply the pk.
+      @{pk /\ ByteArray},
+      return
+    ) = {
+      // trace!({"verify msg": msg, "pk": pk}) |
+      new itemsCh, sigCh, hashCh, chainIdCh, verifyCh in {
+        // ISSUE: handle failure from rlpDecode
+        rlpDecode!(msg, *trace, *itemsCh) |
+        for(@[nonce, gasPrice, gasLimit, to, value, data, v, r, s] <- itemsCh) {
+          // trace!({"decoded tx": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]}) |
+
+          sigDER!(r, s, *sigCh) |
+
+          if (v.nth(0) < 35) {
+            rlpHash!([nonce, gasPrice, gasLimit, to, value, data], *hashCh)
+          } else {
+            // EIP155: chainId = (sigV - 35) // 2; r=0, s=0
+            oneByte!((v.nth(0) - 35) / 2, *chainIdCh) |
+            for(@chainId <- chainIdCh) {
+              rlpHash!([nonce, gasPrice, gasLimit, to, value, data,
+                // EIP155: chainId = (sigV - 35) // 2; r=0, s=0
+                chainId, "".hexToBytes(), "".hexToBytes()], *hashCh)
+            }
+          }
+          |
+          for(@sig <- sigCh; @hash <- hashCh) {
+            trace!({"verifying sig": sig, "over": hash, "pubKey": pk}) |
+            @"secp256k1Verify"!(hash, sig,
+              // ASN1 Distinguished Encoding Rules (DER) for public key
+              // 4 = OctetString tag
+              "04".hexToBytes() ++ pk,
+              *verifyCh) |
+            for (@ok <- verifyCh) {
+              // trace!({"sig ok?": ok}) |
+              if (ok) {
+                return!({
+                  "success": true,
+                  "items": [nonce, gasPrice, gasLimit, to, value, data, v, r, s]
+                })
+              } else {
+                return!({"success": false}) // ISSUE: find out what ethereumjs-tx returns on failure
+              }
+            }
+          }
+        }
+      }
+    } |
+    contract rlpHash(@item, return) = {
+      new encodedCh in {
+        rlpEncode!(item, *encodedCh) |
+        for(@encoded <- encodedCh) {
+          @"keccak256Hash"!(encoded, *return)
+        }
+      }
+    } |
+
+    // ASN1 Distinguished Encoding Rules (DER) for signature
+    // i.e. SEQUENCE { r INTEGER, S INTEGER }
+    contract sigDER(@{r /\ ByteArray}, @{s /\ ByteArray}, return) = {
+      // trace!({"sigDERr": r, "s": s}) |
+      new zpad, rpCh, spCh, lenRSCh, lenRCh, lenSCh in {
+        zpad!(r, *rpCh) | zpad!(s, *spCh) |
+        for(@rp <- rpCh; @sp <- spCh) {
+          // trace!({"rp": rp, "sp": sp}) |
+          oneByte!(rp.length(), *lenRCh) |
+          oneByte!(sp.length(), *lenSCh) |
+          oneByte!(2 + 1 + rp.length() + 1 + sp.length(), *lenRSCh) |
+          for(@lenR <- lenRCh; @lenS <- lenSCh; @lenRS <- lenRSCh) {
+            // trace!({"sigDER": (rp, sp), "lenR": lenR, "lenS": lenS, "lenRS": lenRS}) |
+            return!(
+              // SEQUENCE
+              "30".hexToBytes() ++ lenRS ++
+                // INTEGER
+                "02".hexToBytes() ++ lenR ++ rp ++
+                "02".hexToBytes() ++ lenS ++ sp
+            )
+          }
+        } |
+        contract zpad(@{bn /\ ByteArray}, return) = {
+          // trace!({"zpad": bn.nth(0)}) |
+          if (bn.nth(0) >= 128) {
+            return!("00".hexToBytes() ++ bn)
+          } else {
+            return!(bn)
+          }
+        }
+      }
+    } |
+
+    new resultCh in {
+      trace!("ethereumjs-tx README test case") |
+
+      verifySignature!(
+        // tx.serialize().toString('hex')
+        "f889808609184e72a00082271094000000000000000000000000000000000000000080a47f746573743200000000000000000000000000000000000000000000000000000060005729a0f2d54d3399c9bcd3ac3482a5ffaeddfe68e9a805375f626b4f2f8cf530c2d95aa05b3bb54e6e8db52083a9b674e578c843a87c292f0383ddba168573808d36dc8e".hexToBytes(),
+        // > tx.getSenderPublicKey().toString('hex')
+        ("6d9038945ff8f4669201ba1e806c9a46a5034a578e4d52c03152198538039294" ++
+          "4efd6c702504d9130573bb939f5c124af95d38168546cc7207a7e0baf14172ff").hexToBytes(),
+
+        // > tx.hash(false).toString('hex')
+        // or, equivalently:
+        // const zb = Buffer.from([])
+        // > ethUtil.rlphash([tx.nonce, tx.gasPrice, tx.gasLimit, tx.to, tx.value, tx.data, ethUtil.toBuffer(tx._chainId), zb, zb])
+        // "df2a7cb6d05278504959987a144c116dbd11cbdc50d6482c5bae84a7f41e2113".hexToBytes(),
+        *resultCh) |
+
+      for(@actual <- resultCh) {
+        trace!({"actual from README": actual})
+      }
+    }
+    |
+    new resultCh, sendCh, ej in {
+      verifySignature!(
+        // https://github.com/ethereumjs/ethereumjs-tx/blob/master/test/txs.json#L22-L32
+        "f86d068609184e72a0008201f494be862ad9abfe6f22bcb087716c7d89a26051f74c88016345785d8a0000801ca024a484bfa7380860e9fa0a9f5e4b64b985e860ca31abd36e66583f9030c2e29da04d5ef07d9e73fa2fbfdad059591b4f13d0aa79e7634a2bb00174c9200cabb04d".hexToBytes(),
+        "eca8b8b663b31277cfa6023bc1f4cddd4b5e5f9625c966634b2e499cae52437754536931a0b5dbbb58c62e84440c3c32db4d04a1f4fb1c6ac0bd2d9ad50028a1".hexToBytes(),
+        // "073c878297a789a52ba1fb9c0c761114e9a0267c0d9ea496aa06fcac5db421e9".hexToBytes(),
+        *resultCh) |
+
+      for(@actual <- resultCh) {
+        trace!({"actual test2": actual})
+      } |
+
+      sendTransaction!(
+        "f86d068609184e72a0008201f494be862ad9abfe6f22bcb087716c7d89a26051f74c88016345785d8a0000801ca024a484bfa7380860e9fa0a9f5e4b64b985e860ca31abd36e66583f9030c2e29da04d5ef07d9e73fa2fbfdad059591b4f13d0aa79e7634a2bb00174c9200cabb04d".hexToBytes(),
+        "eca8b8b663b31277cfa6023bc1f4cddd4b5e5f9625c966634b2e499cae52437754536931a0b5dbbb58c62e84440c3c32db4d04a1f4fb1c6ac0bd2d9ad50028a1".hexToBytes(),
+        *ej, *sendCh) |
+
+      for(@actual <- sendCh) {
+        trace!({"actual from sendTransaction test2": actual})
+      } |
+      for(@problem <- ej) {
+        trace!({"PROBLEM from sendTransaction test2": problem})
+      }
+    }
+  }
+}

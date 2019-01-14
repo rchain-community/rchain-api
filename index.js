@@ -5,15 +5,28 @@
  *
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
  */
+
+/* global require, exports, module */
+// @flow
+
 const RHOCore = require('./src/RHOCore');
 
 module.exports.RHOCore = RHOCore;
 
 
-const RNode = require('./src/rnodeAPI.js');
+const { RNode } = require('./src/rnodeAPI');
 
-module.exports.RNode = RNode.RNode;
+module.exports.RNode = RNode;
+/*::
+import type { IRNode } from './src/rnodeAPI';
+export type { IRNode };
+ */
 
+const { sendCall, makeProxy, callSource } = require('./src/proxy');
+
+module.exports.sendCall = sendCall;
+module.exports.makeProxy = makeProxy;
+module.exports.callSource = callSource;
 
 const signing = require('./src/signing');
 

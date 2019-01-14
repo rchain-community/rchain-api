@@ -1,0 +1,46 @@
+/**
+ * voterRole -- participate in an election
+ */
+new export(`export:`), voterRole,
+trace(`rho:io:stderr`),
+lookup(`rho:registry:lookup`), insertArbitrary(`rho:registry:insertArbitrary`)
+in {
+  export!(bundle+{*voterRole}) |
+
+  contract voterRole(@"makeLocker", @nickname, @pubKey, @LockerURI, return) = {
+    // trace!({"voter MakeLocker": nickname}) |
+    new seedEntry, llCh, lockerCh, inboxUriCh, ch in {
+      lookup!(LockerURI, *llCh) |
+      for(Locker <- llCh) {
+        Locker!(nickname, pubKey,
+  
+          // Note we're _sending_ this voter seed code, not running it.
+          for(return <- seedEntry) {
+            new self, rCh, inbox in {
+              insertArbitrary!(bundle+{*inbox}, *rCh) |
+              for(@uri <- rCh) {
+                inboxUriCh!(uri) |
+  
+                contract self(@"voteFor", @choice, ej, ack) = {
+                  for(rightToVote <- inbox) {
+                    rightToVote!("vote", choice, *ej, *ack)
+                  }
+                }
+              } |
+              return!(bundle+{*self})
+            }
+          },
+          *seedEntry,
+          *lockerCh
+        )
+      } |
+      for (voterLocker <- lockerCh) {
+        insertArbitrary!(bundle+{*voterLocker}, *ch) |
+        for(@lockerURI <- ch; @inboxURI <- inboxUriCh) {
+          trace!({"made voter locker": lockerURI, "inbox": inboxURI}) |
+          return!({"locker": lockerURI, "inbox": inboxURI})
+        }
+      }
+    }
+  }
+}

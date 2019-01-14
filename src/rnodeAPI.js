@@ -7,7 +7,8 @@ refs:
 [1]: https://github.com/rchain/rchain/blob/dev/models/src/main/protobuf/CasperMessage.proto
 [2]: https://grpc.io/docs/tutorials/basic/node.html
 
- */
+*/
+/* global require, exports */
 // @flow strict
 
 const assert = require('assert');
@@ -26,36 +27,35 @@ const packageDefinition = protoLoader.loadSync(
 
 
 /*::
-import grpc from 'grpc';
-type grpcT = typeof grpc;
+import grpcT from 'grpc';
+import type { JsonExt } from './RHOCore';
+
+type JSData = JsonExt<URL | GPrivate>;
  */
 
 /*::
-type DeployData = {
+export type DeployData = {
   user: Uint8Array ,
   term: string,
   timestamp: number,
   sig: Uint8Array,
   sigAlgorithm: string,
   from: string,
-  phloPrice: PhloPrice,
-  phloLimit: PhloLimit,
+  phloPrice: number,
+  phloLimit: number,
   nonce: number
 }
 type DeployDataInsecure = {
   term: string,
   timestamp: number,
   from: string,
-  phloPrice: PhloPrice,
-  phloLimit: PhloLimit,
+  phloPrice: number,
+  phloLimit: number,
   nonce: number
 }
-type PhloPrice = {
-  value: number
-}
-type PhloLimit = {
-  value: number
-}
+
+type EndPoint = { host: string, port: number };
+export type IRNode = $Call<typeof RNode, grpcT, EndPoint>;
 */
 
 
@@ -80,6 +80,40 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   );
 
   /**
+   * Ask rnode to compute ids of top level private names, given deploy parameters.
+   *
+   * @param d
+   * @param d.user - public key (of validating node?) as in doDeploy
+   * @param d.timestamp - timestamp (ms) as in doDeploy
+   * @param nameQty - how many names to preview? (max: 1024)
+   */
+  function previewPrivateIds(
+    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
+    nameQty /*: number*/,
+  ) /*: Promise<Uint8Array[]> */{
+    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
+      .then(response => response.ids);
+  }
+
+  const idToPar = id => ({ ids: [{ id }] });
+
+  /**
+   * Ask rnode to compute top level private channels, given deploy parameters.
+   *
+   * @param d
+   * @param d.user - public key (of validating node?) as in doDeploy
+   * @param d.timestamp - timestamp (ms) as in doDeploy
+   * @param nameQty - how many names to preview? (max: 1024)
+   */
+  function previewPrivateChannels(
+    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
+    nameQty /*: number*/,
+  ) /*: Promise<IPar[]> */{
+    return previewPrivateIds({ user, timestamp }, nameQty)
+      .then(ids => ids.map(idToPar));
+  }
+
+  /**
    * Deploys a rholang term to a node
    * @memberof RNode
    * @param deployData a DeployData (cf CasperMessage.proto)
@@ -102,10 +136,10 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
-    if (deployData.phloLimit === undefined || !Number.isInteger(deployData.phloLimit.value)) {
+    if (!Number.isInteger(deployData.phloLimit)) {
       throw new Error('ERROR: DeployData structure requires "phloLimit" to be specified');
     }
-    if (deployData.phloPrice === undefined || !Number.isInteger(deployData.phloPrice.value)) {
+    if (!Number.isInteger(deployData.phloPrice)) {
       throw new Error('ERROR: DeployData structure requires "phloPrice" to be specified');
     }
     return deployResponse(
@@ -157,8 +191,8 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPublicName(nameObj /*: Json */) {
-    return listenForDataAtName(RHOCore.fromJSData(nameObj));
+  function listenForDataAtPublicName(nameObj /*: JSData */, depth /*: number */ = 1) {
+    return listenForDataAtName(RHOCore.fromJSData(nameObj), depth);
   }
 
   /**
@@ -169,13 +203,13 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtPrivateName(nameId /*: string */) {
+  function listenForDataAtPrivateName(nameId /*: string */, depth /*: number */ = 1) {
     // Convert the UnforgeableName into a byte array
     const nameByteArray = Buffer.from(nameId, 'hex');
 
     // Create the Par object with the nameByteArray as an ID
-    const channelRequest = { ids: [{ id: nameByteArray }] };
-    return listenForDataAtName(channelRequest);
+    const channelRequest = idToPar(nameByteArray);
+    return listenForDataAtName(channelRequest, depth);
   }
 
   /**
@@ -187,10 +221,10 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: Json */, blockDepth /*: number */ = 10000) {
+  function listenForDataAtName(par /*: IPar */, depth /*: number */ = 1) {
     const channelRequest = {
+      depth,
       name: par,
-      depth: blockDepth,
     };
     return send(then => client.listenForDataAtName(channelRequest, then))
       .then((response) => {
@@ -198,6 +232,62 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
           throw new Error(response);
         }
         // ISSUE: make use of int32 length = 3;?
+        return response.blockResults;
+      });
+  }
+
+
+  /**
+   * Listen for a continuation at an individual public name or
+   * JOINed set of public names in the tuplespace
+   * @memberof RNode
+   * @param nameObjs a list of names (strings)
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth /*: number */ = 1) {
+    return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
+  }
+
+  /**
+   * Listen for a continuation at an individual private name or
+   * JOINed set of private names in the tuplespace
+   * @memberof RNode
+   * @param nameIds a list hex strings representing the unforgeable names' Ids
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtPrivateName(nameIds /*: string[] */, depth /*: number */ = 1) {
+    // Convert the UnforgeableNames into a byte arrays
+    const nameByteArrays = nameIds.map(nameId => Buffer.from(nameId, 'hex'));
+
+    // Create the Par objects with the nameByteArrays as IDs
+    const channelRequests = nameByteArrays.map(nameByteArray => ({ ids: [{ id: nameByteArray }] }));
+    //TODO Does this parse? I think x => { a: b } needs ()s, i.e. x => ({ a: b }).
+    return listenForContinuationAtName(channelRequests, depth);
+  }
+
+
+  /**
+   * Listen for a continuation at an individual name or
+   * JOINed set of names in the tuplespace
+   * @memberof RNode
+   * @param pars The names onwhich to listen
+   * @return promise for ContinuationsWithBlockInfo
+   * @throws Error if status is not Success
+   */
+  function listenForContinuationAtName(pars /*: IPar[] */, depth /*: number */) {
+    const channelRequest = {
+      depth,
+      names: pars,
+    };
+
+    return send(then => client.listenForContinuationAtName(channelRequest, then))
+      .then((response) => {
+        if (response.status !== 'Success') {
+          throw new Error(response);
+        }
+
         return response.blockResults;
       });
   }
@@ -254,8 +344,14 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
+    listenForContinuationAtName,
+    listenForContinuationAtPrivateName,
+    listenForContinuationAtPublicName,
     getBlock,
     getAllBlocks,
+    getIdFromUnforgeableName,
+    previewPrivateIds,
+    previewPrivateChannels,
   });
 }
 
@@ -285,7 +381,7 @@ function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
  * @param calling: a function of the form (cb) => o.m(..., cb)
  * @return A promise for the result passed to cb
  */
-function send(calling) {
+function send/*:: <T>*/(calling) /*: Promise<T> */{
   function executor(resolve, reject) {
     const callback = (err, result) => {
       if (err) {
@@ -308,7 +404,7 @@ function send(calling) {
  *
  * @param callToExecute: a function of the form () => o.m(...)
  * @return A promise for the result of the received stream
- */
+*/
 function sendThenReceiveStream(callToExecute) {
   function executor(resolve, reject) {
     const results = [];
