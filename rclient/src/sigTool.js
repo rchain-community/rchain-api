@@ -1,4 +1,7 @@
 /** sigTool -- signing key generation, storage, and usage
+
+ISSUE: pretty much subsumed by secretStorage. prune nacl dependency too.
+
 @flow strict
  */
 /* global exports, require */

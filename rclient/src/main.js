@@ -4,6 +4,7 @@
 // @flow
 
 /*global require, module, Buffer */
+const assert = require('assert');
 const read = require('read');
 const { URL } = require('url');
 
@@ -65,9 +66,9 @@ const defaultDeployInfo = {
 function main(
   argv,
   clock,
-  { stdin, stdout },
+  { stdin, stdout, randomBytes },
   { writeFile, readFile, join },
-  { nacl, grpc, uuidv4 },
+  { grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
@@ -91,20 +92,20 @@ function main(
   });
 
   if (cli.account && cli['--new']) {
-    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl, uuidv4 });
-  } else if (cli.iaccount && cli['--import']) {
+    newAccount(argWr('--keystore'), cli.LABEL, { getpass, randomBytes, uuidv4 });
+  } else if (cli.account && cli['--import']) {
     importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
   } else if (cli.account && cli['--show-public']) {
     // ISSUE: store un-encrypted public key? "compromises privacy" per Web3 docs.
 
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
-    showPublic(argWr('--keystore'), cli.LABEL, { getpass, nacl });
+    showPublic(argWr('--keystore'), cli.LABEL, { getpass });
   } else if (cli.account && cli['--claim']) {
-    claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, nacl, rnode, clock });
+    claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, rnode, clock });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
-    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
+    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
   }
   if (cli.deploy) {
     deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
@@ -156,7 +157,7 @@ async function register(files, registry, _price, { rnode, clock }) {
 }
 
 
-async function newAccount(keyStore, label, { getpass, nacl, uuidv4 }) {
+async function newAccount(keyStore, label, { getpass, randomBytes, uuidv4 }) {
   const store = FileStorage(keyStore);
 
   const taken = await store.get(label);
@@ -173,11 +174,14 @@ async function newAccount(keyStore, label, { getpass, nacl, uuidv4 }) {
   }
 
   try {
-    const privateKey = Buffer.from(nacl.randomBytes(32));
+    let privKey;
+    do {
+      privKey = randomBytes(32);
+    } while (!secp256k1.privateKeyVerify(privKey));
     const item = secretStorage.encrypt(
-      privateKey,
+      privKey,
       Buffer.from(password),
-      n => Buffer.from(nacl.randomBytes(n)),
+      n => randomBytes(n),
       uuidv4,
     );
     await store.set({ [label]: item });
@@ -220,7 +224,7 @@ async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
 }
 
 
-async function loadKey(keyStore, label, notice, { getpass, nacl }) {
+async function loadKey(keyStore, label, notice, { getpass }) /*: Promise<Buffer> */{
   const store = FileStorage(keyStore);
 
   const keys = await store.get(label);
@@ -238,12 +242,12 @@ async function loadKey(keyStore, label, notice, { getpass, nacl }) {
 
   // TODO: mixed -> SecretStorage
   const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label];
-  const seed = secretStorage.decrypt(Buffer.from(password), item);
-  return nacl.sign.keyPair.fromSeed(seed);
+  const privKey = secretStorage.decrypt(Buffer.from(password), item);
+  return privKey;
 }
 
 
-async function signMessage(keyStore, label, input, { getpass, nacl }) {
+async function signMessage(keyStore, label, input, { getpass }) {
   let message;
   let notice = [];
   if (input.json) {
@@ -264,9 +268,9 @@ async function signMessage(keyStore, label, input, { getpass, nacl }) {
   notice.push(['byte length:', message.length]);
 
   try {
-    const keyPair = await loadKey(keyStore, label, notice, { getpass, nacl });
-    const sig = nacl.sign.detached(message, keyPair.secretKey);
-    console.log(b2h(sig));
+    const privKey = await loadKey(keyStore, label, notice, { getpass });
+    const sigObj = secp256k1.sign(message, privKey);
+    console.log(b2h(sigObj.signature));
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);
@@ -274,26 +278,37 @@ async function signMessage(keyStore, label, input, { getpass, nacl }) {
 }
 
 
-async function showPublic(keyStore, label, { getpass, nacl }) {
+async function showPublic(keyStore, label, { getpass }) {
   try {
-    const keyPair = await loadKey(keyStore, label, [], { getpass, nacl });
+    const privKey = await loadKey(keyStore, label, [], { getpass });
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
-    console.log({ label, publicKey: b2h(keyPair.publicKey) });
+    const pubKey = privateToPublic(privKey);
+    console.log({ label, publicKey: b2h(pubKey) });
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);
   }
 }
 
+// ISSUE: move to secretStorage
+function privateToPublic(privKey) {
+  return secp256k1.publicKeyCreate(privKey, false).slice(1);
+}
 
-async function claimAccount(keyStore, label, priceInfo, { getpass, nacl, rnode, clock }) {
-  let keyPair;
+
+async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock }) {
+  let privKey;
+  let pubKey;
+  let ethAddr;
   try {
-    keyPair = await loadKey(keyStore, label, [], { getpass, nacl });
+    privKey = await loadKey(keyStore, label, [], { getpass });
+    pubKey = privateToPublic(privKey);
+    assert.equal(pubKey.length, 64);
+    ethAddr = keccak256Hash(pubKey).slice(-20);
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
-    console.log({ label, publicKey: b2h(keyPair.publicKey) });
+    console.log({ label, pubKey: b2h(pubKey), ethAddr: b2h(ethAddr) });
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);
@@ -307,13 +322,10 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, nacl, rnode, 
   const [statusOut] = await rnode.previewPrivateChannels({ timestamp: tClaim, user }, 1);
   console.log({ statusOut: prettyPrivate(statusOut) });
   const hash = Buffer.from(keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(
-    [keyPair.publicKey, statusOut],
+    [b2h(pubKey), statusOut],
   ))));
-  const privateKey = keyPair.secretKey.slice(0, 32); // chop off nacl's pubKey
-  const sig = secp256k1.sign(hash, privateKey).signature;
+  const sig = secp256k1.sign(hash, privKey).signature;
 
-  const pubKey = b2h(keyPair.publicKey);
-  const ethAddr = keccak256Hash(keyPair.publicKey).slice(12, 32);
   const status = await sendCall(
     { target: WalletCheck, method: 'claim', args: [ethAddr, pubKey, b2h(sig)/*, statusOut */] },
     { ...priceInfo, user, timestamp: tClaim },
@@ -334,6 +346,7 @@ if (require.main === module) {
     {
       stdin: process.stdin,
       stdout: process.stdout,
+      randomBytes: require('crypto').randomBytes,
     },
     {
       readFile: require('fs').readFile,
@@ -342,7 +355,6 @@ if (require.main === module) {
     },
     {
       grpc: require('grpc'),
-      nacl: require('tweetnacl'),
       uuidv4: require('uuid/v4'),
     },
   );
