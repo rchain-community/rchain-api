@@ -14,7 +14,7 @@ const {
   keccak256Hash,
 } = require('rchain-api');
 
-const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
+const { loadRhoModules, prettyPrivate } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
@@ -50,12 +50,12 @@ import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
  */
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 const defaultDeployInfo = {
+  user,
   from: '0x01', // TODO: cli arg
   nonce: 1,
-  user: h2b(''),
-  timestamp: 0,
-  term: '',
-  sigAlgorithm: '',
+  timestamp: -1,
+  term: 'syntax error',
+  sigAlgorithm: 'N/A',
   sig: h2b(''),
   phloLimit: 0,
   phloPrice: 0,
@@ -304,7 +304,8 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, nacl, rnode, 
   const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
 
   const tClaim = clock().valueOf();
-  const [statusOut] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
+  const [statusOut] = await rnode.previewPrivateChannels({ timestamp: tClaim, user }, 1);
+  console.log({ statusOut: prettyPrivate(statusOut) });
   const hash = Buffer.from(keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(
     [keyPair.publicKey, statusOut],
   ))));
@@ -315,8 +316,8 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, nacl, rnode, 
   const ethAddr = keccak256Hash(keyPair.publicKey).slice(12, 32);
   const status = await sendCall(
     { target: WalletCheck, method: 'claim', args: [ethAddr, pubKey, b2h(sig)/*, statusOut */] },
-    { ...defaultDeployInfo, user, timestamp: tClaim },
-    { rnode, returnCh: statusOut },
+    { ...priceInfo, user, timestamp: tClaim },
+    { rnode, returnCh: statusOut, insertSigned: true },
   );
   console.log({ status });
   // TODO: get balance

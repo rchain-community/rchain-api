@@ -2,6 +2,7 @@
 // @flow
 
 const { rhol, toJSData } = require('./RHOCore');
+const { unforgeableWithId } = require('./loading');
 
 /*::
 import type { IRNode, DeployData } from './rnodeAPI';
@@ -21,7 +22,9 @@ interface SendOpts {
   rnode: IRNode,
   predeclare?: string[],
   delay?: () => Promise<void>,
-  unary?: boolean
+  unary?: boolean,
+  returnCh?: Par,
+  insertSigned?: boolean,
 };
 
 interface ProxyOpts extends SendOpts {
@@ -81,17 +84,33 @@ exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
   deployData /*: DeployData */,
-  { rnode, predeclare = [], delay, unary = false } /*: SendOpts */,
+  { rnode, predeclare = [], delay, unary = false, returnCh, insertSigned = false } /*: SendOpts */,
 ) {
-  const term = callSource({ target, method, args }, { predeclare: predeclare || [], unary });
-  const [returnCh] = await rnode.previewPrivateChannels(deployData, 1);
+  const term = callSource(
+    { target, method, args },
+    { predeclare: predeclare || [], unary, insertSigned },
+  );
+  let returnChan;
+  if (returnCh) {
+    returnChan = returnCh;
+  } else {
+    [returnChan] = await rnode.previewPrivateChannels(deployData, 1);
+  }
   await rnode.doDeploy({ ...deployData, term }, true);
   if (delay) {
     await delay();
   }
   // ISSUE: loop until we get results?
-  const blockResults = await rnode.listenForDataAtName(returnCh);
+  const blockResults = await rnode.listenForDataAtName(returnChan);
   // console.log({ blockResults });
+  if (!(blockResults.length > 0)) {
+    let name = '<unknown>';
+    const { ids } = (returnCh || {});
+    if (ids && ids[0].id) {
+      name = unforgeableWithId(ids[0].id);
+    }
+    throw new Error(`no data at ${name}`);
+  }
   const answerPar = blockResults[0].postBlockData[0];
   // console.log('answerPar', JSON.stringify(answerPar, null, 2));
   return toJSData(answerPar);
@@ -114,7 +133,8 @@ async function noDelay() {
 exports.callSource = callSource;
 function callSource(
   { target, method, args } /*: Message*/,
-  { predeclare = [], unary = false } /*: { predeclare: string[], unary: boolean } */,
+  { predeclare = [], unary = false, insertSigned = false } /*:
+  { predeclare: string[], unary: bool, insertSigned: bool } */,
 ) {
   return rhoCall({
     // ISSUE: assume target is injection-safe?
@@ -124,7 +144,7 @@ function callSource(
       unary
         ? [rhol`${args}`]
         : args.map(arg => rhol`${arg}`)),
-  }, predeclare);
+  }, predeclare, insertSigned);
 }
 
 
@@ -138,8 +158,9 @@ function callSource(
  * @param predeclare: names to pre-declare in addition to `return`
  *                    They are passed (deref's do processes) to target
  *                    in reverse order.
+ * @param insertSigned: was `insertSigned` used to register the target?
  */
-function rhoCall({ target, method, args }, predeclare = []) {
+function rhoCall({ target, method, args }, predeclare = [], insertSigned = false) {
   const newNames = ['return', ...predeclare.reverse()];
   const pieces = [...method, ...args, [...predeclare, 'return'].map(n => `*${n}`)];
   /*
@@ -147,12 +168,13 @@ function rhoCall({ target, method, args }, predeclare = []) {
         // a tuple if insertSigned and just the thing if insertArbitrary.
         // is that by design?
         for(@(_nonce, target) <- targetCh) {
-   */
+  */
+  const targetPattern = insertSigned ? '@(_, *target)' : 'target';
   const term = `
       new ${newNames.join(', ')}, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
         trace!({"in remote call to": ${target}}) |
         lookup!(${target}, *targetCh) |
-        for(target <- targetCh) {
+        for(${targetPattern} <- targetCh) {
           trace!({ "target": *target }) |
           target!(${pieces.join(', ')})
         }
