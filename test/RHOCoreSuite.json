@@ -71,32 +71,15 @@
   },
   "object": {
     "data": {
-      "x": "abc"
+      "x": "abc",
+      "y": 1,
+      "z": true
     },
-    "rholang": "@\"x\"!(\"abc\")",
-    "hex": "0a100a052a031a017812072a051a03616263",
-    "rho": {
-      "sends": [
-        {
-          "chan": {
-            "exprs": [
-              {
-                "g_string": "x"
-              }
-            ]
-          },
-          "data": [
-            {
-              "exprs": [
-                {
-                  "g_string": "abc"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+    "hex": "2a33ba01300a100a052a031a017812072a051a036162630a0d0a052a031a017912042a0210020a0d0a052a031a017a12042a020801",
+    "rho": {"exprs": [{"e_map_body": {"kvs": [
+      {"key": {"exprs": [{"g_string": "x"}]}, "value": {"exprs": [{"g_string": "abc"}]}},
+      {"key": {"exprs": [{"g_string": "y"}]}, "value": {"exprs": [{"g_int": 1}]}},
+      {"key": {"exprs": [{"g_string": "z"}]}, "value": {"exprs": [{"g_bool": true}]}}]}}]}
   },
   "nested object": {
     "data": {
@@ -105,63 +88,13 @@
         "a": true
       }
     },
-    "rholang": "@\"x\"!(\"abc\") | @\"y\"!(@\"a\"!(true))",
-    "hex": "0a100a052a031a017812072a051a036162630a180a052a031a0179120f0a0d0a052a031a016112042a020801",
-    "rho": {
-      "sends": [
-        {
-          "chan": {
-            "exprs": [
-              {
-                "g_string": "x"
-              }
-            ]
-          },
-          "data": [
-            {
-              "exprs": [
-                {
-                  "g_string": "abc"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "chan": {
-            "exprs": [
-              {
-                "g_string": "y"
-              }
-            ]
-          },
-          "data": [
-            {
-              "sends": [
-                {
-                  "chan": {
-                    "exprs": [
-                      {
-                        "g_string": "a"
-                      }
-                    ]
-                  },
-                  "data": [
-                    {
-                      "exprs": [
-                        {
-                          "g_bool": true
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+    "rholang": "{\"x\": \"abc\", \"y\": {\"a\": true}}",
+    "hex": "2a34ba01310a100a052a031a017812072a051a036162630a1d0a052a031a017912142a12ba010f0a0d0a052a031a016112042a020801",
+    "rho": {"exprs": [{"e_map_body": {"kvs": [
+      {"key": {"exprs": [{"g_string": "x"}]}, "value": {"exprs": [{"g_string": "abc"}]}},
+      {"key": {"exprs": [{"g_string": "y"}]}, "value": {"exprs": [{"e_map_body": {"kvs": [
+        {"key": {"exprs": [{"g_string": "a"}]}, "value": {"exprs": [{"g_bool": true}]}}
+      ]}}]}}]}}]}
   },
   "trust vote": {
     "data": [
@@ -174,107 +107,21 @@
         "cert_time": "2018-07-29T02:00:21.259Z"
       }
     ],
-    "rholang": "[\"merge\", \"trust_cert\", @\"cert_time\"!(\"2018-07-29T02:00:21.259Z\") | @\"rating\"!(1) | @\"subject\"!(\"a1\") | @\"voter\"!(\"dckc\")]",
-    "hex": "2a9201a2018e010a092a071a056d657267650a0e2a0c1a0a74727573745f636572740a710a2d0a0d2a0b1a09636572745f74696d65121c2a1a1a18323031382d30372d32395430323a30303a32312e3235395a0a120a0a2a081a06726174696e6712042a0210020a150a0b2a091a077375626a65637412062a041a0261310a150a092a071a05766f74657212082a061a0464636b63",
-    "rho": {
-      "exprs": [
-        {
-          "e_list_body": {
-            "ps": [
-              {
-                "exprs": [
-                  {
-                    "g_string": "merge"
-                  }
-                ]
-              },
-              {
-                "exprs": [
-                  {
-                    "g_string": "trust_cert"
-                  }
-                ]
-              },
-              {
-                "sends": [
-                  {
-                    "chan": {
-                      "exprs": [
-                        {
-                          "g_string": "cert_time"
-                        }
-                      ]
-                    },
-                    "data": [
-                      {
-                        "exprs": [
-                          {
-                            "g_string": "2018-07-29T02:00:21.259Z"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "chan": {
-                      "exprs": [
-                        {
-                          "g_string": "rating"
-                        }
-                      ]
-                    },
-                    "data": [
-                      {
-                        "exprs": [
-                          {
-                            "g_int": 1
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "chan": {
-                      "exprs": [
-                        {
-                          "g_string": "subject"
-                        }
-                      ]
-                    },
-                    "data": [
-                      {
-                        "exprs": [
-                          {
-                            "g_string": "a1"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "chan": {
-                      "exprs": [
-                        {
-                          "g_string": "voter"
-                        }
-                      ]
-                    },
-                    "data": [
-                      {
-                        "exprs": [
-                          {
-                            "g_string": "dckc"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      ]
-    }
+    "rholang": "[\"merge\", \"trust_cert\", {\"cert_time\": \"2018-07-29T02:00:21.259Z\", \"rating\": 1, \"subject\": \"a1\", \"voter\": \"dckc\"}]",
+    "hex": "2a9701a20193010a092a071a056d657267650a0e2a0c1a0a74727573745f636572740a762a74ba01710a2d0a0d2a0b1a09636572745f74696d65121c2a1a1a18323031382d30372d32395430323a30303a32312e3235395a0a120a0a2a081a06726174696e6712042a0210020a150a0b2a091a077375626a65637412062a041a0261310a150a092a071a05766f74657212082a061a0464636b63",
+    "rho": {"exprs": [{"e_list_body": {"ps": [{"exprs": [{"g_string": "merge"}]}, {"exprs": [{"g_string": "trust_cert"}]}, {"exprs": [{ "e_map_body": {"kvs": [
+      { "key":   { "exprs": [{ "g_string": "cert_time"                }] },
+        "value": { "exprs": [{ "g_string": "2018-07-29T02:00:21.259Z" }] }
+      },
+      { "key":   { "exprs": [{ "g_string": "rating" }] },
+        "value": { "exprs": [{ "g_int": 1           }] }
+      },
+      { "key":   { "exprs": [{ "g_string": "subject" }] },
+        "value": { "exprs": [{ "g_string": "a1"      }] }
+      },
+      { "key":   { "exprs": [{ "g_string": "voter" }] },
+        "value": { "exprs": [{ "g_string": "dckc"  }] }
+      }
+    ]}}]}]}}]}
   }
 }

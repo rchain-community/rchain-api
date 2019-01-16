@@ -65,11 +65,10 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
   }
 
   function keysValues(obj) /*: IPar */ {
-    const sends /*: ISend[] */ = Object.keys(obj).sort().map((k) => {
-      const chan /*: IPar */ = expr1({ g_string: k });
-      return { chan, data: [recur(obj[k])] };
-    });
-    return { sends };
+    const kvs /*: ISend[] */ = Object.keys(obj).sort().map(
+      k => ({ key: recur(k), value: recur(obj[k]) }),
+    );
+    return expr1({ e_map_body: { kvs } });
   }
 
   return recur(data);
@@ -238,6 +237,13 @@ function toRholang(par /*: IPar */) /*: string */ {
           && Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
         return `[${items.join(', ')}]`;
+      }
+      if (typeof ex.e_map_body !== 'undefined' && ex.e_map_body !== null
+          && Array.isArray(ex.e_map_body.kvs)) {
+        const properties = (ex.e_map_body.kvs || []).map(
+          ({ key, value }) => `${recur(key || null)}: ${recur(value || null)}`,
+        );
+        return `{${properties.join(', ')}}`;
       }
       throw new Error(`not RHOCore? unknown expr ${JSON.stringify(ex)}`);
     } else if (p.sends && p.sends.length) {

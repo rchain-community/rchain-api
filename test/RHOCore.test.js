@@ -1,12 +1,26 @@
-/* global require */
+/* global require, test, expect */
 /* eslint-disable object-curly-newline */
 
 const { URL } = require('url');
-const Suite = require('testjs');
 
 const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
 const { RHOCore, h2b, keyPair } = require('../index');
 const testData = require('./RHOCoreSuite.json');
+
+// IOU docs...
+const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
+
+Object.entries(testData).forEach(([name, item]) => {
+  test(name, () => {
+    expect(RHOCore.fromJSData(item.data)).toEqual(item.rho);
+    expect(RHOCore.toJSData(item.rho)).toEqual(item.data);
+    if (item.rholang != null) {
+      expect(RHOCore.toRholang(item.rho)).toEqual(item.rholang);
+    }
+    expect(RHOCore.toByteArray(item.rho).toString('hex')).toEqual(item.hex);
+    expect(Par.encode(Par.decode(h2b(item.hex)))).toEqual(Par.encode(item.rho));
+  });
+});
 
 function testRHOCore() {
   function rtest(item) {
@@ -102,4 +116,4 @@ function testRHOCore() {
   Suite.run({ ...mapValues(testData, rtest), ...rhoTests });
 }
 
-testRHOCore();
+//testRHOCore();
