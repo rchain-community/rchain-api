@@ -19,7 +19,8 @@ const usage = `
 
 Usage:
   rclient [options] account --new LABEL
-  rclient [options] import LABEL JSONFILE
+  rclient [options] account --import LABEL JSONFILE
+  rclient [options] account --show-public LABEL
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -73,10 +74,16 @@ function main(
     from: '0x01', // TODO: cli arg
   });
 
-  if (cli.account) {
+  if (cli.account && cli['--new']) {
     newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl, uuidv4 });
-  } else if (cli.import) {
+  } else if (cli.iaccount && cli['--import']) {
     importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
+  } else if (cli.account && cli['--show-public']) {
+    // ISSUE: store un-encrypted public key? "compromises privacy" per Web3 docs.
+
+    // ISSUE: we only need read-only access to the key store;
+    // should WriteAccess extend ReadAccess?
+    showPublic(argWr('--keystore'), cli.LABEL, { getpass, nacl });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
@@ -228,6 +235,31 @@ async function signMessage(keyStore, label, input, { getpass, nacl }) {
     const keyPair = nacl.sign.keyPair.fromSeed(seed);
     const sig = nacl.sign.detached(message, keyPair.secretKey);
     console.log(b2h(sig));
+  } catch (oops) {
+    console.error('cannot decrypt private key; bad password?');
+    console.error(oops.message);
+  }
+}
+
+
+async function showPublic(keyStore, label, { getpass, nacl }) {
+  const store = FileStorage(keyStore);
+
+  const keys = await store.get(label);
+  if (!keys[label]) {
+    console.log(`N such key: ${label}.`);
+    return;
+  }
+
+  const password = await getpass(`Password for ${label}: `);
+
+  try {
+    const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label]; // TODO: mixed -> SecretStorage
+    const seed = secretStorage.decrypt(Buffer.from(password), item);
+    const keyPair = nacl.sign.keyPair.fromSeed(seed);
+    // ISSUE: logging is not just FYI here;
+    // should be passed as an explicit capability.
+    console.log({ label, publicKey: b2h(keyPair.publicKey) });
   } catch (oops) {
     console.error('cannot decrypt private key; bad password?');
     console.error(oops.message);
