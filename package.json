@@ -19,7 +19,7 @@
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
     "flow-check": "flow check --from emacs",
     "flow-status": "flow status --from emacs",
-    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/"
+    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/ --ignore-pattern **/*.test.js"
   },
   "config": {
     "host": "localhost",
