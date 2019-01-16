@@ -13,12 +13,12 @@ const { keccak256Hash } = require('rchain-api');
 
 /*::
 
-opaque type Bytes<L> = Buffer | string;
-opaque type EthAddr = Bytes<20>;
-opaque type UUID = string;
-type PrivateKey = Buffer;
+export type Bytes<L> = Buffer | string;
+export type EthAddr = Bytes<20>;
+export type UUID = string; // ISSUE: opaque? only create from uuid API?
+export type PrivateKey = Buffer; // ISSUE: opaque? only create from randomBytes?
 
-type SecretStorageV3<C, K> = {
+export type SecretStorageV3<C, K> = {
   version: 3,
   id: UUID,
   crypto: C & K & {
@@ -27,19 +27,19 @@ type SecretStorageV3<C, K> = {
   },
 };
 
-type Cipher<N, P> = {
+export type Cipher<N, P> = {
     cipher: N,
     cipherparams: P,
 };
 
-type AES128CTR = Cipher<'aes-128-ctr', { iv: Bytes<16> }>;
+export type AES128CTR = Cipher<'aes-128-ctr', { iv: Bytes<16> }>;
 
-type KDF<N, P> = {
+export type KDF<N, P> = {
   kdf: N,
   kdfparams: P,
 };
 
-type SCrypt = KDF<'scrypt', {
+export type SCrypt = KDF<'scrypt', {
     dklen: 32,
     salt: Bytes<32>,
     n: number,

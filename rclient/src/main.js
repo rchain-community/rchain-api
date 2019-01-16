@@ -7,7 +7,7 @@
 const read = require('read');
 
 const { docopt } = require('docopt');
-const { RNode, RHOCore, simplifiedKeccak256Hash, h2b } = require('rchain-api');
+const { RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h } = require('rchain-api');
 
 const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
@@ -39,6 +39,9 @@ Options:
 
 `;
 
+/*::
+import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
+ */
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 
 
@@ -194,10 +197,10 @@ async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
 
 async function signMessage(keyStore, label, input, { getpass, nacl }) {
   const store = FileStorage(keyStore);
-  const tool = sigTool(store, nacl);
-  const key = await tool.getKey(label);
-  if (!key) {
-    console.log('no signing key');
+
+  const keys = await store.get(label);
+  if (!keys[label]) {
+    console.log(`N such key: ${label}.`);
     return;
   }
 
@@ -220,10 +223,14 @@ async function signMessage(keyStore, label, input, { getpass, nacl }) {
   const password = await getpass(`Password for ${label}: `);
 
   try {
-    const sig = await tool.signMessage(message, key, password);
-    console.log(sig);
+    const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label]; // TODO: mixed -> SecretStorage
+    const seed = secretStorage.decrypt(Buffer.from(password), item);
+    const keyPair = nacl.sign.keyPair.fromSeed(seed);
+    const sig = nacl.sign.detached(message, keyPair.secretKey);
+    console.log(b2h(sig));
   } catch (oops) {
-    console.log(oops.message);
+    console.error('cannot decrypt private key; bad password?');
+    console.error(oops.message);
   }
 }
 
