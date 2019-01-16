@@ -28,6 +28,7 @@ Usage:
   rclient [options] account --import LABEL JSONFILE
   rclient [options] account --show-public LABEL
   rclient [options] account --claim LABEL
+  rclient [options] account --get-balance LABEL
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -104,6 +105,8 @@ function main(
     showPublic(argWr('--keystore'), cli.LABEL, { getpass });
   } else if (cli.account && cli['--claim']) {
     claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, rnode, clock });
+  } else if (cli.account && cli['--get-balance']) {
+    getBalance(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
@@ -303,6 +306,9 @@ function pubToAddress(pubKey) {
 }
 
 
+// https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
+const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
+
 async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock }) {
   let privKey;
   let pubKey;
@@ -320,9 +326,6 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
     return;
   }
 
-  // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
-  const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
-
   const tClaim = clock().valueOf();
   const [statusId] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
   const statusOut /*: IPar */= { ids: [{ id: statusId }] };
@@ -339,7 +342,51 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
     { rnode, returnCh: statusOut, insertSigned: true },
   );
   console.log({ status });
-  // TODO: get balance
+}
+
+async function getBalance(label, priceInfo, { keyStore, getpass, rnode, clock }) {
+  let privKey;
+  let pubKey;
+  let ethAddr;
+  try {
+    privKey = await loadKey(keyStore, label, [], { getpass });
+    pubKey = privateToPublic(privKey);
+    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
+    // ISSUE: logging is not just FYI here;
+    // should be passed as an explicit capability.
+    console.log({ label, pubKey: b2h(pubKey), ethAddr });
+  } catch (oops) {
+    console.error('cannot load key');
+    console.error(oops.message);
+    return;
+  }
+
+  // ISSUE: push run() down into the API somewhere?
+  async function run(term) {
+    const timestamp = clock().valueOf();
+    console.log('run:', { timestamp });
+    const [returnChan] = await rnode.previewPrivateChannels({ timestamp, user }, 1);
+    console.log({ returnChan: prettyPrivate(returnChan) });
+    console.log(term);
+    await rnode.doDeploy({ ...priceInfo, timestamp, user, term }, true);
+    const blockResults = await rnode.listenForDataAtName(returnChan);
+    if (!(blockResults.length > 0)) { throw new Error('no data at return channel'); }
+    const answerPar = blockResults[0].postBlockData[0];
+    // console.log('answerPar', JSON.stringify(answerPar, null, 2));
+    return RHOCore.toJSData(answerPar);
+  }
+
+  const balance = await run(`new return, wCh, rlCh,
+  trace(\`rho:io:stderr\`), lookup(\`rho:registry:lookup\`) in {
+    trace!({"getBalance": *return, "trace": *trace}) |
+    lookup!(\`${String(WalletCheck)}\`, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
+      WalletCheck!("access", "${b2h(pubKey)}", *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+        if(ok) { maybeWallet!("getBalance", *return) }
+        else{ trace!({"problem": *maybeWallet}) | return!(Nil) }
+      }
+    }
+  }`);
+  console.log({ balance });
 }
 
 
