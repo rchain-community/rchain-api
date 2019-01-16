@@ -296,6 +296,11 @@ function privateToPublic(privKey) {
   return secp256k1.publicKeyCreate(privKey, false).slice(1);
 }
 
+function pubToAddress(pubKey) {
+  assert.equal(pubKey.length, 64);
+  return keccak256Hash(pubKey).slice(-20);
+}
+
 
 async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock }) {
   let privKey;
@@ -304,11 +309,10 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
   try {
     privKey = await loadKey(keyStore, label, [], { getpass });
     pubKey = privateToPublic(privKey);
-    assert.equal(pubKey.length, 64);
-    ethAddr = keccak256Hash(pubKey).slice(-20);
+    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
-    console.log({ label, pubKey: b2h(pubKey), ethAddr: b2h(ethAddr) });
+    console.log({ label, pubKey: b2h(pubKey), ethAddr });
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);
@@ -327,7 +331,7 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
   const sig = secp256k1.sign(hash, privKey).signature;
 
   const status = await sendCall(
-    { target: WalletCheck, method: 'claim', args: [ethAddr, pubKey, b2h(sig)/*, statusOut */] },
+    { target: WalletCheck, method: 'claim', args: [ethAddr, b2h(pubKey), b2h(sig)/*, statusOut */] },
     { ...priceInfo, user, timestamp: tClaim },
     { rnode, returnCh: statusOut, insertSigned: true },
   );
