@@ -7,7 +7,8 @@ const { URL } = require('url');
 
 const { Writer } = require('protobufjs');
 
-const { RHOCore, b2h } = require('..');
+const { b2h } = require('./signing');
+const RHOCore = require('./RHOCore');
 
 const { link } = require('./assets');
 

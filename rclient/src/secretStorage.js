@@ -80,17 +80,17 @@ function decrypt(
   assert(item.crypto.kdf === 'scrypt');
 
   const { salt, n, r, p, dklen } = item.crypto.kdfparams;
-  const derivedKey = scrypt(password, h2b(salt), n, r, p, dklen);
+  const derivedKey = scrypt(password, toBuf(salt), n, r, p, dklen);
   // console.log('Derived key:', derivedKey.toString('hex'));
 
   const MACBody = Buffer.concat([
     derivedKey.slice(16, 32),
-    h2b(item.crypto.ciphertext),
+    toBuf(item.crypto.ciphertext),
   ]);
   // console.log('MAC Body', MACBody.toString('hex'));
   const MAC = Buffer.from(keccak256Hash(MACBody));
   // console.log('MAC', MAC.toString('hex'));
-  const diff = MAC.compare(h2b(item.crypto.mac));
+  const diff = MAC.compare(toBuf(item.crypto.mac));
   // console.log('MAC diff?', diff);
   if (diff) {
     throw new Error('bad MAC (probably bad password)');
@@ -99,9 +99,9 @@ function decrypt(
   const cipherKey = derivedKey.slice(0, 128 / 8);
   assert(item.crypto.cipher === 'aes-128-ctr');
   const decipher = crypto.createDecipheriv(
-    item.crypto.cipher, cipherKey, Buffer.from(h2b(item.crypto.cipherparams.iv)),
+    item.crypto.cipher, cipherKey, Buffer.from(toBuf(item.crypto.cipherparams.iv)),
   );
-  const privateKey = decipher.update(h2b(item.crypto.ciphertext));
+  const privateKey = decipher.update(toBuf(item.crypto.ciphertext));
   return privateKey;
 }
 
@@ -158,19 +158,19 @@ function encrypt(
 
   // umm... not pretty...
   const bytes = item.crypto;
-  bytes.mac = b2h(item.crypto.mac);
-  bytes.ciphertext = b2h(item.crypto.ciphertext);
-  bytes.cipherparams.iv = b2h(bytes.cipherparams.iv);
-  bytes.kdfparams.salt = b2h(item.crypto.kdfparams.salt);
+  bytes.mac = toHex(item.crypto.mac);
+  bytes.ciphertext = toHex(item.crypto.ciphertext);
+  bytes.cipherparams.iv = toHex(bytes.cipherparams.iv);
+  bytes.kdfparams.salt = toHex(item.crypto.kdfparams.salt);
 
   return item;
 }
 
 
-function h2b/*:: <L>*/(data /*: Bytes<L>*/) /*: Buffer */{
+function toBuf/*:: <L>*/(data /*: Bytes<L>*/) /*: Buffer */{
   return typeof data === 'string' ? Buffer.from(data, 'hex') : data;
 }
 
-function b2h/*:: <L>*/(data /*: Bytes<L>*/) /*: string */{
+function toHex/*:: <L>*/(data /*: Bytes<L>*/) /*: string */{
   return typeof data === 'string' ? data : data.toString('hex');
 }
