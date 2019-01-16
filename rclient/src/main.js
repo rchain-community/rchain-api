@@ -14,6 +14,7 @@ const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
   keccak256Hash,
 } = require('rchain-api');
+const { GPrivate } = require('../../protobuf/RhoTypes.js');
 
 const { loadRhoModules, prettyPrivate } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
@@ -323,15 +324,17 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
   const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
 
   const tClaim = clock().valueOf();
-  const [statusOut] = await rnode.previewPrivateChannels({ timestamp: tClaim, user }, 1);
+  const [statusId] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
+  const statusOut /*: IPar */= { ids: [{ id: statusId }] };
   console.log({ statusOut: prettyPrivate(statusOut) });
   const hash = Buffer.from(keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(
-    [b2h(pubKey), statusOut],
+    [b2h(pubKey), GPrivate.create({ id: statusId })],
   ))));
-  const sig = secp256k1.sign(hash, privKey).signature;
+  const sigObj = secp256k1.sign(hash, privKey);
+  const sigDER = secp256k1.signatureExport(sigObj.signature);
 
   const status = await sendCall(
-    { target: WalletCheck, method: 'claim', args: [ethAddr, b2h(pubKey), b2h(sig)/*, statusOut */] },
+    { target: WalletCheck, method: 'claim', args: [ethAddr, b2h(pubKey), b2h(sigDER)/*, statusOut */] },
     { ...priceInfo, user, timestamp: tClaim },
     { rnode, returnCh: statusOut, insertSigned: true },
   );
