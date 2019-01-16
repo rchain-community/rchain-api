@@ -5,11 +5,15 @@
 
 /*global require, module, Buffer */
 const read = require('read');
+const { URL } = require('url');
 
+const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
-const { RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h } = require('rchain-api');
+const {
+  RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
+  keccak256Hash,
+} = require('rchain-api');
 
-const { sigTool } = require('./sigTool');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
@@ -21,6 +25,7 @@ Usage:
   rclient [options] account --new LABEL
   rclient [options] account --import LABEL JSONFILE
   rclient [options] account --show-public LABEL
+  rclient [options] account --claim LABEL
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -44,6 +49,17 @@ Options:
 import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
  */
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
+const defaultDeployInfo = {
+  from: '0x01', // TODO: cli arg
+  nonce: 1,
+  user: h2b(''),
+  timestamp: 0,
+  term: '',
+  sigAlgorithm: '',
+  sig: h2b(''),
+  phloLimit: 0,
+  phloPrice: 0,
+};
 
 
 function main(
@@ -69,9 +85,9 @@ function main(
   const rnode = RNode(grpc, where);
 
   const priceInfo = () => ({
+    ...defaultDeployInfo,
     phloPrice: parseInt(cli['--phlo-price'], 10),
     phloLimit: parseInt(cli['--phlo-limit'], 10),
-    from: '0x01', // TODO: cli arg
   });
 
   if (cli.account && cli['--new']) {
@@ -84,6 +100,8 @@ function main(
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
     showPublic(argWr('--keystore'), cli.LABEL, { getpass, nacl });
+  } else if (cli.account && cli['--claim']) {
+    claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, nacl, rnode, clock });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     signMessage(argWr('--keystore'), cli.LABEL, input, { getpass, nacl });
@@ -202,68 +220,106 @@ async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
 }
 
 
-async function signMessage(keyStore, label, input, { getpass, nacl }) {
+async function loadKey(keyStore, label, notice, { getpass, nacl }) {
   const store = FileStorage(keyStore);
 
   const keys = await store.get(label);
   if (!keys[label]) {
-    console.log(`N such key: ${label}.`);
-    return;
+    throw new Error(`No such key: ${label}.`);
   }
 
+  // ISSUE: logging is not just FYI here;
+  // should be passed as an explicit capability.
+  notice.forEach((args) => {
+    console.log(...args);
+  });
+
+  const password = await getpass(`Password for ${label}: `);
+
+  // TODO: mixed -> SecretStorage
+  const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label];
+  const seed = secretStorage.decrypt(Buffer.from(password), item);
+  return nacl.sign.keyPair.fromSeed(seed);
+}
+
+
+async function signMessage(keyStore, label, input, { getpass, nacl }) {
   let message;
+  let notice = [];
   if (input.json) {
     const code = await input.data.readText();
     const data = JSON.parse(code);
     const par = RHOCore.fromJSData(data);
     const rholang = RHOCore.toRholang(par);
-    console.log('JavaScript data:');
-    console.log(data);
-    console.log('Rholang data:');
-    console.log(rholang);
+    notice = [
+      ['JavaScript data:'],
+      [data],
+      ['Rholang data:'],
+      [rholang],
+    ];
     message = RHOCore.toByteArray(par);
   } else {
     message = await input.data.readBytes();
   }
-  console.log('byte length:', message.length);
-
-  const password = await getpass(`Password for ${label}: `);
+  notice.push(['byte length:', message.length]);
 
   try {
-    const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label]; // TODO: mixed -> SecretStorage
-    const seed = secretStorage.decrypt(Buffer.from(password), item);
-    const keyPair = nacl.sign.keyPair.fromSeed(seed);
+    const keyPair = await loadKey(keyStore, label, notice, { getpass, nacl });
     const sig = nacl.sign.detached(message, keyPair.secretKey);
     console.log(b2h(sig));
   } catch (oops) {
-    console.error('cannot decrypt private key; bad password?');
+    console.error('cannot load key');
     console.error(oops.message);
   }
 }
 
 
 async function showPublic(keyStore, label, { getpass, nacl }) {
-  const store = FileStorage(keyStore);
-
-  const keys = await store.get(label);
-  if (!keys[label]) {
-    console.log(`N such key: ${label}.`);
-    return;
-  }
-
-  const password = await getpass(`Password for ${label}: `);
-
   try {
-    const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label]; // TODO: mixed -> SecretStorage
-    const seed = secretStorage.decrypt(Buffer.from(password), item);
-    const keyPair = nacl.sign.keyPair.fromSeed(seed);
+    const keyPair = await loadKey(keyStore, label, [], { getpass, nacl });
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
     console.log({ label, publicKey: b2h(keyPair.publicKey) });
   } catch (oops) {
-    console.error('cannot decrypt private key; bad password?');
+    console.error('cannot load key');
     console.error(oops.message);
   }
+}
+
+
+async function claimAccount(keyStore, label, priceInfo, { getpass, nacl, rnode, clock }) {
+  let keyPair;
+  try {
+    keyPair = await loadKey(keyStore, label, [], { getpass, nacl });
+    // ISSUE: logging is not just FYI here;
+    // should be passed as an explicit capability.
+    console.log({ label, publicKey: b2h(keyPair.publicKey) });
+  } catch (oops) {
+    console.error('cannot load key');
+    console.error(oops.message);
+    return;
+  }
+
+  // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
+  const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
+
+  const tClaim = clock().valueOf();
+  const [statusOut] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
+  const hash = Buffer.from(keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(
+    [keyPair.publicKey, statusOut],
+  ))));
+  const privateKey = keyPair.secretKey.slice(0, 32); // chop off nacl's pubKey
+  const sig = secp256k1.sign(hash, privateKey).signature;
+
+  const pubKey = b2h(keyPair.publicKey);
+  const ethAddr = keccak256Hash(keyPair.publicKey).slice(12, 32);
+  const status = await sendCall(
+    { target: WalletCheck, method: 'claim', args: [ethAddr, pubKey, b2h(sig)/*, statusOut */] },
+    { ...defaultDeployInfo, user, timestamp: tClaim },
+    { rnode, returnCh: statusOut },
+  );
+  console.log({ status });
+  // TODO: get balance
 }
 
 
