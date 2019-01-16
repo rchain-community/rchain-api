@@ -244,7 +244,7 @@ async function loadKey(keyStore, label, notice, { getpass }) /*: Promise<Buffer>
 
   const password = await getpass(`Password for ${label}: `);
 
-  // TODO: mixed -> SecretStorage
+  // $FlowFixMe$ TODO: mixed -> SecretStorage
   const item /*: SecretStorageV3<AES128CTR, SCrypt>*/ = keys[label];
   const privKey = secretStorage.decrypt(Buffer.from(password), item);
   return privKey;
