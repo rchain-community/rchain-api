@@ -1,5 +1,6 @@
 // https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition
 // https://github.com/ethereumjs/ethereumjs-wallet/blob/master/src/index.js
+// why reimplement? (1) education, (2) ocap discipline (3) static typing
 
 /* global require, exports, Buffer */
 // @flow
@@ -8,38 +9,47 @@ const scrypt = require('scrypt.js'); // ISSUE: just use crypto.script?
 const crypto = require('crypto');
 const assert = require('assert');
 
-const { h2b, keccak256Hash } = require('rchain-api');
+const { keccak256Hash } = require('rchain-api');
 
 /*::
 
-opaque type Hex<L> = string;
-opaque type EthAddr = Hex<20>;
+opaque type Bytes<L> = Buffer | string;
+opaque type EthAddr = Bytes<20>;
 opaque type UUID = string;
-opaque type PrivateKey = Buffer;
+type PrivateKey = Buffer;
 
-type SecretStorageV3 = {
+type SecretStorageV3<C, K> = {
   version: 3,
   id: UUID,
-  crypto: {
-    ciphertext: Hex<32>,
-    cipherparams: { iv: Hex<16> },
-    cipher: 'aes-128-ctr', // TODO: handle others?
-    kdf: 'scrypt', // TODO: handle others?
-    kdfparams: {
-      dklen: 32,
-      salt: Hex<32>,
-      n: number,
-      r: number,
-      p: number,
-    },
-    mac: Hex<32>,
+  crypto: C & K & {
+    ciphertext: Bytes<32>,
+    mac: Bytes<32>,
   },
 };
 
+type Cipher<N, P> = {
+    cipher: N,
+    cipherparams: P,
+};
+
+type AES128CTR = Cipher<'aes-128-ctr', { iv: Bytes<16> }>;
+
+type KDF<N, P> = {
+  kdf: N,
+  kdfparams: P,
+};
+
+type SCrypt = KDF<'scrypt', {
+    dklen: 32,
+    salt: Bytes<32>,
+    n: number,
+    r: number,
+    p: number,
+  }>;
 */
 
 
-const testVectorScrypt /*: SecretStorageV3 */ = {
+const testVectorScrypt /*: SecretStorageV3<AES128CTR, SCrypt> */ = {
   crypto: {
     cipher: 'aes-128-ctr',
     cipherparams: { iv: '83dbcc02d8ccb40e466191a123791e0e' },
@@ -58,12 +68,15 @@ const testVectorScrypt /*: SecretStorageV3 */ = {
   version: 3,
 };
 
-const testPk = load(Buffer.from('testpassword'), testVectorScrypt);
+const testPk = decrypt(Buffer.from('testpassword'), testVectorScrypt);
 assert(testPk.toString('hex') === '7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d');
 
 
-exports.load = load;
-function load(password /*: Buffer*/, item /*: SecretStorageV3*/) /*: PrivateKey */ {
+exports.decrypt = decrypt;
+function decrypt(
+  password /*: Buffer*/,
+  item /*: SecretStorageV3<AES128CTR, SCrypt>*/,
+) /*: PrivateKey */ {
   assert(item.crypto.kdf === 'scrypt');
 
   const { salt, n, r, p, dklen } = item.crypto.kdfparams;
@@ -72,12 +85,12 @@ function load(password /*: Buffer*/, item /*: SecretStorageV3*/) /*: PrivateKey 
 
   const MACBody = Buffer.concat([
     derivedKey.slice(16, 32),
-    Buffer.from(h2b(item.crypto.ciphertext)),
+    h2b(item.crypto.ciphertext),
   ]);
   // console.log('MAC Body', MACBody.toString('hex'));
   const MAC = Buffer.from(keccak256Hash(MACBody));
   // console.log('MAC', MAC.toString('hex'));
-  const diff = MAC.compare(Buffer.from(h2b(item.crypto.mac)));
+  const diff = MAC.compare(h2b(item.crypto.mac));
   // console.log('MAC diff?', diff);
   if (diff) {
     throw new Error('bad MAC (probably bad password)');
@@ -88,6 +101,76 @@ function load(password /*: Buffer*/, item /*: SecretStorageV3*/) /*: PrivateKey 
   const decipher = crypto.createDecipheriv(
     item.crypto.cipher, cipherKey, Buffer.from(h2b(item.crypto.cipherparams.iv)),
   );
-  const privateKey = decipher.update(item.crypto.ciphertext, 'hex');
+  const privateKey = decipher.update(h2b(item.crypto.ciphertext));
   return privateKey;
+}
+
+
+exports.encrypt = encrypt;
+function encrypt(
+  privateKey /*: PrivateKey */,
+  password /*: Buffer */,
+  randomBytes /*: number => Buffer */,
+  uuidv4 /*: () => UUID */,
+) /*: SecretStorageV3<AES128CTR, SCrypt> */ {
+  const kdf /*: SCrypt */ = {
+    kdf: 'scrypt',
+    kdfparams: {
+      salt: randomBytes(32),
+      n: 262144,
+      r: 8,
+      p: 1,
+      dklen: 32,
+    },
+  };
+  const derivedKey /*: Buffer */ = scrypt(password, ...Object.values(kdf.kdfparams));
+  // console.log('Derived key:', derivedKey.toString('hex'));
+
+  const cipherKey = derivedKey.slice(0, 128 / 8);
+
+  const cipher /*: AES128CTR */ = {
+    cipher: 'aes-128-ctr',
+    cipherparams: { iv: randomBytes(16) },
+  };
+
+  const encipher = crypto.createCipheriv(cipher.cipher, cipherKey, cipher.cipherparams.iv);
+  const ciphertext = encipher.update(privateKey);
+  encipher.final().copy(ciphertext, ciphertext.length);
+
+  const MACBody = Buffer.concat([
+    derivedKey.slice(16, 32),
+    ciphertext,
+  ]);
+  // console.log('MAC Body', MACBody.toString('hex'));
+  const mac = Buffer.from(keccak256Hash(MACBody)).toString('hex');
+  // console.log('MAC', MAC.toString('hex'));
+
+  const item = {
+    version: 3,
+    id: uuidv4(),
+    crypto: {
+      mac,
+      ciphertext,
+      ...kdf,
+      ...cipher,
+    },
+  };
+
+  // umm... not pretty...
+  const bytes = item.crypto;
+  bytes.mac = b2h(item.crypto.mac);
+  bytes.ciphertext = b2h(item.crypto.ciphertext);
+  bytes.cipherparams.iv = b2h(bytes.cipherparams.iv);
+  bytes.kdfparams.salt = b2h(item.crypto.kdfparams.salt);
+
+  return item;
+}
+
+
+function h2b/*:: <L>*/(data /*: Bytes<L>*/) /*: Buffer */{
+  return typeof data === 'string' ? Buffer.from(data, 'hex') : data;
+}
+
+function b2h/*:: <L>*/(data /*: Bytes<L>*/) /*: string */{
+  return typeof data === 'string' ? data : data.toString('hex');
 }

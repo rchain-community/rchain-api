@@ -4,8 +4,9 @@
 // @flow
 
 /*global require, module, Buffer */
-const { docopt } = require('docopt');
 const read = require('read');
+
+const { docopt } = require('docopt');
 const { RNode, RHOCore, simplifiedKeccak256Hash, h2b } = require('rchain-api');
 
 const { sigTool } = require('./sigTool');
@@ -46,7 +47,7 @@ function main(
   clock,
   { stdin, stdout },
   { writeFile, readFile, join },
-  { nacl, grpc },
+  { nacl, grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
   if (cli['--verbose']) { console.log('options:', cli); }
@@ -70,7 +71,7 @@ function main(
   });
 
   if (cli.account) {
-    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl });
+    newAccount(argWr('--keystore'), cli.LABEL, { getpass, nacl, uuidv4 });
   } else if (cli.import) {
     importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
   } else if (cli.sign) {
@@ -127,12 +128,11 @@ async function register(files, registry, _price, { rnode, clock }) {
 }
 
 
-async function newAccount(keyStore, label, { getpass, nacl }) {
+async function newAccount(keyStore, label, { getpass, nacl, uuidv4 }) {
   const store = FileStorage(keyStore);
-  const tool = sigTool(store, nacl);
 
-  const taken = await tool.getKey(label);
-  if (taken) {
+  const taken = await store.get(label);
+  if (taken[label]) {
     console.error(`Key ${label} already exists.`);
     return;
   }
@@ -145,7 +145,14 @@ async function newAccount(keyStore, label, { getpass, nacl }) {
   }
 
   try {
-    await tool.generate({ label, password });
+    const privateKey = Buffer.from(nacl.randomBytes(32));
+    const item = secretStorage.encrypt(
+      privateKey,
+      Buffer.from(password),
+      n => Buffer.from(nacl.randomBytes(n)),
+      uuidv4,
+    );
+    await store.set({ [label]: item });
     console.log({ label, savedTo: keyStore.readOnly().name() });
   } catch (oops) {
     console.error(oops);
@@ -175,7 +182,7 @@ async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
 
   // ISSUE: just check MAC?
   try {
-    secretStorage.load(Buffer.from(password), item);
+    secretStorage.decrypt(Buffer.from(password), item);
   } catch (oops) {
     console.error('cannot load; bad password?');
     return;
@@ -240,6 +247,7 @@ if (require.main === module) {
     {
       grpc: require('grpc'),
       nacl: require('tweetnacl'),
+      uuidv4: require('uuid/v4'),
     },
   );
 }
