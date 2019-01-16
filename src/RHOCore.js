@@ -157,6 +157,11 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
           && Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
       }
+      // interpret tuple as list. IOU tests.
+      if (typeof ex.e_tuple_body !== 'undefined' && ex.e_tuple_body !== null
+          && Array.isArray(ex.e_tuple_body.ps)) {
+        return ex.e_tuple_body.ps.map(recur);
+      }
       if (typeof ex.e_map_body !== 'undefined' && ex.e_map_body !== null
           && Array.isArray(ex.e_map_body.kvs)) {
         const props = ex.e_map_body.kvs.map((kv) => {
