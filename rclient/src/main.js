@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /** rclient -- CLI interface to gRPC API
  */
 
@@ -288,7 +289,8 @@ async function showPublic(keyStore, label, { getpass }) {
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
     const pubKey = privateToPublic(privKey);
-    console.log({ label, publicKey: b2h(pubKey) });
+    const ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
+    console.log({ label, publicKey: b2h(pubKey), ethAddr });
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);
