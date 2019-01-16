@@ -172,7 +172,7 @@ function rhoCall({ target, method, args }, predeclare = [], insertSigned = false
   const targetPattern = insertSigned ? '@(_, *target)' : 'target';
   const term = `
       new ${newNames.join(', ')}, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
-        trace!({"in remote call to": ${target}}) |
+        trace!({"in remote call to": ${target}, "return": *return}) |
         lookup!(${target}, *targetCh) |
         for(${targetPattern} <- targetCh) {
           trace!({ "target": *target }) |
