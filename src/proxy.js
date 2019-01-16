@@ -23,7 +23,7 @@ interface SendOpts {
   predeclare?: string[],
   delay?: () => Promise<void>,
   unary?: boolean,
-  returnCh?: Par,
+  returnCh?: IPar,
   insertSigned?: boolean,
 };
 
