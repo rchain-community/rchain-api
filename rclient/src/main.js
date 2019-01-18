@@ -35,15 +35,29 @@ Usage:
   rclient [options] register RHOMODULE...
 
 Options:
+ account                account management
+                        (ISSUE: "account" is a mis-nomer?
+                         change to id? or locker?)
+ --new                  generate new secret key
+                        and associate with LABEL in keystore
+ --keystore=FILE        [default: keystore.json]
+ --import               import from JSONFILE as LABEL
+                        (per ethereum Web3 Secret Storage)
+ --show-public          show public key and ethereum-style address
+                        after decrypting with password
+ --claim                claim REV balance from RHOC after genesis
+ --get-balance          get REV balance after claiming it
  --host INT             The hostname or IPv4 address of the node
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
                         [default: 40401]
  --phlo-limit=N         how much are you willing to spend? [default: 10000]
  --phlo-price=N         TODO docs [default: 1]
+ deploy                 deploy RHOLANG file
+ register               deploy RHOMODULE, register exported process,
+                        and save URI in registry file
  --registry=FILE        where to store file / URI mappings
                         [default: registry.json]
- --keystore=FILE        [default: keystore.json]
  -v --verbose           Verbose logging
  -h --help              show usage
 
