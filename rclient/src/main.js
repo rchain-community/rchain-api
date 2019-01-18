@@ -13,8 +13,9 @@ const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
-  keccak256Hash,
+  keccak256Hash, keyPair,
 } = require('rchain-api');
+const { rhol } = RHOCore;
 const { GPrivate } = require('../../protobuf/RhoTypes.js');
 
 const { loadRhoModules, prettyPrivate } = require('../../src/loading'); // ISSUE: path?
@@ -30,6 +31,7 @@ Usage:
   rclient [options] account --show-public LABEL
   rclient [options] account --claim LABEL
   rclient [options] account --get-balance LABEL
+  rclient [options] account --publish LABEL
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -47,6 +49,8 @@ Options:
                         after decrypting with password
  --claim                claim REV balance from RHOC after genesis
  --get-balance          get REV balance after claiming it
+ --publish              insert wallet in public registry
+                        (ISSUE: more clear docs)
  --host INT             The hostname or IPv4 address of the node
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
@@ -122,6 +126,8 @@ function main(
     claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, rnode, clock });
   } else if (cli.account && cli['--get-balance']) {
     getBalance(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+  } else if (cli.account && cli['--publish']) {
+    publish(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
@@ -136,6 +142,8 @@ function main(
     )
       .catch((err) => { console.error(err); throw err; });
   }
+
+  // ISSUE: process exit code
 }
 
 
@@ -360,6 +368,26 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
   console.log({ status });
 }
 
+
+function RNode2({ rnode }) {
+  // ISSUE: push run() down into the API somewhere?
+  async function run(deployInfo, timestamp, term) {
+    console.log('run:', { timestamp });
+    const [returnChan] = await rnode.previewPrivateChannels({ timestamp, user }, 1);
+    console.log({ returnChan: prettyPrivate(returnChan) });
+    console.log(term);
+    await rnode.doDeploy({ ...deployInfo, timestamp, user, term }, true);
+    const blockResults = await rnode.listenForDataAtName(returnChan);
+    if (!(blockResults.length > 0)) { throw new Error('no data at return channel'); }
+    const answerPar = blockResults[0].postBlockData[0];
+    // console.log('answerPar', JSON.stringify(answerPar, null, 2));
+    return RHOCore.toJSData(answerPar);
+  }
+
+  return Object.freeze({ run });
+}
+
+
 async function getBalance(label, priceInfo, { keyStore, getpass, rnode, clock }) {
   let privKey;
   let pubKey;
@@ -377,32 +405,64 @@ async function getBalance(label, priceInfo, { keyStore, getpass, rnode, clock })
     return;
   }
 
-  // ISSUE: push run() down into the API somewhere?
-  async function run(term) {
-    const timestamp = clock().valueOf();
-    console.log('run:', { timestamp });
-    const [returnChan] = await rnode.previewPrivateChannels({ timestamp, user }, 1);
-    console.log({ returnChan: prettyPrivate(returnChan) });
-    console.log(term);
-    await rnode.doDeploy({ ...priceInfo, timestamp, user, term }, true);
-    const blockResults = await rnode.listenForDataAtName(returnChan);
-    if (!(blockResults.length > 0)) { throw new Error('no data at return channel'); }
-    const answerPar = blockResults[0].postBlockData[0];
-    // console.log('answerPar', JSON.stringify(answerPar, null, 2));
-    return RHOCore.toJSData(answerPar);
-  }
+  const rnode2 = RNode2({ rnode }); // ISSUE: add to rnodeAPI.js?
 
-  const balance = await run(`new return, wCh, rlCh,
+  const balance = await rnode2.run(priceInfo, clock().valueOf(), rhol`
+  new return, wCh, rlCh,
   trace(\`rho:io:stderr\`), lookup(\`rho:registry:lookup\`) in {
     trace!({"getBalance": *return, "trace": *trace}) |
-    lookup!(\`${String(WalletCheck)}\`, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
-      WalletCheck!("access", "${b2h(pubKey)}", *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
+      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
         if(ok) { maybeWallet!("getBalance", *return) }
         else{ trace!({"problem": *maybeWallet}) | return!(Nil) }
       }
     }
   }`);
   console.log({ balance });
+}
+
+async function publish(label, priceInfo, { keyStore, rnode, clock, getpass }) {
+  const privKey = await loadKey(keyStore, label, [], { getpass });
+  const pubKey = privateToPublic(privKey); // eth style secp256k1
+
+  const nonce = clock().valueOf(); // ISSUE: cli arg? persist?
+
+  const rnode2 = RNode2({ rnode }); // ISSUE: add to rnodeAPI.js?
+
+  const toSign = await rnode2.run(priceInfo, clock().valueOf(), rhol`
+  new return, rlCh, wCh,
+  trace(\`rho:io:stderr\`), lookup(\`rho:registry:lookup\`)
+  in {
+    trace!({"publish pt1": *return}) |
+    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
+      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+        if(ok) { return!((${nonce}, *maybeWallet).toByteArray()) }
+        else { trace!({"problem": *maybeWallet}) | return!(Nil) }
+      }
+    }
+  }`);
+  if (toSign === null) { throw new Error(`no such wallet: ${b2h(pubKey)}`); }
+  if (!(toSign instanceof Uint8Array)) { throw new Error('expected ByteArray'); }
+  console.log({ toSign: Buffer.from(toSign).toString('hex') });
+
+  const edkey = keyPair(privKey); // ed25519 per nacl
+  const sig = edkey.signBytes(toSign);
+
+  const uri = await rnode2.run(priceInfo, clock().valueOf(), rhol`
+  new return, trace(\`rho:io:stderr\`), rlCh, wCh,
+  insertSigned(\`rho:registry:insertSigned:ed25519\`), lookup(\`rho:registry:lookup\`)  in {
+    trace!({"publish pt2": *return}) |
+    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
+      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+        trace!({"access ok?": ok, "maybeWallet": *maybeWallet}) |
+        if(ok) {
+          trace!({"access": *maybeWallet}) |
+          insertSigned!(${edkey.publicKey()}.hexToBytes(), (${nonce}, *maybeWallet), ${sig}, *return)
+        } else { trace!({"problem": *maybeWallet}) | return!(Nil) }
+      }
+    }
+  }`);
+  console.log({ uri: String(uri) });
 }
 
 
