@@ -15,6 +15,7 @@ const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
   keccak256Hash, keyPair,
 } = require('rchain-api');
+
 const { rhol } = RHOCore;
 const { GPrivate } = require('../../protobuf/RhoTypes.js');
 
@@ -86,9 +87,8 @@ const defaultDeployInfo = {
 
 function main(
   argv,
-  clock,
-  { stdin, stdout, randomBytes },
-  { writeFile, readFile, join },
+  { stdin, stdout, writeFile, readFile, join },
+  { clock, randomBytes },
   { grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
@@ -472,16 +472,16 @@ if (require.main === module) {
   /*global process*/
   main(
     process.argv,
-    () => new Date(), // clock
     {
       stdin: process.stdin,
       stdout: process.stdout,
-      randomBytes: require('crypto').randomBytes,
-    },
-    {
       readFile: require('fs').readFile,
       writeFile: require('fs').writeFile,
       join: require('path').join,
+    },
+    {
+      clock: () => new Date(),
+      randomBytes: require('crypto').randomBytes,
     },
     {
       grpc: require('grpc'),
