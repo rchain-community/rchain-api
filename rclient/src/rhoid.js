@@ -1,15 +1,77 @@
-// https://github.com/rchain/rchain/blob/27f76eb02ab2d83bf2bc9cd766157c4723db0854/rholang/src/main/scala/coop/rchain/rholang/interpreter/Registry.scala#L1028-L1047  // eslint-disable-line
+/** rhoid -- build rho:id:... URI from public key as in rnode
+
+This is a port of relevant parts of Registry.scala 27f76eb02ab2
+
+https://github.com/rchain/rchain/blob/27f76eb02ab2d83bf2bc9cd766157c4723db0854/rholang/src/main/scala/coop/rchain/rholang/interpreter/Registry.scala#L1028-L1047  // eslint-disable-line
+
+*/
 // @flow
-/* global exports, Buffer */
-/*eslint no-bitwise: [2, { allow: ["^", "&", "<<", ">>>"] }] */
+/* global require, exports, module, Buffer */
 
 const { blake2b256Hash, b2h } = require('rchain-api');
 const base32 = require('base32-encoding');
 
+// human-oriented base-32 encoding by Zooko 2002 - 2009
 const zbase32 = buf => base32.stringify(buf, 'ybndrfg8ejkmcpqxot1uwisza345h769');
 
+const testCase = {
+  pk: Buffer.from('a2c8007965d9695298679722b6a822b0c36b280ec2ee4ce44454509658345226', 'hex'),
+  uri: 'rho:id:5x4bpc8y66ek1yiutdkqwm6t46qbaw41f6wwea1eoizbaifx6o5ikb',
+};
+
+function test(item) {
+  const uri = pkURI(item.pk);
+  const hash = blake2b256Hash(item.pk);
+  console.log({
+    pk: item.pk.toString('hex'),
+    hash: b2h(hash),
+    uri,
+    ok: uri === item.uri,
+  });
+}
+
+/**
+ * Build URI from 64 byte public key.
+ *
+ * Note: in Registry.scala, this is not a function of its own.
+ */
+exports.pkURI = pkURI;
+function pkURI(pk /*: Buffer*/) {
+  const hash = blake2b256Hash(pk);
+  return buildURI(Buffer.from(hash));
+}
+
+
+/**
+ * Build URI from hash of public key, as in Registry.scala
+ *
+ * ported directly from Registry.scala
+ */
+exports.buildURI = buildURI;
+function buildURI(arr /*: Buffer*/) /*: string */{
+  const fullKey = Buffer.alloc(34, 0);
+  arr.copy(fullKey, 0, 0, 32);
+  const crc = compute(fullKey.slice(0, 32));
+  fullKey[32] = crc & 0xff;
+  fullKey[33] = ((crc & 0xff00) >>> 6) & 0xff;
+  return `rho:id:${zbase32(fullKey).slice(0, 270 / 5)}`; // 270 bits
+}
+
+
+/* Porting the scala involves bit-twiddling, despite Airbnb style. */
+/*eslint no-bitwise: [2, { allow: ["^", "&", "<<", ">>>"] }] */
 
 const INIT_REMAINDER = 0;
+
+/**
+ * Compute CRC14 from byte sequence.
+ *
+ * ported directly from Registry.scala
+ */
+exports.CRC14 = { compute };
+function compute(b /*: Buffer*/) /*: number */{
+  return [...b.values()].reduce(update, INIT_REMAINDER);
+}
 
 function update(rem0, b) {
   function loop(i, rem) {
@@ -24,42 +86,6 @@ function update(rem0, b) {
   return loop(0, (rem0 ^ (b << 6)) & 0xFFFF);
 }
 
-exports.CRC14 = { compute };
-function compute(b /*: Buffer*/) /*: number */{
-  return [...b.values()].reduce(update, INIT_REMAINDER);
-}
-
-
-exports.buildURI = buildURI;
-function buildURI(arr /*: Buffer*/) /*: string */{
-  const fullKey = Buffer.alloc(34, 0);
-  arr.copy(fullKey, 0, 0, 32);
-  const crc = compute(fullKey.slice(0, 32));
-  fullKey[32] = crc & 0xff;
-  fullKey[33] = ((crc & 0xff00) >>> 6) & 0xff;
-  return `rho:id:${zbase32(fullKey).slice(0, 270 / 5)}`; // 270 bits
-}
-
-exports.pkURI = pkURI;
-function pkURI(pk /*: Buffer*/) {
-  const hash = blake2b256Hash(pk);
-  return buildURI(Buffer.from(hash));
-}
-
-
-function test() {
-  const pk = Buffer.from('a2c8007965d9695298679722b6a822b0c36b280ec2ee4ce44454509658345226', 'hex');
-  const hash = blake2b256Hash(pk);
-  const uri = buildURI(Buffer.from(hash));
-  console.log({
-    pk: pk.toString('hex'),
-    hash: b2h(hash),
-    uri,
-    ok: uri === 'rho:id:5x4bpc8y66ek1yiutdkqwm6t46qbaw41f6wwea1eoizbaifx6o5ikb',
-  });
-}
-
-
 if (require.main === module) {
-  test();
+  test(testCase);
 }
