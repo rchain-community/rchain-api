@@ -28,4 +28,4 @@ rules:
       ObjectPattern:
         # Don't discourage long-ish lists of named powerful objects.
         multiline: true
-        minProperties: 7
+        minProperties: 10
