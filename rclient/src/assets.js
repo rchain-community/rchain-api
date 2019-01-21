@@ -7,9 +7,11 @@
  * An alternative implementation would be a pre-processor
  * that in-lines the contents of the linked data as constants.
  */
+// @flow
+/* global exports, require */
 const { readFileSync } = require('fs');
 
 exports.link = link;
-function link(name) {
+function link(name /*: string */) {
   return readFileSync(require.resolve(name), 'utf8');
 }
