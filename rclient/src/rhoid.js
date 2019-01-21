@@ -30,6 +30,8 @@ function test(item) {
   });
 }
 
+
+// ISSUE: rename pkURI to rhoid?
 /**
  * Build URI from 64 byte public key.
  *

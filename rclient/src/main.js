@@ -13,7 +13,7 @@ const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
-  keccak256Hash, keyPair,
+  keccak256Hash, keyPair, makeProxy, blake2b256Hash,
 } = require('rchain-api');
 
 const { rhol } = RHOCore;
@@ -23,6 +23,8 @@ const { loadRhoModules, prettyPrivate } = require('../../src/loading'); // ISSUE
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
+const { link } = require('./assets');
+const rhoid = require('./rhoid');
 
 const usage = `
 
@@ -33,6 +35,7 @@ Usage:
   rclient [options] account --claim LABEL
   rclient [options] account --get-balance LABEL
   rclient [options] account --publish LABEL
+  rclient [options] pay --from=LABEL --to=URI AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -70,6 +73,8 @@ Options:
 
 /*::
 import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
+
+import type { ModuleInfo } from '../../src/loading'; // ISSUE: path?
  */
 const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 const defaultDeployInfo = {
@@ -77,6 +82,7 @@ const defaultDeployInfo = {
   from: '0x01', // TODO: cli arg
   nonce: 1,
   timestamp: -1,
+  // ISSUE: refine types so fields are optional in the right cases
   term: 'syntax error',
   sigAlgorithm: 'N/A',
   sig: h2b(''),
@@ -92,11 +98,20 @@ function main(
   { grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
-  if (cli['--verbose']) { console.log('options:', cli); }
+  if (cli['--verbose']) { console.log('options:', argv, cli); }
 
   const rd = path => fsReadAccess(path, readFile, join);
   const argRd = arg => rd(cli[arg]);
   const argWr = arg => fsWriteAccess(cli[arg], writeFile, readFile, join);
+  function argInt(name) {
+    try {
+      return parseInt(cli[name], 10);
+    } catch (oops) {
+      console.error(oops.message);
+      throw oops;
+    }
+  }
+
   function getpass(prompt /*: string*/) {
     return asPromise(
       f => read({ input: stdin, output: stdout, silent: true, prompt }, f),
@@ -128,6 +143,14 @@ function main(
     getBalance(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
   } else if (cli.account && cli['--publish']) {
     publish(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+  } else if (cli.pay) {
+    sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), {
+      getpass,
+      rnode,
+      clock,
+      keyStore: argWr('--keystore'),
+      registry: FileStorage(argWr('--registry')),
+    });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
@@ -166,21 +189,22 @@ async function register(files, registry, _price, { rnode, clock }) {
     const src = await file.readText();
 
     const srcHash = simplifiedKeccak256Hash(src);
-    const mod = await registry.get(srcHash);
-    return { src, srcHash, mod };
+    console.log('checking', file.name());
+    const mods = await registry.get(srcHash);
+    return { file, src, srcHash, mod: mods[srcHash] };
   }
 
-  const loaded = await Promise.all(files.map(check1));
-
-  async function ensure1({ src, srcHash, mod }) {
-    if (!mod) {
-      // ISSUE: loadRhoModules should take price info
-      const [mod1] = await loadRhoModules([src], user, { rnode, clock });
-      await registry.set({ [srcHash]: mod1 });
-    }
+  const status = await Promise.all(files.map(check1));
+  const toLoad = status.filter(({ mod }) => !mod);
+  console.log('loading:', toLoad.map(({ file }) => file.name()));
+  if (toLoad.length > 0) {
+    const loaded = await loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock });
+    registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
   }
+}
 
-  return Promise.all(loaded.map(ensure1));
+function collect(props /*: [string, ModuleInfo][]*/) /*{ [string]: ModuleInfo } */{
+  return props.reduce((acc, [s, m]) => ({ ...acc, [s]: m }), {});
 }
 
 
@@ -321,7 +345,10 @@ async function showPublic(keyStore, label, { getpass }) {
 
 // ISSUE: move to secretStorage
 function privateToPublic(privKey) {
-  return secp256k1.publicKeyCreate(privKey, false).slice(1);
+  const der = secp256k1.publicKeyCreate(privKey, false);
+  assert.equal(der.length, 65);
+  // chop off 0x04 DER byte sequence tag?
+  return der.slice(1);
 }
 
 function pubToAddress(pubKey) {
@@ -350,6 +377,7 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
     return;
   }
 
+  // ISSUE: refactor to use fixArgs to avoid round trip for previewPrivateIds
   const tClaim = clock().valueOf();
   const [statusId] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
   const statusOut /*: IPar */= { ids: [{ id: statusId }] };
@@ -448,6 +476,7 @@ async function publish(label, priceInfo, { keyStore, rnode, clock, getpass }) {
   const edkey = keyPair(privKey); // ed25519 per nacl
   const sig = edkey.signBytes(toSign);
 
+  // ISSUE: move rholang code to .rho file
   const uri = await rnode2.run(priceInfo, clock().valueOf(), rhol`
   new return, trace(\`rho:io:stderr\`), rlCh, wCh,
   insertSigned(\`rho:registry:insertSigned:ed25519\`), lookup(\`rho:registry:lookup\`)  in {
@@ -463,6 +492,65 @@ async function publish(label, priceInfo, { keyStore, rnode, clock, getpass }) {
     }
   }`);
   console.log({ uri: String(uri) });
+}
+
+
+async function sendPayment(
+  amount, fromLabel, toAddr, paymentInfo,
+  { keyStore, registry, getpass, rnode, clock },
+) {
+  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
+
+  const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
+  const privKey = await loadKey(keyStore, fromLabel, notice, { getpass });
+
+  // registry insertSigned uses ed25519 even though this wallet uses secp256k1 signatures.
+  const edPubKey = Buffer.from(h2b(keyPair(privKey).publicKey()));
+  const fromAddr = new URL(rhoid.pkURI(edPubKey));
+
+  const myWallet = makeProxy(fromAddr, paymentInfo, { rnode, clock, insertSigned: true });
+  const oldNonce = await myWallet.getNonce();
+  console.log({ oldNonce });
+  if (typeof oldNonce !== 'number') { throw new Error('expected number'); }
+  const nonce = oldNonce + 1;
+
+  const predeclare = ['viaPurse'];
+  const rhoHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
+  const sigArgs = dest => secp256k1.sign(rhoHash([nonce, amount, dest]), privKey);
+  const sigFmt = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
+  function fixArgs(args, chanArgs) {
+    const [dest] = chanArgs;
+    const out = [...args];
+    out[4] = sigFmt(sigArgs(dest));
+    return out;
+  }
+
+  const tools = makeProxy(toolsMod.URI, paymentInfo, { rnode, clock, fixArgs, predeclare });
+  const reply = await tools.pay(fromAddr, toAddr, amount, nonce, 'sig goes here');
+  return outcome(reply);
+}
+
+
+/*::
+type WebSendResult<T> = { "=": T } | { "!": string }
+ */
+
+// waterken JSON convensions http://waterken.sourceforge.net/web_send/
+async function outcome/*::<T>*/(x /*:Promise<mixed>*/) /*: Promise<T>*/ {
+  const o = await x;
+  if (o === null || typeof o !== 'object') { throw new Error('bad reply'); }
+  if ('!' in o) { throw new Error(o['!']); }
+  // $FlowFixMe validate mixed -> T
+  return o['='];
+}
+
+async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
+  const srcHash = simplifiedKeccak256Hash(src);
+  const mods = await registry.get(srcHash);
+  const mod = mods[srcHash];
+  if (!mod) { throw new Error(`rholang module not loaded: ${name}`); }
+  // $FlowFixMe validate mixed -> ModuleInfo
+  return mod;
 }
 
 

@@ -79,7 +79,7 @@ function FileStorage(store /*: WriteAccess*/) /*: StorageArea */ {
     }
   }
 
-  async function get(k /*: string*/) {
+  async function get(k /*: string*/) /*: Promise<{ [string]: mixed }> */{
     const info = await load();
     return { [k]: info[k] };
   }
