@@ -53,15 +53,6 @@ async function test({ rnode, clock }) {
 
 
 async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
-  // Wrap send contract with an extra unforgeable channel.
-  function sendVia(ch, timestamp, args) {
-    return sendCall(
-      { target: sendURI, args, method: '' },
-      { ...defaultDeployInfo, user, timestamp, term: '' },
-      { rnode, predeclare: [ch] },
-    );
-  }
-
   const aliceWallet = makeProxy(aliceWalletURI, { user, ...defaultDeployInfo }, { rnode, clock });
 
   const aliceBalance = await aliceWallet.getBalance();
@@ -71,14 +62,17 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
   console.log({ aliceNonce });
 
   const tPmt = clock().valueOf();
-  // ISSUE: we're going over gRPC here to get varId and in sendCall to get _ret.
-  const [_ret, viaId] = await rnode.previewPrivateIds({ timestamp: tPmt, user }, 2);
 
-  const sigHex = basicWalletSig(Scenario.aliceKey, Scenario.amount, aliceNonce + 1, viaId);
+  const bobWalletURI = await sendCall(
+    {
+      target: sendURI,
+      args: [aliceWalletURI, Scenario.amount, aliceNonce + 1, 'sigReplaced', Scenario.bobPk],
+      method: '',
+    },
+    { ...defaultDeployInfo, user, timestamp: tPmt, term: '' },
+    { rnode, predeclare: ['via'], fixArgs: signWith(Scenario.aliceKey) },
+  );
 
-  const bobWalletURI = await sendVia('viaCh', tPmt, [
-    aliceWalletURI, Scenario.amount, aliceNonce + 1, sigHex, Scenario.bobPk,
-  ]);
   if (!(bobWalletURI instanceof URL)) { throw new Error('expected URL'); }
   console.log(`URI of wallet for Bob: ${String(bobWalletURI)}`);
 
@@ -93,20 +87,23 @@ async function alicePaysBob({ aliceWalletURI, sendURI }, { rnode, clock }) {
 
 
 // Compute signature over [nonce, amount, retCh] as in BasicWallet.rho
-function basicWalletSig(key, amount, nonce, retId) {
-  console.log(
-    'preview of unforgeable name needed for signing',
-    unforgeableWithId(retId),
-  );
+function signWith(key) {
+  function basicWalletSig([payee, amount, nonce, _sig, pk], [dest] /*: GPrivate[]*/) {
+  //  const sigHex = basicWalletSig(Scenario.aliceKey, Scenario.amount, aliceNonce + 1, viaId);
 
-  const msg = RHOCore.toByteArray(RHOCore.fromJSData(
-    [nonce, Scenario.amount, GPrivate.create({ id: retId })],
-  ));
+    console.log(
+      'preview of unforgeable name needed for signing',
+      unforgeableWithId(dest.id),
+    );
 
-  const sigHex = key.signBytesHex(blake2b256Hash(msg));
-  console.log(`sign[${key.publicKey()}](${b2h(msg)}) = ${sigHex}`);
+    const msg = RHOCore.toByteArray(RHOCore.fromJSData([nonce, amount, dest]));
 
-  return sigHex;
+    const sigHex = key.signBytesHex(blake2b256Hash(msg));
+    console.log(`sign[${key.publicKey()}](${b2h(msg)}) = ${sigHex}`);
+
+    return [payee, amount, nonce, sigHex, pk];
+  }
+  return basicWalletSig;
 }
 
 

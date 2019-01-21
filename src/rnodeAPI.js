@@ -90,7 +90,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   function previewPrivateIds(
     { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
     nameQty /*: number*/,
-  ) /*: Promise<Uint8Array[]> */{
+  ) /*: Promise<Buffer[]> */{
     return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
       .then(response => response.ids);
   }

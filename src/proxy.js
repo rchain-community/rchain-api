@@ -3,6 +3,7 @@
 
 const { rhol, toJSData } = require('./RHOCore');
 const { unforgeableWithId } = require('./loading');
+const { GPrivate } = require('../protobuf/RhoTypes.js');
 
 /*::
 import type { IRNode, DeployData } from './rnodeAPI';
@@ -18,13 +19,21 @@ type Receiver = {
   [string]: (...mixed[]) => Promise<mixed>
 }
 
-interface SendOpts {
-  rnode: IRNode,
+interface Opts {
   predeclare?: string[],
-  delay?: () => Promise<void>,
   unary?: boolean,
   returnCh?: IPar,
   insertSigned?: boolean,
+  fixArgs?: (mixed[], IPar[]) => mixed[]
+};
+
+interface SourceOpts extends Opts {
+  chanArgs?: GPrivate[],
+};
+
+interface SendOpts extends Opts {
+  rnode: IRNode,
+  delay?: () => Promise<void>,
 };
 
 interface ProxyOpts extends SendOpts {
@@ -38,7 +47,7 @@ interface ProxyOpts extends SendOpts {
  * Make an object that proxies method calls to registered RChain
  * channels.
  *
- * For rholang calling conventions, see `callSource` (and unaryCallSource).
+ * For rholang calling conventions, see `callSource`.
  *
  * @param target: URI where channel is registered.
  * @param deployData: as in doDeploy (though term is ignored and replaced)
@@ -54,12 +63,10 @@ exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: URL */,
   deployData /*: DeployData */,
-  { rnode, clock, delay, unary = false } /*: ProxyOpts */,
+  opts /*: ProxyOpts */,
 ) /*: Receiver */{
-  const sendIt = msg => sendCall(
-    msg, { ...deployData, timestamp: clock().valueOf() },
-    { rnode, delay: delay || noDelay, unary },
-  );
+  const { clock } = opts;
+  const sendIt = msg => sendCall(msg, { ...deployData, timestamp: clock().valueOf() }, opts);
   return new Proxy({}, {
     get: (_, method) => (...args) => sendIt({ target, method, args }),
     // override set to make it read-only?
@@ -70,7 +77,7 @@ function makeProxy(
 /**
  * Call a method on a registered RChain channel.
  *
- * For rholang calling conventions, see `callSource` (and unaryCallSource).
+ * For rholang calling conventions, see `callSource`.
  *
  * @param target: URI where channel is registered.
  * @param deployData: as in doDeploy (though term is ignored and replaced)
@@ -84,28 +91,45 @@ exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
   deployData /*: DeployData */,
-  { rnode, predeclare = [], delay, unary = false, returnCh, insertSigned = false } /*: SendOpts */,
+  opts /*: SendOpts */,
 ) {
-  const term = callSource(
-    { target, method, args },
-    { predeclare: predeclare || [], unary, insertSigned },
-  );
-  let returnChan;
-  if (returnCh) {
-    returnChan = returnCh;
+  const { rnode } = opts;
+  let returnChan/*: IPar */;
+  let chanArgs /*: GPrivate[] */= [];
+  if (opts.returnCh) {
+    returnChan = opts.returnCh;
+  } else if (opts.predeclare && opts.predeclare.length > 0) {
+    const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
+      deployData, 1 + opts.predeclare.length,
+    );
+    console.log({ chans: chans.map(b => b.toString('hex')) });
+
+    const [returnId, ...more] = chans;
+    const idToPar = id => ({ ids: [{ id }] });
+    returnChan = idToPar(returnId);
+    // console.log({ returnChan: JSON.stringify(returnChan) });
+
+    const idToGPrivate = id => GPrivate.create({ id });
+    chanArgs = more.map(idToGPrivate);
   } else {
     [returnChan] = await rnode.previewPrivateChannels(deployData, 1);
   }
-  await rnode.doDeploy({ ...deployData, term }, true);
-  if (delay) {
-    await delay();
+
+  const term = callSource(
+    { target, method, args },
+    { ...opts, chanArgs },
+  );
+  const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
+  console.log({ deployResult });
+  if (opts.delay) {
+    await opts.delay();
   }
   // ISSUE: loop until we get results?
   const blockResults = await rnode.listenForDataAtName(returnChan);
   // console.log({ blockResults });
   if (!(blockResults.length > 0)) {
     let name = '<unknown>';
-    const { ids } = (returnCh || {});
+    const { ids } = returnChan;
     if (ids && ids[0].id) {
       name = unforgeableWithId(ids[0].id);
     }
@@ -114,11 +138,6 @@ async function sendCall(
   const answerPar = blockResults[0].postBlockData[0];
   // console.log('answerPar', JSON.stringify(answerPar, null, 2));
   return toJSData(answerPar);
-}
-
-
-async function noDelay() {
-  return undefined;
 }
 
 
@@ -133,18 +152,18 @@ async function noDelay() {
 exports.callSource = callSource;
 function callSource(
   { target, method, args } /*: Message*/,
-  { predeclare = [], unary = false, insertSigned = false } /*:
-  { predeclare: string[], unary: bool, insertSigned: bool } */,
+  opts /*: SourceOpts */,
 ) {
+  const args2 = opts.fixArgs ? opts.fixArgs(args, opts.chanArgs || []) : args;
   return rhoCall({
     // ISSUE: assume target is injection-safe?
     target: `\`${String(target)}\``,
     method: method && method.length > 0 ? [rhol`${method}`] : [],
     args: (
-      unary
-        ? [rhol`${args}`]
-        : args.map(arg => rhol`${arg}`)),
-  }, predeclare, insertSigned);
+      opts.unary
+        ? [rhol`${args2}`]
+        : args2.map(arg => rhol`${arg}`)),
+  }, opts.predeclare || [], opts.insertSigned || false);
 }
 
 
@@ -156,11 +175,11 @@ function callSource(
  * @param m.method: [] or ["eat"]
  * @param m.args: a list of rholang terms
  * @param predeclare: names to pre-declare in addition to `return`
- *                    They are passed (deref's do processes) to target
+ *                    They are passed (deref'd to processes) to target
  *                    in reverse order.
  * @param insertSigned: was `insertSigned` used to register the target?
  */
-function rhoCall({ target, method, args }, predeclare = [], insertSigned = false) {
+function rhoCall({ target, method, args }, predeclare, insertSigned) {
   const newNames = ['return', ...predeclare.reverse()];
   const pieces = [...method, ...args, [...predeclare, 'return'].map(n => `*${n}`)];
   /*
