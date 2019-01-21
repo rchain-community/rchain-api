@@ -29,32 +29,29 @@ const rhoid = require('./rhoid');
 const usage = `
 
 Usage:
-  rclient [options] account --new LABEL
-  rclient [options] account --import LABEL JSONFILE
-  rclient [options] account --show-public LABEL
-  rclient [options] account --claim LABEL
-  rclient [options] account --get-balance LABEL
-  rclient [options] account --publish LABEL
-  rclient [options] pay --from=LABEL --to=URI AMOUNT
+  rclient [options] keygen --label=LABEL
+  rclient [options] import --label=LABEL JSONFILE
+  rclient [options] info --label=LABEL
+  rclient [options] claim --label=LABEL
+  rclient [options] balance --label=LABEL
+  rclient [options] publish --label=LABEL
+  rclient [options] send --from=LABEL --to=URI AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
 
 Options:
- account                account management
-                        (ISSUE: "account" is a mis-nomer?
-                         change to id? or locker?)
- --new                  generate new secret key
+ keygen                 generate new secret key
                         and associate with LABEL in keystore
  --keystore=FILE        [default: keystore.json]
- --import               import from JSONFILE as LABEL
+ import                 import key from JSONFILE as LABEL
                         (per ethereum Web3 Secret Storage)
- --show-public          show public key and ethereum-style address
+ info                   show public key and ethereum-style address
                         after decrypting with password
- --claim                claim REV balance from RHOC after genesis
- --get-balance          get REV balance after claiming it
- --publish              insert wallet in public registry
+ claim                  claim REV balance from RHOC after genesis
+ publish                insert wallet in public registry
                         (ISSUE: more clear docs)
+ balance                get REV balance after publishing account
  --host INT             The hostname or IPv4 address of the node
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
@@ -91,7 +88,11 @@ const defaultDeployInfo = {
 };
 
 
-function main(
+function ExitStatus(message) {
+  this.message = message;
+}
+
+async function main(
   argv,
   { stdin, stdout, writeFile, readFile, join },
   { clock, randomBytes },
@@ -127,24 +128,24 @@ function main(
     phloLimit: parseInt(cli['--phlo-limit'], 10),
   });
 
-  if (cli.account && cli['--new']) {
-    newAccount(argWr('--keystore'), cli.LABEL, { getpass, randomBytes, uuidv4 });
-  } else if (cli.account && cli['--import']) {
-    importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
-  } else if (cli.account && cli['--show-public']) {
+  if (cli.keygen) {
+    await keygen(argWr('--keystore'), cli['--label'], { getpass, randomBytes, uuidv4 });
+  } else if (cli.import) {
+    await importKey(argWr('--keystore'), cli['--label'], argRd('JSONFILE'), { getpass });
+  } else if (cli.info) {
     // ISSUE: store un-encrypted public key? "compromises privacy" per Web3 docs.
 
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
-    showPublic(argWr('--keystore'), cli.LABEL, { getpass });
-  } else if (cli.account && cli['--claim']) {
-    claimAccount(argWr('--keystore'), cli.LABEL, priceInfo(), { getpass, rnode, clock });
-  } else if (cli.account && cli['--get-balance']) {
-    getBalance(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
-  } else if (cli.account && cli['--publish']) {
-    publish(cli.LABEL, priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
-  } else if (cli.pay) {
-    sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), {
+    await showPublic(argWr('--keystore'), cli['--label'], { getpass });
+  } else if (cli.claim) {
+    await claimAccount(argWr('--keystore'), cli['--label'], priceInfo(), { getpass, rnode, clock });
+  } else if (cli.balance) {
+    await getBalance(cli['--label'], priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+  } else if (cli.publish) {
+    await publish(cli['--label'], priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+  } else if (cli.send) {
+    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), {
       getpass,
       rnode,
       clock,
@@ -153,13 +154,13 @@ function main(
     });
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
-    signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
+    await signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
   }
   if (cli.deploy) {
-    deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
+    await deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
-    register(
+    await register(
       cli.RHOMODULE.map(rd), FileStorage(argWr('--registry')),
       priceInfo(), { rnode, clock },
     )
@@ -208,38 +209,28 @@ function collect(props /*: [string, ModuleInfo][]*/) /*{ [string]: ModuleInfo } 
 }
 
 
-async function newAccount(keyStore, label, { getpass, randomBytes, uuidv4 }) {
+async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
   const store = FileStorage(keyStore);
 
   const taken = await store.get(label);
-  if (taken[label]) {
-    console.error(`Key ${label} already exists.`);
-    return;
-  }
+  if (taken[label]) { throw new ExitStatus(`Key ${label} already exists.`); }
 
   const password = await getpass(`Password for ${label}:`);
   const passconf = await getpass(`Confirm password for ${label}:`);
-  if (password !== passconf) {
-    console.error('Passwords do not match.');
-    return;
-  }
+  if (password !== passconf) { throw new ExitStatus('Passwords do not match.'); }
 
-  try {
-    let privKey;
-    do {
-      privKey = randomBytes(32);
-    } while (!secp256k1.privateKeyVerify(privKey));
-    const item = secretStorage.encrypt(
-      privKey,
-      Buffer.from(password),
-      n => randomBytes(n),
-      uuidv4,
-    );
-    await store.set({ [label]: item });
-    console.log({ label, savedTo: keyStore.readOnly().name() });
-  } catch (oops) {
-    console.error(oops);
-  }
+  let privKey;
+  do {
+    privKey = randomBytes(32);
+  } while (!secp256k1.privateKeyVerify(privKey));
+  const item = secretStorage.encrypt(
+    privKey,
+    Buffer.from(password),
+    n => randomBytes(n),
+    uuidv4,
+  );
+  await store.set({ [label]: item });
+  console.log({ label, savedTo: keyStore.readOnly().name() });
 }
 
 
@@ -575,5 +566,13 @@ if (require.main === module) {
       grpc: require('grpc'),
       uuidv4: require('uuid/v4'),
     },
-  );
+  )
+    .catch((err) => {
+      if (err instanceof ExitStatus) {
+        console.error(err.message);
+        process.exit(1);
+      } else {
+        throw err; // bug!
+      }
+    });
 }
