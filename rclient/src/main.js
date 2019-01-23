@@ -123,13 +123,11 @@ async function main(
     phloLimit: argInt('--phlo-limit'),
   });
 
-  const io = () => ({
-    getpass,
-    rnode,
-    clock,
-    keyStore: argWr('--keystore'),
-    registry: FileStorage(argWr('--registry')),
-  });
+  async function ioTools() {
+    const registry = FileStorage(argWr('--registry'));
+    const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
+    return { getpass, rnode, clock, toolsMod, keyStore: argWr('--keystore') };
+  }
 
   if (cli.keygen) {
     await keygen(argWr('--keystore'), cli.LABEL, { getpass, randomBytes, uuidv4 });
@@ -140,28 +138,29 @@ async function main(
 
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
-    await showPublic(argWr('--keystore'), cli.LABEL, { getpass });
+    await showPublic(cli.LABEL, { getpass, keyStore: argWr('--keystore') });
   } else if (cli.claim) {
-    await claimAccount(cli.LABEL, priceInfo(), io());
+    const io = await ioTools();
+    await claimAccount(cli.LABEL, priceInfo(), io);
   } else if (cli.balance) {
-    await getBalance(cli.LABEL, priceInfo(), io());
+    const io = await ioTools();
+    await getBalance(cli.LABEL, priceInfo(), io);
   } else if (cli.publish) {
-    await publish(cli.LABEL, priceInfo(), io());
+    const io = await ioTools();
+    await publish(cli.LABEL, priceInfo(), io);
   } else if (cli.send) {
-    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), io());
+    const io = await ioTools();
+    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), io);
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     await signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
-  }
-  if (cli.deploy) {
+  } else if (cli.deploy) {
     await deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
     await register(
-      cli.RHOMODULE.map(rd), FileStorage(argWr('--registry')),
-      priceInfo(), { rnode, clock },
-    )
-      .catch((err) => { console.error(err); throw err; });
+      cli.RHOMODULE.map(rd), priceInfo(), { rnode, clock, registry: FileStorage(argWr('--registry')) },
+    );
   }
 
   // ISSUE: process exit code
@@ -180,28 +179,35 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 }
 
 
-async function register(files, registry, _price, { rnode, clock }) {
+async function register(files, _price, { registry, rnode, clock }) {
   // ISSUE: what to do when we restart the node?
   // how to check that we're talking to the same chain?
   async function check1(file) {
-    const src = await file.readText();
+    const src = await ioOrExit(file.readText());
 
     const srcHash = simplifiedKeccak256Hash(src);
-    console.log('checking', file.name());
-    const mods = await registry.get(srcHash);
+    const mods = await ioOrExit(registry.get(srcHash));
     return { file, src, srcHash, mod: mods[srcHash] };
   }
 
   const status = await Promise.all(files.map(check1));
+  status.filter(({ mod }) => !!mod).forEach(({ file, mod }) => {
+    console.log({ file: file.name(), uri: mod.URI, status: 'loaded already' });
+  });
+
   const toLoad = status.filter(({ mod }) => !mod);
-  console.log('loading:', toLoad.map(({ file }) => file.name()));
   if (toLoad.length > 0) {
+    console.log('loading:', toLoad.map(({ file }) => file.name()));
     const loaded = await loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock });
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
+    loaded.forEach((m, ix) => {
+      console.log({ status: 'newly loaded', file: toLoad[ix].file.name(), uri: String(m.URI) });
+    });
   }
 }
 
-function collect(props /*: [string, ModuleInfo][]*/) /*{ [string]: ModuleInfo } */{
+// [[p1, v1], [p2, v2], ...] => { p1: v1, p2: v2, ... }
+function collect/*:: <T>*/(props /*: [string, T][]*/) /*{ [string]: T } */{
   return props.reduce((acc, [s, m]) => ({ ...acc, [s]: m }), {});
 }
 
@@ -235,7 +241,7 @@ async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
     uuidv4,
   );
   await store.set({ [label]: item });
-  console.log({ label, savedTo: keyStore.readOnly().name() });
+  console.log({ label, keyStore: keyStore.readOnly().name(), status: 'saved' });
 }
 
 
@@ -321,7 +327,7 @@ async function signMessage(keyStore, label, input, { getpass }) {
 }
 
 
-async function showPublic(keyStore, label, { getpass }) {
+async function showPublic(label, { keyStore, getpass }) {
   try {
     const privKey = await loadKey(keyStore, label, [], { getpass });
     // ISSUE: logging is not just FYI here;
@@ -352,7 +358,7 @@ function pubToAddress(pubKey) {
 const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
-async function claimAccount(label, priceInfo, { keyStore, registry, getpass, rnode, clock }) {
+async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
   let privKey;
   let pubKey;
   let ethAddr;
@@ -373,7 +379,6 @@ async function claimAccount(label, priceInfo, { keyStore, registry, getpass, rno
     out[2] = sigDERHex(secp256k1.sign(rhoBlakeHash([b2h(pubKey), statusOut]), privKey));
     return out;
   }
-  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs });
   const uri = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
 
@@ -381,7 +386,7 @@ async function claimAccount(label, priceInfo, { keyStore, registry, getpass, rno
 }
 
 
-async function getBalance(label, priceInfo, { keyStore, registry, getpass, rnode, clock }) {
+async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
   let privKey;
   let pubKey;
   let ethAddr;
@@ -396,21 +401,19 @@ async function getBalance(label, priceInfo, { keyStore, registry, getpass, rnode
     throw new ExitStatus(`cannot load key: ${err.message}`);
   }
 
-  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
   const balance = await outcome(tools.getBalance(b2h(pubKey)));
 
   console.log({ ethAddr, balance, label });
 }
 
-async function publish(label, priceInfo, { keyStore, registry, rnode, clock, getpass }) {
+async function publish(label, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
   const privKey = await loadKey(keyStore, label, [], { getpass });
   const secPubKey = privateToPublic(privKey); // eth style secp256k1
   const edkey = keyPair(privKey); // ed25519 per nacl
 
   const nonce = clock().valueOf(); // ISSUE: cli arg? persist?
 
-  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
 
   const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
@@ -425,10 +428,8 @@ async function publish(label, priceInfo, { keyStore, registry, rnode, clock, get
 async function sendPayment(
   // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
   amount, fromLabel, toAddr, paymentInfo,
-  { keyStore, registry, getpass, rnode, clock },
+  { keyStore, toolsMod, getpass, rnode, clock },
 ) {
-  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
-
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
   const privKey = await loadKey(keyStore, fromLabel, notice, { getpass });
 
