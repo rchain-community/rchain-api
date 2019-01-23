@@ -427,7 +427,7 @@ async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode,
     const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
     const sig = edkey.signBytes(toSign);
 
-    uri = await outcome(tools.publish(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
+    uri = await outcome(tools.publishClaimed(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
   } else {
     const created = await outcome(tools.createWallet('secp256k1', b2h(secPubKey), nonce));
     if (!created.toSign) { throw new Error('expected toSign'); }
