@@ -1,0 +1,62 @@
+/**
+ * tools - stuff n junk
+ */
+new
+  Tools,
+//  export,          // ISSUE: rholang extension
+  export(`export:`), // ISSUE: rholang extension
+  trace(`rho:io:stderr`),
+  lookup(`rho:registry:lookup`)
+in {
+  export!(*Tools) | trace!("Tools OK") |
+
+  contract Tools(@"pay",
+    @{fromAddr /\ Uri}, // registry address of BasicWallet
+    @{toAddr /\ Uri},   // "
+    @{amount /\ Int},
+    @{nonce /\ Int},    // getNonce() of from Wallet
+    @{sig /\ String},   // over blake2b256Hash([nonce, amount, *via].toBytearray())
+    via,                // signed channel
+    return              // { "=": b } where b is balance of from after payment or
+                        // { "!": "problem description" }
+  ) = {
+    new fromCh, toCh, statusCh, dCh, bCh in {
+      trace!({"send": amount}) |
+      lookup!(fromAddr, *fromCh) |
+      lookup!(toAddr, *toCh) |
+      for(@(_, *fromWallet) <- fromCh; @(_, *toWallet) <- toCh) {
+        trace!({"fromWallet": *fromWallet, "toWallet": *toWallet}) |
+        match (*fromWallet, *toWallet) {
+          // ! from Waterken JSON conventions
+          (Nil, _) => { return!({ "!": "from: nothing registered", "uri": fromAddr}) }
+          (_, Nil) => { return!({ "!": "to: nothing registered", "uri": toAddr}) }
+          _ => {
+            fromWallet!("transfer", amount, nonce, sig, *via, *statusCh) |
+            for (@status <- statusCh) {
+              trace!({"transfer status": status}) |
+              if (status == "Success") {
+                for(pmt <- via) {
+                  trace!({"pmt": *pmt, "payee wallet": *toWallet}) |
+                  toWallet!("deposit", amount, *pmt, *dCh) |
+                  for (@depositResult <- dCh) {
+                    trace!({"deposit result": depositResult}) |
+                    if (depositResult) {
+                      fromWallet!("getBalance", *bCh) | for (@balance <- bCh) {
+                        return!({ "=": balance })
+                      }
+                    } else {
+                      return!({ "!": "deposit failed; overdraft?" })
+                    }
+                  }
+                }
+              } else {
+                return!({ "!": status })
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
