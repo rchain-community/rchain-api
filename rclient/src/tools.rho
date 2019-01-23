@@ -30,13 +30,12 @@ in {
       @{ethAddr /\ String},  // 0x...
       @{pubKey /\ String},   // secp256k1 public key in hex
       @{sigHex /\ String},   // DER encoded secp256k1 sig in hex
+      statusOut,             // signed channel
       return
     ) = {
-      new statusOut in {
-        WalletCheck!("claim", ethAddr, pubKey, sigHex, *statusOut) | for (@(ok, msg) <- statusOut) {
-          if(ok) { return!({"=": pubKey}) }
-          else { return!({"!": msg}) }
-        }
+      WalletCheck!("claim", ethAddr, pubKey, sigHex, *statusOut) | for (@(ok, msg) <- statusOut) {
+        if(ok) { return!({"=": pubKey}) }
+        else { return!({"!": msg}) }
       }
     } |
 

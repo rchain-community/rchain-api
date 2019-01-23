@@ -359,6 +359,7 @@ function pubToAddress(pubKey) {
 
 
 const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
+const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
 async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
@@ -379,13 +380,13 @@ async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rno
   function fixArgs(args, [statusOut]) {
     console.log({ args, statusOut });
     const out = [...args];
-    out[2] = sigDERHex(secp256k1.sign(rhoBlakeHash([b2h(pubKey), statusOut]), privKey));
+    out[2] = sigDERHex(secp256k1.sign(rhoKeccakHash([b2h(pubKey), statusOut]), privKey));
     return out;
   }
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs });
-  const uri = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs, predeclare: ['s'] });
+  const pk = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
 
-  console.log({ ethAddr, uri });
+  console.log({ ethAddr, pk });
 }
 
 
