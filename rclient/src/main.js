@@ -29,7 +29,7 @@ Usage:
   rclient [options] info LABEL
   rclient [options] claim LABEL
   rclient [options] balance LABEL
-  rclient [options] publish LABEL
+  rclient [options] publish [--claimed] LABEL
   rclient [options] send --from=LABEL --to=URI AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
@@ -44,8 +44,9 @@ Options:
  info                   show public key and ethereum-style address
                         after decrypting with password
  claim                  claim REV balance from RHOC after genesis
- publish                insert wallet in public registry
-                        (ISSUE: more clear docs)
+ publish                register a wallet at the rhoid derived
+                        from the key. If --claimed, get the wallet
+                        from WalletCheck; else, create a new empty wallet.
  balance                get REV balance after publishing account
  --host INT             The hostname or IPv4 address of the node
                         [default: localhost]
@@ -147,7 +148,7 @@ async function main(
     await getBalance(cli.LABEL, priceInfo(), io);
   } else if (cli.publish) {
     const io = await ioTools();
-    await publish(cli.LABEL, priceInfo(), io);
+    await publish(cli.LABEL, cli['--claimed'], priceInfo(), io);
   } else if (cli.send) {
     const io = await ioTools();
     await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), io);
@@ -198,7 +199,9 @@ async function register(files, _price, { registry, rnode, clock }) {
   const toLoad = status.filter(({ mod }) => !mod);
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
-    const loaded = await loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock });
+    const loaded = await ioOrExit(
+      loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock }),
+    );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
       console.log({ status: 'newly loaded', file: toLoad[ix].file.name(), uri: String(m.URI) });
@@ -402,25 +405,39 @@ async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode
   }
 
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
-  const balance = await outcome(tools.getBalance(b2h(pubKey)));
+  const edPubKey = Buffer.from(h2b(keyPair(privKey).publicKey()));
+  const balance = await outcome(tools.getBalance(new URL(rhoid.pkURI(edPubKey))));
 
   console.log({ ethAddr, balance, label });
 }
 
-async function publish(label, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
+async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
   const privKey = await loadKey(keyStore, label, [], { getpass });
   const secPubKey = privateToPublic(privKey); // eth style secp256k1
+  const ethAddr = `0x${b2h(pubToAddress(secPubKey))}`;
   const edkey = keyPair(privKey); // ed25519 per nacl
 
   const nonce = clock().valueOf(); // ISSUE: cli arg? persist?
 
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
 
-  const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
-  const sig = edkey.signBytes(toSign);
+  let uri;
+  if (isClaimed) {
+    const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
+    const sig = edkey.signBytes(toSign);
 
-  const uri = await outcome(tools.publish(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
-  const ethAddr = `0x${b2h(pubToAddress(secPubKey))}`;
+    uri = await outcome(tools.publish(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
+  } else {
+    const created = await outcome(tools.createWallet('secp256k1', b2h(secPubKey), nonce));
+    if (!created.toSign) { throw new Error('expected toSign'); }
+    if (!created.uri) { throw new Error('expected uri'); }
+    const sig = edkey.signBytes(created.toSign);
+    // ISSUE: try WalletCheck access 1st to avoid clobbering.
+    // ISSUE: check target URI to avoid clobbering
+    uri = await outcome(tools.publishRegistered(
+      created.uri, h2b(edkey.publicKey()), sig, nonce,
+    ));
+  }
   console.log({ uri: String(uri), ethAddr, label });
 }
 
@@ -459,7 +476,12 @@ type WebSendResult<T> = { "=": T } | { "!": string }
 
 // waterken JSON convensions http://waterken.sourceforge.net/web_send/
 async function outcome/*::<T>*/(x /*:Promise<mixed>*/) /*: Promise<T>*/ {
-  const o = await x;
+  let o;
+  try {
+    o = await x;
+  } catch (err) {
+    throw new ExitStatus(`out of phlogistons? ${err.message}`);
+  }
   if (o === null || typeof o !== 'object') { throw new Error('bad reply'); }
   if ('!' in o) { throw new ExitStatus(o['!']); }
   // $FlowFixMe validate mixed -> T

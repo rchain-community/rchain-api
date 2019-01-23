@@ -3,18 +3,28 @@
  */
 new
   Tools,
-  WalletCheckCh,
+  WalletCheckCh, sysCh, bwCh,
 //  export,          // ISSUE: rholang extension
   export(`export:`), // ISSUE: rholang extension
   trace(`rho:io:stderr`),
   lookup(`rho:registry:lookup`),
+  insertArbitrary(`rho:registry:insertArbitrary`),
   insertSigned(`rho:registry:insertSigned:ed25519`)
 in {
   export!(*Tools) | trace!("Tools OK") |
 
   // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
   lookup!(`rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt`, *WalletCheckCh) |
-  for(@(_, *WalletCheck) <- WalletCheckCh) {
+  // SystemInstancesRegistry.rho.
+  lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
+  // BasicWallet.rho
+  lookup!(`rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms`, *bwCh) |
+
+  for(
+    @(_, *WalletCheck) <- WalletCheckCh;
+    @(_, *SystemInstancesRegistry) <- sysCh;
+    @(_, *BasicWallet) <- bwCh
+  ) {
 
     contract Tools(@"claim",
       @{ethAddr /\ String},  // 0x...
@@ -30,14 +40,16 @@ in {
       }
     } |
 
-    contract Tools(@"getBalance", @{pubKey /\ String}, return) = {
+    contract Tools(@"getBalance", @{uri /\ Uri}, return) = {
       trace!({"getBalance": *return, "trace": *trace}) |
       new wCh, bCh in {
-        WalletCheck!("access", pubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-          if(ok == false) { return!({"!": *maybeWallet}) }
-          else {
-            maybeWallet!("getBalance", *bCh) | for(@balance <- bCh) {
-              return!({"=": balance})
+        lookup!(uri, *wCh) | for(@found <- wCh) {
+          match (found) {
+            Nil => {return!({"!": "nothing registered at that URI"}) }
+            (_, *wallet) => {
+              wallet!("getBalance", *bCh) | for(@balance <- bCh) {
+                return!({"=": balance})
+              }
             }
           }
         }
@@ -58,7 +70,7 @@ in {
       }
     } |
 
-    contract Tools(@"publish",
+    contract Tools(@"publishClaimed",
       @{secPubKey /\ String},   // eth style secp256k1 public key for WalletCheck access
       @{edPubKey /\ ByteArray}, // ed25519 public key for InsertSigned. Go figure.
       @{sig /\ ByteArray},      // ed25519 sig over (nonce, *wallet)
@@ -71,6 +83,61 @@ in {
           if(ok == false) { trace!({"problem": *maybeWallet}) | return!({"!": *maybeWallet}) }
           else {
             insertSigned!(edPubKey, (nonce, *maybeWallet), sig, *rCh) |
+            for (@uri <- rCh) {
+              if(uri == Nil) { return!({"!": "insertSigned failed; bad signature?"}) }
+              else { return!({"=": uri}) }
+            }
+          }
+        }
+      }
+    } |
+
+    contract Tools(@"createWallet",
+      @{algorithm /\ String},   // ed25519 or secp256k1
+      @{pk /\ String},          // wallet pk using algorithm above
+      @{nonce /\ Int},          //
+      return
+    ) = {
+      new revCh, purseCh, wCh in {
+        SystemInstancesRegistry!("lookup", "rev", *revCh) | for(rev <- revCh) {
+          trace!({"rev": *rev}) |
+          rev!("makePurse", *revCh) | for (@emptyPurse <- revCh) {
+            trace!({"empty purse": emptyPurse}) |
+            BasicWallet!(emptyPurse, algorithm, pk, *wCh) | for(@maybeWallet <- wCh) {
+              trace!({"maybeWallet": maybeWallet}) |
+              match (maybeWallet) {
+                [] => { return!({"!": "no such algorithm: " ++ algorithm}) }
+                [wallet] => {
+                  new uriCh in {
+                    insertArbitrary!(wallet, *uriCh) | for(@uri <- uriCh) {
+                      trace!({"insert URI": uri}) |
+                      if (uri == Nil) { return!({"!": "failed to register wallet"}) }
+                      else {
+                        return!({"=": { "uri": uri, "toSign": (nonce, wallet).toByteArray()
+                        }})
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    } |
+
+    contract Tools(@"publishRegistered",
+      @{uri /\ Uri},            // where to find Wallet (from insertArbitrary)
+      @{edPubKey /\ ByteArray}, // ed25519 public key for InsertSigned.
+      @{sig /\ ByteArray},      // ed25519 sig over (nonce, *wallet)
+      @{nonce /\ Int},
+      return
+    ) = {
+      new wCh, rCh in {
+        lookup!(uri, *wCh) | for (@wallet <- wCh) {
+          if (wallet == Nil) { return!({"!": "lookup failed"}) }
+          else {
+            insertSigned!(edPubKey, (nonce, wallet), sig, *rCh) |
             for (@uri <- rCh) {
               if(uri == Nil) { return!({"!": "insertSigned failed; bad signature?"}) }
               else { return!({"=": uri}) }
