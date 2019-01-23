@@ -3,12 +3,83 @@
  */
 new
   Tools,
+  WalletCheckCh,
 //  export,          // ISSUE: rholang extension
   export(`export:`), // ISSUE: rholang extension
   trace(`rho:io:stderr`),
-  lookup(`rho:registry:lookup`)
+  lookup(`rho:registry:lookup`),
+  insertSigned(`rho:registry:insertSigned:ed25519`)
 in {
   export!(*Tools) | trace!("Tools OK") |
+
+  // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
+  lookup!(`rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt`, *WalletCheckCh) |
+  for(@(_, *WalletCheck) <- WalletCheckCh) {
+
+    contract Tools(@"claim",
+      @{ethAddr /\ String},  // 0x...
+      @{pubKey /\ String},   // secp256k1 public key in hex
+      @{sigHex /\ String},   // DER encoded secp256k1 sig in hex
+      return
+    ) = {
+      new statusOut in {
+        WalletCheck!("claim", ethAddr, pubKey, sigHex, *statusOut) | for (@(ok, msg) <- statusOut) {
+          if(ok) { return!({"=": pubKey}) }
+          else { return!({"!": msg}) }
+        }
+      }
+    } |
+
+    contract Tools(@"getBalance", @{pubKey /\ String}, return) = {
+      trace!({"getBalance": *return, "trace": *trace}) |
+      new wCh, bCh in {
+        WalletCheck!("access", pubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+          if(ok == false) { return!({"!": *maybeWallet}) }
+          else {
+            maybeWallet!("getBalance", *bCh) | for(@balance <- bCh) {
+              return!({"=": balance})
+            }
+          }
+        }
+      }
+    } |
+
+    contract Tools(@"prepareToPublish",
+      @{pubKey /\ String},  // ed25519 public key
+      @{nonce /\ Int},
+      return
+    ) = {
+      new rCh, wCh in {
+        WalletCheck!("access", pubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+          trace!({"access": *maybeWallet}) |
+          if(ok == false) { trace!({"problem": *maybeWallet}) | return!({"!": *maybeWallet}) }
+          else { return!({"=": (nonce, *maybeWallet).toByteArray()}) }
+        }
+      }
+    } |
+
+    contract Tools(@"publish",
+      @{secPubKey /\ String},   // eth style secp256k1 public key for WalletCheck access
+      @{edPubKey /\ ByteArray}, // ed25519 public key for InsertSigned. Go figure.
+      @{sig /\ ByteArray},      // ed25519 sig over (nonce, *wallet)
+      @{nonce /\ Int},
+      return
+    ) = {
+      new rCh, wCh in {
+        WalletCheck!("access", secPubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
+          trace!({"access": *maybeWallet}) |
+          if(ok == false) { trace!({"problem": *maybeWallet}) | return!({"!": *maybeWallet}) }
+          else {
+            insertSigned!(edPubKey, (nonce, *maybeWallet), sig, *rCh) |
+            for (@uri <- rCh) {
+              if(uri == Nil) { return!({"!": "insertSigned failed; bad signature?"}) }
+              else { return!({"=": uri}) }
+            }
+          }
+        }
+      }
+    }
+  } |
 
   contract Tools(@"pay",
     @{fromAddr /\ Uri}, // registry address of BasicWallet
@@ -59,4 +130,3 @@ in {
     }
   }
 }
-

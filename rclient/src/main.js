@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 /** rclient -- CLI interface to gRPC API
  */
-
 // @flow
-
 /*global require, module, Buffer */
+
 const assert = require('assert');
 const read = require('read');
 const { URL } = require('url');
@@ -12,14 +11,11 @@ const { URL } = require('url');
 const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
-  RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h, sendCall,
+  RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h,
   keccak256Hash, keyPair, makeProxy, blake2b256Hash,
 } = require('rchain-api');
+const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 
-const { rhol } = RHOCore;
-const { GPrivate } = require('../../protobuf/RhoTypes.js');
-
-const { loadRhoModules, prettyPrivate } = require('../../src/loading'); // ISSUE: path?
 const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
@@ -27,14 +23,13 @@ const { link } = require('./assets');
 const rhoid = require('./rhoid');
 
 const usage = `
-
 Usage:
-  rclient [options] keygen --label=LABEL
-  rclient [options] import --label=LABEL JSONFILE
-  rclient [options] info --label=LABEL
-  rclient [options] claim --label=LABEL
-  rclient [options] balance --label=LABEL
-  rclient [options] publish --label=LABEL
+  rclient [options] keygen LABEL
+  rclient [options] import LABEL JSONFILE
+  rclient [options] info LABEL
+  rclient [options] claim LABEL
+  rclient [options] balance LABEL
+  rclient [options] publish LABEL
   rclient [options] send --from=LABEL --to=URI AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
@@ -119,39 +114,41 @@ async function main(
     );
   }
 
-  const where = { host: cli['--host'], port: cli['--port'] };
+  const where = { host: cli['--host'], port: argInt('--port') };
   const rnode = RNode(grpc, where);
 
   const priceInfo = () => ({
     ...defaultDeployInfo,
-    phloPrice: parseInt(cli['--phlo-price'], 10),
-    phloLimit: parseInt(cli['--phlo-limit'], 10),
+    phloPrice: argInt('--phlo-price'),
+    phloLimit: argInt('--phlo-limit'),
+  });
+
+  const io = () => ({
+    getpass,
+    rnode,
+    clock,
+    keyStore: argWr('--keystore'),
+    registry: FileStorage(argWr('--registry')),
   });
 
   if (cli.keygen) {
-    await keygen(argWr('--keystore'), cli['--label'], { getpass, randomBytes, uuidv4 });
+    await keygen(argWr('--keystore'), cli.LABEL, { getpass, randomBytes, uuidv4 });
   } else if (cli.import) {
-    await importKey(argWr('--keystore'), cli['--label'], argRd('JSONFILE'), { getpass });
+    await importKey(argWr('--keystore'), cli.LABEL, argRd('JSONFILE'), { getpass });
   } else if (cli.info) {
     // ISSUE: store un-encrypted public key? "compromises privacy" per Web3 docs.
 
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
-    await showPublic(argWr('--keystore'), cli['--label'], { getpass });
+    await showPublic(argWr('--keystore'), cli.LABEL, { getpass });
   } else if (cli.claim) {
-    await claimAccount(argWr('--keystore'), cli['--label'], priceInfo(), { getpass, rnode, clock });
+    await claimAccount(cli.LABEL, priceInfo(), io());
   } else if (cli.balance) {
-    await getBalance(cli['--label'], priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+    await getBalance(cli.LABEL, priceInfo(), io());
   } else if (cli.publish) {
-    await publish(cli['--label'], priceInfo(), { keyStore: argWr('--keystore'), getpass, rnode, clock });
+    await publish(cli.LABEL, priceInfo(), io());
   } else if (cli.send) {
-    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), {
-      getpass,
-      rnode,
-      clock,
-      keyStore: argWr('--keystore'),
-      registry: FileStorage(argWr('--registry')),
-    });
+    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), io());
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     await signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
@@ -208,6 +205,14 @@ function collect(props /*: [string, ModuleInfo][]*/) /*{ [string]: ModuleInfo } 
   return props.reduce((acc, [s, m]) => ({ ...acc, [s]: m }), {});
 }
 
+async function ioOrExit/*::<T>*/(p /*: Promise<T>*/) /*: Promise<T>*/ {
+  try {
+    return await p;
+  } catch (err) {
+    throw new ExitStatus(err.message);
+  }
+}
+
 
 async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
   const store = FileStorage(keyStore);
@@ -246,33 +251,29 @@ async function importKey(keyStore, label, jsonKeyfile, { getpass }) {
     delete item.Crypto;
   }
   if (item.crypto.kdf !== 'scrypt') {
-    console.log('unsupported kdf:', item.crypto.kdf);
-    return;
+    throw new ExitStatus(`unsupported kdf: ${item.crypto.kdf}`);
   }
   if (item.crypto.cipher !== 'aes-128-ctr') {
-    console.log('unsupported cipher:', item.crypto.cipher);
-    return;
+    throw new ExitStatus(`unsupported cipher: ${item.crypto.cipher}`);
   }
 
-  // ISSUE: just check MAC?
   try {
-    secretStorage.decrypt(Buffer.from(password), item);
-  } catch (oops) {
-    console.error('cannot load; bad password?');
-    return;
+    const privKey = secretStorage.decrypt(Buffer.from(password), item);
+    const pubKey = privateToPublic(privKey);
+    const ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
+    await store.set({ [label]: item });
+    console.log({ label, ethAddr, keyStore: keyStore.readOnly().name() });
+  } catch (err) {
+    throw new ExitStatus(`cannot import key: ${err.message}`);
   }
-
-  await store.set({ [label]: item });
 }
 
 
 async function loadKey(keyStore, label, notice, { getpass }) /*: Promise<Buffer> */{
   const store = FileStorage(keyStore);
 
-  const keys = await store.get(label);
-  if (!keys[label]) {
-    throw new Error(`No such key: ${label}.`);
-  }
+  const keys = await ioOrExit(store.get(label));
+  if (!keys[label]) { throw new ExitStatus(`No such key: ${label}.`); }
 
   // ISSUE: logging is not just FYI here;
   // should be passed as an explicit capability.
@@ -348,10 +349,10 @@ function pubToAddress(pubKey) {
 }
 
 
-// https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
-const WalletCheck = new URL('rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt');
+const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
+const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
-async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock }) {
+async function claimAccount(label, priceInfo, { keyStore, registry, getpass, rnode, clock }) {
   let privKey;
   let pubKey;
   let ethAddr;
@@ -362,52 +363,25 @@ async function claimAccount(keyStore, label, priceInfo, { getpass, rnode, clock 
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
     console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (oops) {
-    console.error('cannot load key');
-    console.error(oops.message);
-    return;
+  } catch (err) {
+    throw new ExitStatus(`cannot load public key: ${err.message}`);
   }
 
-  // ISSUE: refactor to use fixArgs to avoid round trip for previewPrivateIds
-  const tClaim = clock().valueOf();
-  const [statusId] = await rnode.previewPrivateIds({ timestamp: tClaim, user }, 1);
-  const statusOut /*: IPar */= { ids: [{ id: statusId }] };
-  console.log({ statusOut: prettyPrivate(statusOut) });
-  const hash = Buffer.from(keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(
-    [b2h(pubKey), GPrivate.create({ id: statusId })],
-  ))));
-  const sigObj = secp256k1.sign(hash, privKey);
-  const sigDER = secp256k1.signatureExport(sigObj.signature);
+  function fixArgs(args, [statusOut]) {
+    console.log({ args, statusOut });
+    const out = [...args];
+    out[2] = sigDERHex(secp256k1.sign(rhoBlakeHash([b2h(pubKey), statusOut]), privKey));
+    return out;
+  }
+  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs });
+  const uri = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
 
-  const status = await sendCall(
-    { target: WalletCheck, method: 'claim', args: [ethAddr, b2h(pubKey), b2h(sigDER)/*, statusOut */] },
-    { ...priceInfo, user, timestamp: tClaim },
-    { rnode, returnCh: statusOut, insertSigned: true },
-  );
-  console.log({ status });
+  console.log({ ethAddr, uri });
 }
 
 
-function RNode2({ rnode }) {
-  // ISSUE: push run() down into the API somewhere?
-  async function run(deployInfo, timestamp, term) {
-    console.log('run:', { timestamp });
-    const [returnChan] = await rnode.previewPrivateChannels({ timestamp, user }, 1);
-    console.log({ returnChan: prettyPrivate(returnChan) });
-    console.log(term);
-    await rnode.doDeploy({ ...deployInfo, timestamp, user, term }, true);
-    const blockResults = await rnode.listenForDataAtName(returnChan);
-    if (!(blockResults.length > 0)) { throw new Error('no data at return channel'); }
-    const answerPar = blockResults[0].postBlockData[0];
-    // console.log('answerPar', JSON.stringify(answerPar, null, 2));
-    return RHOCore.toJSData(answerPar);
-  }
-
-  return Object.freeze({ run });
-}
-
-
-async function getBalance(label, priceInfo, { keyStore, getpass, rnode, clock }) {
+async function getBalance(label, priceInfo, { keyStore, registry, getpass, rnode, clock }) {
   let privKey;
   let pubKey;
   let ethAddr;
@@ -418,75 +392,38 @@ async function getBalance(label, priceInfo, { keyStore, getpass, rnode, clock })
     // ISSUE: logging is not just FYI here;
     // should be passed as an explicit capability.
     console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (oops) {
-    console.error('cannot load key');
-    console.error(oops.message);
-    return;
+  } catch (err) {
+    throw new ExitStatus(`cannot load key: ${err.message}`);
   }
 
-  const rnode2 = RNode2({ rnode }); // ISSUE: add to rnodeAPI.js?
+  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
+  const balance = await outcome(tools.getBalance(b2h(pubKey)));
 
-  const balance = await rnode2.run(priceInfo, clock().valueOf(), rhol`
-  new return, wCh, rlCh,
-  trace(\`rho:io:stderr\`), lookup(\`rho:registry:lookup\`) in {
-    trace!({"getBalance": *return, "trace": *trace}) |
-    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
-      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-        if(ok) { maybeWallet!("getBalance", *return) }
-        else{ trace!({"problem": *maybeWallet}) | return!(Nil) }
-      }
-    }
-  }`);
-  console.log({ balance });
+  console.log({ ethAddr, balance, label });
 }
 
-async function publish(label, priceInfo, { keyStore, rnode, clock, getpass }) {
+async function publish(label, priceInfo, { keyStore, registry, rnode, clock, getpass }) {
   const privKey = await loadKey(keyStore, label, [], { getpass });
-  const pubKey = privateToPublic(privKey); // eth style secp256k1
+  const secPubKey = privateToPublic(privKey); // eth style secp256k1
+  const edkey = keyPair(privKey); // ed25519 per nacl
 
   const nonce = clock().valueOf(); // ISSUE: cli arg? persist?
 
-  const rnode2 = RNode2({ rnode }); // ISSUE: add to rnodeAPI.js?
+  const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
 
-  const toSign = await rnode2.run(priceInfo, clock().valueOf(), rhol`
-  new return, rlCh, wCh,
-  trace(\`rho:io:stderr\`), lookup(\`rho:registry:lookup\`)
-  in {
-    trace!({"publish pt1": *return}) |
-    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
-      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-        if(ok) { return!((${nonce}, *maybeWallet).toByteArray()) }
-        else { trace!({"problem": *maybeWallet}) | return!(Nil) }
-      }
-    }
-  }`);
-  if (toSign === null) { throw new Error(`no such wallet: ${b2h(pubKey)}`); }
-  if (!(toSign instanceof Uint8Array)) { throw new Error('expected ByteArray'); }
-  console.log({ toSign: Buffer.from(toSign).toString('hex') });
-
-  const edkey = keyPair(privKey); // ed25519 per nacl
+  const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
   const sig = edkey.signBytes(toSign);
 
-  // ISSUE: move rholang code to .rho file
-  const uri = await rnode2.run(priceInfo, clock().valueOf(), rhol`
-  new return, trace(\`rho:io:stderr\`), rlCh, wCh,
-  insertSigned(\`rho:registry:insertSigned:ed25519\`), lookup(\`rho:registry:lookup\`)  in {
-    trace!({"publish pt2": *return}) |
-    lookup!(${WalletCheck}, *rlCh) | for (@(_, *WalletCheck) <- rlCh) {
-      WalletCheck!("access", ${b2h(pubKey)}, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-        trace!({"access ok?": ok, "maybeWallet": *maybeWallet}) |
-        if(ok) {
-          trace!({"access": *maybeWallet}) |
-          insertSigned!(${edkey.publicKey()}.hexToBytes(), (${nonce}, *maybeWallet), ${sig}, *return)
-        } else { trace!({"problem": *maybeWallet}) | return!(Nil) }
-      }
-    }
-  }`);
-  console.log({ uri: String(uri) });
+  const uri = await outcome(tools.publish(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
+  const ethAddr = `0x${b2h(pubToAddress(secPubKey))}`;
+  console.log({ uri: String(uri), ethAddr, label });
 }
 
 
 async function sendPayment(
+  // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
   amount, fromLabel, toAddr, paymentInfo,
   { keyStore, registry, getpass, rnode, clock },
 ) {
@@ -501,24 +438,17 @@ async function sendPayment(
 
   const myWallet = makeProxy(fromAddr, paymentInfo, { rnode, clock, insertSigned: true });
   const oldNonce = await myWallet.getNonce();
-  console.log({ oldNonce });
   if (typeof oldNonce !== 'number') { throw new Error('expected number'); }
   const nonce = oldNonce + 1;
 
-  const predeclare = ['viaPurse'];
-  const rhoHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
-  const sigArgs = dest => secp256k1.sign(rhoHash([nonce, amount, dest]), privKey);
-  const sigFmt = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
-  function fixArgs(args, chanArgs) {
-    const [dest] = chanArgs;
+  function fixArgs(args, [dest, ..._]) {
     const out = [...args];
-    out[4] = sigFmt(sigArgs(dest));
+    out[4] = sigDERHex(secp256k1.sign(rhoBlakeHash([nonce, amount, dest]), privKey));
     return out;
   }
+  const tools = makeProxy(toolsMod.URI, paymentInfo, { rnode, clock, fixArgs, predeclare: ['via'] });
 
-  const tools = makeProxy(toolsMod.URI, paymentInfo, { rnode, clock, fixArgs, predeclare });
-  const reply = await tools.pay(fromAddr, toAddr, amount, nonce, 'sig goes here');
-  return outcome(reply);
+  return outcome(tools.pay(fromAddr, toAddr, amount, nonce, 'sig goes here'));
 }
 
 
@@ -530,7 +460,7 @@ type WebSendResult<T> = { "=": T } | { "!": string }
 async function outcome/*::<T>*/(x /*:Promise<mixed>*/) /*: Promise<T>*/ {
   const o = await x;
   if (o === null || typeof o !== 'object') { throw new Error('bad reply'); }
-  if ('!' in o) { throw new Error(o['!']); }
+  if ('!' in o) { throw new ExitStatus(o['!']); }
   // $FlowFixMe validate mixed -> T
   return o['='];
 }
@@ -539,7 +469,7 @@ async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
   const srcHash = simplifiedKeccak256Hash(src);
   const mods = await registry.get(srcHash);
   const mod = mods[srcHash];
-  if (!mod) { throw new Error(`rholang module not loaded: ${name}`); }
+  if (!mod) { throw new ExitStatus(`rholang module not loaded: ${name}`); }
   // $FlowFixMe validate mixed -> ModuleInfo
   return mod;
 }
