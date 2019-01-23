@@ -97,22 +97,21 @@ async function sendCall(
   let returnChan/*: IPar */;
   let chanArgs /*: GPrivate[] */= [];
   if (opts.returnCh) {
+    if (opts.fixArgs) { throw new Error('fixArgs not supported with returnCh'); }
     returnChan = opts.returnCh;
-  } else if (opts.predeclare && opts.predeclare.length > 0) {
+  } else {
     const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
-      deployData, 1 + opts.predeclare.length,
+      deployData, 1 + (opts.predeclare || []).length,
     );
     console.log({ chans: chans.map(b => b.toString('hex')) });
 
-    const [returnId, ...more] = chans;
+    const [returnId, ..._] = chans;
     const idToPar = id => ({ ids: [{ id }] });
     returnChan = idToPar(returnId);
     // console.log({ returnChan: JSON.stringify(returnChan) });
 
     const idToGPrivate = id => GPrivate.create({ id });
-    chanArgs = more.map(idToGPrivate);
-  } else {
-    [returnChan] = await rnode.previewPrivateChannels(deployData, 1);
+    chanArgs = chans.reverse().map(idToGPrivate);
   }
 
   const term = callSource(
