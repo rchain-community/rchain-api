@@ -12,7 +12,8 @@ FLOWGEN=flowgen
 # REV=master
 REV=dev
 
-PROTO_SRC=CasperMessage.proto RhoTypes.proto Either.proto google/protobuf/empty.proto
+GOOG=google/protobuf/empty.proto google/protobuf/any.proto
+PROTO_SRC=CasperMessage.proto RhoTypes.proto Either.proto $(GOOG)
 
 download: $(PROTO_SRC)
 
@@ -48,19 +49,43 @@ google/protobuf/empty.proto:
 	mkdir -p google/protobuf
 	$(WGET) -O $@ $(RAW_GH)/google/protobuf/v3.5.1/src/google/protobuf/empty.proto
 
-flowtyped: interfaces/RhoTypes.js
+google/protobuf/any.proto:
+	mkdir -p google/protobuf
+	$(WGET) -O $@ $(RAW_GH)/google/protobuf/v3.5.1/src/google/protobuf/any.proto
+
+flowtyped: interfaces/CasperMessage.js interfaces/RhoTypes.js interfaces/Either.js
+
+CasperMessage.d.ts: CasperMessage.js
+	$(PBTS) -o $@ --no-comments $<
 
 RhoTypes.d.ts: RhoTypes.js
 	$(PBTS) -o $@ --no-comments $<
 
+Either.d.ts: Either.js
+	$(PBTS) -o $@ --no-comments $<
+
+
+interfaces/CasperMessage.js: CasperMessage.d.ts
+	mkdir -p interfaces
+	$(FLOWGEN) -o $@ $<
+
 interfaces/RhoTypes.js: RhoTypes.d.ts
 	mkdir -p interfaces
 	$(FLOWGEN) -o $@ $<
-	$(PERL) -i.bak -pe 's/declare interface /interface /; s/ mixins / implements /' $@
 
+interfaces/Either.js: Either.d.ts
+	mkdir -p interfaces
+	$(FLOWGEN) -o $@ $<
+
+
+CasperMessage.js:
+	$(PBJS) -t static-module -w commonjs --keep-case -o $@ CasperMessage.proto
 
 RhoTypes.js:
 	$(PBJS) -t static-module -w commonjs --keep-case -o $@ RhoTypes.proto
+
+Either.js:
+	$(PBJS) -t static-module -w commonjs --keep-case -o $@ Either.proto
 
 clean:
 	rm -rf messages.json messages.d.ts
