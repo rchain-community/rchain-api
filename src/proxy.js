@@ -6,7 +6,7 @@ const { unforgeableWithId } = require('./loading');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
 
 /*::
-import type { IRNode, DeployData } from './rnodeAPI';
+import type { IRNode, IDeployData } from './rnodeAPI';
 import { URL } from 'url';
 
 type Message = {
@@ -62,7 +62,7 @@ interface ProxyOpts extends SendOpts {
 exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: URL */,
-  deployData /*: DeployData */,
+  deployData /*: $ReadOnly<IDeployData> */,
   opts /*: ProxyOpts */,
 ) /*: Receiver */{
   const { clock } = opts;
@@ -90,7 +90,7 @@ function makeProxy(
 exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
-  deployData /*: DeployData */,
+  deployData /*: $ReadOnly<IDeployData> */,
   opts /*: SendOpts */,
 ) {
   const { rnode } = opts;

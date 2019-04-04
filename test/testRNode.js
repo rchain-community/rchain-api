@@ -73,14 +73,14 @@ function netTests({ grpc, clock, rng }) {
       const timestamp = clock().valueOf();
 
       localNode().doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
-        test.equal(results, 'Success!');
+        test.equal(results.slice(0, 'Success'.length), 'Success');
         test.done();
       });
     },
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
       localNode().getBlock(blockHash).catch((err) => {
-        test.equal(err.message, 'ERROR: Could not locate a block by hash : thisshouldbreak');
+        test.deepEqual(err, ['Error: Failure to find block with hash thisshouldbreak']);
         test.done();
       });
     },
@@ -113,7 +113,7 @@ function runAndListen(
 ) {
   // console.log("run:", { term, returnChannel });
   return node.doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
-    if (test) { test.equal(results, 'Success!'); }
+    if (test) { test.equal(results.slice(0, 'Success'.length), 'Success'); }
 
     // Get the generated result from the channel
     return node.listenForDataAtPublicName(returnChannel);
