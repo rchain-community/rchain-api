@@ -12,7 +12,7 @@ FLOWGEN=flowgen
 # REV=master
 REV=dev
 
-PROTO_SRC=CasperMessage.proto RhoTypes.proto google/protobuf/empty.proto
+PROTO_SRC=CasperMessage.proto RhoTypes.proto Either.proto google/protobuf/empty.proto
 
 download: $(PROTO_SRC)
 
@@ -39,6 +39,9 @@ CasperMessage.proto:
 
 RhoTypes.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/RhoTypes.proto
+
+Either.proto:
+	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/Either.proto
 
 
 google/protobuf/empty.proto:
