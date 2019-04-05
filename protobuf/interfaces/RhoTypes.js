@@ -284,7 +284,7 @@ declare export class Var implements IVar {
     [k: string]: any
   };
 }
-declare var Var: typeof npm$namespace$Var;
+//??? declare var Var: typeof npm$namespace$Var;
 
 declare var npm$namespace$Var: {
   WildcardMsg: typeof Var$WildcardMsg

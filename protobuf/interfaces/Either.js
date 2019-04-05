@@ -157,6 +157,7 @@ declare var npm$namespace$google: {
 };
 
 declare var npm$namespace$google$protobuf: {
+  Empty: typeof google$protobuf$Empty,
   Any: typeof google$protobuf$Any
 };
 declare interface google$protobuf$IAny {
