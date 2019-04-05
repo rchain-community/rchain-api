@@ -46,6 +46,7 @@ type EndPoint = { host: string, port: number };
 export type IRNode = $Call<typeof RNode, grpcT, EndPoint>;
 
 export type IDeployData = coop$rchain$casper$protocol$IDeployData;
+type DeployService = coop$rchain$casper$protocol$DeployService;
 
 type Decoder<T> = { decode(reader: Uint8Array): T };
 */
@@ -67,7 +68,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   const proto = grpc.loadPackageDefinition(packageDefinition);
   const casper = proto.coop.rchain.casper.protocol;
 
-  const client /*: coop$rchain$casper$protocol$DeployService */ = new casper.DeployService(
+  const client /*: DeployService */ = new casper.DeployService(
     `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
   );
 
