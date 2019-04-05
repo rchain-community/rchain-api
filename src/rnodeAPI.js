@@ -161,7 +161,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     return eitherSync(cls, x);
   }
 
-  async function eitherSync/*::<T>*/(cls /*: Decoder<T>*/, x /*: IEither*/) /*: T*/{
+  function eitherSync/*::<T>*/(cls /*: Decoder<T>*/, x /*: IEither*/) /*: T*/{
     if (x.success) {
       /* $FlowFixMe$ ISSUE: Either.proto fibs a bit*/
       return cls.decode(x.success.response.value);
