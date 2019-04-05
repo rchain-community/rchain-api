@@ -2,13 +2,15 @@
  */
 /* global require, module, Buffer */
 
+const ttest = require('tape');
+
 const { RNode, RHOCore, b2h } = require('../index');
 const testData = require('./RHOCoreSuite.json');
 const { runAndListen } = require('./testRNode');
 
 const { rhol } = RHOCore;
 
-function integrationTest({ Suite, endpoint, grpc, clock, rng }) {
+function integrationTest({ endpoint, grpc, clock, rng }) {
   console.log({ endpoint });
   const node = RNode(grpc, endpoint);
 
@@ -25,22 +27,23 @@ function integrationTest({ Suite, endpoint, grpc, clock, rng }) {
         @${returnChannel}!({${item.data}}.toByteArray())
       `;
 
-      test.log({ term });
+      test.comment({ term });
       runAndListen(term, returnChannel, clock().valueOf(), node)
         .then((par) => {
           const bytes = par.exprs[0].g_byte_array;
-          test.log({ actual: b2h(bytes), expected: item.hex });
+          test.comment({ actual: b2h(bytes), expected: item.hex });
           test.equal(b2h(bytes), item.hex);
-          test.done();
+          test.end();
         })
         .catch((oops) => {
           test.fail(oops.message);
-          test.done();
+          test.end();
         });
     };
   }
 
-  Suite.run(mapValues(testData, byteArrayTest));
+  Object.entries(mapValues(testData, byteArrayTest))
+    .forEach(([desc, fn]) => ttest(desc, fn));
 }
 
 
@@ -58,7 +61,6 @@ if (require.main === module) {
       rng: () => Math.random(),
       endpoint,
       grpc: require('grpc'),
-      Suite: require('testjs'),
     },
   );
 }

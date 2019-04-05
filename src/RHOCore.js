@@ -4,7 +4,7 @@
 const { URL } = require('url');
 
 // ISSUE: generated code isn't annotated. $FlowFixMe
-const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
+const { Par, GPrivate } = require('../protobuf/RhoTypes');
 
 // copied from signing.js to avoid circular imports
 const b2h = bytes => Buffer.from(bytes).toString('hex');
@@ -21,21 +21,12 @@ exports.fromJSData = fromJSData;
  * @memberof RHOCore
  */
 function fromJSData(data /*: mixed */) /* : IPar */ {
+  // ISSUE: why doesn't x instanceof GPrivate work???
+  const GP = GPrivate.fromObject({ id: 'dead' }).constructor;
+
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
 
   function recur(x) /*: IPar */{
-    if (x instanceof URL) {
-      return expr1({ g_uri: x.href });
-    }
-    if (x instanceof GPrivate) {
-      return { ids: [x] };
-    }
-    if (x instanceof Uint8Array) {
-      return expr1({ g_byte_array: Buffer.from(x) });
-    }
-    if (x instanceof Buffer) {
-      return expr1({ g_byte_array: x });
-    }
     switch (typeof x) {
       case 'boolean':
         return expr1({ g_bool: x });
@@ -50,6 +41,18 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
         }
         if (Array.isArray(x)) {
           return toArry(x);
+        }
+        if (x instanceof URL) {
+          return expr1({ g_uri: x.href });
+        }
+        if (x instanceof GP) {
+          return { ids: [x] };
+        }
+        if (x instanceof Uint8Array) {
+          return expr1({ g_byte_array: Buffer.from(x) });
+        }
+        if (x instanceof Buffer) {
+          return expr1({ g_byte_array: x });
         }
         return keysValues(x);
       default:

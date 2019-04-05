@@ -8,11 +8,19 @@ refs:
 [2]: https://grpc.io/docs/tutorials/basic/node.html
 
 */
-/* global require, exports */
+/* global require, exports, Buffer */
 // @flow strict
 
 const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
+const {
+  BlockQueryResponse,
+  BlockInfoWithoutTuplespace,
+  DeployServiceResponse,
+  ListeningNameContinuationResponse,
+  ListeningNameDataResponse,
+  PrivateNamePreviewResponse,
+} = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 const RHOCore = require('./RHOCore');
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
@@ -34,28 +42,13 @@ type JSData = JsonExt<URL | GPrivate>;
  */
 
 /*::
-export type DeployData = {
-  user: Uint8Array ,
-  term: string,
-  timestamp: number,
-  sig: Uint8Array,
-  sigAlgorithm: string,
-  from: string,
-  phloPrice: number,
-  phloLimit: number,
-  nonce: number
-}
-type DeployDataInsecure = {
-  term: string,
-  timestamp: number,
-  from: string,
-  phloPrice: number,
-  phloLimit: number,
-  nonce: number
-}
-
 type EndPoint = { host: string, port: number };
 export type IRNode = $Call<typeof RNode, grpcT, EndPoint>;
+
+export type IDeployData = coop$rchain$casper$protocol$IDeployData;
+type DeployService = coop$rchain$casper$protocol$DeployService;
+
+type Decoder<T> = { decode(reader: Uint8Array): T };
 */
 
 
@@ -75,7 +68,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   const proto = grpc.loadPackageDefinition(packageDefinition);
   const casper = proto.coop.rchain.casper.protocol;
 
-  const client = new casper.DeployService(
+  const client /*: DeployService */ = new casper.DeployService(
     `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
   );
 
@@ -83,16 +76,19 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Ask rnode to compute ids of top level private names, given deploy parameters.
    *
    * @param d
-   * @param d.user - public key (of validating node?) as in doDeploy
+   * @param d.deployer - public key (of validating node?) as in doDeploy
    * @param d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
    */
-  function previewPrivateIds(
-    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
-    nameQty /*: number*/,
+  async function previewPrivateIds(
+    { deployer, timestamp } /*: $ReadOnly<{ deployer?: Uint8Array, timestamp?: number }> */,
+    nameQty /*: number */,
   ) /*: Promise<Buffer[]> */{
-    return send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f))
-      .then(response => response.ids);
+    const response = await either(
+      PrivateNamePreviewResponse,
+      send(f => client.previewPrivateNames({ deployer, timestamp, nameQty }, f)),
+    );
+    return response.ids;
   }
 
   const idToPar = id => ({ ids: [{ id }] });
@@ -117,22 +113,23 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Deploys a rholang term to a node
    * @memberof RNode
    * @param deployData a DeployData (cf CasperMessage.proto)
+   * @param deployData.deployer public key
    * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
-   * @param deployData.purseAddress where deployment price is paid from
    * @param deployData.timestamp millisecond timestamp
    *        e.g. new Date().valueOf()
-   * @param deployData.nonce
-   * @param deployData.phloLimit
-   * @param deployData.phloPrice
-   * UNTESTED:
    * @param deployData.sig signature of (hash(term) + timestamp) using private key
    * @param deployData.sigAlgorithm name of the algorithm used to sign
+   * @param deployData.phloLimit
+   * @param deployData.phloPrice
+   * @param deployData.validAfterBlockNumber ???ISSUE???
+   *
    * @param autoCreateBlock automatically create a new block after deploy transaction success
-   * @return A promise for a response message
+   * @return A promise for message
    *
    * ISSUE: import / generate DeployData static type
    */
-  function doDeploy(deployData /*: DeployDataInsecure*/, autoCreateBlock /*: boolean*/ = false) {
+  async function doDeploy(deployData /*: IDeployData */,
+    autoCreateBlock /*: boolean*/ = false) /*: Promise<string>*/ {
     // See also
     // casper/src/main/scala/coop/rchain/casper/util/comm/DeployRuntime.scala#L38
     // d        = DeployString().withTimestamp(timestamp).withTerm(code)
@@ -142,15 +139,11 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     if (!Number.isInteger(deployData.phloPrice)) {
       throw new Error('ERROR: DeployData structure requires "phloPrice" to be specified');
     }
-    return deployResponse(
-      send(deployNext => client.DoDeploy(deployData, deployNext)).then((response) => {
-        if (autoCreateBlock) {
-          return send(createBlockNext => client.createBlock({}, createBlockNext))
-            .then(() => response);
-        }
-        return response;
-      }),
-    );
+    let out = await either(DeployServiceResponse, send(f => client.doDeploy(deployData, f)));
+    if (autoCreateBlock) {
+      out = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+    }
+    return out.message;
   }
 
   /**
@@ -158,29 +151,22 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @memberof RNode
    * @return A promise for response message
    */
-  function createBlock() {
-    return deployResponse(send(next => client.createBlock({}, next)));
+  async function createBlock() /*: Promise<string>*/ {
+    const r = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+    return r.message;
   }
 
-  /**
-   * Adds block to local DAG and gossips block to peers on network
-   * @memberof RNode
-   * @param block The block to be added
-   * @return A promise for response message
-   */
-  function addBlock(block /*: mixed */) {
-    // ISSUE: Error: Illegal value for Message.Field ...
-    // .Expr.g_bool of type bool: object
-    // (proto3 field without field presence cannot be null)
-    // https://gist.github.com/dckc/e60f22866aa47938bcd06e39be351aea
-    return deployResponse(send(then => client.addBlock(block, then)));
+  async function either/*::<T>*/(cls /*: Decoder<T>*/, px /*: Promise<Either>*/) /*: Promise<T>*/{
+    const x = await px;
+    return eitherSync(cls, x);
   }
 
-  function deployResponse(responseP) {
-    return responseP.then((response) => {
-      if (!response.success) { throw new Error(response.message); }
-      return response.message;
-    });
+  function eitherSync/*::<T>*/(cls /*: Decoder<T>*/, x /*: IEither*/) /*: T*/{
+    if (x.success) {
+      /* $FlowFixMe$ ISSUE: Either.proto fibs a bit*/
+      return cls.decode(x.success.response.value);
+    }
+    throw (x.error || {}).messages;
   }
 
   /**
@@ -221,19 +207,19 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return: promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    */
-  function listenForDataAtName(par /*: IPar */, depth /*: number */ = 1) {
+  async function listenForDataAtName(
+    par /*: IPar */,
+    depth /*: number */ = 1,
+  ) /*: Promise<ListeningNameDataResponse> */ {
     const channelRequest = {
       depth,
       name: par,
     };
-    return send(then => client.listenForDataAtName(channelRequest, then))
-      .then((response) => {
-        if (response.status !== 'Success') {
-          throw new Error(response);
-        }
-        // ISSUE: make use of int32 length = 3;?
-        return response.blockResults;
-      });
+    const response = await either(
+      ListeningNameDataResponse,
+      send(f => client.listenForDataAtName(channelRequest, f)),
+    );
+    return response.blockResults;
   }
 
 
@@ -273,23 +259,20 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * JOINed set of names in the tuplespace
    * @memberof RNode
    * @param pars The names onwhich to listen
-   * @return promise for ContinuationsWithBlockInfo
+   * @return promise for DataWithBlockInfo
    * @throws Error if status is not Success
    */
-  function listenForContinuationAtName(pars /*: IPar[] */, depth /*: number */) {
+  async function listenForContinuationAtName(
+    pars /*: IPar[] */,
+    depth /*: number */,
+  ) /*: Promise<ListeningNameContinuationResponse> */{
     const channelRequest = {
       depth,
       names: pars,
     };
 
-    return send(then => client.listenForContinuationAtName(channelRequest, then))
-      .then((response) => {
-        if (response.status !== 'Success') {
-          throw new Error(response);
-        }
-
-        return response.blockResults;
-      });
+    const response = await send(f => client.listenForContinuationAtName(channelRequest, f));
+    return either(ListeningNameContinuationResponse, response);
   }
 
   /**
@@ -300,18 +283,15 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return BlockInfo structure that will include all metadata and also includes Tuplespace
    * @throws Error if the hash is blank or does not correspond to an existing block
    */
-  function getBlock(blockHash /*: string */) {
+  async function getBlock(blockHash /*: string */) {
     if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
     if (typeof blockHash !== 'string') { throw new Error('ERROR: blockHash must be a string value'); }
 
-    const blockQuery = { hash: blockHash };
-    return send(then => client.showBlock(blockQuery, then))
-      .then((blockWithTuplespace) => {
-        if (blockWithTuplespace.blockInfo === null) {
-          throw new Error(`ERROR: Could not locate a block by hash : ${blockHash}`);
-        }
-        return blockWithTuplespace;
-      });
+    const response = await either(
+      BlockQueryResponse,
+      send(f => client.showBlock({ hash: blockHash }, f)),
+    );
+    return response.blockInfo;
   }
 
   /**
@@ -326,21 +306,18 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   function getAllBlocks(blockDepth /*: number */ = 1) {
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
-
-    const blockQuery = { depth: blockDepth };
-    return sendThenReceiveStream(() => client.showBlocks(blockQuery))
-      .then((blockList) => {
-        if (blockList.length === 0) {
+    sendThenReceiveStream(client.showBlocks({ depth: blockDepth }))
+      .then((parts) => {
+        if (parts.length === 0) {
           throw new Error('ERROR: Failed to retrieve the requested blocks');
         }
-        return blockList;
+        return parts.map(x => eitherSync(BlockInfoWithoutTuplespace, x));
       });
   }
 
   return def({
     doDeploy,
     createBlock,
-    addBlock,
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,
@@ -381,12 +358,13 @@ function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
  * @param calling: a function of the form (cb) => o.m(..., cb)
  * @return A promise for the result passed to cb
  */
-function send/*:: <T>*/(calling) /*: Promise<T> */{
+function send/*:: <T>*/(calling /*: Callback<T> => mixed*/) /*: Promise<T> */{
   function executor(resolve, reject) {
     const callback = (err, result) => {
       if (err) {
         reject(err);
       }
+      if (typeof result === 'undefined') { throw new TypeError('must give err or result'); }
       resolve(result);
     };
 
@@ -395,6 +373,10 @@ function send/*:: <T>*/(calling) /*: Promise<T> */{
 
   return new Promise(executor);
 }
+/*::
+type Callback<T> = (error: Error | null, response?: T) => void;
+*/
+
 
 /*
  * Adapt streamResponse-style API using Promises.
@@ -402,17 +384,16 @@ function send/*:: <T>*/(calling) /*: Promise<T> */{
  * Instead of obj.method(...arg) and event handlers for 'data', 'end', 'error', and 'status',
  * use sendThenReceiveStream(() => obj.method(...arg)) and get a promise.
  *
- * @param callToExecute: a function of the form () => o.m(...)
+ * @param stream: emitter
  * @return A promise for the result of the received stream
 */
-function sendThenReceiveStream(callToExecute) {
+function sendThenReceiveStream(stream) {
   function executor(resolve, reject) {
     const results = [];
-    const call = callToExecute();
-    call.on('data', (dataChunk) => { results.push(dataChunk); });
-    call.on('end', () => { resolve(results); });
-    call.on('error', (e) => { reject(e); });
-    call.on('status', (status) => {
+    stream.on('data', (dataChunk) => { results.push(dataChunk); });
+    stream.on('end', () => { resolve(results); });
+    stream.on('error', (e) => { reject(e); });
+    stream.on('status', (status) => {
       if (status.code !== 0 && status.details !== '') {
         console.log(`INFO - Stream received status : ${status.details}`);
       }

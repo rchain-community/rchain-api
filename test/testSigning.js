@@ -1,4 +1,5 @@
-const Suite = require('testjs');
+/*global require*/
+const ttest = require('tape');
 const { keyPair, h2b, verify } = require('../index');
 
 function testSigning() {
@@ -20,7 +21,8 @@ function testSigning() {
     }),
   };
 
-  Suite.run(cases);
+  Object.entries(cases).forEach(([desc, fn]) => ttest(desc, fn));
+
   function check(info) {
     return (test) => {
       const pair1 = keyPair(h2b(info.seedHex));
@@ -32,7 +34,7 @@ function testSigning() {
       test.deepEqual(info.sigHex, sigHex);
 
       test.deepEqual(verify(message, h2b(info.sigHex), h2b(info.pubKeyHex)), true);
-      test.done();
+      test.end();
     };
   }
 }

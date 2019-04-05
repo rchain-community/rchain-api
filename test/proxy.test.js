@@ -1,11 +1,10 @@
-// jest conventions. hm.
-/* global test, expect */
 /* global require */
 const { URL } = require('url');
+const test = require('tape');
 const { callSource } = require('..');
 
-test('callSource with no args', () => {
-  expect(callSource({ target: new URL('x:'), method: 'm', args: [] }, {})).toEqual(`
+test('callSource with no args', (t) => {
+  t.equal(callSource({ target: new URL('x:'), method: 'm', args: [] }, {}), `
       new return, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
         trace!({"in remote call to": \`x:\`, "return": *return}) |
         lookup!(\`x:\`, *targetCh) |
@@ -15,13 +14,14 @@ test('callSource with no args', () => {
         }
       }
     `);
+  t.end();
 });
 
-test('callSource with 1 predeclared arg', () => {
-  expect(callSource(
+test('callSource with 1 predeclared arg', (t) => {
+  t.equal(callSource(
     { target: new URL('x:'), method: 'm', args: [] },
     { predeclare: ['dest'] },
-  )).toEqual(`
+  ), `
       new return, dest, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
         trace!({"in remote call to": \`x:\`, "return": *return}) |
         lookup!(\`x:\`, *targetCh) |
@@ -31,14 +31,15 @@ test('callSource with 1 predeclared arg', () => {
         }
       }
     `);
+  t.end();
 });
 
-test('callSource with BasicWallet signature', () => {
+test('callSource with BasicWallet signature', (t) => {
   function signArgs(args, _chanArgs) {
     return [...args.slice(0, -1), 'DEADBEEF'];
   }
 
-  expect(callSource({
+  t.equal(callSource({
     target: new URL('rho:id:tools'),
     method: 'pay',
     args: [10, 1, 'SIGTODO'],
@@ -46,7 +47,7 @@ test('callSource with BasicWallet signature', () => {
     chanArgs: [null],
     predeclare: ['dest'],
     fixArgs: signArgs,
-  })).toEqual(`
+  }), `
       new return, dest, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
         trace!({"in remote call to": \`rho:id:tools\`, "return": *return}) |
         lookup!(\`rho:id:tools\`, *targetCh) |
@@ -56,4 +57,5 @@ test('callSource with BasicWallet signature', () => {
         }
       }
     `);
+  t.end();
 });

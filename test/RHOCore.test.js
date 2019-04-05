@@ -2,25 +2,15 @@
 /* eslint-disable object-curly-newline */
 
 const { URL } = require('url');
+const ttest = require('tape');
 
-const { Par, GPrivate } = require('../protobuf/RhoTypes.js');
 const { RHOCore, h2b, keyPair } = require('../index');
+const { Par, GPrivate } = require('../protobuf/RhoTypes');
+
 const testData = require('./RHOCoreSuite.json');
 
 // IOU docs...
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
-
-Object.entries(testData).forEach(([name, item]) => {
-  test(name, () => {
-    expect(RHOCore.fromJSData(item.data)).toEqual(item.rho);
-    expect(RHOCore.toJSData(item.rho)).toEqual(item.data);
-    if (item.rholang != null) {
-      expect(RHOCore.toRholang(item.rho)).toEqual(item.rholang);
-    }
-    expect(RHOCore.toByteArray(item.rho).toString('hex')).toEqual(item.hex);
-    expect(Par.encode(Par.decode(h2b(item.hex)))).toEqual(Par.encode(item.rho));
-  });
-});
 
 function testRHOCore() {
   function rtest(item) {
@@ -33,7 +23,7 @@ function testRHOCore() {
       test.deepEqual(RHOCore.toByteArray(item.rho).toString('hex'), item.hex);
       test.deepEqual(Par.encode(Par.decode(h2b(item.hex))), Par.encode(item.rho));
 
-      test.done();
+      test.end();
     };
   }
 
@@ -46,21 +36,21 @@ function testRHOCore() {
   const { rhol } = RHOCore;
   const rhoTests = {
     'rhol template: numbers, strings, lists, objects': (test) => {
-      test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], @"b"!(2))');
-      test.done();
+      test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], {"b": 2})');
+      test.end();
     },
     'rhol template: string quoting': (test) => {
       const txt = '"Hi," he said; "I\'m John."';
       test.deepEqual(rhol`c1!(${txt})`, 'c1!("\\"Hi,\\" he said; \\"I\'m John.\\"")');
-      test.done();
+      test.end();
     },
     'rhol template: begining': (test) => {
       test.deepEqual(rhol`${'a'}!(bc)`, '"a"!(bc)');
-      test.done();
+      test.end();
     },
     'rhol template: ending': (test) => {
       test.deepEqual(rhol`0!${'a'}`, '0!"a"');
-      test.done();
+      test.end();
     },
     'RHOCore extension: URI': (test) => {
       const uri = 'rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8';
@@ -77,7 +67,7 @@ function testRHOCore() {
         rhol`lookup!(${uri}, *return)`,
         'lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *return)',
       );
-      test.done();
+      test.end();
     },
     'RHOCore extension: bytes': (test) => {
       const hex = 'deadbeef';
@@ -109,11 +99,12 @@ function testRHOCore() {
         rhol`new dest, status in { BasicWallet!("transfer", ${amount}, ${nonce}, ${sig}, dest, status) }`,
         'new dest, status in { BasicWallet!("transfer", 100, 12, "6a6e8ea7d13ad1e7cd676eee62081f9c6b36cfaef4d41d533127a56e7f48ad1378ae93e59b05d73cf17ce55bedf6b201cd78f6ec8ef20dd1b919b5918cc72007".hexToBytes(), dest, status) }',
       );
-      test.done();
+      test.end();
     },
   };
 
-  Suite.run({ ...mapValues(testData, rtest), ...rhoTests });
+  Object.entries({ ...mapValues(testData, rtest), ...rhoTests })
+    .forEach(([desc, fn]) => ttest(desc, fn));
 }
 
-//testRHOCore();
+testRHOCore();
