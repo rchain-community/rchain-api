@@ -46,8 +46,8 @@ function testRHOCore() {
   const { rhol } = RHOCore;
   const rhoTests = {
     'rhol template: numbers, strings, lists, objects': (test) => {
-      test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], @"b"!(2))');
-      test.done();
+      test.deepEqual(rhol`c1!(${['a']}, ${{ b: 2 }})`, 'c1!(["a"], {"b": 2})');
+      test.end();
     },
     'rhol template: string quoting': (test) => {
       const txt = '"Hi," he said; "I\'m John."';
