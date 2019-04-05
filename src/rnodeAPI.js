@@ -149,7 +149,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   /**
    * Creates a block on your node
    * @memberof RNode
-   * @return A promise for { .message }
+   * @return A promise for response message
    */
   async function createBlock() /*: Promise<string>*/ {
     const r = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
