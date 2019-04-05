@@ -1,4 +1,5 @@
 /* global require, module, exports */
+const ttest = require('tape');
 const api = require('../index');
 
 const { RNode, b2h, h2b } = api;
@@ -9,13 +10,9 @@ const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash 
 /**
  * Run unit tests plus supplemental tests.
  *
- * Suite.run() can only be called in one place because
- * it does `process.exit()`. Using ocap discipline
- * means passing such powerful objects in explicitly.
- *
  * @param suite2: supplemental tests
  */
-function testRNode({ Suite }, suite2) {
+function testRNode(suite2) {
   // mock enough of grpc
   function DeployService(_hostPort, _chan) { }
   const casper = { DeployService };
@@ -25,7 +22,7 @@ function testRNode({ Suite }, suite2) {
     credentials: { createInsecure() { } },
   };
 
-  Suite.run({
+  Object.entries({
     'args check': (test) => {
       test.doesNotThrow(() => RNode(grpc0, { host: 'h', port: 123 }));
       // $FlowFixMe args are intentionally wrong type
@@ -34,10 +31,10 @@ function testRNode({ Suite }, suite2) {
       test.throws(() => RNode(grpc0, { host: 'hi' }), Error);
       // $FlowFixMe
       test.throws(() => RNode(grpc0, { port: 123 }), Error);
-      test.done();
+      test.end();
     },
     ...suite2,
-  });
+  }).forEach(([desc, fn]) => ttest(desc, fn));
 }
 
 
@@ -59,11 +56,11 @@ function netTests({ grpc, clock, rng }) {
         } else {
           test.equal(fn('testtest'), b2h(rholangHash.exprs[0].g_byte_array));
         }
-        test.done();
+        test.end();
       })
       .catch((oops) => {
         test.equal(oops, 0);
-        test.done();
+        test.end();
       });
   }
 
@@ -74,14 +71,14 @@ function netTests({ grpc, clock, rng }) {
 
       localNode().doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
         test.equal(results.slice(0, 'Success'.length), 'Success');
-        test.done();
+        test.end();
       });
     },
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
       localNode().getBlock(blockHash).catch((err) => {
         test.deepEqual(err, ['Error: Failure to find block with hash thisshouldbreak']);
-        test.done();
+        test.end();
       });
     },
     'simplified SHA256 hashing': (test) => {
@@ -142,12 +139,12 @@ if (require.main === module) {
   /* eslint-disable global-require */
   /* global process */
   if (process.argv.includes('--net')) {
-    testRNode({ Suite: require('testjs') }, netTests({
+    testRNode(netTests({
       grpc: require('grpc'),
       clock: () => new Date(),
       rng: () => Math.random(),
     }));
   } else {
-    testRNode({ Suite: require('testjs') }, {});
+    testRNode({});
   }
 }

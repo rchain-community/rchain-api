@@ -15,7 +15,7 @@
     "doc-watch": "documentation serve --watch index.js src/**.js --shallow",
     "check": "npm run test && npm run lint && npm run flow-check",
     "test-jest": "jest",
-    "test": "node test/testRHOCore.js; node test/testRNode.js; node test/testSigning.js",
+    "test": "tape test/**/*.js",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
     "flow-check": "flow check --from emacs",
     "flow-status": "flow status --from emacs",
@@ -60,8 +60,7 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "flow-bin": "^0.81.0",
-    "jest": "^23.6.0",
-    "testjs": "^1.0.4"
+    "tape": "^4.10.1"
   },
   "TODO": {
     "documentation": "^8.0.2"
