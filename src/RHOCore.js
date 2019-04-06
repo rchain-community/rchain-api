@@ -197,7 +197,7 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
     }
   }
 
-  return recur(par);
+  return recur(Par.toObject(par));
 }
 
 
