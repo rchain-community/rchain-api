@@ -30,6 +30,13 @@ module.exports.callSource = callSource;
 
 const signing = require('./src/signing');
 
+/*::
+export type Hex<T> = Hex<T>;
+export type Bytes = Bytes;
+export type Signature = Signature;
+export type PrivateKey = PrivateKey;
+export type PublicKey = PublicKey;
+*/
 module.exports.keyPair = signing.keyPair;
 module.exports.verify = signing.verify;
 module.exports.b2h = signing.b2h;
@@ -44,3 +51,7 @@ module.exports.blake2b256Hash = hashing.blake2b256Hash;
 module.exports.simplifiedSHA256Hash = hashing.simplifiedSHA256Hash;
 module.exports.simplifiedKeccak256Hash = hashing.simplifiedKeccak256Hash;
 module.exports.simplifiedBlake2b256Hash = hashing.simplifiedBlake2b256Hash;
+
+const { RevAddress } = require('./src/revAddress');
+
+module.exports.RevAddress = RevAddress;

@@ -13,6 +13,7 @@ const { docopt } = require('docopt');
 const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h,
   keccak256Hash, keyPair, makeProxy, blake2b256Hash,
+  RevAddress,
 } = require('rchain-api');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 
@@ -337,7 +338,9 @@ async function showPublic(label, { keyStore, getpass }) {
     // should be passed as an explicit capability.
     const pubKey = privateToPublic(privKey);
     const ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    console.log({ label, publicKey: b2h(pubKey), ethAddr });
+    const edKey = keyPair(privKey); // ed25519
+    const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
+    console.log({ label, publicKey: b2h(pubKey), ethAddr, revAddr });
   } catch (oops) {
     console.error('cannot load key');
     console.error(oops.message);

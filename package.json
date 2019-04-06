@@ -1,6 +1,6 @@
 {
   "name": "rchain-api",
-  "version": "0.9.1-beta.1",
+  "version": "0.9.1-beta.2",
   "description": "RChain client for node.js",
   "main": "index.js",
   "scripts": {
@@ -48,6 +48,7 @@
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
     "blake2": "^2.0.1",
+    "bs58": "^4.0.1",
     "grpc": "^1.13.1",
     "js-sha3": "^0.8.0",
     "protobufjs": "^6.8.8",
