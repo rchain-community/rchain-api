@@ -465,7 +465,7 @@ async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode,
 async function transferPayment(
   // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
   amount, fromLabel, toAddr, paymentInfo,
-  { keyStore, toolsMod, getpass, rnode, clock },
+  { keyStore, toolsMod, getpass, rnode, clock, delay },
 ) {
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
   const { revAddr, publicKey } = await loadRevAddr(fromLabel, notice, { keyStore, getpass });
@@ -473,7 +473,7 @@ async function transferPayment(
   const tools = makeProxy(
     toolsMod.URI,
     { ...paymentInfo, deployer: h2b(publicKey) },
-    { rnode, clock },
+    { rnode, clock, delay },
   );
 
   const transferResult = await tools.transfer(revAddr, toAddr, amount);
