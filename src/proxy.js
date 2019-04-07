@@ -2,7 +2,6 @@
 // @flow
 
 const { rhol, toJSData } = require('./RHOCore');
-const { unforgeableWithId } = require('./loading');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
 const { prettyPrivate } = require('./loading');
 
@@ -120,24 +119,39 @@ async function sendCall(
     { target, method, args },
     { ...opts, chanArgs },
   );
-  console.log({ deployData });
+  console.log({ deployData, note: 'placeholder term' });
   const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
   console.log({ deployResult });
 
+  const blockResults = await pollAt(returnChan, method || '?', { delay: opts.delay, rnode });
+  const answerPar = blockResults[0].postBlockData[0];
+  // console.log('answerPar', JSON.stringify(answerPar, null, 2));
+  return toJSData(answerPar);
+}
+
+
+exports.pollAt = pollAt;
+async function pollAt(
+  returnChan /*: IPar */,
+  doing /*: string*/,
+  { rnode, delay } /*: { rnode: IRNode, delay?: (number) => Promise<void> }*/,
+) {
   let blockResults = [];
+  const returnPretty = prettyPrivate(returnChan);
+  // eslint-disable-next-line no-restricted-syntax
   for (const poll of [1, 2, 3, 4]) {
-    console.log(`${method || '?'}: listen #${poll} at return chan ${prettyPrivate(returnChan)}`);
+    console.log(`${doing}: listen #${poll} at return chan ${returnPretty}`);
+    // eslint-disable-next-line no-await-in-loop
     blockResults = await rnode.listenForDataAtName(returnChan);
     // console.log({ blockResults });
     if (blockResults.length > 0) {
       break;
     }
-    if (opts.delay) { await opts.delay(poll); }
+    // eslint-disable-next-line no-await-in-loop
+    if (delay) { await delay(poll); }
   }
-
-  const answerPar = blockResults[0].postBlockData[0];
-  // console.log('answerPar', JSON.stringify(answerPar, null, 2));
-  return toJSData(answerPar);
+  if (!blockResults.length) { throw new Error(`${doing}: no reply at ${returnPretty}`); }
+  return blockResults;
 }
 
 
