@@ -30,11 +30,15 @@ in {
       @{amount /\ Int},
       return
     ) = {
-      new vaultCh in {
+      new vaultCh, balanceCh in {
         RevVault!("findOrCreateGenesisVault", revAddress, amount, *vaultCh) |
         for(@(true, vault) <- vaultCh) {
           trace!({"new vault": vault, "amount": amount}) |
-          return!((true, vault))
+
+          @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
+            trace!({"new vault balance": balance}) |
+            return!((true, amount, balance))
+          }
         }
       }
     } |

@@ -49,7 +49,7 @@ Options:
                         from the key. If --claimed, get the wallet
                         from WalletCheck; else, create a new empty wallet.
  balance                get REV balance after publishing account
- --host INT             The hostname or IPv4 address of the node
+ --host NAME            The hostname or IPv4 address of the node
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
                         [default: 40401]
@@ -58,6 +58,7 @@ Options:
  deploy                 deploy RHOLANG file
  register               deploy RHOMODULE, register exported process,
                         and save URI in registry file
+ --poll-interval=N      when listening for data after a call. in ms [default: 5000]
  --registry=FILE        where to store file / URI mappings
                         [default: registry.json]
  -v --verbose           Verbose logging
@@ -91,7 +92,7 @@ function ExitStatus(message) {
 async function main(
   argv,
   { stdin, stdout, writeFile, readFile, join },
-  { clock, randomBytes },
+  { clock, randomBytes, setTimeout },
   { grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
@@ -117,6 +118,9 @@ async function main(
 
   const where = { host: cli['--host'], port: argInt('--port') };
   const rnode = RNode(grpc, where);
+  const mkPause = makeTimer(setTimeout);
+  const dur = argInt('--poll-interval');
+  const delay = i => mkPause(dur * i);
 
   const priceInfo = () => ({
     ...defaultDeployInfo,
@@ -127,7 +131,7 @@ async function main(
   async function ioTools() {
     const registry = FileStorage(argWr('--registry'));
     const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
-    return { getpass, rnode, clock, toolsMod, keyStore: argWr('--keystore') };
+    return { getpass, rnode, clock, delay, toolsMod, keyStore: argWr('--keystore') };
   }
 
   if (cli.keygen) {
@@ -163,11 +167,20 @@ async function main(
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
     await register(
-      cli.RHOMODULE.map(rd), priceInfo(), { rnode, clock, registry: FileStorage(argWr('--registry')) },
+      cli.RHOMODULE.map(rd), priceInfo(),
+      { rnode, clock, delay, registry: FileStorage(argWr('--registry')) },
     );
   }
+}
 
-  // ISSUE: process exit code
+function makeTimer(setTimeout) {
+  return function timer(ms) {
+    console.log(`making pause of ${ms} ms`);
+    return new Promise(resolve => setTimeout(() => {
+      console.log(`${ms} pause done`);
+      resolve();
+    }, ms));
+  };
 }
 
 
@@ -183,7 +196,7 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 }
 
 
-async function register(files, _price, { registry, rnode, clock }) {
+async function register(files, _price, { registry, rnode, clock, delay }) {
   // ISSUE: what to do when we restart the node?
   // how to check that we're talking to the same chain?
   async function check1(file) {
@@ -204,7 +217,7 @@ async function register(files, _price, { registry, rnode, clock }) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
     const { deployer } = defaultDeployInfo;
     const loaded = await ioOrExit(
-      loadRhoModules(toLoad.map(({ src }) => src), deployer, { rnode, clock }),
+      loadRhoModules(toLoad.map(({ src }) => src), deployer, { rnode, clock, delay }),
     );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
@@ -364,15 +377,18 @@ async function loadRevAddr(label, notice, { keyStore, getpass }) {
   }
 }
 
-async function genVault(label, amount, priceInfo, { keyStore, getpass, toolsMod, rnode, clock }) {
+async function genVault(
+  label, amount, priceInfo,
+  { keyStore, getpass, toolsMod, rnode, clock, delay },
+) {
   const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
   const result = await tools.genVault(revAddr, amount);
   if (result && typeof result === 'object' && typeof result.message === 'string') {
     throw new ExitStatus(`cannot generate vault: ${result.message}`);
   }
-  console.log({ revAddr, label, amount });
+  console.log({ revAddr, label, amount, result });
 }
 
 const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
@@ -406,10 +422,10 @@ async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rno
 }
 
 
-async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
+async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
   const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
   const balance = await tools.balance(revAddr);
 
   console.log({ revAddr, balance, label });
@@ -496,7 +512,7 @@ async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
 if (require.main === module) {
   // Import primitive effects only when invoked as main module.
   /* eslint-disable global-require */
-  /*global process*/
+  /*global process, setTimeout*/
   main(
     process.argv,
     {
@@ -508,6 +524,7 @@ if (require.main === module) {
     },
     {
       clock: () => new Date(),
+      setTimeout,
       randomBytes: require('crypto').randomBytes,
     },
     {
@@ -520,6 +537,8 @@ if (require.main === module) {
         console.error(err.message);
         process.exit(1);
       } else {
+        console.error(err);
+        console.error(err.stack);
         throw err; // bug!
       }
     });

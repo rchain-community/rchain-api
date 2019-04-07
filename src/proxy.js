@@ -34,7 +34,7 @@ interface SourceOpts extends Opts {
 
 interface SendOpts extends Opts {
   rnode: IRNode,
-  delay?: () => Promise<void>,
+  delay?: (number) => Promise<void>,
 };
 
 interface ProxyOpts extends SendOpts {
@@ -122,21 +122,18 @@ async function sendCall(
   );
   const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
   console.log({ deployData, deployResult });
-  if (opts.delay) {
-    await opts.delay();
-  }
-  // ISSUE: loop until we get results?
-  console.log(`${method || '?'}: listening at return chan ${prettyPrivate(returnChan)}`);
-  const blockResults = await rnode.listenForDataAtName(returnChan);
-  // console.log({ blockResults });
-  if (!(blockResults.length > 0)) {
-    let name = '<unknown>';
-    const { ids } = returnChan;
-    if (ids && ids[0].id) {
-      name = unforgeableWithId(ids[0].id);
+
+  let blockResults = [];
+  for (const poll of [1, 2, 3, 4]) {
+    console.log(`${method || '?'}: listen #${poll} at return chan ${prettyPrivate(returnChan)}`);
+    blockResults = await rnode.listenForDataAtName(returnChan);
+    // console.log({ blockResults });
+    if (blockResults.length > 0) {
+      break;
     }
-    throw new Error(`no data at ${name}`);
+    if (opts.delay) { await opts.delay(poll); }
   }
+
   const answerPar = blockResults[0].postBlockData[0];
   // console.log('answerPar', JSON.stringify(answerPar, null, 2));
   return toJSData(answerPar);

@@ -23,6 +23,7 @@ import type { IRNode } from '..';
 interface LoadAccess {
   rnode: IRNode,
   clock: () => Date,
+  delay?: (number) => Promise<void>,
 }
 
 export type ModuleInfo = {
@@ -37,7 +38,7 @@ export type ModuleInfo = {
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
   sources /*: string[]*/, deployer /*: Uint8Array*/,
-  { rnode, clock } /*: LoadAccess */,
+  { rnode, clock, delay } /*: LoadAccess */,
 ) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;
   function monotonicClock() {
@@ -65,8 +66,13 @@ async function loadRhoModules(
   console.log({ createdBlock, loading: deployed.map(({ name }) => name) });
 
   async function register1({ name, title, term, chan }) /*: Promise<ModuleInfo> */{
-    console.log(`${name}: listening for URI at ${prettyPrivate(chan)}`);
-    const found = await rnode.listenForDataAtName(chan);
+    let found = [];
+    for (const poll of [1, 2, 3, 4]) {
+      console.log(`${name}: listen #${poll} for URI at ${prettyPrivate(chan)}`);
+      found = await rnode.listenForDataAtName(chan);
+      if (found.length > 0) { break; }
+      if (delay) { await delay(poll); }
+    }
     const d = firstBlockData(found);
     if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${String(d)}`); }
     const URI = d;
