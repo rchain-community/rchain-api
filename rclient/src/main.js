@@ -11,7 +11,7 @@ const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h,
-  keccak256Hash, keyPair, makeProxy, blake2b256Hash,
+  keccak256Hash, keyPair, makeProxy,
   RevAddress,
 } = require('rchain-api');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
@@ -375,7 +375,6 @@ async function genVault(label, amount, priceInfo, { keyStore, getpass, toolsMod,
   console.log({ revAddr, label, amount });
 }
 
-const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
