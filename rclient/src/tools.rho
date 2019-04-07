@@ -3,7 +3,7 @@
  */
 new
   Tools,
-  WalletCheckCh, sysCh, bwCh,
+  WalletCheckCh, RevVaultCh, sysCh, bwCh,
 //  export,          // ISSUE: rholang extension
   export(`export:`), // ISSUE: rholang extension
   trace(`rho:io:stderr`),
@@ -13,6 +13,7 @@ new
 in {
   export!(*Tools) | trace!("Tools OK") |
 
+  lookup!(`rho:id:1o93uitkrjfubh43jt19owanuezhntag5wh74c6ur5feuotpi73q8z`, *RevVaultCh) |
   // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
   lookup!(`rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt`, *WalletCheckCh) |
   // SystemInstancesRegistry.rho.
@@ -21,11 +22,45 @@ in {
   lookup!(`rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms`, *bwCh) |
 
   for(
+    @(_, *RevVault) <- RevVaultCh
+  ) {
+
+    contract Tools(@"genVault",
+      @{revAddress /\ String},
+      @{amount /\ Int},
+      return
+    ) = {
+      new vaultCh in {
+        RevVault!("findOrCreateGenesisVault", revAddress, amount, *vaultCh) |
+        for(@(true, vault) <- vaultCh) {
+          trace!({"new vault": vault, "amount": amount}) |
+          return!((true, vault))
+        }
+      }
+    } |
+
+    contract Tools(@"balance",
+      @{revAddress /\ String},
+      return
+    ) = {
+      new vaultCh, balanceCh in {
+        RevVault!("findOrCreate", revAddress, *vaultCh) | for (@(true, vault) <- vaultCh) {
+          trace!("Obtained vault, checking balance") |
+
+          @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
+            trace!({"balance": balance}) |
+            return!(balance)
+          }
+        }
+      }
+    }
+  } |
+
+  for(
     @(_, *WalletCheck) <- WalletCheckCh;
     @(_, *SystemInstancesRegistry) <- sysCh;
     @(_, *BasicWallet) <- bwCh
   ) {
-
     contract Tools(@"claim",
       @{ethAddr /\ String},  // 0x...
       @{pubKey /\ String},   // secp256k1 public key in hex

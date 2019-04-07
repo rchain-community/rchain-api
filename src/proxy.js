@@ -4,7 +4,6 @@
 const { rhol, toJSData } = require('./RHOCore');
 const { unforgeableWithId } = require('./loading');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
-const { b2h } = require('./signing');
 const { prettyPrivate } = require('./loading');
 
 /*::

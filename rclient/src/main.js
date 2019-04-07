@@ -28,6 +28,7 @@ Usage:
   rclient [options] keygen LABEL
   rclient [options] import LABEL JSONFILE
   rclient [options] info LABEL
+  rclient [options] genVault LABEL AMOUNT
   rclient [options] claim LABEL
   rclient [options] balance LABEL
   rclient [options] publish [--claimed] LABEL
@@ -44,6 +45,7 @@ Options:
                         (per ethereum Web3 Secret Storage)
  info                   show public key and ethereum-style address
                         after decrypting with password
+ genVault               create a genesis vault (testnet only)
  claim                  claim REV balance from RHOC after genesis
  publish                register a wallet at the rhoid derived
                         from the key. If --claimed, get the wallet
@@ -53,7 +55,7 @@ Options:
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
                         [default: 40401]
- --phlo-limit=N         how much are you willing to spend? [default: 10000]
+ --phlo-limit=N         how much are you willing to spend? [default: 1000000]
  --phlo-price=N         TODO docs [default: 1]
  deploy                 deploy RHOLANG file
  register               deploy RHOMODULE, register exported process,
@@ -70,9 +72,9 @@ import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
 
 import type { ModuleInfo } from '../../src/loading'; // ISSUE: path?
  */
-const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
+const deployer = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 const defaultDeployInfo = {
-  user,
+  deployer,
   from: '0x01', // TODO: cli arg
   nonce: 1,
   timestamp: -1,
@@ -141,6 +143,9 @@ async function main(
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
     await showPublic(cli.LABEL, { getpass, keyStore: argWr('--keystore') });
+  } else if (cli.genVault) {
+    const io = await ioTools();
+    await genVault(cli.LABEL, argInt('AMOUNT'), priceInfo(), io);
   } else if (cli.claim) {
     const io = await ioTools();
     await claimAccount(cli.LABEL, priceInfo(), io);
@@ -201,7 +206,7 @@ async function register(files, _price, { registry, rnode, clock }) {
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
     const loaded = await ioOrExit(
-      loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock }),
+      loadRhoModules(toLoad.map(({ src }) => src), deployer, { rnode, clock }),
     );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
@@ -361,6 +366,28 @@ function pubToAddress(pubKey) {
 }
 
 
+async function loadRevAddr(label, { keyStore, getpass }) {
+  try {
+    const privKey = await loadKey(keyStore, label, [], { getpass });
+    const edKey = keyPair(privKey); // ed25519
+    const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
+    return { label, revAddr, publicKey: edKey.publicKey() };
+  } catch (err) {
+    throw new ExitStatus(`cannot load public key: ${err.message}`);
+  }
+}
+
+async function genVault(label, amount, priceInfo, { keyStore, getpass, toolsMod, rnode, clock }) {
+  const { revAddr } = await loadRevAddr(label, { keyStore, getpass });
+
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
+  const result = await tools.genVault(revAddr, amount);
+  if (result && typeof result === 'object' && typeof result.message === 'string') {
+    throw new ExitStatus(`cannot generate vault: ${result.message}`);
+  }
+  console.log({ revAddr, label, amount });
+}
+
 const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
@@ -394,25 +421,12 @@ async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rno
 
 
 async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
-  let privKey;
-  let pubKey;
-  let ethAddr;
-  try {
-    privKey = await loadKey(keyStore, label, [], { getpass });
-    pubKey = privateToPublic(privKey);
-    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    // ISSUE: logging is not just FYI here;
-    // should be passed as an explicit capability.
-    console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (err) {
-    throw new ExitStatus(`cannot load key: ${err.message}`);
-  }
+  const { revAddr } = await loadRevAddr(label, { keyStore, getpass });
 
   const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
-  const edPubKey = Buffer.from(h2b(keyPair(privKey).publicKey()));
-  const balance = await outcome(tools.getBalance(new URL(rhoid.pkURI(edPubKey))));
+  const balance = await tools.balance(revAddr);
 
-  console.log({ ethAddr, balance, label });
+  console.log({ revAddr, balance, label });
 }
 
 async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
