@@ -54,7 +54,7 @@ async function loadRhoModules(
     const timestamp = monotonicClock();
     const [chan] = await rnode.previewPrivateChannels({ user: deployer, timestamp }, 1);
     console.log(`Deploying: ${title}\n`);
-    const deployResult = await rnode.doDeploy({ deployer, term, timestamp, ...defaultPayment });
+    const deployResult = await rnode.doDeploy({ ...defaultPayment, deployer, term, timestamp });
     console.log({ deployResult, name });
     return { name, title, term, chan };
   }
