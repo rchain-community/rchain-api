@@ -120,8 +120,9 @@ async function sendCall(
     { target, method, args },
     { ...opts, chanArgs },
   );
+  console.log({ deployData });
   const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
-  console.log({ deployData, deployResult });
+  console.log({ deployResult });
 
   let blockResults = [];
   for (const poll of [1, 2, 3, 4]) {

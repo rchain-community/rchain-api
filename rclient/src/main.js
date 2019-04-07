@@ -261,7 +261,9 @@ async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
     uuidv4,
   );
   await store.set({ [label]: item });
-  console.log({ label, keyStore: keyStore.readOnly().name(), status: 'saved' });
+  const publicKey = keyPair(privKey).publicKey();
+  const revAddr = RevAddress.fromPublicKey(h2b(publicKey)).toString();
+  console.log({ label, revAddr, publicKey, keyStore: keyStore.readOnly().name(), status: 'saved' });
 }
 
 
