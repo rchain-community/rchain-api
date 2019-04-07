@@ -11,7 +11,7 @@ new
   insertArbitrary(`rho:registry:insertArbitrary`),
   insertSigned(`rho:registry:insertSigned:ed25519`)
 in {
-  export!(*Tools) | trace!("Tools OK") |
+  export!(*Tools) | trace!("rclient: Tools OK") |
 
   lookup!(`rho:id:1o93uitkrjfubh43jt19owanuezhntag5wh74c6ur5feuotpi73q8z`, *RevVaultCh) |
 
@@ -27,10 +27,10 @@ in {
       new vaultCh, balanceCh in {
         RevVault!("findOrCreateGenesisVault", revAddress, amount, *vaultCh) |
         for(@(true, vault) <- vaultCh) {
-          trace!({"new vault": vault, "amount": amount}) |
+          trace!({"tag": "rclient", "new vault": vault, "amount": amount}) |
 
           @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
-            trace!({"new vault balance": balance}) |
+            trace!({"tag": "rclient", "new vault balance": balance}) |
             return!((true, amount, balance))
           }
         }
@@ -43,10 +43,10 @@ in {
     ) = {
       new vaultCh, balanceCh in {
         RevVault!("findOrCreate", revAddress, *vaultCh) | for (@(true, vault) <- vaultCh) {
-          trace!("Obtained vault, checking balance") |
+          trace!("rclient: Obtained vault, checking balance") |
 
           @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
-            trace!({"balance": balance}) |
+            trace!({"tag": "rclient", "balance": balance}) |
             return!(balance)
           }
         }
@@ -59,20 +59,24 @@ in {
       @{amount /\ Int},
       return
     ) = {
+      trace!({"rclient": "transfer", "amount": amount, "from": from, "to": to }) |
+
       new vaultCh, revVaultkeyCh in {
         RevVault!("findOrCreate", from, *vaultCh) |
         RevVault!("deployerAuthKey", *revVaultkeyCh) |
         for (@(true, vault) <- vaultCh; key <- revVaultkeyCh) {
 
-          trace!({"amount": amount, "from": from, "to": to, "vault": vault, "key": *key}) |
-
           new resultCh in {
             @vault!("transfer", to, amount, *key, *resultCh) |
             for (@result <- resultCh) {
-              trace!({"amount": amount, "to": to, "result": result}) |
+              trace!({"rclient": "txfer result", "amount": amount, "to": to, "result": result}) |
               return!(result)
             }
           }
+        } |
+        for (@(false, why) <- vaultCh; _ <- revVaultkeyCh) {
+          trace!({"rclient": "findOrCreate failed", "why": why}) |
+          return!((false, why))
         }
       }
     }
