@@ -121,7 +121,7 @@ async function sendCall(
     { ...opts, chanArgs },
   );
   const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
-  console.log({ deployResult });
+  console.log({ deployData, deployResult });
   if (opts.delay) {
     await opts.delay();
   }

@@ -53,6 +53,30 @@ in {
           }
         }
       }
+    } |
+
+    contract Tools(@"transfer",
+      @{from /\ String},  // RevAddress
+      @{to /\ String},    // RevAddress
+      @{amount /\ Int},
+      return
+    ) = {
+      new vaultCh, revVaultkeyCh in {
+        RevVault!("findOrCreate", from, *vaultCh) |
+        RevVault!("deployerAuthKey", *revVaultkeyCh) |
+        for (@(true, vault) <- vaultCh; key <- revVaultkeyCh) {
+
+          trace!({"amount": amount, "from": from, "to": to, "vault": vault, "key": *key}) |
+
+          new resultCh in {
+            @vault!("transfer", to, amount, *key, *resultCh) |
+            for (@result <- resultCh) {
+              trace!({"amount": amount, "to": to, "result": result}) |
+              return!(result)
+            }
+          }
+        }
+      }
     }
   } |
 
