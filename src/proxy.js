@@ -4,6 +4,8 @@
 const { rhol, toJSData } = require('./RHOCore');
 const { unforgeableWithId } = require('./loading');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
+const { b2h } = require('./signing');
+const { prettyPrivate } = require('./loading');
 
 /*::
 import type { IRNode, IDeployData } from './rnodeAPI';
@@ -101,9 +103,10 @@ async function sendCall(
     returnChan = opts.returnCh;
   } else {
     const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
-      deployData, 1 + (opts.predeclare || []).length,
+      { user: deployData.deployer, timestamp: deployData.timestamp },
+      1 + (opts.predeclare || []).length,
     );
-    console.log({ chans: chans.map(b => b.toString('hex')) });
+    // console.log({ chans: chans.map(b2h) });
 
     const [returnId, ..._] = chans;
     const idToPar = id => ({ ids: [{ id }] });
@@ -124,6 +127,7 @@ async function sendCall(
     await opts.delay();
   }
   // ISSUE: loop until we get results?
+  console.log(`${method || '?'}: listening at return chan ${prettyPrivate(returnChan)}`);
   const blockResults = await rnode.listenForDataAtName(returnChan);
   // console.log({ blockResults });
   if (!(blockResults.length > 0)) {

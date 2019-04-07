@@ -55,3 +55,7 @@ module.exports.simplifiedBlake2b256Hash = hashing.simplifiedBlake2b256Hash;
 const { RevAddress } = require('./src/revAddress');
 
 module.exports.RevAddress = RevAddress;
+
+const loading = require('./src/loading');
+
+module.exports.firstBlockData = loading.firstBlockData;

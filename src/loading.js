@@ -6,6 +6,7 @@
 const { URL } = require('url');
 
 const { Writer } = require('protobufjs');
+const { DataWithBlockInfo } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 
 const { b2h } = require('./signing');
 const RHOCore = require('./RHOCore');
@@ -35,7 +36,7 @@ export type ModuleInfo = {
 
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
-  sources /*: string[]*/, user /*: Uint8Array*/,
+  sources /*: string[]*/, deployer /*: Uint8Array*/,
   { rnode, clock } /*: LoadAccess */,
 ) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;
@@ -50,9 +51,9 @@ async function loadRhoModules(
 
   async function deploy1({ name, title, term }) {
     const timestamp = monotonicClock();
-    const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
+    const [chan] = await rnode.previewPrivateChannels({ user: deployer, timestamp }, 1);
     console.log(`Deploying: ${title}\n`);
-    const deployResult = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment });
+    const deployResult = await rnode.doDeploy({ deployer, term, timestamp, ...defaultPayment });
     console.log({ deployResult, name });
     return { name, title, term, chan };
   }
@@ -125,7 +126,10 @@ function prettyPrivate(par /*: IPar */) {
   return unforgeableWithId(par.ids[0].id);
 }
 
-function firstBlockData(blockResults) {
+exports.firstBlockData = firstBlockData;
+function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
+  const _ = DataWithBlockInfo; // mark used
+  // console.log({ blockResults });
   if (!blockResults.length) { throw new Error('no blocks found'); }
   return RHOCore.toJSData(firstBlockProcess(blockResults));
 }

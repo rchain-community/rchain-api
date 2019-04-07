@@ -16,6 +16,7 @@ const protoLoader = require('@grpc/proto-loader');
 const {
   BlockQueryResponse,
   BlockInfoWithoutTuplespace,
+  DataWithBlockInfo,
   DeployServiceResponse,
   ListeningNameContinuationResponse,
   ListeningNameDataResponse,
@@ -81,12 +82,12 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param nameQty - how many names to preview? (max: 1024)
    */
   async function previewPrivateIds(
-    { deployer, timestamp } /*: $ReadOnly<{ deployer?: Uint8Array, timestamp?: number }> */,
+    { user, timestamp } /*: $ReadOnly<{ user?: Uint8Array, timestamp?: number }> */,
     nameQty /*: number */,
   ) /*: Promise<Buffer[]> */{
     const response = await either(
       PrivateNamePreviewResponse,
-      send(f => client.previewPrivateNames({ deployer, timestamp, nameQty }, f)),
+      send(f => client.previewPrivateNames({ user, timestamp, nameQty }, f)),
     );
     return response.ids;
   }
@@ -204,17 +205,18 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @memberof RNode
    * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
    * @param blockDepth: Number of blocks to look back in for the name to listen on
-   * @return: promise for [DataWithBlockInfo]
+   * @return: promise for DataWithBlockInfo[]
    * @throws Error if status is not Success
    */
   async function listenForDataAtName(
     par /*: IPar */,
     depth /*: number */ = 1,
-  ) /*: Promise<ListeningNameDataResponse> */ {
+  ) /*: Promise<DataWithBlockInfo[]> */ {
     const channelRequest = {
       depth,
       name: par,
     };
+    const _ = DataWithBlockInfo; // mark used
     const response = await either(
       ListeningNameDataResponse,
       send(f => client.listenForDataAtName(channelRequest, f)),
