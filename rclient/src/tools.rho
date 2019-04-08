@@ -4,8 +4,8 @@
 new
   Tools,
   RevVaultCh,
-  export,          // ISSUE: rholang extension
-//  export(`export:`), // ISSUE: rholang extension
+//  export,          // ISSUE: rholang extension
+  export(`export:`), // ISSUE: rholang extension
   trace(`rho:io:stderr`),
   lookup(`rho:registry:lookup`),
   insertArbitrary(`rho:registry:insertArbitrary`),
