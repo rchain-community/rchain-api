@@ -3,194 +3,80 @@
  */
 new
   Tools,
-  WalletCheckCh, sysCh, bwCh,
-//  export,          // ISSUE: rholang extension
-  export(`export:`), // ISSUE: rholang extension
+  RevVaultCh,
+  export,          // ISSUE: rholang extension
+//  export(`export:`), // ISSUE: rholang extension
   trace(`rho:io:stderr`),
   lookup(`rho:registry:lookup`),
   insertArbitrary(`rho:registry:insertArbitrary`),
   insertSigned(`rho:registry:insertSigned:ed25519`)
 in {
-  export!(*Tools) | trace!("Tools OK") |
+  export!(*Tools) | trace!("rclient: Tools OK") |
 
-  // https://github.com/rchain/rchain/blob/dev/casper/src/main/rholang/WalletCheck.rho
-  lookup!(`rho:id:oqez475nmxx9ktciscbhps18wnmnwtm6egziohc3rkdzekkmsrpuyt`, *WalletCheckCh) |
-  // SystemInstancesRegistry.rho.
-  lookup!(`rho:id:wdwc36f4ixa6xacck3ddepmgueum7zueuczgthcqp6771kdu8jogm8`, *sysCh) |
-  // BasicWallet.rho
-  lookup!(`rho:id:3yicxut5xtx5tnmnneta7actof4yse3xangw4awzt8c8owqmddgyms`, *bwCh) |
+  lookup!(`rho:id:1o93uitkrjfubh43jt19owanuezhntag5wh74c6ur5feuotpi73q8z`, *RevVaultCh) |
 
   for(
-    @(_, *WalletCheck) <- WalletCheckCh;
-    @(_, *SystemInstancesRegistry) <- sysCh;
-    @(_, *BasicWallet) <- bwCh
+    @(_, *RevVault) <- RevVaultCh
   ) {
 
-    contract Tools(@"claim",
-      @{ethAddr /\ String},  // 0x...
-      @{pubKey /\ String},   // secp256k1 public key in hex
-      @{sigHex /\ String},   // DER encoded secp256k1 sig in hex
-      statusOut,             // signed channel
+    contract Tools(@"genVault",
+      @{revAddress /\ String},
+      @{amount /\ Int},
       return
     ) = {
-      WalletCheck!("claim", ethAddr, pubKey, sigHex, *statusOut) | for (@(ok, msg) <- statusOut) {
-        if(ok) { return!({"=": pubKey}) }
-        else { return!({"!": msg}) }
-      }
-    } |
+      new vaultCh, balanceCh in {
+        RevVault!("findOrCreateGenesisVault", revAddress, amount, *vaultCh) |
+        for(@(true, vault) <- vaultCh) {
+          trace!({"tag": "rclient", "new vault": vault, "amount": amount}) |
 
-    contract Tools(@"getBalance", @{uri /\ Uri}, return) = {
-      trace!({"getBalance": *return, "trace": *trace}) |
-      new wCh, bCh in {
-        lookup!(uri, *wCh) | for(@found <- wCh) {
-          match (found) {
-            Nil => {return!({"!": "nothing registered at that URI"}) }
-            (_, *wallet) => {
-              wallet!("getBalance", *bCh) | for(@balance <- bCh) {
-                return!({"=": balance})
-              }
-            }
+          @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
+            trace!({"tag": "rclient", "new vault balance": balance}) |
+            return!((true, amount, balance))
           }
         }
       }
     } |
 
-    contract Tools(@"prepareToPublish",
-      @{pubKey /\ String},  // ed25519 public key
-      @{nonce /\ Int},
+    contract Tools(@"balance",
+      @{revAddress /\ String},
       return
     ) = {
-      new rCh, wCh in {
-        WalletCheck!("access", pubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-          trace!({"access": *maybeWallet}) |
-          if(ok == false) { trace!({"problem": *maybeWallet}) | return!({"!": *maybeWallet}) }
-          else { return!({"=": (nonce, *maybeWallet).toByteArray()}) }
-        }
-      }
-    } |
+      new vaultCh, balanceCh in {
+        RevVault!("findOrCreate", revAddress, *vaultCh) | for (@(true, vault) <- vaultCh) {
+          trace!("rclient: Obtained vault, checking balance") |
 
-    contract Tools(@"publishClaimed",
-      @{secPubKey /\ String},   // eth style secp256k1 public key for WalletCheck access
-      @{edPubKey /\ ByteArray}, // ed25519 public key for InsertSigned. Go figure.
-      @{sig /\ ByteArray},      // ed25519 sig over (nonce, *wallet)
-      @{nonce /\ Int},
-      return
-    ) = {
-      new rCh, wCh in {
-        WalletCheck!("access", secPubKey, *wCh) | for(@(ok, *maybeWallet) <- wCh) {
-          trace!({"access": *maybeWallet}) |
-          if(ok == false) { trace!({"problem": *maybeWallet}) | return!({"!": *maybeWallet}) }
-          else {
-            insertSigned!(edPubKey, (nonce, *maybeWallet), sig, *rCh) |
-            for (@uri <- rCh) {
-              if(uri == Nil) { return!({"!": "insertSigned failed; bad signature?"}) }
-              else { return!({"=": uri}) }
-            }
+          @vault!("balance", *balanceCh) | for (@balance <- balanceCh) {
+            trace!({"tag": "rclient", "balance": balance}) |
+            return!(balance)
           }
         }
       }
     } |
 
-    contract Tools(@"createWallet",
-      @{algorithm /\ String},   // ed25519 or secp256k1
-      @{pk /\ String},          // wallet pk using algorithm above
-      @{nonce /\ Int},          //
+    contract Tools(@"transfer",
+      @{from /\ String},  // RevAddress
+      @{to /\ String},    // RevAddress
+      @{amount /\ Int},
       return
     ) = {
-      new revCh, purseCh, wCh in {
-        SystemInstancesRegistry!("lookup", "rev", *revCh) | for(rev <- revCh) {
-          trace!({"rev": *rev}) |
-          rev!("makePurse", *revCh) | for (@emptyPurse <- revCh) {
-            trace!({"empty purse": emptyPurse}) |
-            BasicWallet!(emptyPurse, algorithm, pk, *wCh) | for(@maybeWallet <- wCh) {
-              trace!({"maybeWallet": maybeWallet}) |
-              match (maybeWallet) {
-                [] => { return!({"!": "no such algorithm: " ++ algorithm}) }
-                [wallet] => {
-                  new uriCh in {
-                    insertArbitrary!(wallet, *uriCh) | for(@uri <- uriCh) {
-                      trace!({"insert URI": uri}) |
-                      if (uri == Nil) { return!({"!": "failed to register wallet"}) }
-                      else {
-                        return!({"=": { "uri": uri, "toSign": (nonce, wallet).toByteArray()
-                        }})
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    } |
+      trace!({"rclient": "transfer", "amount": amount, "from": from, "to": to }) |
 
-    contract Tools(@"publishRegistered",
-      @{uri /\ Uri},            // where to find Wallet (from insertArbitrary)
-      @{edPubKey /\ ByteArray}, // ed25519 public key for InsertSigned.
-      @{sig /\ ByteArray},      // ed25519 sig over (nonce, *wallet)
-      @{nonce /\ Int},
-      return
-    ) = {
-      new wCh, rCh in {
-        lookup!(uri, *wCh) | for (@wallet <- wCh) {
-          if (wallet == Nil) { return!({"!": "lookup failed"}) }
-          else {
-            insertSigned!(edPubKey, (nonce, wallet), sig, *rCh) |
-            for (@uri <- rCh) {
-              if(uri == Nil) { return!({"!": "insertSigned failed; bad signature?"}) }
-              else { return!({"=": uri}) }
-            }
-          }
-        }
-      }
-    }
-  } |
+      new vaultCh, revVaultkeyCh in {
+        RevVault!("findOrCreate", from, *vaultCh) |
+        RevVault!("deployerAuthKey", *revVaultkeyCh) |
+        for (@(true, vault) <- vaultCh; key <- revVaultkeyCh) {
 
-  contract Tools(@"pay",
-    @{fromAddr /\ Uri}, // registry address of BasicWallet
-    @{toAddr /\ Uri},   // "
-    @{amount /\ Int},
-    @{nonce /\ Int},    // getNonce() of from Wallet
-    @{sig /\ String},   // over blake2b256Hash([nonce, amount, *via].toBytearray())
-    via,                // signed channel
-    return              // { "=": b } where b is balance of from after payment or
-                        // { "!": "problem description" }
-  ) = {
-    new fromCh, toCh, statusCh, dCh, bCh in {
-      trace!({"send": amount}) |
-      lookup!(fromAddr, *fromCh) |
-      lookup!(toAddr, *toCh) |
-      for(@(_, *fromWallet) <- fromCh; @(_, *toWallet) <- toCh) {
-        trace!({"fromWallet": *fromWallet, "toWallet": *toWallet}) |
-        match (*fromWallet, *toWallet) {
-          // ! from Waterken JSON conventions
-          (Nil, _) => { return!({ "!": "from: nothing registered", "uri": fromAddr}) }
-          (_, Nil) => { return!({ "!": "to: nothing registered", "uri": toAddr}) }
-          _ => {
-            fromWallet!("transfer", amount, nonce, sig, *via, *statusCh) |
-            for (@status <- statusCh) {
-              trace!({"transfer status": status}) |
-              if (status == "Success") {
-                for(pmt <- via) {
-                  trace!({"pmt": *pmt, "payee wallet": *toWallet}) |
-                  toWallet!("deposit", amount, *pmt, *dCh) |
-                  for (@depositResult <- dCh) {
-                    trace!({"deposit result": depositResult}) |
-                    if (depositResult) {
-                      fromWallet!("getBalance", *bCh) | for (@balance <- bCh) {
-                        return!({ "=": balance })
-                      }
-                    } else {
-                      return!({ "!": "deposit failed; overdraft?" })
-                    }
-                  }
-                }
-              } else {
-                return!({ "!": status })
-              }
+          new resultCh in {
+            @vault!("transfer", to, amount, *key, *resultCh) |
+            for (@result <- resultCh) {
+              trace!({"rclient": "txfer result", "amount": amount, "to": to, "result": result}) |
+              return!(result)
             }
           }
+        } |
+        for (@(false, why) <- vaultCh; _ <- revVaultkeyCh) {
+          trace!({"rclient": "findOrCreate failed", "why": why}) |
+          return!((false, why))
         }
       }
     }

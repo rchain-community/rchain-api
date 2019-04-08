@@ -2,8 +2,8 @@
 // @flow
 
 const { rhol, toJSData } = require('./RHOCore');
-const { unforgeableWithId } = require('./loading');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
+const { prettyPrivate } = require('./loading');
 
 /*::
 import type { IRNode, IDeployData } from './rnodeAPI';
@@ -33,7 +33,7 @@ interface SourceOpts extends Opts {
 
 interface SendOpts extends Opts {
   rnode: IRNode,
-  delay?: () => Promise<void>,
+  delay?: (number) => Promise<void>,
 };
 
 interface ProxyOpts extends SendOpts {
@@ -101,9 +101,10 @@ async function sendCall(
     returnChan = opts.returnCh;
   } else {
     const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
-      deployData, 1 + (opts.predeclare || []).length,
+      { user: deployData.deployer, timestamp: deployData.timestamp },
+      1 + (opts.predeclare || []).length,
     );
-    console.log({ chans: chans.map(b => b.toString('hex')) });
+    // console.log({ chans: chans.map(b2h) });
 
     const [returnId, ..._] = chans;
     const idToPar = id => ({ ids: [{ id }] });
@@ -118,25 +119,39 @@ async function sendCall(
     { target, method, args },
     { ...opts, chanArgs },
   );
+  console.log({ deployData, note: 'placeholder term' });
   const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
   console.log({ deployResult });
-  if (opts.delay) {
-    await opts.delay();
-  }
-  // ISSUE: loop until we get results?
-  const blockResults = await rnode.listenForDataAtName(returnChan);
-  // console.log({ blockResults });
-  if (!(blockResults.length > 0)) {
-    let name = '<unknown>';
-    const { ids } = returnChan;
-    if (ids && ids[0].id) {
-      name = unforgeableWithId(ids[0].id);
-    }
-    throw new Error(`no data at ${name}`);
-  }
+
+  const blockResults = await pollAt(returnChan, method || '?', { delay: opts.delay, rnode });
   const answerPar = blockResults[0].postBlockData[0];
   // console.log('answerPar', JSON.stringify(answerPar, null, 2));
   return toJSData(answerPar);
+}
+
+
+exports.pollAt = pollAt;
+async function pollAt(
+  returnChan /*: IPar */,
+  doing /*: string*/,
+  { rnode, delay } /*: { rnode: IRNode, delay?: (number) => Promise<void> }*/,
+) {
+  let blockResults = [];
+  const returnPretty = prettyPrivate(returnChan);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const poll of [1, 2, 3, 4]) {
+    console.log(`${doing}: listen #${poll} at return chan ${returnPretty}`);
+    // eslint-disable-next-line no-await-in-loop
+    blockResults = await rnode.listenForDataAtName(returnChan);
+    // console.log({ blockResults });
+    if (blockResults.length > 0) {
+      break;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    if (delay) { await delay(poll); }
+  }
+  if (!blockResults.length) { throw new Error(`${doing}: no reply at ${returnPretty}`); }
+  return blockResults;
 }
 
 

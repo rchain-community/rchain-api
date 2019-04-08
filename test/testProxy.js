@@ -1,9 +1,9 @@
-/*global require, exports*/
+/*global require, exports, Buffer*/
 
-const { sendCall, makeProxy, RNode, RHOCore, h2b } = require('..');
+const { sendCall, makeProxy, RNode, h2b, firstBlockData } = require('..');
 const { link } = require('./assets');
+const { prettyPrivate } = require('../src/loading'); // ISSUE: cheating?
 
-const { toJSData } = RHOCore;
 const def = Object.freeze;
 const remoteContract = link('./target1.rho');
 const defaultPayment = {
@@ -18,12 +18,12 @@ const defaultPayment = {
  * Get remoteTarget registry URI and make method calls on the
  * registered object.
  */
-async function test({ rnode, clock, user, setTimeout }) {
-  const target = await remoteTarget({ rnode, clock, user });
+async function test({ rnode, clock, deployer, setTimeout }) {
+  const target = await remoteTarget({ rnode, clock, deployer });
 
   const timeout = clock().valueOf();
 
-  const deployData = { user, timeout, ...defaultPayment };
+  const deployData = { deployer, timeout, ...defaultPayment };
   const delay = () => makeTimer(setTimeout)(500);
   const ansToSend = await sendCall(
     { target, method: 'buy', args: ['orange', 20] },
@@ -49,34 +49,29 @@ function makeTimer(setTimeout) {
 /**
  * Get registry URI of object created in target1.rho.
  */
-async function remoteTarget({ rnode, clock, user }) {
+async function remoteTarget({ rnode, clock, deployer }) {
   const timestamp = clock().valueOf();
-  const deployTarget = { term: remoteContract, user, timestamp, ...defaultPayment };
-  const [targetCh] = await rnode.previewPrivateChannels(deployTarget, 1);
+  const deployTarget = { term: remoteContract, deployer, timestamp, ...defaultPayment };
+  const [id1] = await rnode.previewPrivateIds({ user: deployer, timestamp }, 1);
+  const idToPar = id => ({ ids: [{ id }] });
+  const targetCh = idToPar(id1);
   // console.log({ targetCh: JSON.stringify(targetCh) });
   await rnode.doDeploy(deployTarget, true);
+  console.log(`remote: listening at return chan ${prettyPrivate(targetCh)}`);
   const found = await rnode.listenForDataAtName(targetCh);
   // console.log('found:', JSON.stringify(found));
-  const target = toJSData(firstBlockData(found));
+  const target = firstBlockData(found);
   console.log({ target });
   return target;
-}
-
-
-// Get the first piece of data from listenForDataAtName
-function firstBlockData(blockResults) {
-  return blockResults[0].postBlockData[0];
 }
 
 
 function mockRNode() {
   let nextAnswer = {};
 
-  const idToPar = id => ({ ids: [{ id }] });
-
-  async function previewPrivateChannels({ user, timestamp }, nameQty) {
-    const each = i => (user.length * i + timestamp) % 51;
-    return [...Array(nameQty).keys()].map(each).map(idToPar);
+  async function previewPrivateIds({ user, timestamp }, nameQty) {
+    const each = i => Buffer.from([(user.length * i + timestamp) % 51]);
+    return [...Array(nameQty).keys()].map(each);
   }
   async function doDeploy(deployData) {
     console.log('deploy: ', deployData);
@@ -85,41 +80,45 @@ function mockRNode() {
     } else {
       nextAnswer = { exprs: [{ g_int: '42' }] };
     }
+    return 'Success! (mock)';
   }
 
   async function listenForDataAtName(_name /*: IPar*/) {
     // console.log('listen for data at', JSON.stringify(_name));
     return [{ postBlockData: [nextAnswer] }];
   }
-  return def({ previewPrivateChannels, doDeploy, listenForDataAtName });
+  return def({ previewPrivateIds, doDeploy, listenForDataAtName });
 }
 
 /*global module, setTimeout */
 if (require.main === module) {
   /* global process */
   /* eslint-disable global-require */
-  test({
-    setTimeout,
-    user: h2b('deadbeef1234'),
-    rnode: mockRNode(),
-    clock: () => new Date(1542492713352),
-  });
+  if (!process.argv.includes('--net')) {
+    console.log('*** Mock Test');
+    test({
+      setTimeout,
+      deployer: h2b('deadbeef1234'),
+      rnode: mockRNode(),
+      clock: () => new Date(1542492713352),
+    });
+  } else {
+    const endpoint = {
+      host: process.env.npm_config_host || 'localhost',
+      port: parseInt(process.env.npm_config_port || '40401', 10),
+    };
+    const rnode = RNode(require('grpc'), endpoint);
 
-  const endpoint = {
-    host: process.env.npm_config_host || 'localhost',
-    port: parseInt(process.env.npm_config_port || '40401', 10),
-  };
-  const rnode = RNode(require('grpc'), endpoint);
-
-  try {
+    console.log('*** Live Test');
     test({
       setTimeout,
       rnode,
-      user: h2b('deadbeef1234'),
+      deployer: h2b('1122334455667788112233445566778811223344556677881122334455667788'),
       clock: () => new Date().valueOf(),
+    }).catch((oops) => {
+      console.error(oops);
+      console.error(oops.stack);
+      process.exit(1);
     });
-  } catch (oops) {
-    console.error(oops);
-    process.exit(1);
   }
 }

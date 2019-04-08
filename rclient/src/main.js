@@ -6,13 +6,13 @@
 
 const assert = require('assert');
 const read = require('read');
-const { URL } = require('url');
 
 const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
   RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h,
-  keccak256Hash, keyPair, makeProxy, blake2b256Hash,
+  keccak256Hash, keyPair, makeProxy,
+  RevAddress,
 } = require('rchain-api');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 
@@ -20,17 +20,17 @@ const { fsReadAccess, fsWriteAccess, FileStorage } = require('./pathlib');
 const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
 const { link } = require('./assets');
-const rhoid = require('./rhoid');
 
 const usage = `
 Usage:
   rclient [options] keygen LABEL
   rclient [options] import LABEL JSONFILE
   rclient [options] info LABEL
+  rclient [options] genVault LABEL AMOUNT
   rclient [options] claim LABEL
   rclient [options] balance LABEL
   rclient [options] publish [--claimed] LABEL
-  rclient [options] send --from=LABEL --to=URI AMOUNT
+  rclient [options] transfer --from=LABEL --to=REVADDR AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
   rclient [options] register RHOMODULE...
@@ -43,20 +43,22 @@ Options:
                         (per ethereum Web3 Secret Storage)
  info                   show public key and ethereum-style address
                         after decrypting with password
+ genVault               create a genesis vault (testnet only)
  claim                  claim REV balance from RHOC after genesis
  publish                register a wallet at the rhoid derived
                         from the key. If --claimed, get the wallet
                         from WalletCheck; else, create a new empty wallet.
  balance                get REV balance after publishing account
- --host INT             The hostname or IPv4 address of the node
+ --host NAME            The hostname or IPv4 address of the node
                         [default: localhost]
  --port INT             The tcp port of the nodes gRPC service
                         [default: 40401]
- --phlo-limit=N         how much are you willing to spend? [default: 10000]
+ --phlo-limit=N         how much are you willing to spend? [default: 1000000]
  --phlo-price=N         TODO docs [default: 1]
  deploy                 deploy RHOLANG file
  register               deploy RHOMODULE, register exported process,
                         and save URI in registry file
+ --poll-interval=N      when listening for data after a call. in ms [default: 5000]
  --registry=FILE        where to store file / URI mappings
                         [default: registry.json]
  -v --verbose           Verbose logging
@@ -69,9 +71,8 @@ import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
 
 import type { ModuleInfo } from '../../src/loading'; // ISSUE: path?
  */
-const user = h2b('d72d0a7c0c9378b4874efbf871ae8089dd81f2ed3c54159fffeaba6e6fca4236'); // arbitrary
 const defaultDeployInfo = {
-  user,
+  deployer: h2b('1111111111111111222222222222222233333333333333334444444444444444'),
   from: '0x01', // TODO: cli arg
   nonce: 1,
   timestamp: -1,
@@ -91,7 +92,7 @@ function ExitStatus(message) {
 async function main(
   argv,
   { stdin, stdout, writeFile, readFile, join },
-  { clock, randomBytes },
+  { clock, randomBytes, setTimeout },
   { grpc, uuidv4 },
 ) {
   const cli = docopt(usage, { argv: argv.slice(2) });
@@ -117,6 +118,9 @@ async function main(
 
   const where = { host: cli['--host'], port: argInt('--port') };
   const rnode = RNode(grpc, where);
+  const mkPause = makeTimer(setTimeout);
+  const dur = argInt('--poll-interval');
+  const delay = i => mkPause(dur * i);
 
   const priceInfo = () => ({
     ...defaultDeployInfo,
@@ -127,7 +131,7 @@ async function main(
   async function ioTools() {
     const registry = FileStorage(argWr('--registry'));
     const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
-    return { getpass, rnode, clock, toolsMod, keyStore: argWr('--keystore') };
+    return { getpass, rnode, clock, delay, toolsMod, keyStore: argWr('--keystore') };
   }
 
   if (cli.keygen) {
@@ -140,6 +144,9 @@ async function main(
     // ISSUE: we only need read-only access to the key store;
     // should WriteAccess extend ReadAccess?
     await showPublic(cli.LABEL, { getpass, keyStore: argWr('--keystore') });
+  } else if (cli.genVault) {
+    const io = await ioTools();
+    await genVault(cli.LABEL, argInt('AMOUNT'), priceInfo(), io);
   } else if (cli.claim) {
     const io = await ioTools();
     await claimAccount(cli.LABEL, priceInfo(), io);
@@ -149,9 +156,9 @@ async function main(
   } else if (cli.publish) {
     const io = await ioTools();
     await publish(cli.LABEL, cli['--claimed'], priceInfo(), io);
-  } else if (cli.send) {
+  } else if (cli.transfer) {
     const io = await ioTools();
-    await sendPayment(argInt('AMOUNT'), cli['--from'], new URL(cli['--to']), priceInfo(), io);
+    await transferPayment(argInt('AMOUNT'), cli['--from'], cli['--to'], priceInfo(), io);
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     await signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
@@ -160,11 +167,20 @@ async function main(
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
     await register(
-      cli.RHOMODULE.map(rd), priceInfo(), { rnode, clock, registry: FileStorage(argWr('--registry')) },
+      cli.RHOMODULE.map(rd), priceInfo(),
+      { rnode, clock, delay, registry: FileStorage(argWr('--registry')) },
     );
   }
+}
 
-  // ISSUE: process exit code
+function makeTimer(setTimeout) {
+  return function timer(ms) {
+    console.log(`making pause of ${ms} ms`);
+    return new Promise(resolve => setTimeout(() => {
+      console.log(`${ms} pause done`);
+      resolve();
+    }, ms));
+  };
 }
 
 
@@ -180,7 +196,7 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 }
 
 
-async function register(files, _price, { registry, rnode, clock }) {
+async function register(files, _price, { registry, rnode, clock, delay }) {
   // ISSUE: what to do when we restart the node?
   // how to check that we're talking to the same chain?
   async function check1(file) {
@@ -199,8 +215,9 @@ async function register(files, _price, { registry, rnode, clock }) {
   const toLoad = status.filter(({ mod }) => !mod);
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
+    const { deployer } = defaultDeployInfo;
     const loaded = await ioOrExit(
-      loadRhoModules(toLoad.map(({ src }) => src), user, { rnode, clock }),
+      loadRhoModules(toLoad.map(({ src }) => src), deployer, { rnode, clock, delay }),
     );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
@@ -244,7 +261,9 @@ async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
     uuidv4,
   );
   await store.set({ [label]: item });
-  console.log({ label, keyStore: keyStore.readOnly().name(), status: 'saved' });
+  const publicKey = keyPair(privKey).publicKey();
+  const revAddr = RevAddress.fromPublicKey(h2b(publicKey)).toString();
+  console.log({ label, revAddr, publicKey, keyStore: keyStore.readOnly().name(), status: 'saved' });
 }
 
 
@@ -331,17 +350,8 @@ async function signMessage(keyStore, label, input, { getpass }) {
 
 
 async function showPublic(label, { keyStore, getpass }) {
-  try {
-    const privKey = await loadKey(keyStore, label, [], { getpass });
-    // ISSUE: logging is not just FYI here;
-    // should be passed as an explicit capability.
-    const pubKey = privateToPublic(privKey);
-    const ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    console.log({ label, publicKey: b2h(pubKey), ethAddr });
-  } catch (oops) {
-    console.error('cannot load key');
-    console.error(oops.message);
-  }
+  const { revAddr, publicKey } = await loadRevAddr(label, [], { keyStore, getpass });
+  console.log({ label, publicKey, revAddr });
 }
 
 // ISSUE: move to secretStorage
@@ -358,7 +368,31 @@ function pubToAddress(pubKey) {
 }
 
 
-const rhoBlakeHash = data => blake2b256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
+async function loadRevAddr(label, notice, { keyStore, getpass }) {
+  try {
+    const privKey = await loadKey(keyStore, label, notice, { getpass });
+    const edKey = keyPair(privKey); // ed25519
+    const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
+    return { label, revAddr, publicKey: edKey.publicKey() };
+  } catch (err) {
+    throw new ExitStatus(`cannot load public key: ${err.message}`);
+  }
+}
+
+async function genVault(
+  label, amount, priceInfo,
+  { keyStore, getpass, toolsMod, rnode, clock, delay },
+) {
+  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
+
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const result = await tools.genVault(revAddr, amount);
+  if (result && typeof result === 'object' && typeof result.message === 'string') {
+    throw new ExitStatus(`cannot generate vault: ${result.message}`);
+  }
+  console.log({ revAddr, label, amount, result });
+}
+
 const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
@@ -390,26 +424,13 @@ async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rno
 }
 
 
-async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
-  let privKey;
-  let pubKey;
-  let ethAddr;
-  try {
-    privKey = await loadKey(keyStore, label, [], { getpass });
-    pubKey = privateToPublic(privKey);
-    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    // ISSUE: logging is not just FYI here;
-    // should be passed as an explicit capability.
-    console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (err) {
-    throw new ExitStatus(`cannot load key: ${err.message}`);
-  }
+async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
+  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
-  const edPubKey = Buffer.from(h2b(keyPair(privKey).publicKey()));
-  const balance = await outcome(tools.getBalance(new URL(rhoid.pkURI(edPubKey))));
+  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const balance = await tools.balance(revAddr);
 
-  console.log({ ethAddr, balance, label });
+  console.log({ revAddr, balance, label });
 }
 
 async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
@@ -443,31 +464,22 @@ async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode,
 }
 
 
-async function sendPayment(
+async function transferPayment(
   // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
   amount, fromLabel, toAddr, paymentInfo,
-  { keyStore, toolsMod, getpass, rnode, clock },
+  { keyStore, toolsMod, getpass, rnode, clock, delay },
 ) {
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
-  const privKey = await loadKey(keyStore, fromLabel, notice, { getpass });
+  const { revAddr, publicKey } = await loadRevAddr(fromLabel, notice, { keyStore, getpass });
 
-  // registry insertSigned uses ed25519 even though this wallet uses secp256k1 signatures.
-  const edPubKey = Buffer.from(h2b(keyPair(privKey).publicKey()));
-  const fromAddr = new URL(rhoid.pkURI(edPubKey));
+  const tools = makeProxy(
+    toolsMod.URI,
+    { ...paymentInfo, deployer: h2b(publicKey) },
+    { rnode, clock, delay },
+  );
 
-  const myWallet = makeProxy(fromAddr, paymentInfo, { rnode, clock, insertSigned: true });
-  const oldNonce = await myWallet.getNonce();
-  if (typeof oldNonce !== 'number') { throw new Error('expected number'); }
-  const nonce = oldNonce + 1;
-
-  function fixArgs(args, [dest, ..._]) {
-    const out = [...args];
-    out[4] = sigDERHex(secp256k1.sign(rhoBlakeHash([nonce, amount, dest]), privKey));
-    return out;
-  }
-  const tools = makeProxy(toolsMod.URI, paymentInfo, { rnode, clock, fixArgs, predeclare: ['via'] });
-
-  return outcome(tools.pay(fromAddr, toAddr, amount, nonce, 'sig goes here'));
+  const transferResult = await tools.transfer(revAddr, toAddr, amount);
+  console.log({ transferResult });
 }
 
 
@@ -502,7 +514,7 @@ async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
 if (require.main === module) {
   // Import primitive effects only when invoked as main module.
   /* eslint-disable global-require */
-  /*global process*/
+  /*global process, setTimeout*/
   main(
     process.argv,
     {
@@ -514,6 +526,7 @@ if (require.main === module) {
     },
     {
       clock: () => new Date(),
+      setTimeout,
       randomBytes: require('crypto').randomBytes,
     },
     {
@@ -526,6 +539,8 @@ if (require.main === module) {
         console.error(err.message);
         process.exit(1);
       } else {
+        console.error(err);
+        console.error(err.stack);
         throw err; // bug!
       }
     });

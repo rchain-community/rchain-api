@@ -3,6 +3,17 @@
 /* global require, exports, Buffer */
 // @flow
 
+/*::
+
+// ISSUE: opaque types?
+export type Hex<T> = string;
+export type Bytes = Uint8Array | Buffer;
+export type Signature = Bytes;
+export type PrivateKey = Bytes;
+export type PublicKey = Bytes;
+
+*/
+
 // ref https://nodejs.org/api/util.html#util_custom_inspection_functions_on_objects
 // ack: https://stackoverflow.com/a/46870568
 // const inspect = require('util').inspect;
@@ -14,8 +25,15 @@ const { fromJSData, toByteArray } = require('./RHOCore');
 import type { JsonExt } from './RHOCore';
 */
 
-function b2h(bytes /*: Uint8Array */) /*: string*/ { return Buffer.from(bytes).toString('hex'); }
-function h2b(hex /*: string*/) /*: Uint8Array*/ { return Buffer.from(hex, 'hex'); }
+function b2h/*:: <T: Bytes>*/(bytes /*: T */) /*: string*/ {
+  return Buffer.from(bytes).toString('hex');
+}
+function b2hx/*:: <T: Bytes>*/(bytes /*: T */) /*: Hex<T>*/ {
+  return Buffer.from(bytes).toString('hex');
+}
+function h2b/*:: <T: Bytes>*/(hex /*: Hex<T>*/) /*: Bytes*/ {
+  return Buffer.from(hex, 'hex');
+}
 
 const t2b = text => Buffer.from(text);
 
@@ -29,14 +47,14 @@ exports.keyPair = keyPair;
  * Build key pair from seed.
  * @param seed 32 bytes, as from crypto.randombytes(32)
  */
-function keyPair(seed /*: Uint8Array */) {
+function keyPair(seed /*: PrivateKey */) {
   const key = sign.keyPair.fromSeed(seed);
 
   // TODO const toString = () => `<keyPair ${label}: ${state.publicKey.substring(0, 12)}...>`;
   /**
    * @memberof keyPair
    */
-  function signBytes(bytes /*: (Uint8Array)*/) /*: Uint8Array */ {
+  function signBytes(bytes /*: Uint8Array */) /*: Signature */ {
     return sign.detached(bytes, key.secretKey);
   }
 
@@ -46,31 +64,31 @@ function keyPair(seed /*: Uint8Array */) {
     /**
      * @memberof keyPair
      */
-    signBytesHex(bytes /*: Uint8Array*/) /*: string */ { return b2h(signBytes(bytes)); },
+    signBytesHex(bytes /*: Uint8Array*/) /*: Hex<Signature> */ { return b2hx(signBytes(bytes)); },
     /**
      * @memberof keyPair
      */
-    signText(text /*: string*/) /*: Uint8Array*/ { return signBytes(t2b(text)); },
+    signText(text /*: string*/) /*: Signature */ { return signBytes(t2b(text)); },
     /**
      * @memberof keyPair
      */
-    signTextHex(text /*: string*/) /*: string*/ { return b2h(signBytes(t2b(text))); },
+    signTextHex(text /*: string*/) /*: Hex<Signature> */ { return b2hx(signBytes(t2b(text))); },
     /**
      * @memberof keyPair
      */
-    publicKey() /*: string*/ { return b2h(key.publicKey); },
+    publicKey() /*: Hex<PublicKey> */ { return b2hx(key.publicKey); },
 
     /**
      * @memberof keyPair
      */
-    signData(data /*: JsonExt<URL | GPrivate>*/) {
+    signData(data /*: JsonExt<URL | GPrivate>*/) /*: Signature */ {
       return signBytes(toByteArray(fromJSData(data)));
     },
     /**
      * @memberof keyPair
      */
-    signDataHex(data /*: JsonExt<URL | GPrivate>*/) {
-      return b2h(signBytes(toByteArray(fromJSData(data))));
+    signDataHex(data /*: JsonExt<URL | GPrivate>*/) /*: Hex<Signature> */ {
+      return b2hx(signBytes(toByteArray(fromJSData(data))));
     },
     // TODO label: () => state.label,
     // TODO [inspect.custom]: toString
@@ -84,9 +102,9 @@ exports.verify = verify;
  */
 function verify(
   message /*: Uint8Array*/,
-  sig /*: Uint8Array*/,
-  publicKey /*: Uint8Array*/,
-) /*: Uint8Array */ {
+  sig /*: Signature */,
+  publicKey /*: PublicKey */,
+) /*: Signature */ {
   return sign.detached.verify(message, sig, publicKey);
 }
 

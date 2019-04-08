@@ -8,7 +8,7 @@ in {
   new uriCh in {
     insertArbitrary!(*target, *uriCh) |
     for (@uri <- uriCh) {
-      debug!({"target": uri}) |
+      debug!({"target": uri, "ret": *ret}) |
       ret!("${target}" %% {"target": uri})
     }
   }

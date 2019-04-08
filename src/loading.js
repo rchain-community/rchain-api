@@ -6,9 +6,11 @@
 const { URL } = require('url');
 
 const { Writer } = require('protobufjs');
+const { DataWithBlockInfo } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 
 const { b2h } = require('./signing');
 const RHOCore = require('./RHOCore');
+const { pollAt } = require('./proxy');
 
 const { link } = require('./assets');
 
@@ -22,6 +24,7 @@ import type { IRNode } from '..';
 interface LoadAccess {
   rnode: IRNode,
   clock: () => Date,
+  delay?: (number) => Promise<void>,
 }
 
 export type ModuleInfo = {
@@ -35,8 +38,8 @@ export type ModuleInfo = {
 
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
-  sources /*: string[]*/, user /*: Uint8Array*/,
-  { rnode, clock } /*: LoadAccess */,
+  sources /*: string[]*/, deployer /*: Uint8Array*/,
+  { rnode, clock, delay } /*: LoadAccess */,
 ) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;
   function monotonicClock() {
@@ -50,9 +53,9 @@ async function loadRhoModules(
 
   async function deploy1({ name, title, term }) {
     const timestamp = monotonicClock();
-    const [chan] = await rnode.previewPrivateChannels({ user, timestamp }, 1);
+    const [chan] = await rnode.previewPrivateChannels({ user: deployer, timestamp }, 1);
     console.log(`Deploying: ${title}\n`);
-    const deployResult = await rnode.doDeploy({ user, term, timestamp, ...defaultPayment });
+    const deployResult = await rnode.doDeploy({ ...defaultPayment, deployer, term, timestamp });
     console.log({ deployResult, name });
     return { name, title, term, chan };
   }
@@ -64,8 +67,7 @@ async function loadRhoModules(
   console.log({ createdBlock, loading: deployed.map(({ name }) => name) });
 
   async function register1({ name, title, term, chan }) /*: Promise<ModuleInfo> */{
-    console.log(`${name}: listening for URI at ${prettyPrivate(chan)}`);
-    const found = await rnode.listenForDataAtName(chan);
+    const found = await pollAt(chan, name, { rnode, delay });
     const d = firstBlockData(found);
     if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${String(d)}`); }
     const URI = d;
@@ -125,7 +127,10 @@ function prettyPrivate(par /*: IPar */) {
   return unforgeableWithId(par.ids[0].id);
 }
 
-function firstBlockData(blockResults) {
+exports.firstBlockData = firstBlockData;
+function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
+  const _ = DataWithBlockInfo; // mark used
+  // console.log({ blockResults });
   if (!blockResults.length) { throw new Error('no blocks found'); }
   return RHOCore.toJSData(firstBlockProcess(blockResults));
 }

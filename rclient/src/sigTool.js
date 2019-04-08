@@ -14,6 +14,7 @@ const def = Object.freeze;
 
 import nacl from 'tweetnacl';
 import type { StorageArea } from './pathlib';
+import type { Hex, PublicKey } from 'rchain-api';
 
 // SigningKey is the format we use to save the key pair
 // with the secret key encrypted.
@@ -24,7 +25,7 @@ export type SigningKey = {
     nonce: string,
     cipherText: string,
   },
-  pubKey: string
+  pubKey: Hex<PublicKey>
 }
 
 export interface SigTool {

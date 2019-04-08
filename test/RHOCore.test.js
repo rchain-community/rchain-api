@@ -17,6 +17,8 @@ function testRHOCore() {
     return (test) => {
       test.deepEqual(RHOCore.fromJSData(item.data), item.rho);
       test.deepEqual(RHOCore.toJSData(item.rho), item.data);
+      const msg = Par.fromObject(item.rho);
+      test.deepEqual(RHOCore.toJSData(msg), item.data);
       if (item.rholang != null) {
         test.deepEqual(RHOCore.toRholang(item.rho), item.rholang);
       }

@@ -74,10 +74,23 @@ function netTests({ grpc, clock, rng }) {
         test.end();
       });
     },
+    'test getAllBlocks': (test) => {
+      const expected = [
+        'parentsHashList', 'blockHash', 'blockSize', 'blockNumber', 'version',
+        'deployCount', 'tupleSpaceHash', 'timestamp', 'faultTolerance',
+        'mainParentHash', 'sender',
+      ];
+      localNode().getAllBlocks()
+        .then((actual) => {
+          test.equal(actual.length > 0, true);
+          test.deepEqual(Object.keys(actual[0]), expected);
+          test.end();
+        });
+    },
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
       localNode().getBlock(blockHash).catch((err) => {
-        test.deepEqual(err, ['Error: Failure to find block with hash thisshouldbreak']);
+        test.deepEqual(err.message, 'Error: Failure to find block with hash thisshouldbreak');
         test.end();
       });
     },
