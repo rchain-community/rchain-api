@@ -12,6 +12,7 @@ export type Signature = Bytes;
 export type PrivateKey = Bytes;
 export type PublicKey = Bytes;
 
+export type KeyPair = $Call<typeof keyPair, PrivateKey>;
 */
 
 // ref https://nodejs.org/api/util.html#util_custom_inspection_functions_on_objects
@@ -20,7 +21,10 @@ export type PublicKey = Bytes;
 
 const { sign } = require('tweetnacl'); // ocap discpline: "hiding" keyPair
 
+const { DeployData } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 const { fromJSData, toByteArray } = require('./RHOCore');
+const { blake2b256Hash } = require('./hashing');
+
 /*::
 import type { JsonExt } from './RHOCore';
 */
@@ -104,10 +108,45 @@ function verify(
   message /*: Uint8Array*/,
   sig /*: Signature */,
   publicKey /*: PublicKey */,
-) /*: Signature */ {
+) /*: boolean */ {
   return sign.detached.verify(message, sig, publicKey);
 }
 
+
+/**
+ * a port of casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+ *
+ * ISSUE: only ed25519 is supported.
+ */
+const SignDeployment = (() => {
+  const algName = 'ed25519';
+
+  const fill = deployData => (deployer, sig, sigAlgorithm) => (
+    { ...deployData, deployer, sig, sigAlgorithm }
+  );
+
+  const clear = deployData => fill(deployData)(null, null, null);
+
+  function signD(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
+    const toSign = DeployData.encode(clear(deployData)).finish();
+    const hash = blake2b256Hash(toSign);
+    const signature = key.signBytes(hash);
+
+    return fill(deployData)(h2b(key.publicKey()), signature, algName);
+  }
+
+  function verifyD(deployData /*: DeployData*/)/*: boolean */ {
+    if (deployData.sigAlgorithm !== algName) {
+      throw new Error(`unsupported: ${deployData.sigAlgorithm}`);
+    }
+    const toVerify = DeployData.encode(clear(deployData)).finish();
+    const hash = blake2b256Hash(toVerify);
+    return verify(hash, deployData.sig, deployData.deployer);
+  }
+
+  return Object.freeze({ sign: signD, verify: verifyD });
+})();
+exports.SignDeployment = SignDeployment;
 
 function integrationTest({ randomBytes }) {
   const seed = randomBytes(32);

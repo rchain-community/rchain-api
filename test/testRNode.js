@@ -2,7 +2,7 @@
 const ttest = require('tape');
 const api = require('../index');
 
-const { RNode, b2h, h2b } = api;
+const { RNode, b2h, h2b, SignDeployment, keyPair } = api;
 const { sha256Hash, keccak256Hash, blake2b256Hash } = api;
 const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = api;
 
@@ -38,6 +38,8 @@ function testRNode(suite2) {
 }
 
 
+const defaultSec = h2b('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
+
 function netTests({ grpc, clock, rng }) {
   const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
 
@@ -69,7 +71,8 @@ function netTests({ grpc, clock, rng }) {
       const term = 'new test in { contract test(return) = { return!("test") } }';
       const timestamp = clock().valueOf();
 
-      localNode().doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
+      const key = keyPair(defaultSec);
+      localNode().doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
         test.equal(results.slice(0, 'Success'.length), 'Success');
         test.end();
       });
@@ -121,8 +124,9 @@ function runAndListen(
   term, returnChannel, timestamp,
   node, test = null,
 ) {
+  const key = keyPair(defaultSec);
   // console.log("run:", { term, returnChannel });
-  return node.doDeploy({ term, timestamp, ...payment() }, true).then((results) => {
+  return node.doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
     if (test) { test.equal(results.slice(0, 'Success'.length), 'Success'); }
 
     // Get the generated result from the channel
@@ -137,13 +141,14 @@ function runAndListen(
 }
 
 
-function payment(phloPrice = 1, phloLimit = 10000000) {
-  return {
+function payFor(d0, key, phloPrice = 1, phloLimit = 10000000) {
+  const dout = SignDeployment.sign(key, {
+    ...d0,
     phloPrice,
     phloLimit,
-    from: '0x01',
-    nonce: 0,
-  };
+  });
+  // console.log({ valid: SignDeployment.verify(dout), sig: b2h(dout.sig) });
+  return dout;
 }
 
 

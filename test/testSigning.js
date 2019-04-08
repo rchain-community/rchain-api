@@ -1,6 +1,7 @@
 /*global require*/
 const ttest = require('tape');
-const { keyPair, h2b, verify } = require('../index');
+const { DeployData } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
+const { keyPair, h2b, b2h, verify, SignDeployment } = require('..');
 
 function testSigning() {
   const cases = {
@@ -37,6 +38,33 @@ function testSigning() {
       test.end();
     };
   }
+
+  ttest('sign deploy', (test) => {
+    const defaultSec = h2b('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
+
+    const d0 /*: DeployData */ = {
+      term: 'new test in { contract test(return) = { return!("test") } }',
+      timestamp: 1554757703966,
+      phloPrice: 1,
+      phloLimit: 10000000,
+    };
+    const toSign = DeployData.encode(d0).finish();
+    test.equal(
+      b2h(toSign),
+      '123b6e6577207465737420696e207b20636f6e747261637420746573742872657475726e29203d207b2072657475726e212822746573742229207d207d189eb29ff69f2d38014080ade204',
+    );
+
+    const dout = SignDeployment.sign(keyPair(defaultSec), d0);
+    test.equal(
+      b2h(dout.sig),
+      'b6e0c2077e3ae2794b7324b518b49a9aa597eb07207f84f6339db73aeb6852491b8a7e640fd17f88ee80b61e3d326ec87835feebbb7dacdeadf03f26deff350f',
+    );
+    test.equal(
+      b2h(dout.deployer),
+      '77f48b59caeda77751ed138b0ec667ff50f8768c25d48309a8f386a2bad187fb',
+    );
+    test.end();
+  });
 }
 
 testSigning();

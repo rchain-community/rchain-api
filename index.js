@@ -22,11 +22,12 @@ import type { IRNode } from './src/rnodeAPI';
 export type { IRNode };
  */
 
-const { sendCall, makeProxy, callSource } = require('./src/proxy');
+const { sendCall, makeProxy, callSource, firstBlockData } = require('./src/proxy');
 
 module.exports.sendCall = sendCall;
 module.exports.makeProxy = makeProxy;
 module.exports.callSource = callSource;
+module.exports.firstBlockData = firstBlockData;
 
 const signing = require('./src/signing');
 
@@ -41,7 +42,7 @@ module.exports.keyPair = signing.keyPair;
 module.exports.verify = signing.verify;
 module.exports.b2h = signing.b2h;
 module.exports.h2b = signing.h2b;
-
+module.exports.SignDeployment = signing.SignDeployment;
 
 const hashing = require('./src/hashing.js');
 
@@ -55,7 +56,3 @@ module.exports.simplifiedBlake2b256Hash = hashing.simplifiedBlake2b256Hash;
 const { RevAddress } = require('./src/revAddress');
 
 module.exports.RevAddress = RevAddress;
-
-const loading = require('./src/loading');
-
-module.exports.firstBlockData = loading.firstBlockData;
