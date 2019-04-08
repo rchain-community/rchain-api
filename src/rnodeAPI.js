@@ -167,7 +167,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
       /* $FlowFixMe$ ISSUE: Either.proto fibs a bit*/
       return cls.decode(x.success.response.value);
     }
-    throw (x.error || {}).messages;
+    throw new Error((x.error || {}).messages);
   }
 
   /**

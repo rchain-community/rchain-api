@@ -77,7 +77,7 @@ function netTests({ grpc, clock, rng }) {
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
       localNode().getBlock(blockHash).catch((err) => {
-        test.deepEqual(err, ['Error: Failure to find block with hash thisshouldbreak']);
+        test.deepEqual(err.message, 'Error: Failure to find block with hash thisshouldbreak');
         test.end();
       });
     },
