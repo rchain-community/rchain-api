@@ -305,10 +305,10 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function getAllBlocks(blockDepth /*: number */ = 1) {
+  function getAllBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
-    sendThenReceiveStream(client.showBlocks({ depth: blockDepth }))
+    return sendThenReceiveStream(client.showBlocks({ depth: blockDepth }))
       .then((parts) => {
         if (parts.length === 0) {
           throw new Error('ERROR: Failed to retrieve the requested blocks');
