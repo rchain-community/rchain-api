@@ -5,8 +5,10 @@
 
 const { URL } = require('url');
 
-const { h2b, keyPair, SignDeployment } = require('./signing');
-const { pollAt, firstBlockData } = require('./proxy');
+const Hex = require('./hex');
+const { Ed25519 } = require('./signing');
+const { pollAt } = require('./proxy');
+const { Block, SignDeployment } = require('./rnodeAPI');
 
 const { link } = require('./assets');
 
@@ -65,7 +67,7 @@ async function loadRhoModules(
   async function register1({ name, title, term, chan }) /*: Promise<ModuleInfo> */{
     console.log({ pollAt });
     const found = await pollAt(chan, name, { rnode, delay });
-    const d = firstBlockData(found);
+    const d = Block.firstData(found);
     if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${String(d)}`); }
     const URI = d;
     console.log(`${name} registered at: ${String(URI)}`);
@@ -119,7 +121,7 @@ async function integrationTest(argv, { readFileSync, clock, rnode, setTimeout })
   const dur = 3 * 1000;
   const delay = _i => new Promise((resolve) => { setTimeout(resolve, dur); });
 
-  const key = keyPair(h2b('11'.repeat(32)));
+  const key = Ed25519.keyPair(Hex.decode('11'.repeat(32)));
   function payFor(d0 /*: DeployInfo*/) {
     return SignDeployment.sign(key, {
       ...d0,

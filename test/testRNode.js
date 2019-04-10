@@ -2,9 +2,8 @@
 const ttest = require('tape');
 const api = require('../index');
 
-const { RNode, b2h, h2b, SignDeployment, keyPair } = api;
-const { sha256Hash, keccak256Hash, blake2b256Hash } = api;
-const { simplifiedSHA256Hash, simplifiedKeccak256Hash, simplifiedBlake2b256Hash } = api;
+const { RNode, SignDeployment, RHOCore, Hex } = api;
+const { Ed25519, SHA256, Keccak256, Blake2b256 } = api;
 
 
 /**
@@ -38,7 +37,7 @@ function testRNode(suite2) {
 }
 
 
-const defaultSec = h2b('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
+const defaultSec = Hex.decode('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
 
 function netTests({ grpc, clock, rng }) {
   const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
@@ -53,10 +52,10 @@ function netTests({ grpc, clock, rng }) {
     runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
       .then((rholangHash) => {
         if (isNormalTest) {
-          const serializedData = h2b(config.txt);
+          const serializedData = Hex.decode(config.txt);
           test.deepEqual(fn(serializedData), Uint8Array.from(rholangHash.exprs[0].g_byte_array));
         } else {
-          test.equal(fn('testtest'), b2h(rholangHash.exprs[0].g_byte_array));
+          test.equal(fn('testtest'), Hex.encode(rholangHash.exprs[0].g_byte_array));
         }
         test.end();
       })
@@ -71,7 +70,7 @@ function netTests({ grpc, clock, rng }) {
       const term = 'new test in { contract test(return) = { return!("test") } }';
       const timestamp = clock().valueOf();
 
-      const key = keyPair(defaultSec);
+      const key = Ed25519.keyPair(defaultSec);
       localNode().doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
         test.equal(results.slice(0, 'Success'.length), 'Success');
         test.end();
@@ -98,22 +97,22 @@ function netTests({ grpc, clock, rng }) {
       });
     },
     'simplified SHA256 hashing': (test) => {
-      hashTest(test, simplifiedSHA256Hash, 'sha256Hash', false);
+      hashTest(test, RHOCore.wrapHash(SHA256.hash), 'sha256hash', false);
     },
     'simplified Keccak256 hashing': (test) => {
-      hashTest(test, simplifiedKeccak256Hash, 'keccak256Hash', false);
+      hashTest(test, RHOCore.wrapHash(Keccak256.hash), 'keccak256hash', false);
     },
     'simplified Blake2b256 hashing': (test) => {
-      hashTest(test, simplifiedBlake2b256Hash, 'blake2b256Hash', false);
+      hashTest(test, RHOCore.wrapHash(Blake2b256.hash), 'blake2b256hash', false);
     },
     'normal SHA256 hashing': (test) => {
-      hashTest(test, sha256Hash, 'sha256Hash', true);
+      hashTest(test, SHA256.hash, 'SHA256.hash', true);
     },
     'normal Keccak256 hashing': (test) => {
-      hashTest(test, keccak256Hash, 'keccak256Hash', true);
+      hashTest(test, Keccak256.hash, 'keccak256.hash', true);
     },
     'normal Blake2b256 hashing': (test) => {
-      hashTest(test, blake2b256Hash, 'blake2b256Hash', true);
+      hashTest(test, Blake2b256.hash, 'Blake2b256.hash', true);
     },
   };
 }
@@ -124,7 +123,7 @@ function runAndListen(
   term, returnChannel, timestamp,
   node, test = null,
 ) {
-  const key = keyPair(defaultSec);
+  const key = Ed25519.keyPair(defaultSec);
   // console.log("run:", { term, returnChannel });
   return node.doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
     if (test) { test.equal(results.slice(0, 'Success'.length), 'Success'); }

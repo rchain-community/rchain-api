@@ -6,15 +6,17 @@ ISSUE: pretty much subsumed by secretStorage. prune nacl dependency too.
  */
 /* global exports, require */
 
-const { b2h, h2b } = require('rchain-api');
+const { Hex } = require('rchain-api');
 
 const def = Object.freeze;
+const b2h = Hex.encode;
+const h2b = Hex.decode;
 
 /*::
 
 import nacl from 'tweetnacl';
 import type { StorageArea } from './pathlib';
-import type { Hex, PublicKey } from 'rchain-api';
+import type { HexStr, PublicKey } from 'rchain-api';
 
 // SigningKey is the format we use to save the key pair
 // with the secret key encrypted.
@@ -25,7 +27,7 @@ export type SigningKey = {
     nonce: string,
     cipherText: string,
   },
-  pubKey: Hex<PublicKey>
+  pubKey: HexStr<PublicKey>
 }
 
 export interface SigTool {

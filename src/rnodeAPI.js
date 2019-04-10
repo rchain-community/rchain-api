@@ -17,12 +17,15 @@ const {
   BlockQueryResponse,
   BlockInfoWithoutTuplespace,
   DataWithBlockInfo,
+  DeployData,
   DeployServiceResponse,
   ListeningNameContinuationResponse,
   ListeningNameDataResponse,
   PrivateNamePreviewResponse,
 } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 const RHOCore = require('./RHOCore');
+const Hex = require('./hex');
+const { Blake2b256, Ed25519 } = require('./signing');
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
@@ -38,6 +41,7 @@ const packageDefinition = protoLoader.loadSync(
 /*::
 import grpcT from 'grpc';
 import type { JsonExt } from './RHOCore';
+import type { KeyPair } from './signing';
 
 type JSData = JsonExt<URL | GPrivate>;
  */
@@ -350,6 +354,62 @@ function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
   throw new Error('Provided Par object does not represent a single unforgeable name');
 }
 
+
+function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
+  const _ = DataWithBlockInfo; // mark used
+  // console.log({ blockResults });
+  if (!blockResults.length) { throw new Error('no blocks found'); }
+  return RHOCore.toJSData(firstBlockProcess(blockResults));
+}
+exports.Block = Object.freeze({ firstData: firstBlockData });
+
+
+// Get the first piece of data from listenForDataAtName
+function firstBlockProcess(blockResults) {
+  // console.log('found:', JSON.stringify(blockResults, null, 2));
+  const ea = [].concat(...blockResults.map(br => br.postBlockData));
+  // console.log('ea: ', JSON.stringify(ea, null, 2));
+  const good = ea.filter(it => it.exprs.length > 0 || it.bundles.length > 0 || it.ids.length > 0);
+  // console.log('good:');
+  // console.log(JSON.stringify(good, null, 2));
+  return good[0];
+}
+
+
+/**
+ * a port of casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+ *
+ * ISSUE: only ed25519 is supported.
+ */
+const SignDeployment = (() => {
+  const algName = 'ed25519';
+
+  const fill = deployData => (deployer, sig, sigAlgorithm) => (
+    { ...deployData, deployer, sig, sigAlgorithm }
+  );
+
+  const clear = deployData => fill(deployData)(null, null, null);
+
+  function signD(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
+    const toSign = DeployData.encode(clear(deployData)).finish();
+    const hash = Blake2b256.hash(toSign);
+    const signature = key.signBytes(hash);
+
+    return fill(deployData)(Hex.decode(key.publicKey()), signature, algName);
+  }
+
+  function verifyD(deployData /*: DeployData*/)/*: boolean */ {
+    if (deployData.sigAlgorithm !== algName) {
+      throw new Error(`unsupported: ${deployData.sigAlgorithm}`);
+    }
+    const toVerify = DeployData.encode(clear(deployData)).finish();
+    const hash = Blake2b256.hash(toVerify);
+    return Ed25519.verify(hash, deployData.sig, deployData.deployer);
+  }
+
+  return Object.freeze({ sign: signD, verify: verifyD });
+})();
+exports.SignDeployment = SignDeployment;
 
 /*
  * Adapt callback-style API using Promises.

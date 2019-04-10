@@ -1,12 +1,9 @@
 /*global require, exports*/
 // @flow
 
-const { Writer } = require('protobufjs');
-const { DataWithBlockInfo } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
-
-const { b2h } = require('./signing');
-const { rhol, toJSData } = require('./RHOCore');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
+const { rhol, prettyPrivate } = require('./RHOCore');
+const { Block } = require('./rnodeAPI');
 
 /*::
 import type { IRNode, IDeployData } from './rnodeAPI';
@@ -127,7 +124,7 @@ async function sendCall(
   console.log({ deployResult });
 
   const blockResults = await pollAt(returnChan, method || '?', { delay: opts.delay, rnode });
-  return firstBlockData(blockResults);
+  return Block.firstData(blockResults);
 }
 
 
@@ -153,42 +150,6 @@ async function pollAt(
   }
   if (!blockResults.length) { throw new Error(`${doing}: no reply at ${returnPretty}`); }
   return blockResults;
-}
-
-
-/**
- * Get printable form of unforgeable name, given id.
- */
-exports.unforgeableWithId = unforgeableWithId;
-function unforgeableWithId(id /*: Uint8Array */) {
-  const bytes = Writer.create().bytes(id).finish().slice(1);
-  return `Unforgeable(0x${b2h(bytes)})`;
-}
-
-exports.prettyPrivate = prettyPrivate;
-function prettyPrivate(par /*: IPar */) {
-  if (!(par.ids && par.ids.length && par.ids[0].id)) { throw new Error('expected GPrivate'); }
-  return unforgeableWithId(par.ids[0].id);
-}
-
-exports.firstBlockData = firstBlockData;
-function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
-  const _ = DataWithBlockInfo; // mark used
-  // console.log({ blockResults });
-  if (!blockResults.length) { throw new Error('no blocks found'); }
-  return toJSData(firstBlockProcess(blockResults));
-}
-
-
-// Get the first piece of data from listenForDataAtName
-function firstBlockProcess(blockResults) {
-  // console.log('found:', JSON.stringify(blockResults, null, 2));
-  const ea = [].concat(...blockResults.map(br => br.postBlockData));
-  // console.log('ea: ', JSON.stringify(ea, null, 2));
-  const good = ea.filter(it => it.exprs.length > 0 || it.bundles.length > 0 || it.ids.length > 0);
-  // console.log('good:');
-  // console.log(JSON.stringify(good, null, 2));
-  return good[0];
 }
 
 

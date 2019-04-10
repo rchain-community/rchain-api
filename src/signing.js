@@ -5,9 +5,9 @@
 
 /*::
 
+import type { HexStr, Bytes } from './hex';
+
 // ISSUE: opaque types?
-export type Hex<T> = string;
-export type Bytes = Uint8Array | Buffer;
 export type Signature = Bytes;
 export type PrivateKey = Bytes;
 export type PublicKey = Bytes;
@@ -19,40 +19,25 @@ export type KeyPair = $Call<typeof keyPair, PrivateKey>;
 // ack: https://stackoverflow.com/a/46870568
 // const inspect = require('util').inspect;
 
+const crypto = require('crypto');
+
 const { sign } = require('tweetnacl'); // ocap discpline: "hiding" keyPair
+const blake2 = require('blake2');
+const { keccak256 } = require('js-sha3');
 
-const { DeployData } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
-const { fromJSData, toByteArray } = require('./RHOCore');
-const { blake2b256Hash } = require('./hashing');
-
-/*::
-import type { JsonExt } from './RHOCore';
-*/
-
-function b2h/*:: <T: Bytes>*/(bytes /*: T */) /*: string*/ {
-  return Buffer.from(bytes).toString('hex');
-}
-function b2hx/*:: <T: Bytes>*/(bytes /*: T */) /*: Hex<T>*/ {
-  return Buffer.from(bytes).toString('hex');
-}
-function h2b/*:: <T: Bytes>*/(hex /*: Hex<T>*/) /*: Bytes*/ {
-  return Buffer.from(hex, 'hex');
-}
-
-const t2b = text => Buffer.from(text);
+const b2hx = require('./hex').fromBytes;
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
-exports.b2h = b2h;
-exports.h2b = h2b;
-
-exports.keyPair = keyPair;
 /**
  * Build key pair from seed.
+ *
  * @param seed 32 bytes, as from crypto.randombytes(32)
+ * @memberof Ed25519
  */
 function keyPair(seed /*: PrivateKey */) {
   const key = sign.keyPair.fromSeed(seed);
+  const t2b = text => Buffer.from(text);
 
   // TODO const toString = () => `<keyPair ${label}: ${state.publicKey.substring(0, 12)}...>`;
   /**
@@ -68,7 +53,7 @@ function keyPair(seed /*: PrivateKey */) {
     /**
      * @memberof keyPair
      */
-    signBytesHex(bytes /*: Uint8Array*/) /*: Hex<Signature> */ { return b2hx(signBytes(bytes)); },
+    signBytesHex(bs /*: Uint8Array*/) /*: HexStr<Signature> */ { return b2hx(signBytes(bs)); },
     /**
      * @memberof keyPair
      */
@@ -76,33 +61,22 @@ function keyPair(seed /*: PrivateKey */) {
     /**
      * @memberof keyPair
      */
-    signTextHex(text /*: string*/) /*: Hex<Signature> */ { return b2hx(signBytes(t2b(text))); },
+    signTextHex(text /*: string*/) /*: HexStr<Signature> */ { return b2hx(signBytes(t2b(text))); },
     /**
      * @memberof keyPair
      */
-    publicKey() /*: Hex<PublicKey> */ { return b2hx(key.publicKey); },
+    publicKey() /*: HexStr<PublicKey> */ { return b2hx(key.publicKey); },
 
-    /**
-     * @memberof keyPair
-     */
-    signData(data /*: JsonExt<URL | GPrivate>*/) /*: Signature */ {
-      return signBytes(toByteArray(fromJSData(data)));
-    },
-    /**
-     * @memberof keyPair
-     */
-    signDataHex(data /*: JsonExt<URL | GPrivate>*/) /*: Hex<Signature> */ {
-      return b2hx(signBytes(toByteArray(fromJSData(data))));
-    },
     // TODO label: () => state.label,
     // TODO [inspect.custom]: toString
   });
 }
 
 
-exports.verify = verify;
 /**
  * Verify ed25519 signature
+ *
+ * @memberof Ed25519
  */
 function verify(
   message /*: Uint8Array*/,
@@ -112,41 +86,47 @@ function verify(
   return sign.detached.verify(message, sig, publicKey);
 }
 
+exports.Ed25519 = Object.freeze({ keyPair, verify });
+
+exports.SHA256 = Object.freeze({ hash: sha256Hash });
+/**
+ * Compute a SHA256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
+ * @memberof SHA256
+ */
+function sha256Hash(serializedData /*: Uint8Array*/) /*: Uint8Array*/ {
+  const sha256 = crypto.createHash('sha256');
+  sha256.update(Buffer.from(serializedData));
+  return Uint8Array.from(sha256.digest());
+}
 
 /**
- * a port of casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+ * Compute a Keccak-256 hash over some data, the way that it will be computed in Rholang
  *
- * ISSUE: only ed25519 is supported.
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
  */
-const SignDeployment = (() => {
-  const algName = 'ed25519';
+function keccak256Hash(serializedData /*: Uint8Array*/) /*: Uint8Array*/ {
+  return new Uint8Array(keccak256.arrayBuffer(serializedData));
+}
+exports.Keccak256 = { hash: keccak256Hash };
 
-  const fill = deployData => (deployer, sig, sigAlgorithm) => (
-    { ...deployData, deployer, sig, sigAlgorithm }
-  );
 
-  const clear = deployData => fill(deployData)(null, null, null);
+exports.Blake2b256 = Object.freeze({ hash: blake2b256Hash });
+/**
+ * Compute a Blake2b-256 hash over some data, the way that it will be computed in Rholang
+ *
+ * @param serializedData: Uint8Array of serialized Rholang data, used to compute the hash
+ * @return Uint8Array of bytes representing the computed hash
+ */
+function blake2b256Hash(serializedData /*: Uint8Array*/) /*: Uint8Array*/ {
+  const blake2b256 = blake2.createHash('blake2b', { digestLength: 32 });
+  blake2b256.update(serializedData);
+  return Uint8Array.from(blake2b256.digest());
+}
 
-  function signD(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
-    const toSign = DeployData.encode(clear(deployData)).finish();
-    const hash = blake2b256Hash(toSign);
-    const signature = key.signBytes(hash);
-
-    return fill(deployData)(h2b(key.publicKey()), signature, algName);
-  }
-
-  function verifyD(deployData /*: DeployData*/)/*: boolean */ {
-    if (deployData.sigAlgorithm !== algName) {
-      throw new Error(`unsupported: ${deployData.sigAlgorithm}`);
-    }
-    const toVerify = DeployData.encode(clear(deployData)).finish();
-    const hash = blake2b256Hash(toVerify);
-    return verify(hash, deployData.sig, deployData.deployer);
-  }
-
-  return Object.freeze({ sign: signD, verify: verifyD });
-})();
-exports.SignDeployment = SignDeployment;
 
 function integrationTest({ randomBytes }) {
   const seed = randomBytes(32);

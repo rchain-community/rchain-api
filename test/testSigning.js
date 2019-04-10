@@ -1,7 +1,9 @@
 /*global require*/
+// @flow
+
 const ttest = require('tape');
 const { DeployData } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
-const { keyPair, h2b, b2h, verify, SignDeployment } = require('..');
+const { Ed25519, Hex, SignDeployment } = require('..');
 
 function testSigning() {
   const cases = {
@@ -24,9 +26,12 @@ function testSigning() {
 
   Object.entries(cases).forEach(([desc, fn]) => ttest(desc, fn));
 
+  const b2h = Hex.encode;
+  const h2b = Hex.decode;
+
   function check(info) {
     return (test) => {
-      const pair1 = keyPair(h2b(info.seedHex));
+      const pair1 = Ed25519.keyPair(h2b(info.seedHex));
 
       test.deepEqual(info.pubKeyHex, pair1.publicKey());
 
@@ -34,7 +39,7 @@ function testSigning() {
       const sigHex = pair1.signBytesHex(message);
       test.deepEqual(info.sigHex, sigHex);
 
-      test.deepEqual(verify(message, h2b(info.sigHex), h2b(info.pubKeyHex)), true);
+      test.deepEqual(Ed25519.verify(message, h2b(info.sigHex), h2b(info.pubKeyHex)), true);
       test.end();
     };
   }
@@ -54,7 +59,7 @@ function testSigning() {
       '123b6e6577207465737420696e207b20636f6e747261637420746573742872657475726e29203d207b2072657475726e212822746573742229207d207d189eb29ff69f2d38014080ade204',
     );
 
-    const dout = SignDeployment.sign(keyPair(defaultSec), d0);
+    const dout = SignDeployment.sign(Ed25519.keyPair(defaultSec), d0);
     test.equal(
       b2h(dout.sig),
       'b6e0c2077e3ae2794b7324b518b49a9aa597eb07207f84f6339db73aeb6852491b8a7e640fd17f88ee80b61e3d326ec87835feebbb7dacdeadf03f26deff350f',

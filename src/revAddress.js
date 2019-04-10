@@ -1,8 +1,8 @@
 /* global require, exports, Buffer */
 
 const base58 = require('bs58');
-const { blake2b256Hash } = require('./hashing');
-const { h2b } = require('./signing');
+const { Blake2b256 } = require('./signing');
+const h2b = require('./hex').decode;
 
 const checksumLength = 4;
 const keyLength = 32;
@@ -50,7 +50,7 @@ exports.RevAddress = RevAddress;
 exports.fromPublicKey = fromPublicKey;
 function fromPublicKey(pk /*: PublicKey */) /*: RevAddr */ {
   if (keyLength !== pk.length) { throw new Error(`bad public key length: ${pk.length}`); }
-  const keyHash = blake2b256Hash(pk);
+  const keyHash = Blake2b256.hash(pk);
   const payload = concat(prefix, keyHash);
   const checksum = computeChecksum(payload);
   const s = base58.encode(Buffer.from(concat(payload, checksum)));
@@ -66,7 +66,7 @@ function fromPublicKey(pk /*: PublicKey */) /*: RevAddr */ {
 }
 
 function computeChecksum(toCheck /*: Bytes */) /*: Bytes*/ {
-  return blake2b256Hash(toCheck).slice(0, checksumLength);
+  return Blake2b256.hash(toCheck).slice(0, checksumLength);
 }
 
 function concat(a, b) {

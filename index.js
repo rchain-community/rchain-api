@@ -6,53 +6,45 @@
  * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
  */
 
-/* global require, exports, module */
+/* global require, exports */
 // @flow
 
 const RHOCore = require('./src/RHOCore');
 
-module.exports.RHOCore = RHOCore;
+exports.RHOCore = RHOCore;
 
 
-const { RNode } = require('./src/rnodeAPI');
+const { RNode, SignDeployment, Block } = require('./src/rnodeAPI');
 
-module.exports.RNode = RNode;
 /*::
 import type { IRNode } from './src/rnodeAPI';
 export type { IRNode };
  */
+exports.RNode = RNode;
+exports.SignDeployment = SignDeployment;
+exports.Block = Block;
 
-const { sendCall, makeProxy, callSource, firstBlockData } = require('./src/proxy');
-
-module.exports.sendCall = sendCall;
-module.exports.makeProxy = makeProxy;
-module.exports.callSource = callSource;
-module.exports.firstBlockData = firstBlockData;
-
-const signing = require('./src/signing');
+exports.RegistryProxy = require('./src/proxy');
 
 /*::
-export type Hex<T> = Hex<T>;
-export type Bytes = Bytes;
 export type Signature = Signature;
 export type PrivateKey = PrivateKey;
 export type PublicKey = PublicKey;
 */
-module.exports.keyPair = signing.keyPair;
-module.exports.verify = signing.verify;
-module.exports.b2h = signing.b2h;
-module.exports.h2b = signing.h2b;
-module.exports.SignDeployment = signing.SignDeployment;
+const { Ed25519, Blake2b256, SHA256, Keccak256 } = require('./src/signing');
 
-const hashing = require('./src/hashing.js');
+exports.Ed25519 = Ed25519;
+exports.Blake2b256 = Blake2b256;
+exports.SHA256 = SHA256;
+exports.Keccak256 = Keccak256;
 
-module.exports.sha256Hash = hashing.sha256Hash;
-module.exports.keccak256Hash = hashing.keccak256Hash;
-module.exports.blake2b256Hash = hashing.blake2b256Hash;
-module.exports.simplifiedSHA256Hash = hashing.simplifiedSHA256Hash;
-module.exports.simplifiedKeccak256Hash = hashing.simplifiedKeccak256Hash;
-module.exports.simplifiedBlake2b256Hash = hashing.simplifiedBlake2b256Hash;
+/*::
+export type HexStr<T> = HexStr<T>;
+export type Bytes = Bytes;
+*/
+
+exports.Hex = require('./src/hex');
 
 const { RevAddress } = require('./src/revAddress');
 
-module.exports.RevAddress = RevAddress;
+exports.RevAddress = RevAddress;

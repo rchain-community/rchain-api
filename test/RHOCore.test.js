@@ -4,7 +4,7 @@
 const { URL } = require('url');
 const ttest = require('tape');
 
-const { RHOCore, h2b, keyPair } = require('../index');
+const { RHOCore, Hex, Ed25519 } = require('..');
 const { Par, GPrivate } = require('../protobuf/RhoTypes');
 
 const testData = require('./RHOCoreSuite.json');
@@ -13,6 +13,8 @@ const testData = require('./RHOCoreSuite.json');
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
 
 function testRHOCore() {
+  const h2b = Hex.decode;
+
   function rtest(item) {
     return (test) => {
       test.deepEqual(RHOCore.fromJSData(item.data), item.rho);
@@ -92,11 +94,11 @@ function testRHOCore() {
     },
     'BasicWallet transfer signature': (test) => {
       const destid = h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4');
-      const k1 = keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
+      const k1 = Ed25519.keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
 
       // BasicWallet.transfer signature is over these params:
       const [nonce, amount, dest] = [12, 100, GPrivate.fromObject({ id: destid })];
-      const sig = k1.signData([nonce, amount, dest]);
+      const sig = Hex.decode(RHOCore.wrapHash(k1.signBytes)([nonce, amount, dest]));
       test.equal(
         rhol`new dest, status in { BasicWallet!("transfer", ${amount}, ${nonce}, ${sig}, dest, status) }`,
         'new dest, status in { BasicWallet!("transfer", 100, 12, "6a6e8ea7d13ad1e7cd676eee62081f9c6b36cfaef4d41d533127a56e7f48ad1378ae93e59b05d73cf17ce55bedf6b201cd78f6ec8ef20dd1b919b5918cc72007".hexToBytes(), dest, status) }',
