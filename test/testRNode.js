@@ -83,7 +83,8 @@ function netTests({ grpc, clock, rng }) {
       localNode().doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
         test.equal(results.slice(0, 'Success'.length), 'Success');
         test.end();
-      });
+      })
+        .catch((oops) => { test.fail(oops.message); test.end(); });
     },
     'test getAllBlocks': (test) => {
       const expected = [
@@ -96,14 +97,16 @@ function netTests({ grpc, clock, rng }) {
           test.equal(actual.length > 0, true);
           test.deepEqual(Object.keys(actual[0]), expected);
           test.end();
-        });
+        })
+        .catch((oops) => { test.fail(oops.message); test.end(); });
     },
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
       localNode().getBlock(blockHash).catch((err) => {
         test.deepEqual(err.message, 'Error: Failure to find block with hash thisshouldbreak');
         test.end();
-      });
+      })
+        .catch((oops) => { test.fail(oops.message); test.end(); });
     },
     'simplified SHA256 hashing': (test) => {
       hashTest(test, null, RHOCore.wrapHash(sha256Hash), 'sha256Hash');
