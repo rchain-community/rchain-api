@@ -58,6 +58,13 @@ myNode.doDeploy({
 [./docs/](./docs/index.md)
 
 
+## RChain gRPC protobuf compatibility
+
+[protobuf][proto]: v0.9.1 bf1b2c6 Mar 28, 2019
+
+[pro]: https://github.com/rchain/rchain/tree/bf1b2c6c6662515403c0a429e8c9fa25edd64638/models/src/main/protobuf
+
+
 ## Examples and Related Projects
 * [Nth Caller](https://github.com/JoshOrndorff/nth-caller-game) a minimal RChain-based dApp game that uses RChain-API
 * [Status](https://github.com/JoshOrndorff/RChain-Status) a moderately complex dapp that uses more RChain-API features as well as [RSign](https://github.com/dckc/RSign)
@@ -65,9 +72,6 @@ myNode.doDeploy({
 * [RChain-dbr](https://github.com/dckc/rchain-dbr) A web-of-trust based distributed budgeting and rewards dApp
 * [RSign](https://github.com/dckc/RSign) A chrome extension for generating client-side signatures akin to metamask
 * [node-client](https://github.com/rchain/rchain/tree/dev/node-client) A similar but less mature RChain API written in python
-
-## RChain gRPC protobuf compatibility
-* Commit hash [51d9323](https://github.com/rchain/rchain/tree/dev/models/src/main/protobuf) Jan 3, 2019
 
 
 ## License
