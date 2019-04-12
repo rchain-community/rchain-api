@@ -12,6 +12,7 @@
     "postinstall": "cd rclient; npm install --no-package-lock",
     "testAll": "npm run check && npm run integrationTest",
     "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md && markdown-doctest",
+    "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
     "doc-watch": "documentation serve --watch index.js src/**.js --shallow",
     "check": "npm run test && npm run lint && npm run flow-check",
     "test-jest": "jest",
