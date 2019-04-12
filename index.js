@@ -32,7 +32,9 @@ exports.Block = Block;
  * REV transaction, vault support
  *
  * Refs:
- *  - [REV Vault](https://rchain.atlassian.net/wiki/spaces/CORE/pages/652640311/Wallet+proposal)
+ *  - [REV Vault][vault] Feb 2019
+ *
+ * [vault]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/652640311/Wallet+proposal
  *
  * @example
  * // Suppose Alice generates a key pair.
