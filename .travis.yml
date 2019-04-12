@@ -6,6 +6,4 @@ cache:
     - "node_modules"
     - "rclient/node_modules"
 script:
-  - npm test
-  - npm run flow-check
-  - npm run lint
+  - npm run check

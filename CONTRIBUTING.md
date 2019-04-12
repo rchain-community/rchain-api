@@ -1,15 +1,12 @@
 # Code Conventions and Design Notes
 
-All contributions should pass these checks (as noted in
-`.travis.yml`):
+As noted in `.travis.yml`, all contributions must pass `npm run check`,
+which runs `test`, `lint`, etc. The `test` check is conventional unit tests.
 
-```yaml
-  - npm test
-  - npm run flow-check
-  - npm run lint
-```
+Contributions should also pass `npm run integrationTest`, which
+requires a running validator node (see below).
 
-The `test` check is conventional unit tests.
+To run both the offline and online tests, use `npm run testAll`.
 
 
 ## Static Typechecking: flow
@@ -22,15 +19,23 @@ does an incremental check.
 ## RChain Validator Node for Integration testing
 
 One way to provide a validator node for testing, provided you're OK
-with the security risks around `--net host`, is:
-
+with the security risks around `--net host`, is to first have
+the node start up and generate some random validator keys:
 
 ```bash
-$ docker run --rm -it --net host coop.rchain/rnode:0.7.1 run -s
+docker run --rm --net host -v$HOME/.rnode:/var/lib/rnode \
+    rchain/rnode run -s
 ```
 
-This presumes you've built `coop.rchain/rnode` per `DEVELOPER.md` in
-rchain/rchain.
+Then grab one of the secret keys for use as a validator private key:
+
+```bash
+first_key=$(cat $(ls ~/.rnode/genesis/*.sk|head -1))
+
+docker run --rm --net host -v$HOME/.rnode:/var/lib/rnode \
+    rchain/rnode run -s --validator-private-key $first_key
+```
+
 
 ## Code Style: airbnb
 
