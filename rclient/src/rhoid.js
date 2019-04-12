@@ -8,8 +8,10 @@ https://github.com/rchain/rchain/blob/27f76eb02ab2d83bf2bc9cd766157c4723db0854/r
 // @flow
 /* global require, exports, module, Buffer */
 
-const { Blake2b256, Hex } = require('rchain-api');
+const { RholangCrypto, Hex } = require('rchain-api');
 const base32 = require('base32-encoding');
+
+const { blake2b256Hash } = RholangCrypto;
 
 // human-oriented base-32 encoding by Zooko 2002 - 2009
 const zbase32 = buf => base32.stringify(buf, 'ybndrfg8ejkmcpqxot1uwisza345h769');
@@ -21,7 +23,7 @@ const testCase = {
 
 function test(item) {
   const uri = pkURI(item.pk);
-  const hash = Blake2b256.hash(item.pk);
+  const hash = blake2b256Hash(item.pk);
   console.log({
     pk: item.pk.toString('hex'),
     hash: Hex.encode(hash),
@@ -39,7 +41,7 @@ function test(item) {
  */
 exports.pkURI = pkURI;
 function pkURI(pk /*: Buffer*/) {
-  const hash = Blake2b256.hash(pk);
+  const hash = blake2b256Hash(pk);
   return buildURI(Buffer.from(hash));
 }
 

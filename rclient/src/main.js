@@ -11,8 +11,8 @@ const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
   RNode, RHOCore,
-  Keccak256,
-  Hex, Ed25519, SignDeployment,
+  RholangCrypto,
+  Hex, Ed25519keyPair, SignDeployment,
   RegistryProxy,
   RevAddress,
 } = require('rchain-api');
@@ -23,6 +23,7 @@ const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
 const { link } = require('./assets');
 
+const { keccak256Hash } = RholangCrypto;
 const { makeProxy } = RegistryProxy;
 const h2b = Hex.decode;
 const b2h = Hex.encode;
@@ -202,7 +203,7 @@ async function register(
   async function check1(file) {
     const src = await ioOrExit(file.readText());
 
-    const srcHash = RHOCore.wrapHash(Keccak256.hash)(src);
+    const srcHash = RHOCore.wrapHash(keccak256Hash)(src);
     const mods = await ioOrExit(registry.get(srcHash));
     return { file, src, srcHash, mod: mods[srcHash] };
   }
@@ -216,7 +217,7 @@ async function register(
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
     const privKey = await loadKey(keyStore, label, [], { getpass });
-    const pmtKey = Ed25519.keyPair(privKey);
+    const pmtKey = Ed25519keyPair(privKey);
     const loaded = await ioOrExit(
       loadRhoModules(toLoad.map(({ src }) => src), payWith(pmtKey), { rnode, clock, delay }),
     );
@@ -262,7 +263,7 @@ async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
     uuidv4,
   );
   await store.set({ [label]: item });
-  const publicKey /*: HexStr<PublicKey> */= Ed25519.keyPair(privKey).publicKey();
+  const publicKey /*: HexStr<PublicKey> */= Ed25519keyPair(privKey).publicKey();
   const revAddr = RevAddress.fromPublicKey(h2b(publicKey)).toString();
   console.log({ label, revAddr, publicKey, keyStore: keyStore.readOnly().name(), status: 'saved' });
 }
@@ -365,14 +366,14 @@ function privateToPublic(privKey) {
 
 function pubToAddress(pubKey) {
   assert.equal(pubKey.length, 64);
-  return Keccak256.hash(pubKey).slice(-20);
+  return keccak256Hash(pubKey).slice(-20);
 }
 
 
 async function loadRevAddr(label, notice, { keyStore, getpass }) {
   try {
     const privKey = await loadKey(keyStore, label, notice, { getpass });
-    const edKey = Ed25519.keyPair(privKey);
+    const edKey = Ed25519keyPair(privKey);
     const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
     return { label, revAddr, publicKey: edKey.publicKey() };
   } catch (err) {
@@ -394,7 +395,7 @@ async function genVault(
   console.log({ revAddr, label, amount, result });
 }
 
-const rhoKeccakHash = data => Keccak256.hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
+const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
 const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
 async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
@@ -472,7 +473,7 @@ async function outcome/*::<T>*/(x /*:Promise<mixed>*/) /*: Promise<T>*/ {
 }
 
 async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
-  const srcHash = RHOCore.wrapHash(Keccak256.hash)(src);
+  const srcHash = RHOCore.wrapHash(keccak256Hash)(src);
   const mods = await registry.get(srcHash);
   const mod = mods[srcHash];
   if (!mod) { throw new ExitStatus(`rholang module not loaded: ${name}`); }

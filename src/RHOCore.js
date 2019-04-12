@@ -138,7 +138,7 @@ function wrapHash(
 //          as well as URLs.
 //          The flow type is given below:
 export type JsonExt<T> =
-    | JsonPrimitive<T>
+      JsonPrimitive<T>
     | JsonExtArray<T>
     | JsonExtObject<T>
     ;
@@ -301,18 +301,40 @@ function toRholang(par /*: IPar */) /*: string */ {
 
 /**
  * Get printable form of unforgeable name, given id.
+ *
+ * @memberof RHOCore
  */
-exports.unforgeableWithId = unforgeableWithId;
 function unforgeableWithId(id /*: Uint8Array */) {
   const bytes = Writer.create().bytes(id).finish().slice(1);
   return `Unforgeable(0x${hex.encode(bytes)})`;
 }
+exports.unforgeableWithId = unforgeableWithId;
 
-exports.prettyPrivate = prettyPrivate;
-function prettyPrivate(par /*: IPar */) {
-  if (!(par.ids && par.ids.length && par.ids[0].id)) { throw new Error('expected GPrivate'); }
+function prettyPrivate(par /*: IPar */) /*: string */{
+  if (!(par.ids && par.ids.length && par.ids[0].id)) {
+    return toRholang(par);
+  }
   return unforgeableWithId(par.ids[0].id);
 }
+exports.prettyPrivate = prettyPrivate;
+
+exports.getIdFromUnforgeableName = getIdFromUnforgeableName;
+/**
+ * Convert the ack channel into a HEX-formatted unforgeable name
+ *
+ * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+ * @return HEX-formatted string of unforgeable name's Id
+ * @throws Error if the Par does not represent an unforgeable name
+ *
+ * @memberof RHOCore
+ */
+function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
+  if (par.ids && par.ids.length === 1 && par.ids[0].id) {
+    return Buffer.from(par.ids[0].id).toString('hex');
+  }
+  throw new Error('Provided Par object does not represent a single unforgeable name');
+}
+
 
 exports.rhol = rhol;
 /**

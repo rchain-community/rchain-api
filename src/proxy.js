@@ -58,6 +58,8 @@ interface ProxyOpts extends SendOpts {
  *                    a call and listening for the response.
  * @param opts.unary: whether to use unary calling conventions.
  * @param opts.predeclare: names to pre-declare after `return`
+ *
+ * @memberof RegistryProxy
  */
 exports.makeProxy = makeProxy;
 function makeProxy(
@@ -86,6 +88,8 @@ function makeProxy(
  * @param opts.delay: an optional async function to call between sending
  *                    a call and listening for the response.
  * @param opts.unary: whether to use unary calling conventions.
+ *
+ * @memberof RegistryProxy
  */
 exports.sendCall = sendCall;
 async function sendCall(
@@ -119,11 +123,26 @@ async function sendCall(
     { target, method, args },
     { ...opts, chanArgs },
   );
-  console.log({ deployData, note: 'placeholder term' });
-  const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
-  console.log({ deployResult });
+  console.log(term);
+  return runRholang(term, returnChan, deployData, opts, method || '?');
+}
 
-  const blockResults = await pollAt(returnChan, method || '?', { delay: opts.delay, rnode });
+
+exports.runRholang = runRholang;
+async function runRholang(
+  term /*: string */,
+  returnChan /*: IPar */,
+  deployData /*: $ReadOnly<IDeployData> */,
+  opts /*: SendOpts */,
+  label /*: string */ = '',
+) /**/ {
+  const { rnode } = opts;
+  //@@@@@@@this can't work with signed deploys
+  // console.log({ deployData, note: 'placeholder term' });
+  const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
+  console.log({ deployResult }); // ISSUE: return block hash to caller?
+
+  const blockResults = await pollAt(returnChan, label, { delay: opts.delay, rnode });
   return Block.firstData(blockResults);
 }
 
@@ -160,6 +179,8 @@ async function pollAt(
  * @param opts
  * @param opts.unary: For better compositionality, JS args are combined into one
  *                    list arg on the rholang side.
+ *
+ * @memberof RegistryProxy
  */
 exports.callSource = callSource;
 function callSource(
@@ -182,6 +203,7 @@ function callSource(
 /**
  * Caller is responsible for converting pieces to rholang.
  *
+ * @private
  * @param m: message
  * @param m.target: a rholang URI expression: `rho:id:...`
  * @param m.method: [] or ["eat"]
@@ -211,6 +233,5 @@ function rhoCall({ target, method, args }, predeclare, insertSigned) {
         }
       }
     `;
-  console.log(term);
   return term;
 }

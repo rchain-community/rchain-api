@@ -9,6 +9,8 @@ exports.link = link;
 /**
  * link a string asset
  *
+ * @private
+ *
  * With respect to ocap discipline, we regard this as part of the
  * module loading infrastructure rather than a run-time operation.
  *

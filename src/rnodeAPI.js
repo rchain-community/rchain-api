@@ -25,7 +25,9 @@ const {
 } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
 const RHOCore = require('./RHOCore');
 const Hex = require('./hex');
-const { Blake2b256, Ed25519 } = require('./signing');
+const { RholangCrypto } = require('./signing');
+
+const { blake2b256Hash, ed25519Verify } = RholangCrypto;
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
 
@@ -84,6 +86,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param d.deployer - public key (of validating node?) as in doDeploy
    * @param d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
+   * @memberof RNode
    */
   async function previewPrivateIds(
     { user, timestamp } /*: $ReadOnly<{ user?: Uint8Array, timestamp?: number }> */,
@@ -105,9 +108,10 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param d.user - public key (of validating node?) as in doDeploy
    * @param d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
+   * @memberof RNode
    */
   function previewPrivateChannels(
-    { user, timestamp } /*: { user: Uint8Array, timestamp: number } */,
+    { user, timestamp } /*: $ReadOnly<{ user?: Uint8Array, timestamp?: number }> */,
     nameQty /*: number*/,
   ) /*: Promise<IPar[]> */{
     return previewPrivateIds({ user, timestamp }, nameQty)
@@ -181,6 +185,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param nameObj: JSON-ish data: string, number, {}, [], ...
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
+   * @deprecated
    */
   function listenForDataAtPublicName(nameObj /*: JSData */, depth /*: number */ = 1) {
     return listenForDataAtName(RHOCore.fromJSData(nameObj), depth);
@@ -193,6 +198,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param nameId: Hex string representing an UnforgeableName's Id
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
+   * @deprecated
    */
   function listenForDataAtPrivateName(nameId /*: string */, depth /*: number */ = 1) {
     // Convert the UnforgeableName into a byte array
@@ -216,6 +222,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     par /*: IPar */,
     depth /*: number */ = 1,
   ) /*: Promise<DataWithBlockInfo[]> */ {
+    // console.log('listen', { par: JSON.stringify(par) });
     const channelRequest = {
       depth,
       name: par,
@@ -225,6 +232,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
       ListeningNameDataResponse,
       send(f => client.listenForDataAtName(channelRequest, f)),
     );
+    // console.log('listen', { response });
     return response.blockResults;
   }
 
@@ -236,6 +244,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param nameObjs a list of names (strings)
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
+   * @deprecated
    */
   function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth /*: number */ = 1) {
     return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
@@ -248,6 +257,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param nameIds a list hex strings representing the unforgeable names' Ids
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
+   * @deprecated
    */
   function listenForContinuationAtPrivateName(nameIds /*: string[] */, depth /*: number */ = 1) {
     // Convert the UnforgeableNames into a byte arrays
@@ -332,26 +342,9 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     listenForContinuationAtPublicName,
     getBlock,
     getAllBlocks,
-    getIdFromUnforgeableName,
     previewPrivateIds,
     previewPrivateChannels,
   });
-}
-
-
-exports.getIdFromUnforgeableName = getIdFromUnforgeableName;
-/**
- * Convert the ack channel into a HEX-formatted unforgeable name
- *
- * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
- * @return HEX-formatted string of unforgeable name's Id
- * @throws Error if the Par does not represent an unforgeable name
- */
-function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
-  if (par.ids && par.ids.length === 1 && par.ids[0].id) {
-    return Buffer.from(par.ids[0].id).toString('hex');
-  }
-  throw new Error('Provided Par object does not represent a single unforgeable name');
 }
 
 
@@ -361,15 +354,20 @@ function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
   if (!blockResults.length) { throw new Error('no blocks found'); }
   return RHOCore.toJSData(firstBlockProcess(blockResults));
 }
-exports.Block = Object.freeze({ firstData: firstBlockData });
+exports.Block = Object.freeze({
+  firstData: firstBlockData,
+  firstProcess: firstBlockProcess,
+});
 
 
 // Get the first piece of data from listenForDataAtName
-function firstBlockProcess(blockResults) {
+function firstBlockProcess(blockResults /*: DataWithBlockInfo[] */) {
   // console.log('found:', JSON.stringify(blockResults, null, 2));
   const ea = [].concat(...blockResults.map(br => br.postBlockData));
   // console.log('ea: ', JSON.stringify(ea, null, 2));
-  const good = ea.filter(it => it.exprs.length > 0 || it.bundles.length > 0 || it.ids.length > 0);
+  const good = ea.filter(it => (it.exprs || []).length > 0
+                         || (it.bundles || []).length > 0
+                         || (it.ids || []).length > 0);
   // console.log('good:');
   // console.log(JSON.stringify(good, null, 2));
   return good[0];
@@ -390,21 +388,32 @@ const SignDeployment = (() => {
 
   const clear = deployData => fill(deployData)(null, null, null);
 
+  /**
+   * @name sign
+   *
+   * @memberof SignDeployment
+   */
   function signD(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
     const toSign = DeployData.encode(clear(deployData)).finish();
-    const hash = Blake2b256.hash(toSign);
+    const hash = blake2b256Hash(toSign);
     const signature = key.signBytes(hash);
 
     return fill(deployData)(Hex.decode(key.publicKey()), signature, algName);
   }
 
+  /**
+   * Verify Deployment
+   * @name verify
+   *
+   * @memberof SignDeployment
+   */
   function verifyD(deployData /*: DeployData*/)/*: boolean */ {
     if (deployData.sigAlgorithm !== algName) {
       throw new Error(`unsupported: ${deployData.sigAlgorithm}`);
     }
     const toVerify = DeployData.encode(clear(deployData)).finish();
-    const hash = Blake2b256.hash(toVerify);
-    return Ed25519.verify(hash, deployData.sig, deployData.deployer);
+    const hash = blake2b256Hash(toVerify);
+    return ed25519Verify(hash, deployData.sig, deployData.deployer);
   }
 
   return Object.freeze({ sign: signD, verify: verifyD });
@@ -425,6 +434,7 @@ function send/*:: <T>*/(calling /*: Callback<T> => mixed*/) /*: Promise<T> */{
     const callback = (err, result) => {
       if (err) {
         reject(err);
+        return;
       }
       if (typeof result === 'undefined') { throw new TypeError('must give err or result'); }
       resolve(result);

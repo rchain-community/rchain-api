@@ -1,10 +1,17 @@
 /* global require, module, exports */
+// @flow
+
 const ttest = require('tape');
-const api = require('../index');
+const api = require('..');
 
-const { RNode, SignDeployment, RHOCore, Hex } = api;
-const { Ed25519, SHA256, Keccak256, Blake2b256 } = api;
+const { RNode, RegistryProxy, SignDeployment, RHOCore, Hex } = api;
+const { RholangCrypto, Ed25519keyPair } = api;
 
+const { sha256Hash, keccak256Hash, blake2b256Hash } = RholangCrypto;
+
+/*::
+import type { JsonExt } from '..';
+ */
 
 /**
  * Run unit tests plus supplemental tests.
@@ -42,25 +49,27 @@ const defaultSec = Hex.decode('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7
 function netTests({ grpc, clock, rng }) {
   const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
 
-  function hashTest(test, fn, fname, isNormalTest = true) {
+  function hashTest(test, hashBytes, hashData, fname) {
     const returnChannel = rng().toString(36).substring(7);
-    const config = (isNormalTest)
+    const config = (hashBytes)
       ? { txt: 'deadbeef', func: 'hexToBytes' }
       : { txt: 'testtest', func: 'toByteArray' };
     const hashProc = `@"${fname}"!("${config.txt}".${config.func}(), "${returnChannel}")`;
 
     runAndListen(hashProc, returnChannel, clock().valueOf(), localNode(), test)
-      .then((rholangHash) => {
-        if (isNormalTest) {
-          const serializedData = Hex.decode(config.txt);
-          test.deepEqual(fn(serializedData), Uint8Array.from(rholangHash.exprs[0].g_byte_array));
-        } else {
-          test.equal(fn('testtest'), Hex.encode(rholangHash.exprs[0].g_byte_array));
+      .then((value) => {
+        test.ok(value instanceof Uint8Array);
+        if (!(value instanceof Uint8Array)) { throw new Error(`Uint8array expected: ${value}`); }
+        if (hashBytes) {
+          const bs = Hex.decode(config.txt);
+          test.deepEqual(hashBytes(bs), value);
+        } else if (hashData) {
+          test.equal(hashData('testtest'), Hex.encode(value));
         }
         test.end();
       })
       .catch((oops) => {
-        test.equal(oops, 0);
+        test.fail(oops.message);
         test.end();
       });
   }
@@ -70,7 +79,7 @@ function netTests({ grpc, clock, rng }) {
       const term = 'new test in { contract test(return) = { return!("test") } }';
       const timestamp = clock().valueOf();
 
-      const key = Ed25519.keyPair(defaultSec);
+      const key = Ed25519keyPair(defaultSec);
       localNode().doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
         test.equal(results.slice(0, 'Success'.length), 'Success');
         test.end();
@@ -97,46 +106,38 @@ function netTests({ grpc, clock, rng }) {
       });
     },
     'simplified SHA256 hashing': (test) => {
-      hashTest(test, RHOCore.wrapHash(SHA256.hash), 'sha256hash', false);
+      hashTest(test, null, RHOCore.wrapHash(sha256Hash), 'sha256Hash');
     },
     'simplified Keccak256 hashing': (test) => {
-      hashTest(test, RHOCore.wrapHash(Keccak256.hash), 'keccak256hash', false);
+      hashTest(test, null, RHOCore.wrapHash(keccak256Hash), 'keccak256Hash');
     },
     'simplified Blake2b256 hashing': (test) => {
-      hashTest(test, RHOCore.wrapHash(Blake2b256.hash), 'blake2b256hash', false);
+      hashTest(test, null, RHOCore.wrapHash(blake2b256Hash), 'blake2b256Hash');
     },
     'normal SHA256 hashing': (test) => {
-      hashTest(test, SHA256.hash, 'SHA256.hash', true);
+      hashTest(test, sha256Hash, null, 'sha256Hash');
     },
     'normal Keccak256 hashing': (test) => {
-      hashTest(test, Keccak256.hash, 'keccak256.hash', true);
+      hashTest(test, keccak256Hash, null, 'keccak256Hash');
     },
     'normal Blake2b256 hashing': (test) => {
-      hashTest(test, Blake2b256.hash, 'Blake2b256.hash', true);
+      hashTest(test, blake2b256Hash, null, 'blake2b256Hash');
     },
   };
 }
 
 
 exports.runAndListen = runAndListen;
-function runAndListen(
-  term, returnChannel, timestamp,
-  node, test = null,
-) {
-  const key = Ed25519.keyPair(defaultSec);
-  // console.log("run:", { term, returnChannel });
-  return node.doDeploy(payFor({ term, timestamp }, key), true).then((results) => {
-    if (test) { test.equal(results.slice(0, 'Success'.length), 'Success'); }
+async function runAndListen(
+  term /*: string */, returnChannel /*: string*/, timestamp /*: number*/,
+  node /*: any */, _test /*: any*/, // KLUDGE: any
+) /*: Promise<JsonExt<URL | GPrivate>> */ {
+  const key = Ed25519keyPair(defaultSec);
 
-    // Get the generated result from the channel
-    return node.listenForDataAtPublicName(returnChannel);
-  }).then((blockResults) => {
-    if (test) { test.notEqual(blockResults.length, 0); }
-
-    const lastBlock = blockResults.slice(-1).pop();
-    const lastDatum = lastBlock.postBlockData.slice(-1).pop();
-    return lastDatum;
-  });
+  return RegistryProxy.runRholang(
+    term, RHOCore.fromJSData(returnChannel), payFor({ term, timestamp }, key),
+    { rnode: node },
+  );
 }
 
 

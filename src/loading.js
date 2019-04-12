@@ -6,7 +6,7 @@
 const { URL } = require('url');
 
 const Hex = require('./hex');
-const { Ed25519 } = require('./signing');
+const { Ed25519keyPair } = require('./signing');
 const { pollAt } = require('./proxy');
 const { Block, SignDeployment } = require('./rnodeAPI');
 
@@ -121,7 +121,7 @@ async function integrationTest(argv, { readFileSync, clock, rnode, setTimeout })
   const dur = 3 * 1000;
   const delay = _i => new Promise((resolve) => { setTimeout(resolve, dur); });
 
-  const key = Ed25519.keyPair(Hex.decode('11'.repeat(32)));
+  const key = Ed25519keyPair(Hex.decode('11'.repeat(32)));
   function payFor(d0 /*: DeployInfo*/) {
     return SignDeployment.sign(key, {
       ...d0,

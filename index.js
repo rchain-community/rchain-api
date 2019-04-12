@@ -11,6 +11,10 @@
 
 const RHOCore = require('./src/RHOCore');
 
+/*::
+export type JsonExt<T> = JsonExt<T>;
+ */
+
 exports.RHOCore = RHOCore;
 
 
@@ -24,19 +28,22 @@ exports.RNode = RNode;
 exports.SignDeployment = SignDeployment;
 exports.Block = Block;
 
-exports.RegistryProxy = require('./src/proxy');
+/**
+ * Proxy method calls to registered RChain channels.
+ */
+const RegistryProxy = require('./src/proxy');
+
+exports.RegistryProxy = RegistryProxy;
 
 /*::
 export type Signature = Signature;
 export type PrivateKey = PrivateKey;
 export type PublicKey = PublicKey;
 */
-const { Ed25519, Blake2b256, SHA256, Keccak256 } = require('./src/signing');
+const { Ed25519keyPair, RholangCrypto } = require('./src/signing');
 
-exports.Ed25519 = Ed25519;
-exports.Blake2b256 = Blake2b256;
-exports.SHA256 = SHA256;
-exports.Keccak256 = Keccak256;
+exports.Ed25519keyPair = Ed25519keyPair;
+exports.RholangCrypto = RholangCrypto;
 
 /*::
 export type HexStr<T> = HexStr<T>;

@@ -1,16 +1,13 @@
-/* global require, test, expect */
+/* global require */
 /* eslint-disable object-curly-newline */
 
 const { URL } = require('url');
 const ttest = require('tape');
 
-const { RHOCore, Hex, Ed25519 } = require('..');
+const { RHOCore, Hex, Ed25519keyPair } = require('..');
 const { Par, GPrivate } = require('../protobuf/RhoTypes');
 
 const testData = require('./RHOCoreSuite.json');
-
-// IOU docs...
-const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
 
 function testRHOCore() {
   const h2b = Hex.decode;
@@ -94,7 +91,7 @@ function testRHOCore() {
     },
     'BasicWallet transfer signature': (test) => {
       const destid = h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4');
-      const k1 = Ed25519.keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
+      const k1 = Ed25519keyPair(h2b('f6664a95992958bbfeb7e6f50bbca2aa7bfd015aec79820caf362a3c874e9247'));
 
       // BasicWallet.transfer signature is over these params:
       const [nonce, amount, dest] = [12, 100, GPrivate.fromObject({ id: destid })];

@@ -44,12 +44,12 @@ doDeploy result: { success: true, message: 'Success!' }
 There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using RChain-API itself.
 
 ```javascript
-const myNode = RNode('localhost', 40401);
-rchain.doDeploy({
+const myNode = RNode(grpc, { host: 'localhost', port: 40401 });
+myNode.doDeploy({
   term: '@"aliceUpdates"!("Having fun traveling!")',
-  timestamp: clock().valueOf(),
-  // from: '0x1',
-  // nonce: 0,
+  timestamp: new Date().valueOf(),
+  phloLimit: 1000000,
+  phloPrice: 1,
 })
 ```
 
@@ -71,7 +71,7 @@ rchain.doDeploy({
 
 
 ## License
-Copyright 2018 RChain Cooperative
+Copyright 2018-2019 RChain Cooperative
 
 Apache 2.0 License (See LICENSE.txt)
 

@@ -9,7 +9,7 @@ const scrypt = require('scrypt.js'); // ISSUE: just use crypto.script?
 const crypto = require('crypto');
 const assert = require('assert');
 
-const { Keccak256 } = require('rchain-api');
+const { keccak256Hash } = require('rchain-api').RholangCrypto;
 
 /*::
 
@@ -88,7 +88,7 @@ function decrypt(
     toBuf(item.crypto.ciphertext),
   ]);
   // console.log('MAC Body', MACBody.toString('hex'));
-  const MAC = Buffer.from(Keccak256.hash(MACBody));
+  const MAC = Buffer.from(keccak256Hash(MACBody));
   // console.log('MAC', MAC.toString('hex'));
   const diff = MAC.compare(toBuf(item.crypto.mac));
   // console.log('MAC diff?', diff);
@@ -142,7 +142,7 @@ function encrypt(
     ciphertext,
   ]);
   // console.log('MAC Body', MACBody.toString('hex'));
-  const mac = Buffer.from(Keccak256.hash(MACBody)).toString('hex');
+  const mac = Buffer.from(keccak256Hash(MACBody)).toString('hex');
   // console.log('MAC', MAC.toString('hex'));
 
   const item = {
