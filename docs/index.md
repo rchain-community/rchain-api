@@ -3,11 +3,11 @@
 ### Table of Contents
 
 -   [RholangCrypto][2]
-    -   [blake2b256Hash][3]
-        -   [Parameters][4]
-    -   [ed25519Verify][5]
-        -   [Parameters][6]
-        -   [Examples][7]
+    -   [Examples][3]
+    -   [blake2b256Hash][4]
+        -   [Parameters][5]
+    -   [ed25519Verify][6]
+        -   [Parameters][7]
     -   [keccak256Hash][8]
         -   [Parameters][9]
     -   [sha256Hash][10]
@@ -73,101 +73,122 @@
         -   [Parameters][70]
     -   [signTextHex][71]
         -   [Parameters][72]
--   [RevAddress][73]
-    -   [fromPublicKey][74]
-        -   [Parameters][75]
--   [SignDeployment][76]
-    -   [sign][77]
-    -   [verify][78]
+-   [REV][73]
+    -   [Examples][74]
+    -   [RevAddress][75]
+        -   [fromPublicKey][76]
+            -   [Parameters][77]
+    -   [SignDeployment][78]
+        -   [sign][79]
+            -   [Parameters][80]
+        -   [verify][81]
+            -   [Parameters][82]
 
 ## RholangCrypto
 
-[src/signing.js:163-163][79]
+[src/signing.js:178-178][83]
 
-Cryptographic functions from Rholang.
+Cryptographic functions from Rholang
 
 refs:
 
 -   [RChain Cryptography Specification][cspec] May 2018
 -   [rholang/examples/tut-hash-functions.rho][htut] Aug 2018
+-   [rholang/examples/tut-verify-channel.md][vtut] Aug 2018
 
 [cspec]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/112721930/Cryptography+Specification
 
 [htut]: https://github.com/rchain/rchain/blob/a582f94/rholang/examples/tut-hash-functions.rho
 
+[vtut]: https://github.com/rchain/rchain/blob/3c64ca3/rholang/examples/tut-verify-channel.md
+
+See also [RHOCore.wrapHash][84]
+
+### Examples
+
+```javascript
+// Suppose we have Nathan Hale's public key:
+ const halePub = Hex.decode(
+    'd759793bbc13a2819a827c76adb6fba8a49aee007f49f2d0992d99b825ad2c48');
+
+// And we are presented with a document that he purportedly signed:
+const doc = 'I regret that I have but one life to live for my country.';
+const sig1 = Hex.decode(
+    'af42db4ae7a23ee182f7aabc3a73fa89834bc0daefab94d0f3e28c508557c3d3' +
+    'f06c67c28ebd2768ffa0b320330ec5089a9ae7519534fe70e9d06145d8caf40c');
+
+// Signatures are conventionally computed over a document's hash.
+// In this case, we happen to know it's a Blake2b 256 bit hash:
+const digest = RholangCrypto.blake2b256Hash(Buffer.from(doc));
+
+// Indeed, the signature is valid.
+assert(RholangCrypto.ed25519Verify(digest, sig1, halePub));
+
+// If the signature is altered even slightly, validation fails:
+const sig2 = sig1;
+sig2[0] = 123;
+assert(!RholangCrypto.ed25519Verify(digest, sig2, halePub));
+```
+
 ### blake2b256Hash
 
-[src/signing.js:146-150][80]
+[src/signing.js:134-138][85]
 
 Blake2b 256 bit cryptographic hash function
 
 #### Parameters
 
--   `input` **[Uint8Array][81]** any number of bytes
+-   `input` **[Uint8Array][86]** any number of bytes
 
-Returns **[Uint8Array][81]** 256 bit (32 byte) hash
+Returns **[Uint8Array][86]** 256 bit (32 byte) hash
 
 ### ed25519Verify
 
-[src/signing.js:102-108][82]
+[src/signing.js:90-96][87]
 
 Verify ed25519 signature
 
 #### Parameters
 
--   `message` **[Uint8Array][81]** any number of bytes (TODO: test!)
--   `sig` **[Uint8Array][81]** 64 byte ed25519 signature over message
--   `publicKey` **[Uint8Array][81]** 32 byte ed25519 public key
+-   `message` **[Uint8Array][86]** any number of bytes (TODO: test!)
+-   `sig` **[Uint8Array][86]** 64 byte ed25519 signature over message
+-   `publicKey` **[Uint8Array][86]** 32 byte ed25519 public key
 
-#### Examples
-
-```javascript
-const publicKey = Hex.decode(
-    '288755c48c3951f89c5f0ffe885088dc0970fd935bc12adfdd81f81bb63d6219');
- const message = Hex.decode(
-    'a6da46a1dc7ed715d4cd6472a736249a4d11142d160dbef9f20ae493de908c4e');
- const sig = Hex.decode(
-    'd0a909078ce8b8706a641b07a0d4fe2108064813ce42009f108f89c2a3f4864a' +
-    'a1a510d6dfccad3b62cd610db0bfe82bcecb08d813997fa7df14972f56017e0b');
-
- assert(RholangCrypto.ed25519Verify(message, sig, publicKey));
-```
-
-Returns **[boolean][83]** indicates whether the signature is valid
+Returns **[boolean][88]** indicates whether the signature is valid
 
 ### keccak256Hash
 
-[src/signing.js:133-135][84]
+[src/signing.js:121-123][89]
 
 Keccak 256 bit cryptographic hash function (aka SHA-3)
 
 #### Parameters
 
--   `input` **[Uint8Array][81]** any number of bytes
+-   `input` **[Uint8Array][86]** any number of bytes
 
-Returns **[Uint8Array][81]** 256 bit (32 byte) hash
+Returns **[Uint8Array][86]** 256 bit (32 byte) hash
 
 ### sha256Hash
 
-[src/signing.js:119-123][85]
+[src/signing.js:107-111][90]
 
 SHA-2 256 bit cryptographic hash function
 
 #### Parameters
 
--   `input` **[Uint8Array][81]** any number of bytes
+-   `input` **[Uint8Array][86]** any number of bytes
 
-Returns **[Uint8Array][81]** 256 bit (32 byte) hash
+Returns **[Uint8Array][86]** 256 bit (32 byte) hash
 
 ## RegistryProxy
 
-[index.js:34-34][86]
+[index.js:64-64][91]
 
 Proxy method calls to registered RChain channels.
 
 ### callSource
 
-[src/proxy.js:185-185][87]
+[src/proxy.js:185-185][92]
 
 Make a rholang term for looking up a target and calling a method.
 
@@ -180,7 +201,7 @@ Make a rholang term for looking up a target and calling a method.
 
 ### makeProxy
 
-[src/proxy.js:64-64][88]
+[src/proxy.js:64-64][93]
 
 Make an object that proxies method calls to registered RChain
 channels.
@@ -201,7 +222,7 @@ For rholang calling conventions, see `callSource`.
 
 ### sendCall
 
-[src/proxy.js:94-94][89]
+[src/proxy.js:94-94][94]
 
 Call a method on a registered RChain channel.
 
@@ -219,28 +240,28 @@ For rholang calling conventions, see `callSource`.
 
 ## RNode
 
-[src/rnodeAPI.js:70-348][90]
+[src/rnodeAPI.js:70-348][95]
 
 Connect to an RChain node (RNode).
 
 ### Parameters
 
 -   `grpc` **grpcT** access to the network: grpc instance from the node grpc package
--   `endPoint` **{host: [string][91], port: [number][92]}** rnode gRPC service
+-   `endPoint` **{host: [string][96], port: [number][97]}** rnode gRPC service
 
 Returns **any** a thin wrapper around a gRPC client stub
 
 ### createBlock
 
-[src/rnodeAPI.js:163-166][93]
+[src/rnodeAPI.js:163-166][98]
 
 Creates a block on your node
 
-Returns **[Promise][94]&lt;[string][91]>** A promise for response message
+Returns **[Promise][99]&lt;[string][96]>** A promise for response message
 
 ### doDeploy
 
-[src/rnodeAPI.js:140-156][95]
+[src/rnodeAPI.js:140-156][100]
 
 Deploys a rholang term to a node
 
@@ -256,35 +277,35 @@ Deploys a rholang term to a node
     -   `deployData.phloLimit`  
     -   `deployData.phloPrice`  
     -   `deployData.validAfterBlockNumber`  ???ISSUE???
--   `autoCreateBlock` **[boolean][83]** automatically create a new block after deploy transaction success
+-   `autoCreateBlock` **[boolean][88]** automatically create a new block after deploy transaction success
 
-Returns **[Promise][94]&lt;[string][91]>** A promise for messageISSUE: import / generate DeployData static type
+Returns **[Promise][99]&lt;[string][96]>** A promise for messageISSUE: import / generate DeployData static type
 
 ### getAllBlocks
 
-[src/rnodeAPI.js:322-332][96]
+[src/rnodeAPI.js:322-332][101]
 
 Retrieve the block summary for a series of blocks starting with the most recent,
 including the number of blocks specified by the block_depth
 
 #### Parameters
 
--   `blockDepth` **[number][92]** : Number indicating the number of blocks to retrieve
+-   `blockDepth` **[number][97]** : Number indicating the number of blocks to retrieve
 
 
 -   Throws **any** Error if blockDepth &lt; 1 or no blocks were able to be retrieved
 
-Returns **[Promise][94]&lt;BlockInfoWithoutTuplespace>** List of BlockInfoWithoutTuplespace structures for each block retrieved
+Returns **[Promise][99]&lt;BlockInfoWithoutTuplespace>** List of BlockInfoWithoutTuplespace structures for each block retrieved
 
 ### getBlock
 
-[src/rnodeAPI.js:302-311][97]
+[src/rnodeAPI.js:302-311][102]
 
 Retrieve a block with the tuplespace for a specific block hash
 
 #### Parameters
 
--   `blockHash` **[string][91]** : String of the hash for the block being requested
+-   `blockHash` **[string][96]** : String of the hash for the block being requested
 
 
 -   Throws **any** Error if the hash is blank or does not correspond to an existing block
@@ -293,32 +314,32 @@ Returns **any** BlockInfo structure that will include all metadata and also incl
 
 ### listenForContinuationAtName
 
-[src/rnodeAPI.js:281-292][98]
+[src/rnodeAPI.js:281-292][103]
 
 Listen for a continuation at an individual name or
 JOINed set of names in the tuplespace
 
 #### Parameters
 
--   `pars` **[Array][99]&lt;IPar>** The names onwhich to listen
--   `depth` **[number][92]** 
+-   `pars` **[Array][104]&lt;IPar>** The names onwhich to listen
+-   `depth` **[number][97]** 
 
 
 -   Throws **any** Error if status is not Success
 
-Returns **[Promise][94]&lt;ListeningNameContinuationResponse>** promise for DataWithBlockInfo
+Returns **[Promise][99]&lt;ListeningNameContinuationResponse>** promise for DataWithBlockInfo
 
 ### listenForContinuationAtPrivateName
 
-[src/rnodeAPI.js:262-270][100]
+[src/rnodeAPI.js:262-270][105]
 
 Listen for a continuation at an individual private name or
 JOINed set of private names in the tuplespace
 
 #### Parameters
 
--   `nameIds` **[Array][99]&lt;[string][91]>** a list hex strings representing the unforgeable names' Ids
--   `depth` **[number][92]**  (optional, default `1`)
+-   `nameIds` **[Array][104]&lt;[string][96]>** a list hex strings representing the unforgeable names' Ids
+-   `depth` **[number][97]**  (optional, default `1`)
 
 
 -   Throws **any** Error if status is not Success
@@ -332,15 +353,15 @@ Returns **any** promise for ContinuationsWithBlockInfo
 
 ### listenForContinuationAtPublicName
 
-[src/rnodeAPI.js:249-251][101]
+[src/rnodeAPI.js:249-251][106]
 
 Listen for a continuation at an individual public name or
 JOINed set of public names in the tuplespace
 
 #### Parameters
 
--   `nameObjs` **[Array][99]&lt;[string][91]>** a list of names (strings)
--   `depth` **[number][92]**  (optional, default `1`)
+-   `nameObjs` **[Array][104]&lt;[string][96]>** a list of names (strings)
+-   `depth` **[number][97]**  (optional, default `1`)
 
 
 -   Throws **any** Error if status is not Success
@@ -354,31 +375,31 @@ Returns **any** promise for ContinuationsWithBlockInfo
 
 ### listenForDataAtName
 
-[src/rnodeAPI.js:221-237][102]
+[src/rnodeAPI.js:221-237][107]
 
 Listen for data at a name in the RChain tuple-space.
 
 #### Parameters
 
 -   `par` **IPar** : JSON-ish Par data. See protobuf/RhoTypes.proto
--   `depth` **[number][92]**  (optional, default `1`)
+-   `depth` **[number][97]**  (optional, default `1`)
 -   `blockDepth`  : Number of blocks to look back in for the name to listen on
 
 
 -   Throws **any** Error if status is not Success
 
-Returns **[Promise][94]&lt;[Array][99]&lt;DataWithBlockInfo>>** : promise for DataWithBlockInfo\[]
+Returns **[Promise][99]&lt;[Array][104]&lt;DataWithBlockInfo>>** : promise for DataWithBlockInfo\[]
 
 ### listenForDataAtPrivateName
 
-[src/rnodeAPI.js:203-210][103]
+[src/rnodeAPI.js:203-210][108]
 
 Listen for data at a PRIVATE name in the RChain tuple-space.
 
 #### Parameters
 
--   `nameId` **[string][91]** : Hex string representing an UnforgeableName's Id
--   `depth` **[number][92]**  (optional, default `1`)
+-   `nameId` **[string][96]** : Hex string representing an UnforgeableName's Id
+-   `depth` **[number][97]**  (optional, default `1`)
 
 
 -   Throws **any** Error if status is not Success
@@ -392,14 +413,14 @@ Returns **any** promise for [DataWithBlockInfo]
 
 ### listenForDataAtPublicName
 
-[src/rnodeAPI.js:190-192][104]
+[src/rnodeAPI.js:190-192][109]
 
 Listen for data at a PUBLIC name in the RChain tuple-space.
 
 #### Parameters
 
 -   `nameObj` **JSData** : JSON-ish data: string, number, {}, \[], ...
--   `depth` **[number][92]**  (optional, default `1`)
+-   `depth` **[number][97]**  (optional, default `1`)
 
 
 -   Throws **any** Error if status is not Success
@@ -413,7 +434,7 @@ Returns **any** promise for [DataWithBlockInfo]
 
 ### previewPrivateChannels
 
-[src/rnodeAPI.js:113-119][105]
+[src/rnodeAPI.js:113-119][110]
 
 Ask rnode to compute top level private channels, given deploy parameters.
 
@@ -422,13 +443,13 @@ Ask rnode to compute top level private channels, given deploy parameters.
 -   `d` **any** 
     -   `d.user`  public key (of validating node?) as in doDeploy
     -   `d.timestamp`  timestamp (ms) as in doDeploy
--   `nameQty` **[number][92]** how many names to preview? (max: 1024)
+-   `nameQty` **[number][97]** how many names to preview? (max: 1024)
 
-Returns **[Promise][94]&lt;[Array][99]&lt;IPar>>** 
+Returns **[Promise][99]&lt;[Array][104]&lt;IPar>>** 
 
 ### previewPrivateIds
 
-[src/rnodeAPI.js:91-100][106]
+[src/rnodeAPI.js:91-100][111]
 
 Ask rnode to compute ids of top level private names, given deploy parameters.
 
@@ -438,13 +459,13 @@ Ask rnode to compute ids of top level private names, given deploy parameters.
     -   `d.timestamp`  timestamp (ms) as in doDeploy
     -   `d.deployer`  public key (of validating node?) as in doDeploy
     -   `d.user`  
--   `nameQty` **[number][92]** how many names to preview? (max: 1024)
+-   `nameQty` **[number][97]** how many names to preview? (max: 1024)
 
-Returns **[Promise][94]&lt;[Array][99]&lt;[Buffer][107]>>** 
+Returns **[Promise][99]&lt;[Array][104]&lt;[Buffer][112]>>** 
 
 ## RHOCore
 
-[index.js:12-12][108]
+[index.js:12-12][113]
 
 "we can detail a direct representation of JSON into a
 fragment of the rholang syntax referred to in the diagram
@@ -454,11 +475,11 @@ below as RHOCore." -- \[Mobile process calculi for programming the blockchain[1]
 
 ### dataToBytes
 
-[src/RHOCore.js:99-99][109]
+[src/RHOCore.js:99-99][114]
 
 ### fromJSData
 
-[src/RHOCore.js:27-82][110]
+[src/RHOCore.js:27-82][115]
 
 Build Rholang expression from Javascript data.
 
@@ -473,33 +494,33 @@ Returns **any** : A rholang term in Protobuf's JSON representation,
 
 ### getIdFromUnforgeableName
 
-[src/RHOCore.js:331-336][111]
+[src/RHOCore.js:331-336][116]
 
 Convert the ack channel into a HEX-formatted unforgeable name
 
 #### Parameters
 
--   `par` **IPar** : JSON-ish Par data: [https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto][112]
+-   `par` **IPar** : JSON-ish Par data: [https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto][117]
 
 
 -   Throws **any** Error if the Par does not represent an unforgeable name
 
-Returns **[string][91]** HEX-formatted string of unforgeable name's Id
+Returns **[string][96]** HEX-formatted string of unforgeable name's Id
 
 ### rhol
 
-[src/RHOCore.js:345-355][113]
+[src/RHOCore.js:345-355][118]
 
 Template tag for RHOCore interpolation
 
 #### Parameters
 
--   `template` **[Array][99]&lt;[string][91]>** 
--   `subs` **...[Array][99]&lt;JsonExt&lt;([URL][114] | GPrivate)>>** 
+-   `template` **[Array][104]&lt;[string][96]>** 
+-   `subs` **...[Array][104]&lt;JsonExt&lt;([URL][119] | GPrivate)>>** 
 
 ### toByteArray
 
-[src/RHOCore.js:90-93][115]
+[src/RHOCore.js:90-93][120]
 
 Turns a rholang term into a byte-array compatible with Rholang
 
@@ -507,11 +528,11 @@ Turns a rholang term into a byte-array compatible with Rholang
 
 -   `termObj` **IPar** 
 
-Returns **[Uint8Array][81]** 
+Returns **[Uint8Array][86]** 
 
 ### toJSData
 
-[src/RHOCore.js:169-233][116]
+[src/RHOCore.js:169-233][121]
 
 Converts an RHOCore object back to JavaScript data
 
@@ -519,11 +540,11 @@ Converts an RHOCore object back to JavaScript data
 
 -   `par` **IPar** A RHOCore representation of a Rholang term
 
-Returns **JsonExt&lt;([URL][114] | GPrivate)>** JSON-serializable data
+Returns **JsonExt&lt;([URL][119] | GPrivate)>** JSON-serializable data
 
 ### toRholang
 
-[src/RHOCore.js:246-299][117]
+[src/RHOCore.js:246-299][122]
 
 Converts an RHOCore object into Rholang source form
 
@@ -531,21 +552,21 @@ Converts an RHOCore object into Rholang source form
 
 -   `par` **IPar** A RHOCore representation of a Rholang term
 
-Returns **[string][91]** A rholang stringISSUE: Use intersection types to constrain par param further than IPar?
+Returns **[string][96]** A rholang stringISSUE: Use intersection types to constrain par param further than IPar?
 
 ### unforgeableWithId
 
-[src/RHOCore.js:307-310][118]
+[src/RHOCore.js:307-310][123]
 
 Get printable form of unforgeable name, given id.
 
 #### Parameters
 
--   `id` **[Uint8Array][81]** 
+-   `id` **[Uint8Array][86]** 
 
 ### wrapHash
 
-[src/RHOCore.js:115-115][119]
+[src/RHOCore.js:115-115][124]
 
 #### Parameters
 
@@ -558,7 +579,7 @@ Returns **any** HEX-formatted string representing the computed hash
 
 ## Ed25519keyPair
 
-[src/signing.js:38-75][120]
+[src/signing.js:38-75][125]
 
 Build key pair from seed.
 
@@ -568,7 +589,7 @@ Build key pair from seed.
 
 ### publicKey
 
-[src/signing.js:70-70][121]
+[src/signing.js:70-70][126]
 
 ISSUE: if the caller wants the bytes, we go bytes -> hex -> bytes
 
@@ -576,96 +597,141 @@ Returns **HexStr&lt;PublicKey>**
 
 ### signBytes
 
-[src/signing.js:46-48][122]
+[src/signing.js:46-48][127]
 
 #### Parameters
 
--   `bytes` **[Uint8Array][81]** 
+-   `bytes` **[Uint8Array][86]** 
 
 Returns **Signature** 
 
 ### signBytesHex
 
-[src/signing.js:56-56][123]
+[src/signing.js:56-56][128]
 
 #### Parameters
 
--   `bs` **[Uint8Array][81]** 
+-   `bs` **[Uint8Array][86]** 
 
 Returns **HexStr&lt;Signature>** 
 
 ### signText
 
-[src/signing.js:60-60][124]
+[src/signing.js:60-60][129]
 
 #### Parameters
 
--   `text` **[string][91]** 
+-   `text` **[string][96]** 
 
 Returns **Signature** 
 
 ### signTextHex
 
-[src/signing.js:64-64][125]
+[src/signing.js:64-64][130]
 
 #### Parameters
 
--   `text` **[string][91]** 
+-   `text` **[string][96]** 
 
 Returns **HexStr&lt;Signature>** 
 
-## RevAddress
+## REV
 
-[src/revAddress.js:34-34][126]
+[index.js:56-56][131]
 
-A RevAddress has a prefix, a keyHash, and a checksum.
+REV transaction, vault support
 
-Use toString() to get base58 form.
+Refs:
 
-### fromPublicKey
+-   [REV Vault][132]
 
-[src/revAddress.js:50-50][127]
+### Examples
 
-Compute REV Address
+```javascript
+// Suppose Alice generates a key pair.
+const aliceKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
+const alicePub = aliceKey.publicKey();
+assert.equal(alicePub, 'd04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737');
 
-#### Parameters
+// She can then share her REV address.
+const aliceAddr = REV.RevAddress.fromPublicKey(Hex.decode(alicePub));
+assert.equal(aliceAddr.toString(), '11112cFcjtrjwn7qCDvTLMu5jEvMSBN2qT1sBwQxDP9AyQCVi26xKZ');
 
--   `pk`  : ed25519 public key
+// She can also sign deployments:
+const term = '@"world"!("Hello!")';
+const timestamp = new Date('2019-04-12T17:59:29.274Z').valueOf();
+const info = REV.SignDeployment.sign(aliceKey, { timestamp, term });
 
-Returns **any** : RevAddressRefs:
-[https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala][128]
-[https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala#L16][129]-   ISSUE: find RevAddress spec
--   ISSUE: how to use tests as documentation?
+assert.deepEqual(info.deployer, Hex.decode(alicePub));
+assert.equal(Hex.encode(info.sig).slice(0, 16), 'ebc47a0a923b7feb');
+assert(REV.SignDeployment.verify(info));
+```
 
-## SignDeployment
+### RevAddress
 
-[src/rnodeAPI.js:382-420][130]
+[src/revAddress.js:38-64][133]
 
-a port of casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+A RevAddress refers to a REV vault.
+
+Use `toString()` to get base58 form.
+
+Refs:
+
+-   [RevAddress.scala][134]
+-   [AddressTools.scala][135]
+
+#### fromPublicKey
+
+[src/revAddress.js:46-61][136]
+
+Compute REV Address from public key
+
+##### Parameters
+
+-   `pk` **[Uint8Array][86]** ed25519 public key
+
+Returns **IRevAddress** 
+
+### SignDeployment
+
+[src/rnodeAPI.js:384-417][137]
+
+a port of [casper/SignDeployment.scala][138]
 
 ISSUE: only ed25519 is supported.
 
-### sign
+#### sign
 
-[src/rnodeAPI.js:396-402][131]
+[src/rnodeAPI.js:396-402][139]
 
-### verify
+##### Parameters
 
-[src/rnodeAPI.js:410-417][132]
+-   `key` **KeyPair** 
+-   `deployData` **DeployData** 
 
-Verify Deployment
+Returns **DeployData** 
+
+#### verify
+
+[src/rnodeAPI.js:407-414][140]
+
+##### Parameters
+
+-   `deployData` **DeployData** 
+
+Returns **[boolean][88]** 
 
 [2]: #rholangcrypto
 
-[3]: #blake2b256hash
+[3]: #examples
 
-[4]: #parameters
+[4]: #blake2b256hash
 
-[5]: #ed25519verify
+[5]: #parameters
 
-[6]: #parameters-1
+[6]: #ed25519verify
 
-[7]: #examples
+[7]: #parameters-1
 
 [8]: #keccak256hash
 
@@ -797,122 +863,138 @@ Verify Deployment
 
 [72]: #parameters-31
 
-[73]: #revaddress
+[73]: #rev
 
-[74]: #frompublickey
+[74]: #examples-1
 
-[75]: #parameters-32
+[75]: #revaddress
 
-[76]: #signdeployment
+[76]: #frompublickey
 
-[77]: #sign
+[77]: #parameters-32
 
-[78]: #verify
+[78]: #signdeployment
 
-[79]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L163-L163 "Source code on GitHub"
+[79]: #sign
 
-[80]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L146-L150 "Source code on GitHub"
+[80]: #parameters-33
 
-[81]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[81]: #verify
 
-[82]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L102-L108 "Source code on GitHub"
+[82]: #parameters-34
 
-[83]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[83]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L178-L178 "Source code on GitHub"
 
-[84]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L133-L135 "Source code on GitHub"
+[84]: #rhocorewraphash
 
-[85]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L119-L123 "Source code on GitHub"
+[85]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L134-L138 "Source code on GitHub"
 
-[86]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/index.js#L34-L34 "Source code on GitHub"
+[86]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-[87]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/proxy.js#L185-L185 "Source code on GitHub"
+[87]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L90-L96 "Source code on GitHub"
 
-[88]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/proxy.js#L64-L64 "Source code on GitHub"
+[88]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[89]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/proxy.js#L94-L94 "Source code on GitHub"
+[89]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L121-L123 "Source code on GitHub"
 
-[90]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L70-L348 "Source code on GitHub"
+[90]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L107-L111 "Source code on GitHub"
 
-[91]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[91]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/index.js#L64-L64 "Source code on GitHub"
 
-[92]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[92]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/proxy.js#L185-L185 "Source code on GitHub"
 
-[93]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L163-L166 "Source code on GitHub"
+[93]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/proxy.js#L64-L64 "Source code on GitHub"
 
-[94]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[94]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/proxy.js#L94-L94 "Source code on GitHub"
 
-[95]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L140-L156 "Source code on GitHub"
+[95]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L70-L348 "Source code on GitHub"
 
-[96]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L322-L332 "Source code on GitHub"
+[96]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[97]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L302-L311 "Source code on GitHub"
+[97]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[98]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L281-L292 "Source code on GitHub"
+[98]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L163-L166 "Source code on GitHub"
 
-[99]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[99]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[100]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L262-L270 "Source code on GitHub"
+[100]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L140-L156 "Source code on GitHub"
 
-[101]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L249-L251 "Source code on GitHub"
+[101]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L322-L332 "Source code on GitHub"
 
-[102]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L221-L237 "Source code on GitHub"
+[102]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L302-L311 "Source code on GitHub"
 
-[103]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L203-L210 "Source code on GitHub"
+[103]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L281-L292 "Source code on GitHub"
 
-[104]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L190-L192 "Source code on GitHub"
+[104]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[105]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L113-L119 "Source code on GitHub"
+[105]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L262-L270 "Source code on GitHub"
 
-[106]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L91-L100 "Source code on GitHub"
+[106]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L249-L251 "Source code on GitHub"
 
-[107]: https://nodejs.org/api/buffer.html
+[107]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L221-L237 "Source code on GitHub"
 
-[108]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/index.js#L12-L12 "Source code on GitHub"
+[108]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L203-L210 "Source code on GitHub"
 
-[109]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L99-L99 "Source code on GitHub"
+[109]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L190-L192 "Source code on GitHub"
 
-[110]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L27-L82 "Source code on GitHub"
+[110]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L113-L119 "Source code on GitHub"
 
-[111]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L331-L336 "Source code on GitHub"
+[111]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L91-L100 "Source code on GitHub"
 
-[112]: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+[112]: https://nodejs.org/api/buffer.html
 
-[113]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L345-L355 "Source code on GitHub"
+[113]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/index.js#L12-L12 "Source code on GitHub"
 
-[114]: https://developer.mozilla.org/docs/Web/API/URL/URL
+[114]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L99-L99 "Source code on GitHub"
 
-[115]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L90-L93 "Source code on GitHub"
+[115]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L27-L82 "Source code on GitHub"
 
-[116]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L169-L233 "Source code on GitHub"
+[116]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L331-L336 "Source code on GitHub"
 
-[117]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L246-L299 "Source code on GitHub"
+[117]: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
 
-[118]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L307-L310 "Source code on GitHub"
+[118]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L345-L355 "Source code on GitHub"
 
-[119]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/RHOCore.js#L115-L115 "Source code on GitHub"
+[119]: https://developer.mozilla.org/docs/Web/API/URL/URL
 
-[120]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L38-L75 "Source code on GitHub"
+[120]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L90-L93 "Source code on GitHub"
 
-[121]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L70-L70 "Source code on GitHub"
+[121]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L169-L233 "Source code on GitHub"
 
-[122]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L46-L48 "Source code on GitHub"
+[122]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L246-L299 "Source code on GitHub"
 
-[123]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L56-L56 "Source code on GitHub"
+[123]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L307-L310 "Source code on GitHub"
 
-[124]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L60-L60 "Source code on GitHub"
+[124]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/RHOCore.js#L115-L115 "Source code on GitHub"
 
-[125]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/signing.js#L64-L64 "Source code on GitHub"
+[125]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L38-L75 "Source code on GitHub"
 
-[126]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/revAddress.js#L34-L34 "Source code on GitHub"
+[126]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L70-L70 "Source code on GitHub"
 
-[127]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/revAddress.js#L50-L50 "Source code on GitHub"
+[127]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L46-L48 "Source code on GitHub"
 
-[128]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala
+[128]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L56-L56 "Source code on GitHub"
 
-[129]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala#L16
+[129]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L60-L60 "Source code on GitHub"
 
-[130]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L382-L420 "Source code on GitHub"
+[130]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/signing.js#L64-L64 "Source code on GitHub"
 
-[131]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L396-L402 "Source code on GitHub"
+[131]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/index.js#L56-L56 "Source code on GitHub"
 
-[132]: https://git@github.com/:dckc/RChain-API/blob/7c5a820e322ae28ac5a7e1f64bca351276188f9a/src/rnodeAPI.js#L410-L417 "Source code on GitHub"
+[132]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/652640311/Wallet+proposal
+
+[133]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/revAddress.js#L38-L64 "Source code on GitHub"
+
+[134]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala
+
+[135]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala
+
+[136]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/revAddress.js#L46-L61 "Source code on GitHub"
+
+[137]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L384-L417 "Source code on GitHub"
+
+[138]: https://github.com/rchain/rchain/blob/9ae5825/casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+
+[139]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L396-L402 "Source code on GitHub"
+
+[140]: https://git@github.com/:dckc/RChain-API/blob/f197c9ae5b22b945c7d9021ca32bd0d4061f235e/src/rnodeAPI.js#L407-L414 "Source code on GitHub"
