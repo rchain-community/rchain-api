@@ -61,13 +61,47 @@ type Decoder<T> = { decode(reader: Uint8Array): T };
 
 exports.RNode = RNode;
 /**
- * Connect to an RChain node (RNode).
+ * RChain node API client
+ *
+ *
+ * Methods are asynchronous; they return promises. Where
+ * CasperMessage.proto specifies an Either, this API
+ * resolves the promise on success or rejects it on failure.
+ *
+ * The promise may also reject for the usual gRPC reasons such as
+ * `UNAVAILABLE: Connect Failed`.
+ *
+ * Refs:
+ *  - [Node API Specification][nodeAPI] May 2018
+ *  - [CasperMessage.proto][cAPI] v0.9.1 bf1b2c6 Mar 28, 2019 and dependencies such as
+ *    - [RhoTypes.proto][rAPI]
+ *  - [RChain Protocol Documentation][apidoc]
+ *
+ * [cAPI]: https://github.com/rchain/rchain/blob/bf1b2c6/models/src/main/protobuf/CasperMessage.proto
+ * [rAPI]: https://github.com/rchain/rchain/blob/bf1b2c6/models/src/main/protobuf/RhoTypes.proto
+ * [apidoc]: https://github.com/rchain/rchain/blob/dev/docs/rnode-api/index.md
+ *
+ * [nodeAPI]:  https://rchain.atlassian.net/wiki/spaces/CORE/pages/392462355/Node+API+Specification
  *
  * @param grpc access to the network: grpc instance from the node grpc package
  * @param endPoint rnode gRPC service
  * @return a thin wrapper around a gRPC client stub
+ *
+ * @example
+ * // Get current block info
+ * const grpc = require('grpc');
+ *
+ * const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
+ * rnode.getAllBlocks().then((blocks) => { assert(blocks[0].blockNumber > 0); });
+ *
+ * // Deploy a simple Rholang process, given a key to authorize payment.
+ * const term = '@"world"!("Hello!")';
+ * const myKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
+ * const timestamp = new Date('2019-04-12T17:59:29.274Z').valueOf();
+ * const info = REV.SignDeployment.sign(myKey, { timestamp, term, phloLimit: 10000, phloPrice: 1 });
+ * rnode.doDeploy(info, true).then((message) => { assert(message.startsWith('Success')); });
  */
-function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */) {
+function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */) /*: IRNode */{
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
@@ -83,7 +117,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Ask rnode to compute ids of top level private names, given deploy parameters.
    *
    * @param d
-   * @param d.deployer - public key (of validating node?) as in doDeploy
+   * @param d.user - public key as in doDeploy deployer
    * @param d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
    * @memberof RNode
@@ -135,7 +169,8 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * @param autoCreateBlock automatically create a new block after deploy transaction success
    * @return A promise for message
    *
-   * ISSUE: import / generate DeployData static type
+   * @throws {Error} Could not deploy, casper instance was not available yet.
+   * @throws {Error} Missing / invalid / wrong size signature
    */
   async function doDeploy(deployData /*: IDeployData */,
     autoCreateBlock /*: boolean*/ = false) /*: Promise<string>*/ {
