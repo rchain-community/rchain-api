@@ -1,4 +1,4 @@
-/* global module, require */
+/* global module, require, Buffer */
 
 const assert = require('assert');
 const rchain = require('.');
@@ -21,8 +21,8 @@ const grpc = {
 module.exports = {
   babel: false,
   globals: {
-    RholangCrypto, RNode, REV, Hex, Ed25519keyPair,
+    assert, Buffer,
     grpc,
-    assert,
+    RholangCrypto, RNode, REV, Hex, Ed25519keyPair,
   },
 };

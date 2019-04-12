@@ -85,18 +85,6 @@ exports.Ed25519keyPair = Ed25519keyPair;
  *
  * @return indicates whether the signature is valid
  *
- * @example
- *
- *  const publicKey = Hex.decode(
- *     '288755c48c3951f89c5f0ffe885088dc0970fd935bc12adfdd81f81bb63d6219');
- *  const message = Hex.decode(
- *     'a6da46a1dc7ed715d4cd6472a736249a4d11142d160dbef9f20ae493de908c4e');
- *  const sig = Hex.decode(
- *     'd0a909078ce8b8706a641b07a0d4fe2108064813ce42009f108f89c2a3f4864a' +
- *     'a1a510d6dfccad3b62cd610db0bfe82bcecb08d813997fa7df14972f56017e0b');
- *
- *  assert(RholangCrypto.ed25519Verify(message, sig, publicKey));
- *
  * @memberof RholangCrypto
  */
 function ed25519Verify(
@@ -150,15 +138,42 @@ function blake2b256Hash(input /*: Uint8Array*/) /*: Uint8Array*/ {
 }
 
 /**
- * Cryptographic functions from Rholang.
+ * Cryptographic functions from Rholang
+ *
  *
  * refs:
  *   - [RChain Cryptography Specification][cspec] May 2018
  *   - [rholang/examples/tut-hash-functions.rho][htut] Aug 2018
+ *   - [rholang/examples/tut-verify-channel.md][vtut] Aug 2018
  *
  * [cspec]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/112721930/Cryptography+Specification
- *
  * [htut]: https://github.com/rchain/rchain/blob/a582f94/rholang/examples/tut-hash-functions.rho
+ * [vtut]: https://github.com/rchain/rchain/blob/3c64ca3/rholang/examples/tut-verify-channel.md
+ *
+ * See also {@link #rhocorewraphash|RHOCore.wrapHash}
+ *
+ * @example
+ * // Suppose we have Nathan Hale's public key:
+ *  const halePub = Hex.decode(
+ *     'd759793bbc13a2819a827c76adb6fba8a49aee007f49f2d0992d99b825ad2c48');
+ *
+ * // And we are presented with a document that he purportedly signed:
+ * const doc = 'I regret that I have but one life to live for my country.';
+ * const sig1 = Hex.decode(
+ *     'af42db4ae7a23ee182f7aabc3a73fa89834bc0daefab94d0f3e28c508557c3d3' +
+ *     'f06c67c28ebd2768ffa0b320330ec5089a9ae7519534fe70e9d06145d8caf40c');
+ *
+ * // Signatures are conventionally computed over a document's hash.
+ * // In this case, we happen to know it's a Blake2b 256 bit hash:
+ * const digest = RholangCrypto.blake2b256Hash(Buffer.from(doc));
+ *
+ * // Indeed, the signature is valid.
+ * assert(RholangCrypto.ed25519Verify(digest, sig1, halePub));
+ *
+ * // If the signature is altered even slightly, validation fails:
+ * const sig2 = sig1;
+ * sig2[0] = 123;
+ * assert(!RholangCrypto.ed25519Verify(digest, sig2, halePub));
  */
 const RholangCrypto = Object.freeze({ blake2b256Hash, sha256Hash, keccak256Hash, ed25519Verify });
 exports.RholangCrypto = RholangCrypto;
