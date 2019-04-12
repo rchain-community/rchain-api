@@ -1,6 +1,8 @@
 /* global require*/
 const ttest = require('tape'); // ISSUE: separate tests
-const { Hex, RevAddress } = require('..');
+const { Hex, REV } = require('..');
+
+const { RevAddress } = REV;
 
 const testCases = [
   {

@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const rchain = require('.');
-const { RholangCrypto, RNode, Hex } = rchain;
+const { RNode, RholangCrypto, REV, Ed25519keyPair, Hex } = rchain;
 
 // mock enough of grpc
 // ISSUE: refactor overlap with test/testRNode.js
@@ -21,7 +21,8 @@ const grpc = {
 module.exports = {
   babel: false,
   globals: {
-    RholangCrypto, RNode, Hex, grpc,
+    RholangCrypto, RNode, REV, Hex, Ed25519keyPair,
+    grpc,
     assert,
   },
 };

@@ -375,9 +375,11 @@ function firstBlockProcess(blockResults /*: DataWithBlockInfo[] */) {
 
 
 /**
- * a port of casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
+ * a port of [casper/SignDeployment.scala](https://github.com/rchain/rchain/blob/9ae5825/casper/src/main/scala/coop/rchain/casper/SignDeployment.scala)
  *
  * ISSUE: only ed25519 is supported.
+ *
+ * @memberof REV
  */
 const SignDeployment = (() => {
   const algName = 'ed25519';
@@ -389,11 +391,9 @@ const SignDeployment = (() => {
   const clear = deployData => fill(deployData)(null, null, null);
 
   /**
-   * @name sign
-   *
-   * @memberof SignDeployment
+   * @memberof REV.SignDeployment
    */
-  function signD(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
+  function sign(key /*: KeyPair */, deployData /*: DeployData*/)/*: DeployData*/ {
     const toSign = DeployData.encode(clear(deployData)).finish();
     const hash = blake2b256Hash(toSign);
     const signature = key.signBytes(hash);
@@ -402,12 +402,9 @@ const SignDeployment = (() => {
   }
 
   /**
-   * Verify Deployment
-   * @name verify
-   *
-   * @memberof SignDeployment
+   * @memberof REV.SignDeployment
    */
-  function verifyD(deployData /*: DeployData*/)/*: boolean */ {
+  function verify(deployData /*: DeployData*/)/*: boolean */ {
     if (deployData.sigAlgorithm !== algName) {
       throw new Error(`unsupported: ${deployData.sigAlgorithm}`);
     }
@@ -416,7 +413,7 @@ const SignDeployment = (() => {
     return ed25519Verify(hash, deployData.sig, deployData.deployer);
   }
 
-  return Object.freeze({ sign: signD, verify: verifyD });
+  return Object.freeze({ sign, verify });
 })();
 exports.SignDeployment = SignDeployment;
 

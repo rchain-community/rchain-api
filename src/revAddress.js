@@ -1,4 +1,5 @@
 /* global require, exports, Buffer */
+// @flow
 
 const base58 = require('bs58');
 const { blake2b256Hash } = require('./signing').RholangCrypto;
@@ -11,61 +12,59 @@ const version = '00';
 const prefix = h2b(coinId + version);
 
 /*::
-type Bytes = Uint8Array;
-type PublicKey = Bytes; // newtype? length?
-
-export type RevAddr = {
+export interface IRevAddress {
   address: Address,
   toString: () => string,
 };
 
 type Address = {
-  prefix: Bytes,
-  keyHash: Bytes,
-  checksum: Bytes,
+  prefix: Uint8Array,
+  keyHash: Uint8Array,
+  checksum: Uint8Array,
 };
 */
 
 /**
- * A RevAddress has a prefix, a keyHash, and a checksum.
+ * A RevAddress refers to a REV vault.
  *
- * Use toString() to get base58 form.
- */
-const RevAddress = Object.freeze({ fromPublicKey });
-exports.RevAddress = RevAddress;
-
-/**
- * Compute REV Address
- * @memberof RevAddress
- * @param pk: ed25519 public key
- * @return: RevAddress
+ * Use `toString()` to get base58 form.
  *
  * Refs:
- * https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala
- * https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala#L16
+ *  - [RevAddress.scala](https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala)
+ *  - [AddressTools.scala](https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala)
  *
- * - ISSUE: find RevAddress spec
- * - ISSUE: how to use tests as documentation?
+ * @memberof REV
  */
-exports.fromPublicKey = fromPublicKey;
-function fromPublicKey(pk /*: PublicKey */) /*: RevAddr */ {
-  if (keyLength !== pk.length) { throw new Error(`bad public key length: ${pk.length}`); }
-  const keyHash = blake2b256Hash(pk);
-  const payload = concat(prefix, keyHash);
-  const checksum = computeChecksum(payload);
-  const s = base58.encode(Buffer.from(concat(payload, checksum)));
+const RevAddress = (() => {
+  /**
+   * Compute REV Address from public key
+   *
+   * @param pk ed25519 public key
+   *
+   * @memberof REV.RevAddress
+   */
+  function fromPublicKey(pk /*: Uint8Array */) /*: IRevAddress */ {
+    if (keyLength !== pk.length) { throw new Error(`bad public key length: ${pk.length}`); }
+    const keyHash = blake2b256Hash(pk);
+    const payload = concat(prefix, keyHash);
+    const checksum = computeChecksum(payload);
+    const s = base58.encode(Buffer.from(concat(payload, checksum)));
 
-  return Object.freeze({
-    address: {
-      prefix,
-      keyHash,
-      checksum,
-    },
-    toString: () => s,
-  });
-}
+    return Object.freeze({
+      address: {
+        prefix,
+        keyHash,
+        checksum,
+      },
+      toString: () => s,
+    });
+  }
 
-function computeChecksum(toCheck /*: Bytes */) /*: Bytes*/ {
+  return Object.freeze({ fromPublicKey });
+})();
+exports.RevAddress = RevAddress;
+
+function computeChecksum(toCheck /*: Uint8Array */) /*: Uint8Array */ {
   return blake2b256Hash(toCheck).slice(0, checksumLength);
 }
 

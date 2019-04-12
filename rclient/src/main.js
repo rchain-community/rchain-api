@@ -10,11 +10,10 @@ const read = require('read');
 const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
-  RNode, RHOCore,
+  RNode, RHOCore, REV,
   RholangCrypto,
-  Hex, Ed25519keyPair, SignDeployment,
+  Hex, Ed25519keyPair,
   RegistryProxy,
-  RevAddress,
 } = require('rchain-api');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 
@@ -23,6 +22,7 @@ const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
 const { link } = require('./assets');
 
+const { SignDeployment, RevAddress } = REV;
 const { keccak256Hash } = RholangCrypto;
 const { makeProxy } = RegistryProxy;
 const h2b = Hex.decode;
