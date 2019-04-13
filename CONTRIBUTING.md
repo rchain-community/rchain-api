@@ -16,7 +16,7 @@ flow-check` script does a complete check and `npm run flow-status`
 does an incremental check.
 
 
-## RChain Validator Node for Integration testing
+0## RChain Validator Node for Integration testing
 
 One way to provide a validator node for testing, provided you're OK
 with the security risks around `--net host`, is to first have

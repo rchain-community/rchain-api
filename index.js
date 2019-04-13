@@ -38,6 +38,7 @@ exports.Block = Block;
  *
  * @example
  * // Suppose Alice generates a key pair.
+ * const { REV, Ed25519keyPair, Hex } = require('rchain-api');
  * const aliceKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
  * const alicePub = aliceKey.publicKey();
  * assert.equal(alicePub, 'd04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737');

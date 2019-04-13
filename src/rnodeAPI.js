@@ -89,6 +89,7 @@ exports.RNode = RNode;
  *
  * @example
  * // Get current block info
+ * const { RNode, REV, Ed25519keyPair, Hex } = require('rchain-api');
  * const grpc = require('grpc');
  *
  * const rnode = RNode(grpc, { host: 'localhost', port: 40401 });

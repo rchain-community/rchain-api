@@ -154,6 +154,7 @@ function blake2b256Hash(input /*: Uint8Array*/) /*: Uint8Array*/ {
  *
  * @example
  * // Suppose we have Nathan Hale's public key:
+ *  const { RholangCrypto, Hex } = require('rchain-api');
  *  const halePub = Hex.decode(
  *     'd759793bbc13a2819a827c76adb6fba8a49aee007f49f2d0992d99b825ad2c48');
  *
