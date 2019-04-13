@@ -89,7 +89,7 @@
 
 ## RholangCrypto
 
-[src/signing.js:178-178][86]
+[src/signing.js:179-179][86]
 
 Cryptographic functions from Rholang
 
@@ -111,6 +111,7 @@ See also [RHOCore.wrapHash][87]
 
 ```javascript
 // Suppose we have Nathan Hale's public key:
+ const { RholangCrypto, Hex } = require('rchain-api');
  const halePub = Hex.decode(
     'd759793bbc13a2819a827c76adb6fba8a49aee007f49f2d0992d99b825ad2c48');
 
@@ -185,7 +186,7 @@ Returns **[Uint8Array][89]** 256 bit (32 byte) hash
 
 ## RegistryProxy
 
-[index.js:72-72][94]
+[index.js:73-73][94]
 
 Proxy method calls to registered RChain channels.
 
@@ -243,7 +244,7 @@ For rholang calling conventions, see `callSource`.
 
 ## RNode
 
-[src/rnodeAPI.js:104-383][98]
+[src/rnodeAPI.js:105-384][98]
 
 RChain node API client
 
@@ -278,6 +279,7 @@ Refs:
 
 ```javascript
 // Get current block info
+const { RNode, REV, Ed25519keyPair, Hex } = require('rchain-api');
 const grpc = require('grpc');
 
 const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
@@ -295,7 +297,7 @@ Returns **IRNode** a thin wrapper around a gRPC client stub
 
 ### createBlock
 
-[src/rnodeAPI.js:198-201][101]
+[src/rnodeAPI.js:199-202][101]
 
 Creates a block on your node
 
@@ -303,7 +305,7 @@ Returns **[Promise][102]&lt;[string][99]>** A promise for response message
 
 ### doDeploy
 
-[src/rnodeAPI.js:175-191][103]
+[src/rnodeAPI.js:176-192][103]
 
 Deploys a rholang term to a node
 
@@ -329,7 +331,7 @@ Returns **[Promise][102]&lt;[string][99]>** A promise for message
 
 ### getAllBlocks
 
-[src/rnodeAPI.js:357-367][105]
+[src/rnodeAPI.js:358-368][105]
 
 Retrieve the block summary for a series of blocks starting with the most recent,
 including the number of blocks specified by the block_depth
@@ -345,7 +347,7 @@ Returns **[Promise][102]&lt;BlockInfoWithoutTuplespace>** List of BlockInfoWitho
 
 ### getBlock
 
-[src/rnodeAPI.js:337-346][106]
+[src/rnodeAPI.js:338-347][106]
 
 Retrieve a block with the tuplespace for a specific block hash
 
@@ -360,7 +362,7 @@ Returns **any** BlockInfo structure that will include all metadata and also incl
 
 ### listenForContinuationAtName
 
-[src/rnodeAPI.js:316-327][107]
+[src/rnodeAPI.js:317-328][107]
 
 Listen for a continuation at an individual name or
 JOINed set of names in the tuplespace
@@ -377,7 +379,7 @@ Returns **[Promise][102]&lt;ListeningNameContinuationResponse>** promise for Dat
 
 ### listenForContinuationAtPrivateName
 
-[src/rnodeAPI.js:297-305][109]
+[src/rnodeAPI.js:298-306][109]
 
 Listen for a continuation at an individual private name or
 JOINed set of private names in the tuplespace
@@ -399,7 +401,7 @@ Returns **any** promise for ContinuationsWithBlockInfo
 
 ### listenForContinuationAtPublicName
 
-[src/rnodeAPI.js:284-286][110]
+[src/rnodeAPI.js:285-287][110]
 
 Listen for a continuation at an individual public name or
 JOINed set of public names in the tuplespace
@@ -421,7 +423,7 @@ Returns **any** promise for ContinuationsWithBlockInfo
 
 ### listenForDataAtName
 
-[src/rnodeAPI.js:256-272][111]
+[src/rnodeAPI.js:257-273][111]
 
 Listen for data at a name in the RChain tuple-space.
 
@@ -438,7 +440,7 @@ Returns **[Promise][102]&lt;[Array][108]&lt;DataWithBlockInfo>>** : promise for 
 
 ### listenForDataAtPrivateName
 
-[src/rnodeAPI.js:238-245][112]
+[src/rnodeAPI.js:239-246][112]
 
 Listen for data at a PRIVATE name in the RChain tuple-space.
 
@@ -459,7 +461,7 @@ Returns **any** promise for [DataWithBlockInfo]
 
 ### listenForDataAtPublicName
 
-[src/rnodeAPI.js:225-227][113]
+[src/rnodeAPI.js:226-228][113]
 
 Listen for data at a PUBLIC name in the RChain tuple-space.
 
@@ -480,7 +482,7 @@ Returns **any** promise for [DataWithBlockInfo]
 
 ### previewPrivateChannels
 
-[src/rnodeAPI.js:147-153][114]
+[src/rnodeAPI.js:148-154][114]
 
 Ask rnode to compute top level private channels, given deploy parameters.
 
@@ -495,7 +497,7 @@ Returns **[Promise][102]&lt;[Array][108]&lt;IPar>>**
 
 ### previewPrivateIds
 
-[src/rnodeAPI.js:125-134][115]
+[src/rnodeAPI.js:126-135][115]
 
 Ask rnode to compute ids of top level private names, given deploy parameters.
 
@@ -682,7 +684,7 @@ Returns **HexStr&lt;Signature>**
 
 ## REV
 
-[index.js:64-64][135]
+[index.js:65-65][135]
 
 REV transaction, vault support
 
@@ -696,6 +698,7 @@ Refs:
 
 ```javascript
 // Suppose Alice generates a key pair.
+const { REV, Ed25519keyPair, Hex } = require('rchain-api');
 const aliceKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
 const alicePub = aliceKey.publicKey();
 assert.equal(alicePub, 'd04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737');
@@ -763,7 +766,7 @@ Returns **IRevAddress**
 
 ### SignDeployment
 
-[src/rnodeAPI.js:419-452][141]
+[src/rnodeAPI.js:420-453][141]
 
 a port of [casper/SignDeployment.scala][142]
 
@@ -771,7 +774,7 @@ ISSUE: only ed25519 is supported.
 
 #### sign
 
-[src/rnodeAPI.js:431-437][143]
+[src/rnodeAPI.js:432-438][143]
 
 ##### Parameters
 
@@ -782,7 +785,7 @@ Returns **DeployData**
 
 #### verify
 
-[src/rnodeAPI.js:442-449][144]
+[src/rnodeAPI.js:443-450][144]
 
 ##### Parameters
 
@@ -958,120 +961,120 @@ Returns **[boolean][91]**
 
 [85]: #parameters-35
 
-[86]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L178-L178 "Source code on GitHub"
+[86]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L179-L179 "Source code on GitHub"
 
 [87]: #rhocorewraphash
 
-[88]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L134-L138 "Source code on GitHub"
+[88]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L134-L138 "Source code on GitHub"
 
 [89]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 
-[90]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L90-L96 "Source code on GitHub"
+[90]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L90-L96 "Source code on GitHub"
 
 [91]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[92]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L121-L123 "Source code on GitHub"
+[92]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L121-L123 "Source code on GitHub"
 
-[93]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L107-L111 "Source code on GitHub"
+[93]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L107-L111 "Source code on GitHub"
 
-[94]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/index.js#L72-L72 "Source code on GitHub"
+[94]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/index.js#L73-L73 "Source code on GitHub"
 
-[95]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/proxy.js#L194-L194 "Source code on GitHub"
+[95]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/proxy.js#L194-L194 "Source code on GitHub"
 
-[96]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/proxy.js#L69-L69 "Source code on GitHub"
+[96]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/proxy.js#L69-L69 "Source code on GitHub"
 
-[97]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/proxy.js#L100-L100 "Source code on GitHub"
+[97]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/proxy.js#L100-L100 "Source code on GitHub"
 
-[98]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L104-L383 "Source code on GitHub"
+[98]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L105-L384 "Source code on GitHub"
 
 [99]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [100]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[101]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L198-L201 "Source code on GitHub"
+[101]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L199-L202 "Source code on GitHub"
 
 [102]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
 
-[103]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L175-L191 "Source code on GitHub"
+[103]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L176-L192 "Source code on GitHub"
 
 [104]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error
 
-[105]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L357-L367 "Source code on GitHub"
+[105]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L358-L368 "Source code on GitHub"
 
-[106]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L337-L346 "Source code on GitHub"
+[106]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L338-L347 "Source code on GitHub"
 
-[107]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L316-L327 "Source code on GitHub"
+[107]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L317-L328 "Source code on GitHub"
 
 [108]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[109]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L297-L305 "Source code on GitHub"
+[109]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L298-L306 "Source code on GitHub"
 
-[110]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L284-L286 "Source code on GitHub"
+[110]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L285-L287 "Source code on GitHub"
 
-[111]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L256-L272 "Source code on GitHub"
+[111]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L257-L273 "Source code on GitHub"
 
-[112]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L238-L245 "Source code on GitHub"
+[112]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L239-L246 "Source code on GitHub"
 
-[113]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L225-L227 "Source code on GitHub"
+[113]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L226-L228 "Source code on GitHub"
 
-[114]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L147-L153 "Source code on GitHub"
+[114]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L148-L154 "Source code on GitHub"
 
-[115]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L125-L134 "Source code on GitHub"
+[115]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L126-L135 "Source code on GitHub"
 
 [116]: https://nodejs.org/api/buffer.html
 
-[117]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/index.js#L12-L12 "Source code on GitHub"
+[117]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/index.js#L12-L12 "Source code on GitHub"
 
-[118]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L99-L99 "Source code on GitHub"
+[118]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L99-L99 "Source code on GitHub"
 
-[119]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L27-L82 "Source code on GitHub"
+[119]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L27-L82 "Source code on GitHub"
 
-[120]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L331-L336 "Source code on GitHub"
+[120]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L331-L336 "Source code on GitHub"
 
 [121]: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
 
-[122]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L345-L355 "Source code on GitHub"
+[122]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L345-L355 "Source code on GitHub"
 
 [123]: https://developer.mozilla.org/docs/Web/API/URL/URL
 
-[124]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L90-L93 "Source code on GitHub"
+[124]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L90-L93 "Source code on GitHub"
 
-[125]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L169-L233 "Source code on GitHub"
+[125]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L169-L233 "Source code on GitHub"
 
-[126]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L246-L299 "Source code on GitHub"
+[126]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L246-L299 "Source code on GitHub"
 
-[127]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L307-L310 "Source code on GitHub"
+[127]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L307-L310 "Source code on GitHub"
 
-[128]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/RHOCore.js#L115-L115 "Source code on GitHub"
+[128]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/RHOCore.js#L115-L115 "Source code on GitHub"
 
-[129]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L38-L75 "Source code on GitHub"
+[129]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L38-L75 "Source code on GitHub"
 
-[130]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L70-L70 "Source code on GitHub"
+[130]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L70-L70 "Source code on GitHub"
 
-[131]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L46-L48 "Source code on GitHub"
+[131]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L46-L48 "Source code on GitHub"
 
-[132]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L56-L56 "Source code on GitHub"
+[132]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L56-L56 "Source code on GitHub"
 
-[133]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L60-L60 "Source code on GitHub"
+[133]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L60-L60 "Source code on GitHub"
 
-[134]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/signing.js#L64-L64 "Source code on GitHub"
+[134]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/signing.js#L64-L64 "Source code on GitHub"
 
-[135]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/index.js#L64-L64 "Source code on GitHub"
+[135]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/index.js#L65-L65 "Source code on GitHub"
 
-[136]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/revAddress.js#L38-L103 "Source code on GitHub"
+[136]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/revAddress.js#L38-L103 "Source code on GitHub"
 
 [137]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala
 
 [138]: https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala
 
-[139]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/revAddress.js#L46-L61 "Source code on GitHub"
+[139]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/revAddress.js#L46-L61 "Source code on GitHub"
 
-[140]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/revAddress.js#L69-L100 "Source code on GitHub"
+[140]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/revAddress.js#L69-L100 "Source code on GitHub"
 
-[141]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L419-L452 "Source code on GitHub"
+[141]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L420-L453 "Source code on GitHub"
 
 [142]: https://github.com/rchain/rchain/blob/9ae5825/casper/src/main/scala/coop/rchain/casper/SignDeployment.scala
 
-[143]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L431-L437 "Source code on GitHub"
+[143]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L432-L438 "Source code on GitHub"
 
-[144]: https://git@github.com/:dckc/RChain-API/blob/5cc78f84d32b2e2c6803b3523c794b91882df66f/src/rnodeAPI.js#L442-L449 "Source code on GitHub"
+[144]: https://git@github.com/:dckc/RChain-API/blob/20d55088e791582ae03a1887ebacfb7737ea4e5e/src/rnodeAPI.js#L443-L450 "Source code on GitHub"
