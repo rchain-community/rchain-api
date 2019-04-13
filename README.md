@@ -9,7 +9,7 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 
 ## Quickstart
 ### Find an RChain node whose grpc endpoint you can use.
-At the moment that likely means [running your own RNode](2). We're working on a community node at rnode-test.rhobot.net
+At the moment that likely means [running your own RNode][2]. We're working on a community node at rnode-test.rhobot.net
 
 Make note of your RNode's hostname and gRPC port. If you're not sure, `localhost` and `40401` are good guesses.
 
@@ -62,7 +62,7 @@ myNode.doDeploy({
 
 [protobuf][proto]: v0.9.1 bf1b2c6 Mar 28, 2019
 
-[pro]: https://github.com/rchain/rchain/tree/bf1b2c6c6662515403c0a429e8c9fa25edd64638/models/src/main/protobuf
+[proto]: https://github.com/rchain/rchain/tree/bf1b2c6c6662515403c0a429e8c9fa25edd64638/models/src/main/protobuf
 
 
 ## Examples and Related Projects
