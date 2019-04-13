@@ -2,6 +2,10 @@
 // @flow
 
 const ttest = require('tape');
+const CasperMessage = require('../protobuf/CasperMessage');
+
+const { BlockInfoWithoutTuplespace } = CasperMessage.coop.rchain.casper.protocol;
+
 const api = require('..');
 
 const { RNode, RegistryProxy, SignDeployment, RHOCore, Hex } = api;
@@ -19,14 +23,7 @@ import type { JsonExt } from '..';
  * @param suite2: supplemental tests
  */
 function testRNode(suite2) {
-  // mock enough of grpc
-  function DeployService(_hostPort, _chan) { }
-  const casper = { DeployService };
-  const proto = { coop: { rchain: { casper: { protocol: casper } } } };
-  const grpc0 = {
-    loadPackageDefinition(_d) { return proto; },
-    credentials: { createInsecure() { } },
-  };
+  const grpc0 = grpcMock();
 
   Object.entries({
     'args check': (test) => {
@@ -152,6 +149,35 @@ function payFor(d0, key, phloPrice = 1, phloLimit = 10000000) {
   });
   // console.log({ valid: SignDeployment.verify(dout), sig: b2h(dout.sig) });
   return dout;
+}
+
+exports.grpcMock = grpcMock;
+function grpcMock() {
+  function DeployService(_hostPort /*: Object */, _chan /*: Object */) {
+    return Object.freeze({
+      doDeploy(_dd /*: Object */, _auto /*: boolean */ = false) { return 'Success!'; },
+      showBlocks(_depth /*: number */) {
+        const block4 = { value: BlockInfoWithoutTuplespace.encode({ blockNumber: 4 }).finish() };
+
+        return Object.freeze({
+          on(name /*: string */, handler /*: (...args: any[]) => void */) {
+            if (name === 'data') {
+              handler({ success: { response: block4 } });
+            } else if (name === 'end') {
+              handler();
+            }
+          },
+        });
+      },
+    });
+  }
+
+  const casper = { DeployService };
+  const proto = { coop: { rchain: { casper: { protocol: casper } } } };
+  return Object.freeze({
+    loadPackageDefinition(_d /*: Object */) { return proto; },
+    credentials: { createInsecure() { } },
+  });
 }
 
 
