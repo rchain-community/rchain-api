@@ -34,9 +34,7 @@ Usage:
   rclient [options] import LABEL JSONFILE
   rclient [options] info LABEL
   rclient [options] genVault LABEL AMOUNT
-  rclient [options] claim LABEL
   rclient [options] balance LABEL
-  rclient [options] publish [--claimed] LABEL
   rclient [options] transfer --from=LABEL --to=REVADDR AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
@@ -147,9 +145,6 @@ async function main(
   } else if (cli.genVault) {
     const io = await ioTools();
     await genVault(cli.LABEL, argInt('AMOUNT'), payWith, io);
-  } else if (cli.claim) {
-    const io = await ioTools();
-    await claimAccount(cli.LABEL, payWith, io);
   } else if (cli.balance) {
     const io = await ioTools();
     await getBalance(cli.LABEL, payWith, io);
@@ -393,36 +388,6 @@ async function genVault(
     throw new ExitStatus(`cannot generate vault: ${result.message}`);
   }
   console.log({ revAddr, label, amount, result });
-}
-
-const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
-const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
-
-async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
-  let privKey;
-  let pubKey;
-  let ethAddr;
-  try {
-    privKey = await loadKey(keyStore, label, [], { getpass });
-    pubKey = privateToPublic(privKey);
-    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    // ISSUE: logging is not just FYI here;
-    // should be passed as an explicit capability.
-    console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (err) {
-    throw new ExitStatus(`cannot load public key: ${err.message}`);
-  }
-
-  function fixArgs(args, [statusOut]) {
-    console.log({ args, statusOut });
-    const out = [...args];
-    out[2] = sigDERHex(secp256k1.sign(rhoKeccakHash([b2h(pubKey), statusOut]), privKey));
-    return out;
-  }
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs, predeclare: ['s'] });
-  const pk = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
-
-  console.log({ ethAddr, pk });
 }
 
 
