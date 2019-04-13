@@ -60,12 +60,55 @@ const RevAddress = (() => {
     });
   }
 
-  return Object.freeze({ fromPublicKey });
+  /**
+   * Parse REV Address
+   *
+   * @throws Error on ill-formed address
+   * @memberof REV.RevAddress
+   */
+  function parse(address /*: string */) /*: IRevAddress */{
+    function validateLength(bytes) {
+      if (bytes.length !== prefix.length + (256 / 8) + checksumLength) {
+        throw new Error('Invalid address length');
+      }
+    }
+
+    function validateChecksum(bytes) {
+      const checksumStart = prefix.length + (256 / 8);
+      const [payload, checksum] = splitAt(bytes, checksumStart);
+
+      if (computeChecksum(payload) !== checksum) { throw new Error('Invalid checksum'); }
+      return [payload, checksum];
+    }
+
+    function parseKeyHash(payload) {
+      const [actualPrefix, keyHash] = splitAt(payload, prefix.length);
+      if (actualPrefix !== prefix) { throw new Error('Invalid prefix'); }
+
+      return keyHash;
+    }
+
+    const decodedAddress = base58.decode(address);
+    validateLength(decodedAddress);
+    const [payload, checksum] = validateChecksum(decodedAddress);
+    const keyHash = parseKeyHash(payload);
+
+    return Object.freeze({
+      address: { prefix, keyHash, checksum },
+      toString: () => address,
+    });
+  }
+
+  return Object.freeze({ fromPublicKey, parse });
 })();
 exports.RevAddress = RevAddress;
 
 function computeChecksum(toCheck /*: Uint8Array */) /*: Uint8Array */ {
   return blake2b256Hash(toCheck).slice(0, checksumLength);
+}
+
+function splitAt(bs, x) {
+  return [bs.slice(0, x), bs.slice(x)];
 }
 
 function concat(a, b) {

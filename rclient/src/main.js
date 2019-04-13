@@ -410,6 +410,12 @@ async function transferPayment(
   { keyStore, toolsMod, getpass, rnode, clock, delay },
 ) {
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
+  try {
+    RevAddress.parse(toAddr);
+  } catch (badAddr) {
+    throw new ExitStatus(`bad destination address: ${badAddr.message}`);
+  }
+
   const { revAddr, publicKey, signingKey } = await loadRevAddr(
     fromLabel, notice,
     { keyStore, getpass },
