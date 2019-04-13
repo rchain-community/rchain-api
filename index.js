@@ -54,6 +54,12 @@ exports.Block = Block;
  * assert.deepEqual(info.deployer, Hex.decode(alicePub));
  * assert.equal(Hex.encode(info.sig).slice(0, 16), 'ebc47a0a923b7feb');
  * assert(REV.SignDeployment.verify(info));
+ *
+ * @example
+ * // We can check a REV address before deploying any code.
+ * assert.throws(() => {
+ *   REV.RevAddress.parse('123');
+ * });
  */
 const REV = { SignDeployment, RevAddress };
 exports.REV = REV;
