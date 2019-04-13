@@ -15,7 +15,6 @@
     "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
     "doc-watch": "documentation serve --watch index.js src/**.js --shallow",
     "check": "npm run test && npm run lint && npm run flow-check",
-    "test-jest": "jest",
     "test": "tape test/**/*.js && markdown-doctest",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
     "flow-check": "flow check --from emacs",
