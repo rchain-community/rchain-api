@@ -138,7 +138,7 @@ async function runAndListen(
   const key = Ed25519keyPair(defaultSec);
 
   return RegistryProxy.runRholang(
-    term, RHOCore.fromJSData(returnChannel), payFor({ term, timestamp }, key),
+    term, timestamp, info => payFor(info, key), RHOCore.fromJSData(returnChannel),
     { rnode: node },
   );
 }

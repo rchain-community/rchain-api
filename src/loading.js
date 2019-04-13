@@ -17,6 +17,7 @@ const LOADER_TEMPLATE = link('./loader.rho');
 /*::
 import type { DeployInfo } from '../protobuf/CasperMessage';
 import type { IRNode } from '..';
+import type { PayFor } from './proxy';
 
 interface LoadAccess {
   rnode: IRNode,
@@ -35,7 +36,7 @@ export type ModuleInfo = {
 
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
-  sources /*: string[]*/, payFor /*: DeployInfo => DeployInfo */,
+  sources /*: string[]*/, payFor /*: PayFor<DeployInfo> */,
   { rnode, clock, delay } /*: LoadAccess */,
 ) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;

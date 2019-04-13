@@ -40,6 +40,11 @@ interface ProxyOpts extends SendOpts {
   clock: () => Date
 }
 
+type PK = Uint8Array;
+type Sig = Uint8Array;
+
+export type PayFor<T> = T => T & { deployer: PK, sig: Sig };
+
 */
 
 
@@ -64,11 +69,12 @@ interface ProxyOpts extends SendOpts {
 exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: URL */,
-  deployData /*: $ReadOnly<IDeployData> */,
+  deployer /*: Uint8Array */,
+  payFor /*: PayFor<IDeployData> */,
   opts /*: ProxyOpts */,
 ) /*: Receiver */{
   const { clock } = opts;
-  const sendIt = msg => sendCall(msg, { ...deployData, timestamp: clock().valueOf() }, opts);
+  const sendIt = msg => sendCall(msg, clock().valueOf(), deployer, payFor, opts);
   return new Proxy({}, {
     get: (_, method) => (...args) => sendIt({ target, method, args }),
     // override set to make it read-only?
@@ -94,7 +100,9 @@ function makeProxy(
 exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
-  deployData /*: $ReadOnly<IDeployData> */,
+  timestamp /*: number*/,
+  deployer /*: Uint8Array */,
+  payFor /*: PayFor<IDeployData>*/,
   opts /*: SendOpts */,
 ) {
   const { rnode } = opts;
@@ -105,7 +113,7 @@ async function sendCall(
     returnChan = opts.returnCh;
   } else {
     const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
-      { user: deployData.deployer, timestamp: deployData.timestamp },
+      { user: deployer, timestamp },
       1 + (opts.predeclare || []).length,
     );
     // console.log({ chans: chans.map(b2h) });
@@ -124,22 +132,23 @@ async function sendCall(
     { ...opts, chanArgs },
   );
   console.log(term);
-  return runRholang(term, returnChan, deployData, opts, method || '?');
+  return runRholang(term, timestamp, payFor, returnChan, opts, method || '?');
 }
 
 
 exports.runRholang = runRholang;
 async function runRholang(
   term /*: string */,
+  timestamp /*: number */,
+  payFor /*: PayFor<IDeployData> */,
   returnChan /*: IPar */,
-  deployData /*: $ReadOnly<IDeployData> */,
   opts /*: SendOpts */,
   label /*: string */ = '',
 ) /**/ {
   const { rnode } = opts;
-  //@@@@@@@this can't work with signed deploys
-  // console.log({ deployData, note: 'placeholder term' });
-  const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
+  const deployData = payFor({ term, timestamp });
+  // console.log('runRholang', { deployData, note: 'placeholder term' });
+  const deployResult = await rnode.doDeploy(deployData, true);
   console.log({ deployResult }); // ISSUE: return block hash to caller?
 
   const blockResults = await pollAt(returnChan, label, { delay: opts.delay, rnode });

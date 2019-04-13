@@ -211,10 +211,9 @@ async function register(
   const toLoad = status.filter(({ mod }) => !mod);
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
-    const privKey = await loadKey(keyStore, label, [], { getpass });
-    const pmtKey = Ed25519keyPair(privKey);
+    const { signingKey } = await loadRevAddr(label, [], { keyStore, getpass });
     const loaded = await ioOrExit(
-      loadRhoModules(toLoad.map(({ src }) => src), payWith(pmtKey), { rnode, clock, delay }),
+      loadRhoModules(toLoad.map(({ src }) => src), payWith(signingKey), { rnode, clock, delay }),
     );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
@@ -370,19 +369,22 @@ async function loadRevAddr(label, notice, { keyStore, getpass }) {
     const privKey = await loadKey(keyStore, label, notice, { getpass });
     const edKey = Ed25519keyPair(privKey);
     const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
-    return { label, revAddr, publicKey: edKey.publicKey() };
+    return { label, revAddr, signingKey: edKey, publicKey: edKey.publicKey() };
   } catch (err) {
     throw new ExitStatus(`cannot load public key: ${err.message}`);
   }
 }
 
 async function genVault(
-  label, amount, priceInfo,
+  label, amount, payWith,
   { keyStore, getpass, toolsMod, rnode, clock, delay },
 ) {
-  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
+  const { revAddr, signingKey, publicKey } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const tools = makeProxy(
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
+    { rnode, clock, delay },
+  );
   const result = await tools.genVault(revAddr, amount);
   if (result && typeof result === 'object' && typeof result.message === 'string') {
     throw new ExitStatus(`cannot generate vault: ${result.message}`);
@@ -391,26 +393,30 @@ async function genVault(
 }
 
 
-async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
-  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
+async function getBalance(label, payWith, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
+  const { revAddr, publicKey, signingKey } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const tools = makeProxy(
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
+    { rnode, clock, delay },
+  );
   const balance = await tools.balance(revAddr);
 
   console.log({ revAddr, balance, label });
 }
 
 async function transferPayment(
-  // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
-  amount, fromLabel, toAddr, paymentInfo,
+  amount, fromLabel, toAddr, payWith,
   { keyStore, toolsMod, getpass, rnode, clock, delay },
 ) {
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
-  const { revAddr, publicKey } = await loadRevAddr(fromLabel, notice, { keyStore, getpass });
+  const { revAddr, publicKey, signingKey } = await loadRevAddr(
+    fromLabel, notice,
+    { keyStore, getpass },
+  );
 
   const tools = makeProxy(
-    toolsMod.URI,
-    { ...paymentInfo, deployer: h2b(publicKey) },
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
     { rnode, clock, delay },
   );
 
