@@ -104,8 +104,6 @@ exports.CasperMessage = require('./protobuf/CasperMessage');
 const REV = { SignDeployment, RevAddress };
 exports.REV = REV;
 
-exports.SignDeployment = SignDeployment;
-
 /**
  * Proxy method calls to registered RChain channels.
  */
@@ -128,4 +126,10 @@ export type HexStr<T> = HexStr<T>;
 export type Bytes = Bytes;
 */
 
-exports.Hex = require('./src/hex');
+/**
+ * Hex (base16) encoding and decoding
+ * @namespace
+ */
+const Hex = require('./src/hex');
+
+exports.Hex = Hex;

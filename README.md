@@ -18,7 +18,8 @@ const grpc = require('grpc');
 const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
 
 const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
-rnode.getAllBlocks().then((blocks) => { assert(blocks[0].blockHash.length > 0); });
+rnode.showBlocks()
+  .then((blocks) => { assert.ok(blocks[0].blockHash); });
 ```
 
 If your node is a validator and you have a key to authorize payment, you can deploy code:

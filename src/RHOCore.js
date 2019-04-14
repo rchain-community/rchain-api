@@ -81,6 +81,18 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
   return recur(data);
 }
 
+exports.fromIds = fromIds;
+/**
+ * Turn unforgeable names from raw bytes to protobuf Par shape
+ *
+ * @async
+ * @memberof RHOCore
+ */
+async function fromIds(idsP /*: Promise<Buffer[]> */) /*: Promise<IPar[]> */ {
+  const ids = await idsP;
+  return ids.map(id => ({ ids: [{ id }] }));
+}
+
 
 exports.toByteArray = toByteArray;
 /**

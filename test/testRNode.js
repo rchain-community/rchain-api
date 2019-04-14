@@ -8,7 +8,7 @@ const { BlockInfoWithoutTuplespace } = CasperMessage.coop.rchain.casper.protocol
 
 const api = require('..');
 
-const { RNode, RegistryProxy, SignDeployment, RHOCore, Hex } = api;
+const { RNode, RegistryProxy, REV, RHOCore, Hex } = api;
 const { RholangCrypto, Ed25519keyPair } = api;
 
 const { sha256Hash, keccak256Hash, blake2b256Hash } = RholangCrypto;
@@ -83,13 +83,13 @@ function netTests({ grpc, clock, rng }) {
       })
         .catch((oops) => { test.fail(oops.message); test.end(); });
     },
-    'test getAllBlocks': (test) => {
+    'test showBlocks': (test) => {
       const expected = [
         'parentsHashList', 'blockHash', 'blockSize', 'blockNumber', 'version',
         'deployCount', 'tupleSpaceHash', 'timestamp', 'faultTolerance',
         'mainParentHash', 'sender',
       ];
-      localNode().getAllBlocks()
+      localNode().showBlocks()
         .then((actual) => {
           test.equal(actual.length > 0, true);
           test.deepEqual(Object.keys(actual[0]), expected);
@@ -142,7 +142,7 @@ async function runAndListen(
 
 
 function payFor(d0, key, phloPrice = 1, phloLimit = 10000000) {
-  const dout = SignDeployment.sign(key, {
+  const dout = REV.SignDeployment.sign(key, {
     ...d0,
     phloPrice,
     phloLimit,
@@ -157,7 +157,10 @@ function grpcMock() {
     return Object.freeze({
       doDeploy(_dd /*: Object */, _auto /*: boolean */ = false) { return 'Success!'; },
       showBlocks(_depth /*: number */) {
-        const block4 = { value: BlockInfoWithoutTuplespace.encode({ blockNumber: 4 }).finish() };
+        const block4 = {
+          value: BlockInfoWithoutTuplespace
+            .encode({ blockHash: 'deadbeef' }).finish(),
+        };
 
         return Object.freeze({
           on(name /*: string */, handler /*: (...args: any[]) => void */) {

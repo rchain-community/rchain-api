@@ -41,7 +41,6 @@ const packageDefinition = protoLoader.loadSync(
 
 
 /*::
-import grpcT from 'grpc';
 import type { JsonExt } from './RHOCore';
 import type { KeyPair } from './signing';
 
@@ -50,7 +49,9 @@ type JSData = JsonExt<URL | GPrivate>;
 
 /*::
 type EndPoint = { host: string, port: number };
-export type IRNode = $Call<typeof RNode, grpcT, EndPoint>;
+import GRPCAccess from 'grpc';
+
+export type IRNode = $Call<typeof RNode, GRPCAccess, EndPoint>;
 
 export type IDeployData = coop$rchain$casper$protocol$IDeployData;
 type DeployService = coop$rchain$casper$protocol$DeployService;
@@ -83,7 +84,7 @@ exports.RNode = RNode;
  *
  * [nodeAPI]:  https://rchain.atlassian.net/wiki/spaces/CORE/pages/392462355/Node+API+Specification
  *
- * @param grpc access to the network: grpc instance from the node grpc package
+ * @param grpc access make gRPC network calls
  * @param endPoint rnode gRPC service
  * @return a thin wrapper around a gRPC client stub
  *
@@ -93,7 +94,7 @@ exports.RNode = RNode;
  * const grpc = require('grpc');
  *
  * const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
- * rnode.getAllBlocks().then((blocks) => { assert(blocks[0].blockNumber > 0); });
+ * rnode.showBlocks().then((blocks) => { assert.ok(blocks[0].blockHash); });
  *
  * // Deploy a simple Rholang process, given a key to authorize payment.
  * const term = '@"world"!("Hello!")';
@@ -102,7 +103,10 @@ exports.RNode = RNode;
  * const info = REV.SignDeployment.sign(myKey, { timestamp, term, phloLimit: 10000, phloPrice: 1 });
  * rnode.doDeploy(info, true).then((message) => { assert(message.startsWith('Success')); });
  */
-function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */) /*: IRNode */{
+function RNode(
+  grpc /*: GRPCAccess */,
+  endPoint /*: { host: string, port: number } */,
+) /*: IRNode */ {
   const { host, port } = endPoint;
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
@@ -117,13 +121,15 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   /**
    * Ask rnode to compute ids of top level private names, given deploy parameters.
    *
-   * @param d
-   * @param d.user - public key as in doDeploy deployer
-   * @param d.timestamp - timestamp (ms) as in doDeploy
+   * @param {Object} d
+   * @param {Uint8Array} d.user - public key as in `deployer` in `doDeploy`
+   * @param {number} d.timestamp - timestamp (ms) as in doDeploy
    * @param nameQty - how many names to preview? (max: 1024)
+   * @return a byte Buffer for each id
    * @memberof RNode
+   * @instance
    */
-  async function previewPrivateIds(
+  async function previewPrivateNames(
     { user, timestamp } /*: $ReadOnly<{ user?: Uint8Array, timestamp?: number }> */,
     nameQty /*: number */,
   ) /*: Promise<Buffer[]> */{
@@ -137,25 +143,9 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   const idToPar = id => ({ ids: [{ id }] });
 
   /**
-   * Ask rnode to compute top level private channels, given deploy parameters.
-   *
-   * @param d
-   * @param d.user - public key (of validating node?) as in doDeploy
-   * @param d.timestamp - timestamp (ms) as in doDeploy
-   * @param nameQty - how many names to preview? (max: 1024)
-   * @memberof RNode
-   */
-  function previewPrivateChannels(
-    { user, timestamp } /*: $ReadOnly<{ user?: Uint8Array, timestamp?: number }> */,
-    nameQty /*: number*/,
-  ) /*: Promise<IPar[]> */{
-    return previewPrivateIds({ user, timestamp }, nameQty)
-      .then(ids => ids.map(idToPar));
-  }
-
-  /**
    * Deploys a rholang term to a node
    * @memberof RNode
+   * @instance
    * @param deployData a DeployData (cf CasperMessage.proto)
    * @param deployData.deployer public key
    * @param deployData.term A string of rholang code (for example @"world"!("Hello!")  )
@@ -194,6 +184,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   /**
    * Creates a block on your node
    * @memberof RNode
+   * @instance
    * @return A promise for response message
    */
   async function createBlock() /*: Promise<string>*/ {
@@ -218,10 +209,12 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Listen for data at a PUBLIC name in the RChain tuple-space.
    *
    * @memberof RNode
+   * @instance
    * @param nameObj: JSON-ish data: string, number, {}, [], ...
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    * @deprecated
+   * @ignore
    */
   function listenForDataAtPublicName(nameObj /*: JSData */, depth /*: number */ = 1) {
     return listenForDataAtName(RHOCore.fromJSData(nameObj), depth);
@@ -231,10 +224,12 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Listen for data at a PRIVATE name in the RChain tuple-space.
    *
    * @memberof RNode
+   * @instance
    * @param nameId: Hex string representing an UnforgeableName's Id
    * @return promise for [DataWithBlockInfo]
    * @throws Error if status is not Success
    * @deprecated
+   * @ignore
    */
   function listenForDataAtPrivateName(nameId /*: string */, depth /*: number */ = 1) {
     // Convert the UnforgeableName into a byte array
@@ -249,6 +244,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Listen for data at a name in the RChain tuple-space.
    *
    * @memberof RNode
+   * @instance
    * @param par: JSON-ish Par data. See protobuf/RhoTypes.proto
    * @param blockDepth: Number of blocks to look back in for the name to listen on
    * @return: promise for DataWithBlockInfo[]
@@ -276,11 +272,11 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   /**
    * Listen for a continuation at an individual public name or
    * JOINed set of public names in the tuplespace
-   * @memberof RNode
    * @param nameObjs a list of names (strings)
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
    * @deprecated
+   * @ignore
    */
   function listenForContinuationAtPublicName(nameObjs /*: string[] */, depth /*: number */ = 1) {
     return listenForContinuationAtName(nameObjs.map(RHOCore.fromJSData), depth);
@@ -289,11 +285,11 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
   /**
    * Listen for a continuation at an individual private name or
    * JOINed set of private names in the tuplespace
-   * @memberof RNode
    * @param nameIds a list hex strings representing the unforgeable names' Ids
    * @return promise for ContinuationsWithBlockInfo
    * @throws Error if status is not Success
    * @deprecated
+   * @ignore
    */
   function listenForContinuationAtPrivateName(nameIds /*: string[] */, depth /*: number */ = 1) {
     // Convert the UnforgeableNames into a byte arrays
@@ -310,6 +306,7 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Listen for a continuation at an individual name or
    * JOINed set of names in the tuplespace
    * @memberof RNode
+   * @instance
    * @param pars The names onwhich to listen
    * @return promise for DataWithBlockInfo
    * @throws Error if status is not Success
@@ -331,11 +328,12 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * Retrieve a block with the tuplespace for a specific block hash
    *
    * @memberof RNode
+   * @instance
    * @param blockHash: String of the hash for the block being requested
    * @return BlockInfo structure that will include all metadata and also includes Tuplespace
    * @throws Error if the hash is blank or does not correspond to an existing block
    */
-  async function getBlock(blockHash /*: string */) {
+  async function showBlock(blockHash /*: string */) {
     if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
     if (typeof blockHash !== 'string') { throw new Error('ERROR: blockHash must be a string value'); }
 
@@ -351,11 +349,12 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
    * including the number of blocks specified by the block_depth
    *
    * @memberof RNode
+   * @instance
    * @param blockDepth: Number indicating the number of blocks to retrieve
    * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function getAllBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
+  function showBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
     return sendThenReceiveStream(client.showBlocks({ depth: blockDepth }))
@@ -376,10 +375,9 @@ function RNode(grpc /*: grpcT */, endPoint /*: { host: string, port: number } */
     listenForContinuationAtName,
     listenForContinuationAtPrivateName,
     listenForContinuationAtPublicName,
-    getBlock,
-    getAllBlocks,
-    previewPrivateIds,
-    previewPrivateChannels,
+    showBlock,
+    showBlocks,
+    previewPrivateNames,
   });
 }
 

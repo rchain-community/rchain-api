@@ -9,6 +9,7 @@ const Hex = require('./hex');
 const { Ed25519keyPair } = require('./signing');
 const { pollAt } = require('./proxy');
 const { Block, SignDeployment } = require('./rnodeAPI');
+const { fromIds } = require('./RHOCore');
 
 const { link } = require('./assets');
 
@@ -52,7 +53,7 @@ async function loadRhoModules(
   async function deploy1({ name, title, term }) {
     const timestamp = monotonicClock();
     const info = payFor({ term, timestamp });
-    const [chan] = await rnode.previewPrivateChannels({ user: info.deployer, timestamp }, 1);
+    const [chan] = await fromIds(rnode.previewPrivateNames({ user: info.deployer, timestamp }, 1));
     console.log(`Deploying: ${title}\n`);
     const deployResult = await rnode.doDeploy(info);
     console.log({ deployResult, name });

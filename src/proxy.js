@@ -66,7 +66,6 @@ export type PayFor<T> = T => T & { deployer: PK, sig: Sig };
  *
  * @memberof RegistryProxy
  */
-exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: URL */,
   deployer /*: Uint8Array */,
@@ -80,6 +79,7 @@ function makeProxy(
     // override set to make it read-only?
   });
 }
+exports.makeProxy = makeProxy;
 
 
 /**
@@ -97,7 +97,6 @@ function makeProxy(
  *
  * @memberof RegistryProxy
  */
-exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
   timestamp /*: number*/,
@@ -112,7 +111,7 @@ async function sendCall(
     if (opts.fixArgs) { throw new Error('fixArgs not supported with returnCh'); }
     returnChan = opts.returnCh;
   } else {
-    const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
+    const chans /*: Buffer[] */ = await rnode.previewPrivateNames(
       { user: deployer, timestamp },
       1 + (opts.predeclare || []).length,
     );
@@ -134,6 +133,7 @@ async function sendCall(
   console.log(term);
   return runRholang(term, timestamp, payFor, returnChan, opts, method || '?');
 }
+exports.sendCall = sendCall;
 
 
 exports.runRholang = runRholang;

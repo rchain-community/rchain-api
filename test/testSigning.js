@@ -3,7 +3,7 @@
 
 const ttest = require('tape');
 const { DeployData } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
-const { Ed25519keyPair, RholangCrypto, Hex, SignDeployment } = require('..');
+const { Ed25519keyPair, RholangCrypto, Hex, REV } = require('..');
 
 const { ed25519Verify } = RholangCrypto;
 
@@ -61,7 +61,7 @@ function testSigning() {
       '123b6e6577207465737420696e207b20636f6e747261637420746573742872657475726e29203d207b2072657475726e212822746573742229207d207d189eb29ff69f2d38014080ade204',
     );
 
-    const dout = SignDeployment.sign(Ed25519keyPair(defaultSec), d0);
+    const dout = REV.SignDeployment.sign(Ed25519keyPair(defaultSec), d0);
     test.equal(
       b2h(dout.sig),
       'b6e0c2077e3ae2794b7324b518b49a9aa597eb07207f84f6339db73aeb6852491b8a7e640fd17f88ee80b61e3d326ec87835feebbb7dacdeadf03f26deff350f',
