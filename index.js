@@ -1,14 +1,51 @@
-/**
- * "we can detail a direct representation of JSON into a
- * fragment of the rholang syntax referred to in the diagram
- * below as RHOCore." -- [Mobile process calculi for programming the blockchain[1]
- *
- * [1]: https://github.com/rchain/mobile-process-calculi-for-blockchain/blob/master/enter-the-blockchain.rst
- */
-
 /* global require, exports */
 // @flow
 
+/**
+ * Exchanging data between Rholang and JavaScript
+ *
+ * RChain uses gRPC and protobuf for its network
+ * protocol. [RhoTypes.proto][rAPI] gives the protobuf messages for
+ * Rholang. The main one is `Par`.
+ *
+ * The RHOCore mapping here is derived from Currin et. al but uses a
+ * differet mapping for object properties and includes more ground
+ * rholang types.
+ *
+ * **ISSUE**: Document support for unforgeable names.
+ *
+ * Refs:
+ *  - [Mobile process calculi for programming the blockchain][1]
+ *    Currin, Denman, Eykholt, Meredith Dec 2016
+ *  - [RhoTypes.proto][rAPI] v0.9.1 bf1b2c6 Mar 28, 2019
+ *
+ * [1]: https://mobile-process-calculi-for-programming-the-new-blockchain.readthedocs.io/en/latest/enter-the-blockchain.html#from-data-storage-to-block-storage-in-the-rchain-model
+ * [rAPI]: https://github.com/rchain/rchain/blob/bf1b2c6/models/src/main/protobuf/RhoTypes.proto
+ *
+ * @example <caption>JSON to rholang and back</caption>
+ *
+ * const { RHOCore, RhoTypes } = require('rchain-api');
+ *
+ * const data = [true, 1, 'abc', null, [1, 2, 3]];
+ *
+ * const rhoProto = RHOCore.fromJSData(data);
+ * RhoTypes.Par.verify(rhoProto);
+ * assert.deepEqual(RHOCore.toJSData(rhoProto), data);
+ *
+ * assert.equal(RHOCore.toRholang(rhoProto),
+ *     '[true, 1, "abc", Nil, [1, 2, 3]]');
+ *
+ * @example <caption>Uri and ByteArray</caption>
+ *
+ * const { URL } = require('url');
+ * const { RHOCore, Hex } = require('rchain-api');
+ *
+ * const data = [new URL('rho:id:123'), Hex.decode('deadbeef')];
+ * const rhoProto = RHOCore.fromJSData(data);
+ * assert.deepEqual(RHOCore.toJSData(rhoProto), data);
+ * assert.equal(RHOCore.toRholang(rhoProto),
+ *     '[`rho:id:123`, "deadbeef".hexToBytes()]');
+ */
 const RHOCore = require('./src/RHOCore');
 
 /*::
@@ -16,6 +53,7 @@ export type JsonExt<T> = JsonExt<T>;
  */
 
 exports.RHOCore = RHOCore;
+exports.RhoTypes = require('./protobuf/RhoTypes');
 
 
 const { RNode, SignDeployment, Block } = require('./src/rnodeAPI');
@@ -27,6 +65,7 @@ export type { IRNode };
  */
 exports.RNode = RNode;
 exports.Block = Block;
+exports.CasperMessage = require('./protobuf/CasperMessage');
 
 /**
  * REV transaction, vault support

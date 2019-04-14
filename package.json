@@ -1,6 +1,6 @@
 {
   "name": "rchain-api",
-  "version": "0.9.2-beta.3",
+  "version": "0.9.2-beta.4",
   "description": "RChain client for node.js",
   "main": "index.js",
   "scripts": {

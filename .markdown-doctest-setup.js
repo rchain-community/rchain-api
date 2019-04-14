@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const rchain = require('.');
 const { grpcMock } = require('./test/testRNode');
-const { RNode, RholangCrypto, REV, Ed25519keyPair, Hex } = rchain;
+const { RHOCore, RhoTypes, RNode, RholangCrypto, REV, Hex, Ed25519keyPair } = rchain;
 
 
 function config(env, grpcAccess) {
@@ -14,8 +14,9 @@ function config(env, grpcAccess) {
   return {
     babel: false,
     require: {
+      url: require('url'),
       grpc: grpc,
-      'rchain-api': { RholangCrypto, RNode, REV, Hex, Ed25519keyPair },
+      'rchain-api': { RHOCore, RhoTypes, RNode, RholangCrypto, REV, Hex, Ed25519keyPair },
     },
     globals: {
       assert, Buffer,
