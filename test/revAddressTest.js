@@ -1,6 +1,8 @@
 /* global require*/
 const ttest = require('tape'); // ISSUE: separate tests
-const { h2b, RevAddress } = require('..');
+const { Hex, REV } = require('..');
+
+const { RevAddress } = REV;
 
 const testCases = [
   {
@@ -20,7 +22,7 @@ const testCases = [
 
 testCases.forEach((info) => {
   ttest(`RevAddress: ${info.label}`, (t) => {
-    t.equal(RevAddress.fromPublicKey(h2b(info.publicKey)).toString(), info.revAddress);
+    t.equal(RevAddress.fromPublicKey(Hex.decode(info.publicKey)).toString(), info.revAddress);
     t.end();
   });
 });

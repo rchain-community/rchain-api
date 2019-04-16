@@ -1,7 +1,7 @@
 /* global require */
 const { URL } = require('url');
 const test = require('tape');
-const { callSource } = require('..');
+const { callSource } = require('..').RegistryProxy;
 
 test('callSource with no args', (t) => {
   t.equal(callSource({ target: new URL('x:'), method: 'm', args: [] }, {}), `

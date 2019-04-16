@@ -1,15 +1,12 @@
 # Code Conventions and Design Notes
 
-All contributions should pass these checks (as noted in
-`.travis.yml`):
+As noted in `.travis.yml`, all contributions must pass `npm run check`,
+which runs `test`, `lint`, etc. The `test` check is conventional unit tests.
 
-```yaml
-  - npm test
-  - npm run flow-check
-  - npm run lint
-```
+Contributions should also pass `npm run integrationTest`, which
+requires a running validator node (see below).
 
-The `test` check is conventional unit tests.
+To run both the offline and online tests, use `npm run testAll`.
 
 
 ## Static Typechecking: flow
@@ -19,18 +16,26 @@ flow-check` script does a complete check and `npm run flow-status`
 does an incremental check.
 
 
-## RChain Validator Node for Integration testing
+0## RChain Validator Node for Integration testing
 
 One way to provide a validator node for testing, provided you're OK
-with the security risks around `--net host`, is:
-
+with the security risks around `--net host`, is to first have
+the node start up and generate some random validator keys:
 
 ```bash
-$ docker run --rm -it --net host coop.rchain/rnode:0.7.1 run -s
+docker run --rm --net host -v$HOME/.rnode:/var/lib/rnode \
+    rchain/rnode run -s
 ```
 
-This presumes you've built `coop.rchain/rnode` per `DEVELOPER.md` in
-rchain/rchain.
+Then grab one of the secret keys for use as a validator private key:
+
+```bash
+first_key=$(cat $(ls ~/.rnode/genesis/*.sk|head -1))
+
+docker run --rm --net host -v$HOME/.rnode:/var/lib/rnode \
+    rchain/rnode run -s --validator-private-key $first_key
+```
+
 
 ## Code Style: airbnb
 
@@ -77,19 +82,9 @@ All of our protobuf encoding and decoding is done using [protobuf.js](https://gi
 
 ![protobuf.js diagram](https://camo.githubusercontent.com/f090df881cc6c82ecb7c5d09c9fad550fdfd153e/687474703a2f2f64636f64652e696f2f70726f746f6275662e6a732f746f6f6c7365742e737667)
 
-##  Struggles with extracting API doc
 
-We don't use classes (TODO: cite explanation as to why not)
-but neither of the relevant recipies seem to work:
+##  Extracting API doc
 
-> Many libraries and frameworks have special 'class constructor
-> methods' that accept an object as an input and return a class with
-> that object's properties as prototype properties.
-
-https://github.com/documentationjs/documentation/blob/master/docs/RECIPES.md#class-factories-using-lends
-
-
-We'd like to use these scripts in our `package.json`:
-
-    "doc": "node ./node_modules/.bin/documentation build --github rnodeAPI.js -f html -o docs",
-    "doc-watch": "node ./node_modules/.bin/documentation serve --watch --github rnodeAPI.js"
+We use [documentation.js](https://documentation.js.org/) to build API
+docs (docs/index.md) from sources. Use the `docs-watch`, `build:docs`,
+or `build:docs-html` npm scripts.

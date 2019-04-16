@@ -1,9 +1,9 @@
 /*global require, exports*/
 // @flow
 
-const { rhol, toJSData } = require('./RHOCore');
 const { GPrivate } = require('../protobuf/RhoTypes.js');
-const { prettyPrivate } = require('./loading');
+const { rhol, prettyPrivate } = require('./RHOCore');
+const { Block } = require('./rnodeAPI');
 
 /*::
 import type { IRNode, IDeployData } from './rnodeAPI';
@@ -40,6 +40,11 @@ interface ProxyOpts extends SendOpts {
   clock: () => Date
 }
 
+type PK = Uint8Array;
+type Sig = Uint8Array;
+
+export type PayFor<T> = T => T & { deployer: PK, sig: Sig };
+
 */
 
 
@@ -58,20 +63,23 @@ interface ProxyOpts extends SendOpts {
  *                    a call and listening for the response.
  * @param opts.unary: whether to use unary calling conventions.
  * @param opts.predeclare: names to pre-declare after `return`
+ *
+ * @memberof RegistryProxy
  */
-exports.makeProxy = makeProxy;
 function makeProxy(
   target /*: URL */,
-  deployData /*: $ReadOnly<IDeployData> */,
+  deployer /*: Uint8Array */,
+  payFor /*: PayFor<IDeployData> */,
   opts /*: ProxyOpts */,
 ) /*: Receiver */{
   const { clock } = opts;
-  const sendIt = msg => sendCall(msg, { ...deployData, timestamp: clock().valueOf() }, opts);
+  const sendIt = msg => sendCall(msg, clock().valueOf(), deployer, payFor, opts);
   return new Proxy({}, {
     get: (_, method) => (...args) => sendIt({ target, method, args }),
     // override set to make it read-only?
   });
 }
+exports.makeProxy = makeProxy;
 
 
 /**
@@ -86,11 +94,14 @@ function makeProxy(
  * @param opts.delay: an optional async function to call between sending
  *                    a call and listening for the response.
  * @param opts.unary: whether to use unary calling conventions.
+ *
+ * @memberof RegistryProxy
  */
-exports.sendCall = sendCall;
 async function sendCall(
   { target, method, args } /*: Message*/,
-  deployData /*: $ReadOnly<IDeployData> */,
+  timestamp /*: number*/,
+  deployer /*: Uint8Array */,
+  payFor /*: PayFor<IDeployData>*/,
   opts /*: SendOpts */,
 ) {
   const { rnode } = opts;
@@ -100,8 +111,8 @@ async function sendCall(
     if (opts.fixArgs) { throw new Error('fixArgs not supported with returnCh'); }
     returnChan = opts.returnCh;
   } else {
-    const chans /*: Buffer[] */ = await rnode.previewPrivateIds(
-      { user: deployData.deployer, timestamp: deployData.timestamp },
+    const chans /*: Buffer[] */ = await rnode.previewPrivateNames(
+      { user: deployer, timestamp },
       1 + (opts.predeclare || []).length,
     );
     // console.log({ chans: chans.map(b2h) });
@@ -119,14 +130,29 @@ async function sendCall(
     { target, method, args },
     { ...opts, chanArgs },
   );
-  console.log({ deployData, note: 'placeholder term' });
-  const deployResult = await rnode.doDeploy({ ...deployData, term }, true);
-  console.log({ deployResult });
+  console.log(term);
+  return runRholang(term, timestamp, payFor, returnChan, opts, method || '?');
+}
+exports.sendCall = sendCall;
 
-  const blockResults = await pollAt(returnChan, method || '?', { delay: opts.delay, rnode });
-  const answerPar = blockResults[0].postBlockData[0];
-  // console.log('answerPar', JSON.stringify(answerPar, null, 2));
-  return toJSData(answerPar);
+
+exports.runRholang = runRholang;
+async function runRholang(
+  term /*: string */,
+  timestamp /*: number */,
+  payFor /*: PayFor<IDeployData> */,
+  returnChan /*: IPar */,
+  opts /*: SendOpts */,
+  label /*: string */ = '',
+) /**/ {
+  const { rnode } = opts;
+  const deployData = payFor({ term, timestamp });
+  // console.log('runRholang', { deployData, note: 'placeholder term' });
+  const deployResult = await rnode.doDeploy(deployData, true);
+  console.log({ deployResult }); // ISSUE: return block hash to caller?
+
+  const blockResults = await pollAt(returnChan, label, { delay: opts.delay, rnode });
+  return Block.firstData(blockResults);
 }
 
 
@@ -162,6 +188,8 @@ async function pollAt(
  * @param opts
  * @param opts.unary: For better compositionality, JS args are combined into one
  *                    list arg on the rholang side.
+ *
+ * @memberof RegistryProxy
  */
 exports.callSource = callSource;
 function callSource(
@@ -184,6 +212,7 @@ function callSource(
 /**
  * Caller is responsible for converting pieces to rholang.
  *
+ * @private
  * @param m: message
  * @param m.target: a rholang URI expression: `rho:id:...`
  * @param m.method: [] or ["eat"]
@@ -213,6 +242,5 @@ function rhoCall({ target, method, args }, predeclare, insertSigned) {
         }
       }
     `;
-  console.log(term);
   return term;
 }

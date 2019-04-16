@@ -1,26 +1,27 @@
 /** Test RHOCore test suite data against live node.
  */
+// @flow
+
 /* global require, module, Buffer */
 
 const ttest = require('tape');
 
-const { RNode, RHOCore, b2h } = require('../index');
+const { RNode, RHOCore, Hex } = require('..');
 const testData = require('./RHOCoreSuite.json');
 const { runAndListen } = require('./testRNode');
 
 const { rhol } = RHOCore;
+const b2h = Hex.encode;
+
+/*::
+type Item = { data: Object, hex: string };
+ */
 
 function integrationTest({ endpoint, grpc, clock, rng }) {
   console.log({ endpoint });
   const node = RNode(grpc, endpoint);
 
-  function mapValues(obj, f) {
-    return Object.entries(obj).reduce(
-      (acc, [k, v]) => ({ [k]: f(v), ...acc }), {},
-    );
-  }
-
-  function byteArrayTest(item) {
+  function byteArrayTest(item /*: Item*/) {
     return (test) => {
       const returnChannel = rng().toString(36).substring(7);
       const term = rhol`
@@ -29,10 +30,13 @@ function integrationTest({ endpoint, grpc, clock, rng }) {
 
       test.comment({ term });
       runAndListen(term, returnChannel, clock().valueOf(), node)
-        .then((par) => {
-          const bytes = par.exprs[0].g_byte_array;
-          test.comment({ actual: b2h(bytes), expected: item.hex });
-          test.equal(b2h(bytes), item.hex);
+        .then((bytes) => {
+          test.equal(typeof bytes, 'object');
+          test.ok(bytes instanceof Uint8Array);
+          if (bytes instanceof Uint8Array) {
+            test.comment({ actual: b2h(bytes), expected: item.hex });
+            test.equal(b2h(bytes), item.hex);
+          }
           test.end();
         })
         .catch((oops) => {
@@ -42,8 +46,10 @@ function integrationTest({ endpoint, grpc, clock, rng }) {
     };
   }
 
-  Object.entries(mapValues(testData, byteArrayTest))
-    .forEach(([desc, fn]) => ttest(desc, fn));
+  Object.entries(testData).forEach(([desc, item]) => {
+    /* $FlowFixMe */
+    ttest(desc, byteArrayTest(item));
+  });
 }
 
 

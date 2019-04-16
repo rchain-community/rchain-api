@@ -1,8 +1,9 @@
 /* global require, exports, Buffer */
+// @flow
 
 const base58 = require('bs58');
-const { blake2b256Hash } = require('./hashing');
-const { h2b } = require('./signing');
+const { blake2b256Hash } = require('./signing').RholangCrypto;
+const h2b = require('./hex').decode;
 
 const checksumLength = 4;
 const keyLength = 32;
@@ -11,62 +12,103 @@ const version = '00';
 const prefix = h2b(coinId + version);
 
 /*::
-type Bytes = Uint8Array;
-type PublicKey = Bytes; // newtype? length?
-
-export type RevAddr = {
+export interface IRevAddress {
   address: Address,
   toString: () => string,
 };
 
 type Address = {
-  prefix: Bytes,
-  keyHash: Bytes,
-  checksum: Bytes,
+  prefix: Uint8Array,
+  keyHash: Uint8Array,
+  checksum: Uint8Array,
 };
 */
 
 /**
- * A RevAddress has a prefix, a keyHash, and a checksum.
+ * A RevAddress refers to a REV vault.
  *
- * Use toString() to get base58 form.
- */
-const RevAddress = Object.freeze({ fromPublicKey });
-exports.RevAddress = RevAddress;
-
-/**
- * Compute REV Address
- * @memberof RevAddress
- * @param pk: ed25519 public key
- * @return: RevAddress
+ * Use `toString()` to get base58 form.
  *
  * Refs:
- * https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala
- * https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala#L16
+ *  - [RevAddress.scala](https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/RevAddress.scala)
+ *  - [AddressTools.scala](https://github.com/rchain/rchain/blob/9ae5825/rholang/src/main/scala/coop/rchain/rholang/interpreter/util/AddressTools.scala)
  *
- * - ISSUE: find RevAddress spec
- * - ISSUE: how to use tests as documentation?
+ * @memberof REV
  */
-exports.fromPublicKey = fromPublicKey;
-function fromPublicKey(pk /*: PublicKey */) /*: RevAddr */ {
-  if (keyLength !== pk.length) { throw new Error(`bad public key length: ${pk.length}`); }
-  const keyHash = blake2b256Hash(pk);
-  const payload = concat(prefix, keyHash);
-  const checksum = computeChecksum(payload);
-  const s = base58.encode(Buffer.from(concat(payload, checksum)));
+const RevAddress = (() => {
+  /**
+   * Compute REV Address from public key
+   *
+   * @param pk ed25519 public key
+   *
+   * @memberof REV.RevAddress
+   */
+  function fromPublicKey(pk /*: Uint8Array */) /*: IRevAddress */ {
+    if (keyLength !== pk.length) { throw new Error(`bad public key length: ${pk.length}`); }
+    const keyHash = blake2b256Hash(pk);
+    const payload = concat(prefix, keyHash);
+    const checksum = computeChecksum(payload);
+    const s = base58.encode(Buffer.from(concat(payload, checksum)));
 
-  return Object.freeze({
-    address: {
-      prefix,
-      keyHash,
-      checksum,
-    },
-    toString: () => s,
-  });
+    return Object.freeze({
+      address: {
+        prefix,
+        keyHash,
+        checksum,
+      },
+      toString: () => s,
+    });
+  }
+
+  /**
+   * Parse REV Address
+   *
+   * @throws Error on ill-formed address
+   * @memberof REV.RevAddress
+   */
+  function parse(address /*: string */) /*: IRevAddress */{
+    function validateLength(bytes) {
+      if (bytes.length !== prefix.length + (256 / 8) + checksumLength) {
+        throw new Error('Invalid address length');
+      }
+    }
+
+    function validateChecksum(bytes) {
+      const checksumStart = prefix.length + (256 / 8);
+      const [payload, checksum] = splitAt(bytes, checksumStart);
+
+      if (computeChecksum(payload) !== checksum) { throw new Error('Invalid checksum'); }
+      return [payload, checksum];
+    }
+
+    function parseKeyHash(payload) {
+      const [actualPrefix, keyHash] = splitAt(payload, prefix.length);
+      if (actualPrefix !== prefix) { throw new Error('Invalid prefix'); }
+
+      return keyHash;
+    }
+
+    const decodedAddress = base58.decode(address);
+    validateLength(decodedAddress);
+    const [payload, checksum] = validateChecksum(decodedAddress);
+    const keyHash = parseKeyHash(payload);
+
+    return Object.freeze({
+      address: { prefix, keyHash, checksum },
+      toString: () => address,
+    });
+  }
+
+  return Object.freeze({ fromPublicKey, parse });
+})();
+exports.RevAddress = RevAddress;
+
+function computeChecksum(toCheck /*: Uint8Array */) /*: Uint8Array */ {
+  return blake2b256Hash(toCheck).slice(0, checksumLength);
 }
 
-function computeChecksum(toCheck /*: Bytes */) /*: Bytes*/ {
-  return blake2b256Hash(toCheck).slice(0, checksumLength);
+function splitAt(bs, x) {
+  return [bs.slice(0, x), bs.slice(x)];
 }
 
 function concat(a, b) {

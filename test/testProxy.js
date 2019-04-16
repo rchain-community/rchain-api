@@ -1,17 +1,16 @@
 /*global require, exports, Buffer*/
+// @flow
 
-const { sendCall, makeProxy, RNode, h2b, firstBlockData } = require('..');
+const { URL } = require('url');
+const { RNode, Block, RHOCore, RegistryProxy, REV, Hex, Ed25519keyPair } = require('..');
 const { link } = require('./assets');
-const { prettyPrivate } = require('../src/loading'); // ISSUE: cheating?
+
+const { sendCall, makeProxy } = RegistryProxy;
+const { fromIds } = RHOCore;
+const h2b = Hex.decode;
 
 const def = Object.freeze;
 const remoteContract = link('./target1.rho');
-const defaultPayment = {
-  from: '0x1',
-  nonce: 0,
-  phloPrice: 1,
-  phloLimit: 100000,
-};
 
 
 /**
@@ -21,18 +20,17 @@ const defaultPayment = {
 async function test({ rnode, clock, deployer, setTimeout }) {
   const target = await remoteTarget({ rnode, clock, deployer });
 
-  const timeout = clock().valueOf();
+  const timestamp = clock().valueOf();
 
-  const deployData = { deployer, timeout, ...defaultPayment };
-  const delay = () => makeTimer(setTimeout)(500);
+  const delay = _i => makeTimer(setTimeout)(500);
   const ansToSend = await sendCall(
     { target, method: 'buy', args: ['orange', 20] },
-    deployData,
+    timestamp, deployer, payFor,
     { rnode, clock, delay, unary: true },
   );
   console.log({ ansToSend });
 
-  const targetProxy = makeProxy(target, deployData, { rnode, clock, delay, unary: true });
+  const targetProxy = makeProxy(target, deployer, payFor, { rnode, clock, delay, unary: true });
   const ansToProxy = await targetProxy.sell('banana', 20, 3);
   console.log({ ansToProxy });
 
@@ -49,34 +47,46 @@ function makeTimer(setTimeout) {
 /**
  * Get registry URI of object created in target1.rho.
  */
-async function remoteTarget({ rnode, clock, deployer }) {
+async function remoteTarget({ rnode, clock, deployer }) /*: Promise<URL> */{
   const timestamp = clock().valueOf();
-  const deployTarget = { term: remoteContract, deployer, timestamp, ...defaultPayment };
-  const [id1] = await rnode.previewPrivateIds({ user: deployer, timestamp }, 1);
-  const idToPar = id => ({ ids: [{ id }] });
-  const targetCh = idToPar(id1);
+  const deployTarget = payFor({ term: remoteContract, timestamp });
+  const [targetCh] = await fromIds(rnode.previewPrivateNames({ user: deployer, timestamp }, 1));
   // console.log({ targetCh: JSON.stringify(targetCh) });
   await rnode.doDeploy(deployTarget, true);
-  console.log(`remote: listening at return chan ${prettyPrivate(targetCh)}`);
+  console.log(`remote: listening at return chan ${RHOCore.prettyPrivate(targetCh)}`);
   const found = await rnode.listenForDataAtName(targetCh);
   // console.log('found:', JSON.stringify(found));
-  const target = firstBlockData(found);
+  const target = Block.firstData(found);
   console.log({ target });
+  if (!(target instanceof URL)) { throw new Error('expected URL'); }
   return target;
+}
+
+
+const defaultSec = Hex.decode('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
+
+function payFor(d0, key, phloPrice = 1, phloLimit = 10000000) {
+  const dout = REV.SignDeployment.sign(Ed25519keyPair(defaultSec), {
+    ...d0,
+    phloPrice,
+    phloLimit,
+  });
+  // console.log({ valid: SignDeployment.verify(dout), sig: b2h(dout.sig) });
+  return dout;
 }
 
 
 function mockRNode() {
   let nextAnswer = {};
 
-  async function previewPrivateIds({ user, timestamp }, nameQty) {
+  async function previewPrivateNames({ user, timestamp }, nameQty) {
     const each = i => Buffer.from([(user.length * i + timestamp) % 51]);
     return [...Array(nameQty).keys()].map(each);
   }
-  async function doDeploy(deployData) {
+  async function doDeploy(deployData, _auto = false) {
     console.log('deploy: ', deployData);
     if (deployData.term.match(/rho:registry/)) {
-      nextAnswer = { exprs: [{ g_string: 'rho:id:123456' }] };
+      nextAnswer = { exprs: [{ g_uri: 'rho:id:123456' }] };
     } else {
       nextAnswer = { exprs: [{ g_int: '42' }] };
     }
@@ -87,7 +97,7 @@ function mockRNode() {
     // console.log('listen for data at', JSON.stringify(_name));
     return [{ postBlockData: [nextAnswer] }];
   }
-  return def({ previewPrivateIds, doDeploy, listenForDataAtName });
+  return def({ previewPrivateNames, doDeploy, listenForDataAtName });
 }
 
 /*global module, setTimeout */
@@ -114,7 +124,7 @@ if (require.main === module) {
       setTimeout,
       rnode,
       deployer: h2b('1122334455667788112233445566778811223344556677881122334455667788'),
-      clock: () => new Date().valueOf(),
+      clock: () => new Date(),
     }).catch((oops) => {
       console.error(oops);
       console.error(oops.stack);

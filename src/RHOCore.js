@@ -3,11 +3,15 @@
 
 const { URL } = require('url');
 
+const { Writer } = require('protobufjs');
 // ISSUE: generated code isn't annotated. $FlowFixMe
 const { Par, GPrivate } = require('../protobuf/RhoTypes');
 
-// copied from signing.js to avoid circular imports
-const b2h = bytes => Buffer.from(bytes).toString('hex');
+const hex = require('./hex');
+
+/*::
+import type { HexStr, Bytes } from './hex';
+*/
 
 exports.fromJSData = fromJSData;
 /**
@@ -77,6 +81,18 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
   return recur(data);
 }
 
+exports.fromIds = fromIds;
+/**
+ * Turn unforgeable names from raw bytes to protobuf Par shape
+ *
+ * @async
+ * @memberof RHOCore
+ */
+async function fromIds(idsP /*: Promise<Buffer[]> */) /*: Promise<IPar[]> */ {
+  const ids = await idsP;
+  return ids.map(id => ({ ids: [{ id }] }));
+}
+
 
 exports.toByteArray = toByteArray;
 /**
@@ -88,6 +104,34 @@ function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
   return Par.encode(termObj).finish();
 }
 
+
+/**
+ * @memberof RHOCore
+ */
+exports.dataToBytes = dataToBytes;
+function dataToBytes(data /*: JsonExt<URL | GPrivate>*/) /*: Uint8Array */ {
+  return toByteArray(fromJSData(data));
+}
+
+
+/**
+ * @@@@Compute a Blake2b-256 hash for some Rholang-compatible data, then return the
+ * string representing a HEX-encoded hash
+ *
+ * @param jsData: JS Data compatible with Rholang, used to compute the hash
+ * @return HEX-formatted string representing the computed hash
+ * @throws Error if the js_data contains a non-Rholang data structure
+ *
+ * @memberof RHOCore
+ */
+exports.wrapHash = wrapHash;
+function wrapHash(
+  hashFn /*: Uint8Array => Uint8Array */,
+) /*: JsonExt<URL | GPrivate> => HexStr<Bytes> */ {
+  return function hashData(data /*: JsonExt<URL | GPrivate>*/) {
+    return hex.encode(hashFn(toByteArray(fromJSData(data))));
+  };
+}
 
 /*::
 
@@ -106,7 +150,7 @@ function toByteArray(termObj /*: IPar */) /*: Uint8Array */ {
 //          as well as URLs.
 //          The flow type is given below:
 export type JsonExt<T> =
-    | JsonPrimitive<T>
+      JsonPrimitive<T>
     | JsonExtArray<T>
     | JsonExtObject<T>
     ;
@@ -232,7 +276,7 @@ function toRholang(par /*: IPar */) /*: string */ {
         return src(ex.g_string);
       }
       if (typeof ex.g_byte_array !== 'undefined' && ex.g_byte_array !== null) {
-        return `"${b2h(ex.g_byte_array)}".hexToBytes()`;
+        return `"${hex.encode(ex.g_byte_array)}".hexToBytes()`;
       }
       if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
         const uri = ex.g_uri;
@@ -264,6 +308,43 @@ function toRholang(par /*: IPar */) /*: string */ {
   }
 
   return recur(par);
+}
+
+
+/**
+ * Get printable form of unforgeable name, given id.
+ *
+ * @memberof RHOCore
+ */
+function unforgeableWithId(id /*: Uint8Array */) {
+  const bytes = Writer.create().bytes(id).finish().slice(1);
+  return `Unforgeable(0x${hex.encode(bytes)})`;
+}
+exports.unforgeableWithId = unforgeableWithId;
+
+function prettyPrivate(par /*: IPar */) /*: string */{
+  if (!(par.ids && par.ids.length && par.ids[0].id)) {
+    return toRholang(par);
+  }
+  return unforgeableWithId(par.ids[0].id);
+}
+exports.prettyPrivate = prettyPrivate;
+
+exports.getIdFromUnforgeableName = getIdFromUnforgeableName;
+/**
+ * Convert the ack channel into a HEX-formatted unforgeable name
+ *
+ * @param par: JSON-ish Par data: https://github.com/rchain/rchain/blob/master/models/src/main/protobuf/RhoTypes.proto
+ * @return HEX-formatted string of unforgeable name's Id
+ * @throws Error if the Par does not represent an unforgeable name
+ *
+ * @memberof RHOCore
+ */
+function getIdFromUnforgeableName(par /*: IPar */) /*: string */ {
+  if (par.ids && par.ids.length === 1 && par.ids[0].id) {
+    return Buffer.from(par.ids[0].id).toString('hex');
+  }
+  throw new Error('Provided Par object does not represent a single unforgeable name');
 }
 
 

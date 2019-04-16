@@ -10,9 +10,10 @@ const read = require('read');
 const secp256k1 = require('secp256k1'); // ISSUE: push into rchain-api?
 const { docopt } = require('docopt');
 const {
-  RNode, RHOCore, simplifiedKeccak256Hash, h2b, b2h,
-  keccak256Hash, keyPair, makeProxy,
-  RevAddress,
+  RNode, RHOCore, REV,
+  RholangCrypto,
+  Hex, Ed25519keyPair,
+  RegistryProxy,
 } = require('rchain-api');
 const { loadRhoModules } = require('../../src/loading'); // ISSUE: path?
 
@@ -21,19 +22,23 @@ const { asPromise } = require('./asPromise');
 const secretStorage = require('./secretStorage');
 const { link } = require('./assets');
 
+const { SignDeployment, RevAddress } = REV;
+const { keccak256Hash } = RholangCrypto;
+const { makeProxy } = RegistryProxy;
+const h2b = Hex.decode;
+const b2h = Hex.encode;
+
 const usage = `
 Usage:
   rclient [options] keygen LABEL
   rclient [options] import LABEL JSONFILE
   rclient [options] info LABEL
   rclient [options] genVault LABEL AMOUNT
-  rclient [options] claim LABEL
   rclient [options] balance LABEL
-  rclient [options] publish [--claimed] LABEL
   rclient [options] transfer --from=LABEL --to=REVADDR AMOUNT
   rclient [options] sign LABEL [ --json ] DATAFILE
   rclient [options] deploy RHOLANG
-  rclient [options] register RHOMODULE...
+  rclient [options] register LABEL RHOMODULE...
 
 Options:
  keygen                 generate new secret key
@@ -70,20 +75,9 @@ Options:
 import type { SecretStorageV3, AES128CTR, SCrypt } from './secretStorage';
 
 import type { ModuleInfo } from '../../src/loading'; // ISSUE: path?
- */
-const defaultDeployInfo = {
-  deployer: h2b('1111111111111111222222222222222233333333333333334444444444444444'),
-  from: '0x01', // TODO: cli arg
-  nonce: 1,
-  timestamp: -1,
-  // ISSUE: refine types so fields are optional in the right cases
-  term: 'syntax error',
-  sigAlgorithm: 'N/A',
-  sig: h2b(''),
-  phloLimit: 0,
-  phloPrice: 0,
-};
 
+import type { HexStr, PublicKey } from 'rchain-api';
+ */
 
 function ExitStatus(message) {
   this.message = message;
@@ -122,16 +116,20 @@ async function main(
   const dur = argInt('--poll-interval');
   const delay = i => mkPause(dur * i);
 
-  const priceInfo = () => ({
-    ...defaultDeployInfo,
-    phloPrice: argInt('--phlo-price'),
-    phloLimit: argInt('--phlo-limit'),
-  });
+  function payWith(key) {
+    return function payFor(d0) {
+      return SignDeployment.sign(key, {
+        ...d0,
+        phloPrice: argInt('--phlo-price'),
+        phloLimit: argInt('--phlo-limit'),
+      });
+    };
+  }
 
   async function ioTools() {
     const registry = FileStorage(argWr('--registry'));
     const toolsMod = await ensureLoaded('tools.rho', link('./tools.rho'), { registry });
-    return { getpass, rnode, clock, delay, toolsMod, keyStore: argWr('--keystore') };
+    return { getpass, rnode, clock, delay, toolsMod, registry, keyStore: argWr('--keystore') };
   }
 
   if (cli.keygen) {
@@ -146,29 +144,24 @@ async function main(
     await showPublic(cli.LABEL, { getpass, keyStore: argWr('--keystore') });
   } else if (cli.genVault) {
     const io = await ioTools();
-    await genVault(cli.LABEL, argInt('AMOUNT'), priceInfo(), io);
-  } else if (cli.claim) {
-    const io = await ioTools();
-    await claimAccount(cli.LABEL, priceInfo(), io);
+    await genVault(cli.LABEL, argInt('AMOUNT'), payWith, io);
   } else if (cli.balance) {
     const io = await ioTools();
-    await getBalance(cli.LABEL, priceInfo(), io);
-  } else if (cli.publish) {
-    const io = await ioTools();
-    await publish(cli.LABEL, cli['--claimed'], priceInfo(), io);
+    await getBalance(cli.LABEL, payWith, io);
   } else if (cli.transfer) {
     const io = await ioTools();
-    await transferPayment(argInt('AMOUNT'), cli['--from'], cli['--to'], priceInfo(), io);
+    await transferPayment(argInt('AMOUNT'), cli['--from'], cli['--to'], payWith, io);
   } else if (cli.sign) {
     const input = { data: argRd('DATAFILE'), json: cli['--json'] };
     await signMessage(argWr('--keystore'), cli.LABEL, input, { getpass });
   } else if (cli.deploy) {
-    await deploy(argRd('RHOLANG'), priceInfo(), where, { rnode, clock })
+    await deploy(argRd('RHOLANG'), payWith, where, { rnode, clock })
       .catch((err) => { console.error(err); throw err; });
   } else if (cli.register) {
+    const registry = FileStorage(argWr('--registry'));
     await register(
-      cli.RHOMODULE.map(rd), priceInfo(),
-      { rnode, clock, delay, registry: FileStorage(argWr('--registry')) },
+      cli.LABEL, cli.RHOMODULE.map(rd), payWith,
+      { getpass, rnode, clock, delay, registry, keyStore: argWr('--keystore') },
     );
   }
 }
@@ -196,13 +189,16 @@ async function deploy(rholang, price, where, { rnode, clock }) {
 }
 
 
-async function register(files, _price, { registry, rnode, clock, delay }) {
+async function register(
+  label, files, payWith,
+  { registry, rnode, clock, delay, keyStore, getpass },
+) {
   // ISSUE: what to do when we restart the node?
   // how to check that we're talking to the same chain?
   async function check1(file) {
     const src = await ioOrExit(file.readText());
 
-    const srcHash = simplifiedKeccak256Hash(src);
+    const srcHash = RHOCore.wrapHash(keccak256Hash)(src);
     const mods = await ioOrExit(registry.get(srcHash));
     return { file, src, srcHash, mod: mods[srcHash] };
   }
@@ -215,9 +211,9 @@ async function register(files, _price, { registry, rnode, clock, delay }) {
   const toLoad = status.filter(({ mod }) => !mod);
   if (toLoad.length > 0) {
     console.log('loading:', toLoad.map(({ file }) => file.name()));
-    const { deployer } = defaultDeployInfo;
+    const { signingKey } = await loadRevAddr(label, [], { keyStore, getpass });
     const loaded = await ioOrExit(
-      loadRhoModules(toLoad.map(({ src }) => src), deployer, { rnode, clock, delay }),
+      loadRhoModules(toLoad.map(({ src }) => src), payWith(signingKey), { rnode, clock, delay }),
     );
     registry.set(collect(loaded.map((m, ix) => [toLoad[ix].srcHash, m])));
     loaded.forEach((m, ix) => {
@@ -261,7 +257,7 @@ async function keygen(keyStore, label, { getpass, randomBytes, uuidv4 }) {
     uuidv4,
   );
   await store.set({ [label]: item });
-  const publicKey = keyPair(privKey).publicKey();
+  const publicKey /*: HexStr<PublicKey> */= Ed25519keyPair(privKey).publicKey();
   const revAddr = RevAddress.fromPublicKey(h2b(publicKey)).toString();
   console.log({ label, revAddr, publicKey, keyStore: keyStore.readOnly().name(), status: 'saved' });
 }
@@ -371,21 +367,24 @@ function pubToAddress(pubKey) {
 async function loadRevAddr(label, notice, { keyStore, getpass }) {
   try {
     const privKey = await loadKey(keyStore, label, notice, { getpass });
-    const edKey = keyPair(privKey); // ed25519
+    const edKey = Ed25519keyPair(privKey);
     const revAddr = RevAddress.fromPublicKey(h2b(edKey.publicKey())).toString();
-    return { label, revAddr, publicKey: edKey.publicKey() };
+    return { label, revAddr, signingKey: edKey, publicKey: edKey.publicKey() };
   } catch (err) {
     throw new ExitStatus(`cannot load public key: ${err.message}`);
   }
 }
 
 async function genVault(
-  label, amount, priceInfo,
+  label, amount, payWith,
   { keyStore, getpass, toolsMod, rnode, clock, delay },
 ) {
-  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
+  const { revAddr, signingKey, publicKey } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const tools = makeProxy(
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
+    { rnode, clock, delay },
+  );
   const result = await tools.genVault(revAddr, amount);
   if (result && typeof result === 'object' && typeof result.message === 'string') {
     throw new ExitStatus(`cannot generate vault: ${result.message}`);
@@ -393,88 +392,37 @@ async function genVault(
   console.log({ revAddr, label, amount, result });
 }
 
-const rhoKeccakHash = data => keccak256Hash(RHOCore.toByteArray(RHOCore.fromJSData(data)));
-const sigDERHex = sigObj => b2h(secp256k1.signatureExport(sigObj.signature));
 
-async function claimAccount(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock }) {
-  let privKey;
-  let pubKey;
-  let ethAddr;
-  try {
-    privKey = await loadKey(keyStore, label, [], { getpass });
-    pubKey = privateToPublic(privKey);
-    ethAddr = `0x${b2h(pubToAddress(pubKey))}`;
-    // ISSUE: logging is not just FYI here;
-    // should be passed as an explicit capability.
-    console.log({ label, pubKey: b2h(pubKey), ethAddr });
-  } catch (err) {
-    throw new ExitStatus(`cannot load public key: ${err.message}`);
-  }
+async function getBalance(label, payWith, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
+  const { revAddr, publicKey, signingKey } = await loadRevAddr(label, [], { keyStore, getpass });
 
-  function fixArgs(args, [statusOut]) {
-    console.log({ args, statusOut });
-    const out = [...args];
-    out[2] = sigDERHex(secp256k1.sign(rhoKeccakHash([b2h(pubKey), statusOut]), privKey));
-    return out;
-  }
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, fixArgs, predeclare: ['s'] });
-  const pk = await outcome(tools.claim(ethAddr, b2h(pubKey), 'sig goes here'));
-
-  console.log({ ethAddr, pk });
-}
-
-
-async function getBalance(label, priceInfo, { keyStore, toolsMod, getpass, rnode, clock, delay }) {
-  const { revAddr } = await loadRevAddr(label, [], { keyStore, getpass });
-
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock, delay });
+  const tools = makeProxy(
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
+    { rnode, clock, delay },
+  );
   const balance = await tools.balance(revAddr);
 
   console.log({ revAddr, balance, label });
 }
 
-async function publish(label, isClaimed, priceInfo, { keyStore, toolsMod, rnode, clock, getpass }) {
-  const privKey = await loadKey(keyStore, label, [], { getpass });
-  const secPubKey = privateToPublic(privKey); // eth style secp256k1
-  const ethAddr = `0x${b2h(pubToAddress(secPubKey))}`;
-  const edkey = keyPair(privKey); // ed25519 per nacl
-
-  const nonce = clock().valueOf(); // ISSUE: cli arg? persist?
-
-  const tools = makeProxy(toolsMod.URI, priceInfo, { rnode, clock });
-
-  let uri;
-  if (isClaimed) {
-    const toSign = await outcome(tools.prepareToPublish(b2h(secPubKey), nonce));
-    const sig = edkey.signBytes(toSign);
-
-    uri = await outcome(tools.publishClaimed(b2h(secPubKey), h2b(edkey.publicKey()), sig, nonce));
-  } else {
-    const created = await outcome(tools.createWallet('secp256k1', b2h(secPubKey), nonce));
-    if (!created.toSign) { throw new Error('expected toSign'); }
-    if (!created.uri) { throw new Error('expected uri'); }
-    const sig = edkey.signBytes(created.toSign);
-    // ISSUE: try WalletCheck access 1st to avoid clobbering.
-    // ISSUE: check target URI to avoid clobbering
-    uri = await outcome(tools.publishRegistered(
-      created.uri, h2b(edkey.publicKey()), sig, nonce,
-    ));
-  }
-  console.log({ uri: String(uri), ethAddr, label });
-}
-
-
 async function transferPayment(
-  // ISSUE: paymentInfo confuses phloPrice and such with the REV we're sending here.
-  amount, fromLabel, toAddr, paymentInfo,
+  amount, fromLabel, toAddr, payWith,
   { keyStore, toolsMod, getpass, rnode, clock, delay },
 ) {
   const notice = [[`send ${String(amount)} from ${fromLabel} to ${String(toAddr)}`]];
-  const { revAddr, publicKey } = await loadRevAddr(fromLabel, notice, { keyStore, getpass });
+  try {
+    RevAddress.parse(toAddr);
+  } catch (badAddr) {
+    throw new ExitStatus(`bad destination address: ${badAddr.message}`);
+  }
+
+  const { revAddr, publicKey, signingKey } = await loadRevAddr(
+    fromLabel, notice,
+    { keyStore, getpass },
+  );
 
   const tools = makeProxy(
-    toolsMod.URI,
-    { ...paymentInfo, deployer: h2b(publicKey) },
+    toolsMod.URI, h2b(publicKey), payWith(signingKey),
     { rnode, clock, delay },
   );
 
@@ -502,7 +450,7 @@ async function outcome/*::<T>*/(x /*:Promise<mixed>*/) /*: Promise<T>*/ {
 }
 
 async function ensureLoaded(name, src, { registry }) /*: ModuleInfo */ {
-  const srcHash = simplifiedKeccak256Hash(src);
+  const srcHash = RHOCore.wrapHash(keccak256Hash)(src);
   const mods = await registry.get(srcHash);
   const mod = mods[srcHash];
   if (!mod) { throw new ExitStatus(`rholang module not loaded: ${name}`); }

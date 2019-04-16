@@ -5,21 +5,20 @@
 
 const { URL } = require('url');
 
-const { Writer } = require('protobufjs');
-const { DataWithBlockInfo } = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
-
-const { b2h } = require('./signing');
-const RHOCore = require('./RHOCore');
+const Hex = require('./hex');
+const { Ed25519keyPair } = require('./signing');
 const { pollAt } = require('./proxy');
+const { Block, SignDeployment } = require('./rnodeAPI');
+const { fromIds } = require('./RHOCore');
 
 const { link } = require('./assets');
 
 const LOADER_TEMPLATE = link('./loader.rho');
 
-const defaultPayment = { from: '0x1', nonce: 0, phloPrice: 1, phloLimit: 100000 };
-
 /*::
+import type { DeployInfo } from '../protobuf/CasperMessage';
 import type { IRNode } from '..';
+import type { PayFor } from './proxy';
 
 interface LoadAccess {
   rnode: IRNode,
@@ -38,7 +37,7 @@ export type ModuleInfo = {
 
 exports.loadRhoModules = loadRhoModules;
 async function loadRhoModules(
-  sources /*: string[]*/, deployer /*: Uint8Array*/,
+  sources /*: string[]*/, payFor /*: PayFor<DeployInfo> */,
   { rnode, clock, delay } /*: LoadAccess */,
 ) /*: Promise<ModuleInfo[]> */ {
   let t1 = null;
@@ -53,9 +52,10 @@ async function loadRhoModules(
 
   async function deploy1({ name, title, term }) {
     const timestamp = monotonicClock();
-    const [chan] = await rnode.previewPrivateChannels({ user: deployer, timestamp }, 1);
+    const info = payFor({ term, timestamp });
+    const [chan] = await fromIds(rnode.previewPrivateNames({ user: info.deployer, timestamp }, 1));
     console.log(`Deploying: ${title}\n`);
-    const deployResult = await rnode.doDeploy({ ...defaultPayment, deployer, term, timestamp });
+    const deployResult = await rnode.doDeploy(info);
     console.log({ deployResult, name });
     return { name, title, term, chan };
   }
@@ -67,8 +67,9 @@ async function loadRhoModules(
   console.log({ createdBlock, loading: deployed.map(({ name }) => name) });
 
   async function register1({ name, title, term, chan }) /*: Promise<ModuleInfo> */{
+    console.log({ pollAt });
     const found = await pollAt(chan, name, { rnode, delay });
-    const d = firstBlockData(found);
+    const d = Block.firstData(found);
     if (!(d instanceof URL)) { throw new Error(`Expected URL; got: ${String(d)}`); }
     const URI = d;
     console.log(`${name} registered at: ${String(URI)}`);
@@ -112,54 +113,42 @@ function moduleHeader(sourceCode) {
 }
 
 
-/**
- * Get printable form of unforgeable name, given id.
- */
-exports.unforgeableWithId = unforgeableWithId;
-function unforgeableWithId(id /*: Uint8Array */) {
-  const bytes = Writer.create().bytes(id).finish().slice(1);
-  return `Unforgeable(0x${b2h(bytes)})`;
-}
-
-exports.prettyPrivate = prettyPrivate;
-function prettyPrivate(par /*: IPar */) {
-  if (!(par.ids && par.ids.length && par.ids[0].id)) { throw new Error('expected GPrivate'); }
-  return unforgeableWithId(par.ids[0].id);
-}
-
-exports.firstBlockData = firstBlockData;
-function firstBlockData(blockResults /*: DataWithBlockInfo[] */) {
-  const _ = DataWithBlockInfo; // mark used
-  // console.log({ blockResults });
-  if (!blockResults.length) { throw new Error('no blocks found'); }
-  return RHOCore.toJSData(firstBlockProcess(blockResults));
-}
-
-
-// Get the first piece of data from listenForDataAtName
-function firstBlockProcess(blockResults) {
-  // console.log('found:', JSON.stringify(blockResults, null, 2));
-  const ea = [].concat(...blockResults.map(br => br.postBlockData));
-  // console.log('ea: ', JSON.stringify(ea, null, 2));
-  const good = ea.filter(it => it.exprs.length > 0 || it.bundles.length > 0 || it.ids.length > 0);
-  // console.log('good:');
-  // console.log(JSON.stringify(good, null, 2));
-  return good[0];
-}
-
-
-function integrationTest(argv, { readFileSync }) {
+async function integrationTest(argv, { readFileSync, clock, rnode, setTimeout }) {
   const sourceFileName = argv[2];
   const src = readFileSync(sourceFileName, 'utf8');
   const { name, title, term } = parseModule(src);
   console.log({ name, title });
   console.log(term);
+
+  const dur = 3 * 1000;
+  const delay = _i => new Promise((resolve) => { setTimeout(resolve, dur); });
+
+  const key = Ed25519keyPair(Hex.decode('11'.repeat(32)));
+  function payFor(d0 /*: DeployInfo*/) {
+    return SignDeployment.sign(key, {
+      ...d0,
+      phloPrice: 1,
+      phloLimit: 100000,
+    });
+  }
+
+  const sources = [src];
+  return loadRhoModules(sources, payFor, { rnode, clock, delay });
 }
 
 
 /*global module */
 if (require.main === module) {
-  /* global process */
+  /* global process, setTimeout */
   /* eslint-disable global-require */
-  integrationTest(process.argv, { readFileSync: require('fs').readFileSync });
+  const grpc = require('grpc');
+  const { RNode } = require('./rnodeAPI');
+  const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
+  integrationTest(process.argv, {
+    readFileSync: require('fs').readFileSync,
+    clock: () => new Date(),
+    rnode,
+    setTimeout,
+  })
+    .catch((oops) => { console.error(oops); });
 }

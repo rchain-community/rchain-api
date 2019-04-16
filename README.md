@@ -8,54 +8,57 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 
 
 ## Quickstart
-### Find an RChain node whose grpc endpoint you can use.
-At the moment that likely means [running your own RNode](2). We're working on a community node at rnode-test.rhobot.net
 
-Make note of your RNode's hostname and gRPC port. If you're not sure, `localhost` and `40401` are good guesses.
+Install with `npm install rchain-community/rchain-api`. Then, with
+rnode on `localhost`, you can get current block info:
 
-[2]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/428376065/User+guide+for+running+RNode
 
-### Grab RChain-API
-Clone this repository with eg `git clone https://github.com/JoshOrndorff/RChain-API`
+```js
+const grpc = require('grpc');
+const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
 
-And install dependencies with `npm install`
-
-### (Recommended) Run the integration test
-
-Run `rnodeAPI.js` with _host_ and _port_ arguments, as in: `node rnodeAPI.js rnode-test.rhobot.net 50000`.
-
-You should see something like:
-
-```
-stuffToSign serialized {
-  "type": "Buffer",
-  "data": "0a300a110a0f2a031a01784a08000000000000000012112a051a036162634a0800000000000000002a0800000000000000004a080000000000000000"
-}
-...
-doDeploy result: { success: true, message: 'Success!' }
-@@createBlock():  {
-  "block": {
-    "blockHash": {
-      "type": "Buffer",
-      "data": "3c5d97e2627432026b6d4a17c8027afb95b72e8d08a936d785b58459eff5859e"
+const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
+rnode.showBlocks()
+  .then((blocks) => { assert.ok(blocks[0].blockHash); });
 ```
 
-### Deploy contract to RNode
-There are not yet nice truffle-style build tools, so you will probably deploy your code directly using the `rnode deploy` thin client or using RChain-API itself.
+If your node is a validator and you have a key to authorize payment, you can deploy code:
 
-```javascript
-const myNode = RNode('localhost', 40401);
-rchain.doDeploy({
-  term: '@"aliceUpdates"!("Having fun traveling!")',
-  timestamp: clock().valueOf(),
-  // from: '0x1',
-  // nonce: 0,
-})
+```js
+const grpc = require('grpc');
+const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
+
+const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
+
+const term = '@"world"!("Hello!")';
+const myKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
+const timestamp = new Date('2019-04-12T17:59:29.274Z').valueOf();
+const info = REV.SignDeployment.sign(myKey, { timestamp, term, phloLimit: 10000, phloPrice: 1 });
+rnode.doDeploy(info, true).then((message) => { assert(message.startsWith('Success')); });
 ```
 
 ## API
 
 [./docs/](./docs/index.md)
+
+
+## Getting access to an RChain node
+
+Choices include:
+
+  - [RChain testnet][testnet] nodes such as `node4.testnet.rchain-dev.tk`
+  - a community node at `rnode-test.rhobot.net`
+  - [running your own RNode][2]
+  
+[testnet]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/678756429/RChain+public+testnet+information
+[2]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/428376065/User+guide+for+running+RNode
+
+
+### RChain gRPC protobuf compatibility
+
+[protobuf][proto]: v0.9.1 bf1b2c6 Mar 28, 2019
+
+[proto]: https://github.com/rchain/rchain/tree/bf1b2c6c6662515403c0a429e8c9fa25edd64638/models/src/main/protobuf
 
 
 ## Examples and Related Projects
@@ -66,12 +69,9 @@ rchain.doDeploy({
 * [RSign](https://github.com/dckc/RSign) A chrome extension for generating client-side signatures akin to metamask
 * [node-client](https://github.com/rchain/rchain/tree/dev/node-client) A similar but less mature RChain API written in python
 
-## RChain gRPC protobuf compatibility
-* Commit hash [51d9323](https://github.com/rchain/rchain/tree/dev/models/src/main/protobuf) Jan 3, 2019
-
 
 ## License
-Copyright 2018 RChain Cooperative
+Copyright 2018-2019 RChain Cooperative
 
 Apache 2.0 License (See LICENSE.txt)
 

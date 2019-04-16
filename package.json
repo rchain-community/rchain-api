@@ -1,6 +1,6 @@
 {
   "name": "rchain-api",
-  "version": "0.9.1-beta.2",
+  "version": "0.9.2-beta.4",
   "description": "RChain client for node.js",
   "main": "index.js",
   "scripts": {
@@ -11,15 +11,15 @@
     ],
     "postinstall": "cd rclient; npm install --no-package-lock",
     "testAll": "npm run check && npm run integrationTest",
-    "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md",
-    "doc-watch": "documentation serve --watch index.js src/**.js --shallow",
-    "check": "npm run test && npm run lint && npm run flow-check",
-    "test-jest": "jest",
-    "test": "tape test/**/*.js",
+    "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md && markdown-doctest",
+    "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
+    "doc-watch": "documentation serve --watch index.js --config docs/config.yml src/**.js --shallow",
+    "check": "npm run test && npm run build:docs && npm run lint && npm run flow-check",
+    "test": "tape test/**/*.js && markdown-doctest",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
     "flow-check": "flow check --from emacs",
     "flow-status": "flow status --from emacs",
-    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/ --ignore-pattern **/*.test.js"
+    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/ --ignore-pattern '!.markdown-doctest-setup.js'"
   },
   "config": {
     "host": "localhost",
@@ -61,6 +61,7 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "flow-bin": "^0.81.0",
+    "markdown-doctest": "^0.9.1",
     "tape": "^4.10.1"
   },
   "TODO": {

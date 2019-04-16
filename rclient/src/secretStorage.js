@@ -9,7 +9,7 @@ const scrypt = require('scrypt.js'); // ISSUE: just use crypto.script?
 const crypto = require('crypto');
 const assert = require('assert');
 
-const { keccak256Hash } = require('rchain-api');
+const { keccak256Hash } = require('rchain-api').RholangCrypto;
 
 /*::
 
