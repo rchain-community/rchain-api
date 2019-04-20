@@ -215,22 +215,22 @@ declare export class Var implements IVar {
   free_var: number;
   wildcard: Var$IWildcardMsg | null;
   var_instance: "bound_var" | "free_var" | "wildcard";
-  static create(properties?: IVar): Var;
+  static create(properties?: IVar): this;
   static encode(message: IVar, writer?: $protobuf.Writer): $protobuf.Writer;
   static encodeDelimited(
     message: IVar,
     writer?: $protobuf.Writer
   ): $protobuf.Writer;
-  static decode(reader: $protobuf.Reader | Uint8Array, length?: number): Var;
-  static decodeDelimited(reader: $protobuf.Reader | Uint8Array): Var;
+  static decode(reader: $protobuf.Reader | Uint8Array, length?: number): this;
+  static decodeDelimited(reader: $protobuf.Reader | Uint8Array): this;
   static verify(message: {
     [k: string]: any
   }): string | null;
   static fromObject(object: {
     [k: string]: any
-  }): Var;
+  }): this;
   static toObject(
-    message: Var,
+    message: this,
     options?: $protobuf.IConversionOptions
   ): {
     [k: string]: any
