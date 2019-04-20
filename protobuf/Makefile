@@ -17,7 +17,8 @@ PROTO_SRC=CasperMessage.proto RhoTypes.proto Either.proto $(GOOG)
 
 STATIC_JS=CasperMessage.js RhoTypes.js Either.js
 STATIC_TS=CasperMessage.d.ts RhoTypes.d.ts Either.d.ts
-STATIC_FLOW=interfaces/CasperMessage.js.flow interfaces/RhoTypes.js.flow interfaces/Either.js.flow
+STATIC_FLOW=interfaces/CasperMessage.js.flow interfaces/RhoTypes.js.flow interfaces/Either.js.flow \
+	interfaces/protobufjs.js.flow
 
 download: $(PROTO_SRC)
 
@@ -87,6 +88,9 @@ interfaces/CasperMessage.js.flow: CasperMessage.d.ts
 interfaces/RhoTypes.js.flow: RhoTypes.d.ts
 
 interfaces/Either.js.flow: Either.d.ts
+
+interfaces/protobufjs.js.flow: ../node_modules/protobufjs/index.d.ts
+	$(FLOWGEN) -o $@ $<
 
 clean:
 	rm -rf messages.json messages.d.ts
