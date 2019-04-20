@@ -8,16 +8,16 @@
 
 import * as $protobuf from "protobufjs";
 export interface IPar {
-  sends?: ISend[] | null;
-  receives?: IReceive[] | null;
-  news?: INew[] | null;
-  exprs?: IExpr[] | null;
-  matches?: IMatch[] | null;
-  ids?: IGPrivate[] | null;
-  bundles?: IBundle[] | null;
-  connectives?: IConnective[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +sends?: ISend[] | null;
+  +receives?: IReceive[] | null;
+  +news?: INew[] | null;
+  +exprs?: IExpr[] | null;
+  +matches?: IMatch[] | null;
+  +ids?: IGPrivate[] | null;
+  +bundles?: IBundle[] | null;
+  +connectives?: IConnective[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class Par mixins IPar {
   constructor(properties?: IPar): this;
@@ -165,8 +165,8 @@ declare export class PCost mixins IPCost {
   };
 }
 export interface IListParWithRandom {
-  pars?: IPar[] | null;
-  randomState?: Uint8Array | null;
+  +pars?: IPar[] | null;
+  +randomState?: Uint8Array | null;
 }
 declare export class ListParWithRandom mixins IListParWithRandom {
   constructor(properties?: IListParWithRandom): this;
@@ -205,9 +205,9 @@ declare export class ListParWithRandom mixins IListParWithRandom {
   };
 }
 export interface IVar {
-  bound_var?: number | null;
-  free_var?: number | null;
-  wildcard?: Var$IWildcardMsg | null;
+  +bound_var?: number | null;
+  +free_var?: number | null;
+  +wildcard?: Var$IWildcardMsg | null;
 }
 declare export class Var mixins IVar {
   constructor(properties?: IVar): this;
@@ -242,7 +242,7 @@ declare export class Var mixins IVar {
 declare var Var: typeof npm$namespace$Var;
 
 declare var npm$namespace$Var: {
-  WildcardMsg: typeof Var$WildcardMsg
+  +WildcardMsg: typeof Var$WildcardMsg
 };
 declare interface Var$IWildcardMsg {}
 
@@ -281,9 +281,9 @@ declare class Var$WildcardMsg mixins Var$IWildcardMsg {
   };
 }
 export interface IBundle {
-  body?: IPar | null;
-  writeFlag?: boolean | null;
-  readFlag?: boolean | null;
+  +body?: IPar | null;
+  +writeFlag?: boolean | null;
+  +readFlag?: boolean | null;
 }
 declare export class Bundle mixins IBundle {
   constructor(properties?: IBundle): this;
@@ -315,11 +315,11 @@ declare export class Bundle mixins IBundle {
   };
 }
 export interface ISend {
-  chan?: IPar | null;
-  data?: IPar[] | null;
-  persistent?: boolean | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +chan?: IPar | null;
+  +data?: IPar[] | null;
+  +persistent?: boolean | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class Send mixins ISend {
   constructor(properties?: ISend): this;
@@ -353,10 +353,10 @@ declare export class Send mixins ISend {
   };
 }
 export interface IReceiveBind {
-  patterns?: IPar[] | null;
-  source?: IPar | null;
-  remainder?: IVar | null;
-  freeCount?: number | null;
+  +patterns?: IPar[] | null;
+  +source?: IPar | null;
+  +remainder?: IVar | null;
+  +freeCount?: number | null;
 }
 declare export class ReceiveBind mixins IReceiveBind {
   constructor(properties?: IReceiveBind): this;
@@ -395,9 +395,9 @@ declare export class ReceiveBind mixins IReceiveBind {
   };
 }
 export interface IBindPattern {
-  patterns?: IPar[] | null;
-  remainder?: IVar | null;
-  freeCount?: number | null;
+  +patterns?: IPar[] | null;
+  +remainder?: IVar | null;
+  +freeCount?: number | null;
 }
 declare export class BindPattern mixins IBindPattern {
   constructor(properties?: IBindPattern): this;
@@ -435,7 +435,7 @@ declare export class BindPattern mixins IBindPattern {
   };
 }
 export interface IListBindPatterns {
-  patterns?: IBindPattern[] | null;
+  +patterns?: IBindPattern[] | null;
 }
 declare export class ListBindPatterns mixins IListBindPatterns {
   constructor(properties?: IListBindPatterns): this;
@@ -473,12 +473,12 @@ declare export class ListBindPatterns mixins IListBindPatterns {
   };
 }
 export interface IReceive {
-  binds?: IReceiveBind[] | null;
-  body?: IPar | null;
-  persistent?: boolean | null;
-  bindCount?: number | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +binds?: IReceiveBind[] | null;
+  +body?: IPar | null;
+  +persistent?: boolean | null;
+  +bindCount?: number | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class Receive mixins IReceive {
   constructor(properties?: IReceive): this;
@@ -516,10 +516,10 @@ declare export class Receive mixins IReceive {
   };
 }
 export interface INew {
-  bindCount?: number | null;
-  p?: IPar | null;
-  uri?: string[] | null;
-  locallyFree?: Uint8Array | null;
+  +bindCount?: number | null;
+  +p?: IPar | null;
+  +uri?: string[] | null;
+  +locallyFree?: Uint8Array | null;
 }
 declare export class New mixins INew {
   constructor(properties?: INew): this;
@@ -552,9 +552,9 @@ declare export class New mixins INew {
   };
 }
 export interface IMatchCase {
-  pattern?: IPar | null;
-  source?: IPar | null;
-  freeCount?: number | null;
+  +pattern?: IPar | null;
+  +source?: IPar | null;
+  +freeCount?: number | null;
 }
 declare export class MatchCase mixins IMatchCase {
   constructor(properties?: IMatchCase): this;
@@ -592,10 +592,10 @@ declare export class MatchCase mixins IMatchCase {
   };
 }
 export interface IMatch {
-  target?: IPar | null;
-  cases?: IMatchCase[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +target?: IPar | null;
+  +cases?: IMatchCase[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class Match mixins IMatch {
   constructor(properties?: IMatch): this;
@@ -628,35 +628,35 @@ declare export class Match mixins IMatch {
   };
 }
 export interface IExpr {
-  g_bool?: boolean | null;
-  g_int?: number | Long | null;
-  g_string?: string | null;
-  g_uri?: string | null;
-  g_byte_array?: Uint8Array | null;
-  e_not_body?: IENot | null;
-  e_neg_body?: IENeg | null;
-  e_mult_body?: IEMult | null;
-  e_div_body?: IEDiv | null;
-  e_plus_body?: IEPlus | null;
-  e_minus_body?: IEMinus | null;
-  e_lt_body?: IELt | null;
-  e_lte_body?: IELte | null;
-  e_gt_body?: IEGt | null;
-  e_gte_body?: IEGte | null;
-  e_eq_body?: IEEq | null;
-  e_neq_body?: IENeq | null;
-  e_and_body?: IEAnd | null;
-  e_or_body?: IEOr | null;
-  e_var_body?: IEVar | null;
-  e_list_body?: IEList | null;
-  e_tuple_body?: IETuple | null;
-  e_set_body?: IESet | null;
-  e_map_body?: IEMap | null;
-  e_method_body?: IEMethod | null;
-  e_matches_body?: IEMatches | null;
-  e_percent_percent_body?: IEPercentPercent | null;
-  e_plus_plus_body?: IEPlusPlus | null;
-  e_minus_minus_body?: IEMinusMinus | null;
+  +g_bool?: boolean | null;
+  +g_int?: number | Long | null;
+  +g_string?: string | null;
+  +g_uri?: string | null;
+  +g_byte_array?: Uint8Array | null;
+  +e_not_body?: IENot | null;
+  +e_neg_body?: IENeg | null;
+  +e_mult_body?: IEMult | null;
+  +e_div_body?: IEDiv | null;
+  +e_plus_body?: IEPlus | null;
+  +e_minus_body?: IEMinus | null;
+  +e_lt_body?: IELt | null;
+  +e_lte_body?: IELte | null;
+  +e_gt_body?: IEGt | null;
+  +e_gte_body?: IEGte | null;
+  +e_eq_body?: IEEq | null;
+  +e_neq_body?: IENeq | null;
+  +e_and_body?: IEAnd | null;
+  +e_or_body?: IEOr | null;
+  +e_var_body?: IEVar | null;
+  +e_list_body?: IEList | null;
+  +e_tuple_body?: IETuple | null;
+  +e_set_body?: IESet | null;
+  +e_map_body?: IEMap | null;
+  +e_method_body?: IEMethod | null;
+  +e_matches_body?: IEMatches | null;
+  +e_percent_percent_body?: IEPercentPercent | null;
+  +e_plus_plus_body?: IEPlusPlus | null;
+  +e_minus_minus_body?: IEMinusMinus | null;
 }
 declare export class Expr mixins IExpr {
   constructor(properties?: IExpr): this;
@@ -744,10 +744,10 @@ declare export class Expr mixins IExpr {
   };
 }
 export interface IEList {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
-  remainder?: IVar | null;
+  +ps?: IPar[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
+  +remainder?: IVar | null;
 }
 declare export class EList mixins IEList {
   constructor(properties?: IEList): this;
@@ -780,9 +780,9 @@ declare export class EList mixins IEList {
   };
 }
 export interface IETuple {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +ps?: IPar[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class ETuple mixins IETuple {
   constructor(properties?: IETuple): this;
@@ -814,10 +814,10 @@ declare export class ETuple mixins IETuple {
   };
 }
 export interface IESet {
-  ps?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
-  remainder?: IVar | null;
+  +ps?: IPar[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
+  +remainder?: IVar | null;
 }
 declare export class ESet mixins IESet {
   constructor(properties?: IESet): this;
@@ -850,10 +850,10 @@ declare export class ESet mixins IESet {
   };
 }
 export interface IEMap {
-  kvs?: IKeyValuePair[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
-  remainder?: IVar | null;
+  +kvs?: IKeyValuePair[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
+  +remainder?: IVar | null;
 }
 declare export class EMap mixins IEMap {
   constructor(properties?: IEMap): this;
@@ -886,11 +886,11 @@ declare export class EMap mixins IEMap {
   };
 }
 export interface IEMethod {
-  methodName?: string | null;
-  target?: IPar | null;
-  arguments?: IPar[] | null;
-  locallyFree?: Uint8Array | null;
-  connective_used?: boolean | null;
+  +methodName?: string | null;
+  +target?: IPar | null;
+  +arguments?: IPar[] | null;
+  +locallyFree?: Uint8Array | null;
+  +connective_used?: boolean | null;
 }
 declare export class EMethod mixins IEMethod {
   constructor(properties?: IEMethod): this;
@@ -927,8 +927,8 @@ declare export class EMethod mixins IEMethod {
   };
 }
 export interface IKeyValuePair {
-  key?: IPar | null;
-  value?: IPar | null;
+  +key?: IPar | null;
+  +value?: IPar | null;
 }
 declare export class KeyValuePair mixins IKeyValuePair {
   constructor(properties?: IKeyValuePair): this;
@@ -965,7 +965,7 @@ declare export class KeyValuePair mixins IKeyValuePair {
   };
 }
 export interface IEVar {
-  v?: IVar | null;
+  +v?: IVar | null;
 }
 declare export class EVar mixins IEVar {
   constructor(properties?: IEVar): this;
@@ -995,7 +995,7 @@ declare export class EVar mixins IEVar {
   };
 }
 export interface IENot {
-  p?: IPar | null;
+  +p?: IPar | null;
 }
 declare export class ENot mixins IENot {
   constructor(properties?: IENot): this;
@@ -1025,7 +1025,7 @@ declare export class ENot mixins IENot {
   };
 }
 export interface IENeg {
-  p?: IPar | null;
+  +p?: IPar | null;
 }
 declare export class ENeg mixins IENeg {
   constructor(properties?: IENeg): this;
@@ -1055,8 +1055,8 @@ declare export class ENeg mixins IENeg {
   };
 }
 export interface IEMult {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EMult mixins IEMult {
   constructor(properties?: IEMult): this;
@@ -1087,8 +1087,8 @@ declare export class EMult mixins IEMult {
   };
 }
 export interface IEDiv {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EDiv mixins IEDiv {
   constructor(properties?: IEDiv): this;
@@ -1119,8 +1119,8 @@ declare export class EDiv mixins IEDiv {
   };
 }
 export interface IEPlus {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EPlus mixins IEPlus {
   constructor(properties?: IEPlus): this;
@@ -1151,8 +1151,8 @@ declare export class EPlus mixins IEPlus {
   };
 }
 export interface IEMinus {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EMinus mixins IEMinus {
   constructor(properties?: IEMinus): this;
@@ -1183,8 +1183,8 @@ declare export class EMinus mixins IEMinus {
   };
 }
 export interface IELt {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class ELt mixins IELt {
   constructor(properties?: IELt): this;
@@ -1215,8 +1215,8 @@ declare export class ELt mixins IELt {
   };
 }
 export interface IELte {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class ELte mixins IELte {
   constructor(properties?: IELte): this;
@@ -1247,8 +1247,8 @@ declare export class ELte mixins IELte {
   };
 }
 export interface IEGt {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EGt mixins IEGt {
   constructor(properties?: IEGt): this;
@@ -1279,8 +1279,8 @@ declare export class EGt mixins IEGt {
   };
 }
 export interface IEGte {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EGte mixins IEGte {
   constructor(properties?: IEGte): this;
@@ -1311,8 +1311,8 @@ declare export class EGte mixins IEGte {
   };
 }
 export interface IEEq {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EEq mixins IEEq {
   constructor(properties?: IEEq): this;
@@ -1343,8 +1343,8 @@ declare export class EEq mixins IEEq {
   };
 }
 export interface IENeq {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class ENeq mixins IENeq {
   constructor(properties?: IENeq): this;
@@ -1375,8 +1375,8 @@ declare export class ENeq mixins IENeq {
   };
 }
 export interface IEAnd {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EAnd mixins IEAnd {
   constructor(properties?: IEAnd): this;
@@ -1407,8 +1407,8 @@ declare export class EAnd mixins IEAnd {
   };
 }
 export interface IEOr {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EOr mixins IEOr {
   constructor(properties?: IEOr): this;
@@ -1439,8 +1439,8 @@ declare export class EOr mixins IEOr {
   };
 }
 export interface IEMatches {
-  target?: IPar | null;
-  pattern?: IPar | null;
+  +target?: IPar | null;
+  +pattern?: IPar | null;
 }
 declare export class EMatches mixins IEMatches {
   constructor(properties?: IEMatches): this;
@@ -1477,8 +1477,8 @@ declare export class EMatches mixins IEMatches {
   };
 }
 export interface IEPercentPercent {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EPercentPercent mixins IEPercentPercent {
   constructor(properties?: IEPercentPercent): this;
@@ -1517,8 +1517,8 @@ declare export class EPercentPercent mixins IEPercentPercent {
   };
 }
 export interface IEPlusPlus {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EPlusPlus mixins IEPlusPlus {
   constructor(properties?: IEPlusPlus): this;
@@ -1555,8 +1555,8 @@ declare export class EPlusPlus mixins IEPlusPlus {
   };
 }
 export interface IEMinusMinus {
-  p1?: IPar | null;
-  p2?: IPar | null;
+  +p1?: IPar | null;
+  +p2?: IPar | null;
 }
 declare export class EMinusMinus mixins IEMinusMinus {
   constructor(properties?: IEMinusMinus): this;
@@ -1593,15 +1593,15 @@ declare export class EMinusMinus mixins IEMinusMinus {
   };
 }
 export interface IConnective {
-  conn_and_body?: IConnectiveBody | null;
-  conn_or_body?: IConnectiveBody | null;
-  conn_not_body?: IPar | null;
-  var_ref_body?: IVarRef | null;
-  conn_bool?: boolean | null;
-  conn_int?: boolean | null;
-  conn_string?: boolean | null;
-  conn_uri?: boolean | null;
-  conn_byte_array?: boolean | null;
+  +conn_and_body?: IConnectiveBody | null;
+  +conn_or_body?: IConnectiveBody | null;
+  +conn_not_body?: IPar | null;
+  +var_ref_body?: IVarRef | null;
+  +conn_bool?: boolean | null;
+  +conn_int?: boolean | null;
+  +conn_string?: boolean | null;
+  +conn_uri?: boolean | null;
+  +conn_byte_array?: boolean | null;
 }
 declare export class Connective mixins IConnective {
   constructor(properties?: IConnective): this;
@@ -1655,8 +1655,8 @@ declare export class Connective mixins IConnective {
   };
 }
 export interface IVarRef {
-  index?: number | null;
-  depth?: number | null;
+  +index?: number | null;
+  +depth?: number | null;
 }
 declare export class VarRef mixins IVarRef {
   constructor(properties?: IVarRef): this;
@@ -1687,7 +1687,7 @@ declare export class VarRef mixins IVarRef {
   };
 }
 export interface IConnectiveBody {
-  ps?: IPar[] | null;
+  +ps?: IPar[] | null;
 }
 declare export class ConnectiveBody mixins IConnectiveBody {
   constructor(properties?: IConnectiveBody): this;
@@ -1723,7 +1723,7 @@ declare export class ConnectiveBody mixins IConnectiveBody {
   };
 }
 export interface IGPrivate {
-  id?: Uint8Array | null;
+  +id?: Uint8Array | null;
 }
 declare export class GPrivate mixins IGPrivate {
   constructor(properties?: IGPrivate): this;

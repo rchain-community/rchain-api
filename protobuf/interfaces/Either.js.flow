@@ -160,8 +160,8 @@ declare var npm$namespace$google$protobuf: {
   Any: typeof google$protobuf$Any
 };
 declare interface google$protobuf$IAny {
-  type_url?: string | null;
-  value?: Uint8Array | null;
+  +type_url?: string | null;
+  +value?: Uint8Array | null;
 }
 
 declare class google$protobuf$Any mixins google$protobuf$IAny {
