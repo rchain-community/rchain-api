@@ -11,7 +11,7 @@ export interface IEitherAny {
   type_url?: string | null;
   value?: Uint8Array | null;
 }
-declare export class EitherAny mixins IEitherAny {
+declare export class EitherAny implements IEitherAny {
   constructor(properties?: IEitherAny): this;
   type_url: string;
   value: Uint8Array;
@@ -48,7 +48,7 @@ declare export class EitherAny mixins IEitherAny {
 export interface IEitherError {
   messages?: string[] | null;
 }
-declare export class EitherError mixins IEitherError {
+declare export class EitherError implements IEitherError {
   constructor(properties?: IEitherError): this;
   messages: string[];
   static create(properties?: IEitherError): EitherError;
@@ -84,7 +84,7 @@ declare export class EitherError mixins IEitherError {
 export interface IEitherSuccess {
   response?: IEitherAny | null;
 }
-declare export class EitherSuccess mixins IEitherSuccess {
+declare export class EitherSuccess implements IEitherSuccess {
   constructor(properties?: IEitherSuccess): this;
   response: IEitherAny | null;
   static create(properties?: IEitherSuccess): EitherSuccess;
@@ -121,7 +121,7 @@ export interface IEither {
   error?: IEitherError | null;
   success?: IEitherSuccess | null;
 }
-declare export class Either mixins IEither {
+declare export class Either implements IEither {
   constructor(properties?: IEither): this;
   error: IEitherError | null;
   success: IEitherSuccess | null;
@@ -164,7 +164,7 @@ declare interface google$protobuf$IAny {
   +value?: Uint8Array | null;
 }
 
-declare class google$protobuf$Any mixins google$protobuf$IAny {
+declare class google$protobuf$Any implements google$protobuf$IAny {
   constructor(properties?: google$protobuf$IAny): this;
   type_url: string;
   value: Uint8Array;

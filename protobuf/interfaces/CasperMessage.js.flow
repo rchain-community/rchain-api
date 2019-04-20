@@ -66,7 +66,7 @@ declare var npm$namespace$coop$rchain$casper$protocol: {
   Bond: typeof coop$rchain$casper$protocol$Bond
 };
 declare class coop$rchain$casper$protocol$DeployService
-  mixins $protobuf.rpc.Service {
+  implements $protobuf.rpc.Service {
   constructor(
     rpcImpl: $protobuf.RPCImpl,
     requestDelimited?: boolean,
@@ -205,7 +205,7 @@ declare interface coop$rchain$casper$protocol$IDeployData {
 }
 
 declare class coop$rchain$casper$protocol$DeployData
-  mixins coop$rchain$casper$protocol$IDeployData {
+  implements coop$rchain$casper$protocol$IDeployData {
   constructor(properties?: coop$rchain$casper$protocol$IDeployData): this;
   deployer: Uint8Array;
   term: string;
@@ -256,7 +256,7 @@ declare interface coop$rchain$casper$protocol$IBlockRequest {
 }
 
 declare class coop$rchain$casper$protocol$BlockRequest
-  mixins coop$rchain$casper$protocol$IBlockRequest {
+  implements coop$rchain$casper$protocol$IBlockRequest {
   constructor(properties?: coop$rchain$casper$protocol$IBlockRequest): this;
   base16Hash: string;
   hash: Uint8Array;
@@ -298,7 +298,7 @@ declare class coop$rchain$casper$protocol$BlockRequest
 declare interface coop$rchain$casper$protocol$IForkChoiceTipRequest {}
 
 declare class coop$rchain$casper$protocol$ForkChoiceTipRequest
-  mixins coop$rchain$casper$protocol$IForkChoiceTipRequest {
+  implements coop$rchain$casper$protocol$IForkChoiceTipRequest {
   constructor(
     properties?: coop$rchain$casper$protocol$IForkChoiceTipRequest
   ): this;
@@ -343,7 +343,7 @@ declare interface coop$rchain$casper$protocol$IFindDeployInBlockQuery {
 }
 
 declare class coop$rchain$casper$protocol$FindDeployInBlockQuery
-  mixins coop$rchain$casper$protocol$IFindDeployInBlockQuery {
+  implements coop$rchain$casper$protocol$IFindDeployInBlockQuery {
   constructor(
     properties?: coop$rchain$casper$protocol$IFindDeployInBlockQuery
   ): this;
@@ -389,7 +389,7 @@ declare interface coop$rchain$casper$protocol$IBlockQuery {
 }
 
 declare class coop$rchain$casper$protocol$BlockQuery
-  mixins coop$rchain$casper$protocol$IBlockQuery {
+  implements coop$rchain$casper$protocol$IBlockQuery {
   constructor(properties?: coop$rchain$casper$protocol$IBlockQuery): this;
   hash: string;
   static create(
@@ -432,7 +432,7 @@ declare interface coop$rchain$casper$protocol$IBlocksQuery {
 }
 
 declare class coop$rchain$casper$protocol$BlocksQuery
-  mixins coop$rchain$casper$protocol$IBlocksQuery {
+  implements coop$rchain$casper$protocol$IBlocksQuery {
   constructor(properties?: coop$rchain$casper$protocol$IBlocksQuery): this;
   depth: number;
   static create(
@@ -476,7 +476,7 @@ declare interface coop$rchain$casper$protocol$IDataAtNameQuery {
 }
 
 declare class coop$rchain$casper$protocol$DataAtNameQuery
-  mixins coop$rchain$casper$protocol$IDataAtNameQuery {
+  implements coop$rchain$casper$protocol$IDataAtNameQuery {
   constructor(properties?: coop$rchain$casper$protocol$IDataAtNameQuery): this;
   depth: number;
   name: IPar | null;
@@ -521,7 +521,7 @@ declare interface coop$rchain$casper$protocol$IContinuationAtNameQuery {
 }
 
 declare class coop$rchain$casper$protocol$ContinuationAtNameQuery
-  mixins coop$rchain$casper$protocol$IContinuationAtNameQuery {
+  implements coop$rchain$casper$protocol$IContinuationAtNameQuery {
   constructor(
     properties?: coop$rchain$casper$protocol$IContinuationAtNameQuery
   ): this;
@@ -567,7 +567,7 @@ declare interface coop$rchain$casper$protocol$IDeployServiceResponse {
 }
 
 declare class coop$rchain$casper$protocol$DeployServiceResponse
-  mixins coop$rchain$casper$protocol$IDeployServiceResponse {
+  implements coop$rchain$casper$protocol$IDeployServiceResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IDeployServiceResponse
   ): this;
@@ -612,7 +612,7 @@ declare interface coop$rchain$casper$protocol$IMaybeBlockMessage {
 }
 
 declare class coop$rchain$casper$protocol$MaybeBlockMessage
-  mixins coop$rchain$casper$protocol$IMaybeBlockMessage {
+  implements coop$rchain$casper$protocol$IMaybeBlockMessage {
   constructor(
     properties?: coop$rchain$casper$protocol$IMaybeBlockMessage
   ): this;
@@ -657,7 +657,7 @@ declare interface coop$rchain$casper$protocol$IBlockQueryResponse {
 }
 
 declare class coop$rchain$casper$protocol$BlockQueryResponse
-  mixins coop$rchain$casper$protocol$IBlockQueryResponse {
+  implements coop$rchain$casper$protocol$IBlockQueryResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IBlockQueryResponse
   ): this;
@@ -703,7 +703,7 @@ declare interface coop$rchain$casper$protocol$IVisualizeDagQuery {
 }
 
 declare class coop$rchain$casper$protocol$VisualizeDagQuery
-  mixins coop$rchain$casper$protocol$IVisualizeDagQuery {
+  implements coop$rchain$casper$protocol$IVisualizeDagQuery {
   constructor(
     properties?: coop$rchain$casper$protocol$IVisualizeDagQuery
   ): this;
@@ -749,7 +749,7 @@ declare interface coop$rchain$casper$protocol$IVisualizeBlocksResponse {
 }
 
 declare class coop$rchain$casper$protocol$VisualizeBlocksResponse
-  mixins coop$rchain$casper$protocol$IVisualizeBlocksResponse {
+  implements coop$rchain$casper$protocol$IVisualizeBlocksResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IVisualizeBlocksResponse
   ): this;
@@ -795,7 +795,7 @@ declare interface coop$rchain$casper$protocol$IListeningNameDataResponse {
 }
 
 declare class coop$rchain$casper$protocol$ListeningNameDataResponse
-  mixins coop$rchain$casper$protocol$IListeningNameDataResponse {
+  implements coop$rchain$casper$protocol$IListeningNameDataResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IListeningNameDataResponse
   ): this;
@@ -844,7 +844,7 @@ declare interface coop$rchain$casper$protocol$IListeningNameContinuationResponse
 }
 
 declare class coop$rchain$casper$protocol$ListeningNameContinuationResponse
-  mixins coop$rchain$casper$protocol$IListeningNameContinuationResponse {
+  implements coop$rchain$casper$protocol$IListeningNameContinuationResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IListeningNameContinuationResponse
   ): this;
@@ -891,7 +891,7 @@ declare interface coop$rchain$casper$protocol$IDataWithBlockInfo {
 }
 
 declare class coop$rchain$casper$protocol$DataWithBlockInfo
-  mixins coop$rchain$casper$protocol$IDataWithBlockInfo {
+  implements coop$rchain$casper$protocol$IDataWithBlockInfo {
   constructor(
     properties?: coop$rchain$casper$protocol$IDataWithBlockInfo
   ): this;
@@ -940,7 +940,7 @@ declare interface coop$rchain$casper$protocol$IContinuationsWithBlockInfo {
 }
 
 declare class coop$rchain$casper$protocol$ContinuationsWithBlockInfo
-  mixins coop$rchain$casper$protocol$IContinuationsWithBlockInfo {
+  implements coop$rchain$casper$protocol$IContinuationsWithBlockInfo {
   constructor(
     properties?: coop$rchain$casper$protocol$IContinuationsWithBlockInfo
   ): this;
@@ -987,7 +987,7 @@ declare interface coop$rchain$casper$protocol$IWaitingContinuationInfo {
 }
 
 declare class coop$rchain$casper$protocol$WaitingContinuationInfo
-  mixins coop$rchain$casper$protocol$IWaitingContinuationInfo {
+  implements coop$rchain$casper$protocol$IWaitingContinuationInfo {
   constructor(
     properties?: coop$rchain$casper$protocol$IWaitingContinuationInfo
   ): this;
@@ -1043,7 +1043,7 @@ declare interface coop$rchain$casper$protocol$IBlockInfoWithoutTuplespace {
 }
 
 declare class coop$rchain$casper$protocol$BlockInfoWithoutTuplespace
-  mixins coop$rchain$casper$protocol$IBlockInfoWithoutTuplespace {
+  implements coop$rchain$casper$protocol$IBlockInfoWithoutTuplespace {
   constructor(
     properties?: coop$rchain$casper$protocol$IBlockInfoWithoutTuplespace
   ): this;
@@ -1112,7 +1112,7 @@ declare interface coop$rchain$casper$protocol$IBlockInfo {
 }
 
 declare class coop$rchain$casper$protocol$BlockInfo
-  mixins coop$rchain$casper$protocol$IBlockInfo {
+  implements coop$rchain$casper$protocol$IBlockInfo {
   constructor(properties?: coop$rchain$casper$protocol$IBlockInfo): this;
   blockHash: string;
   blockSize: string;
@@ -1171,7 +1171,7 @@ declare interface coop$rchain$casper$protocol$IPrivateNamePreviewQuery {
 }
 
 declare class coop$rchain$casper$protocol$PrivateNamePreviewQuery
-  mixins coop$rchain$casper$protocol$IPrivateNamePreviewQuery {
+  implements coop$rchain$casper$protocol$IPrivateNamePreviewQuery {
   constructor(
     properties?: coop$rchain$casper$protocol$IPrivateNamePreviewQuery
   ): this;
@@ -1218,7 +1218,7 @@ declare interface coop$rchain$casper$protocol$IPrivateNamePreviewResponse {
 }
 
 declare class coop$rchain$casper$protocol$PrivateNamePreviewResponse
-  mixins coop$rchain$casper$protocol$IPrivateNamePreviewResponse {
+  implements coop$rchain$casper$protocol$IPrivateNamePreviewResponse {
   constructor(
     properties?: coop$rchain$casper$protocol$IPrivateNamePreviewResponse
   ): this;
@@ -1264,7 +1264,7 @@ declare interface coop$rchain$casper$protocol$IApprovedBlockCandidate {
 }
 
 declare class coop$rchain$casper$protocol$ApprovedBlockCandidate
-  mixins coop$rchain$casper$protocol$IApprovedBlockCandidate {
+  implements coop$rchain$casper$protocol$IApprovedBlockCandidate {
   constructor(
     properties?: coop$rchain$casper$protocol$IApprovedBlockCandidate
   ): this;
@@ -1312,7 +1312,7 @@ declare interface coop$rchain$casper$protocol$IUnapprovedBlock {
 }
 
 declare class coop$rchain$casper$protocol$UnapprovedBlock
-  mixins coop$rchain$casper$protocol$IUnapprovedBlock {
+  implements coop$rchain$casper$protocol$IUnapprovedBlock {
   constructor(properties?: coop$rchain$casper$protocol$IUnapprovedBlock): this;
   candidate: coop$rchain$casper$protocol$IApprovedBlockCandidate | null;
   timestamp: number | Long;
@@ -1359,7 +1359,7 @@ declare interface coop$rchain$casper$protocol$ISignature {
 }
 
 declare class coop$rchain$casper$protocol$Signature
-  mixins coop$rchain$casper$protocol$ISignature {
+  implements coop$rchain$casper$protocol$ISignature {
   constructor(properties?: coop$rchain$casper$protocol$ISignature): this;
   publicKey: Uint8Array;
   algorithm: string;
@@ -1405,7 +1405,7 @@ declare interface coop$rchain$casper$protocol$IBlockApproval {
 }
 
 declare class coop$rchain$casper$protocol$BlockApproval
-  mixins coop$rchain$casper$protocol$IBlockApproval {
+  implements coop$rchain$casper$protocol$IBlockApproval {
   constructor(properties?: coop$rchain$casper$protocol$IBlockApproval): this;
   candidate: coop$rchain$casper$protocol$IApprovedBlockCandidate | null;
   sig: coop$rchain$casper$protocol$ISignature | null;
@@ -1450,7 +1450,7 @@ declare interface coop$rchain$casper$protocol$IApprovedBlock {
 }
 
 declare class coop$rchain$casper$protocol$ApprovedBlock
-  mixins coop$rchain$casper$protocol$IApprovedBlock {
+  implements coop$rchain$casper$protocol$IApprovedBlock {
   constructor(properties?: coop$rchain$casper$protocol$IApprovedBlock): this;
   candidate: coop$rchain$casper$protocol$IApprovedBlockCandidate | null;
   sigs: coop$rchain$casper$protocol$ISignature[];
@@ -1494,7 +1494,7 @@ declare interface coop$rchain$casper$protocol$IApprovedBlockRequest {
 }
 
 declare class coop$rchain$casper$protocol$ApprovedBlockRequest
-  mixins coop$rchain$casper$protocol$IApprovedBlockRequest {
+  implements coop$rchain$casper$protocol$IApprovedBlockRequest {
   constructor(
     properties?: coop$rchain$casper$protocol$IApprovedBlockRequest
   ): this;
@@ -1540,7 +1540,7 @@ declare interface coop$rchain$casper$protocol$INoApprovedBlockAvailable {
 }
 
 declare class coop$rchain$casper$protocol$NoApprovedBlockAvailable
-  mixins coop$rchain$casper$protocol$INoApprovedBlockAvailable {
+  implements coop$rchain$casper$protocol$INoApprovedBlockAvailable {
   constructor(
     properties?: coop$rchain$casper$protocol$INoApprovedBlockAvailable
   ): this;
@@ -1595,7 +1595,7 @@ declare interface coop$rchain$casper$protocol$IBlockMessage {
 }
 
 declare class coop$rchain$casper$protocol$BlockMessage
-  mixins coop$rchain$casper$protocol$IBlockMessage {
+  implements coop$rchain$casper$protocol$IBlockMessage {
   constructor(properties?: coop$rchain$casper$protocol$IBlockMessage): this;
   blockHash: Uint8Array;
   header: coop$rchain$casper$protocol$IHeader | null;
@@ -1654,7 +1654,7 @@ declare interface coop$rchain$casper$protocol$IBlockMetadataInternal {
 }
 
 declare class coop$rchain$casper$protocol$BlockMetadataInternal
-  mixins coop$rchain$casper$protocol$IBlockMetadataInternal {
+  implements coop$rchain$casper$protocol$IBlockMetadataInternal {
   constructor(
     properties?: coop$rchain$casper$protocol$IBlockMetadataInternal
   ): this;
@@ -1712,7 +1712,7 @@ declare interface coop$rchain$casper$protocol$IHeader {
 }
 
 declare class coop$rchain$casper$protocol$Header
-  mixins coop$rchain$casper$protocol$IHeader {
+  implements coop$rchain$casper$protocol$IHeader {
   constructor(properties?: coop$rchain$casper$protocol$IHeader): this;
   parentsHashList: Uint8Array[];
   postStateHash: Uint8Array;
@@ -1764,7 +1764,7 @@ declare interface coop$rchain$casper$protocol$IProcessedDeploy {
 }
 
 declare class coop$rchain$casper$protocol$ProcessedDeploy
-  mixins coop$rchain$casper$protocol$IProcessedDeploy {
+  implements coop$rchain$casper$protocol$IProcessedDeploy {
   constructor(properties?: coop$rchain$casper$protocol$IProcessedDeploy): this;
   deploy: coop$rchain$casper$protocol$IDeployData | null;
   cost: IPCost | null;
@@ -1812,7 +1812,7 @@ declare interface coop$rchain$casper$protocol$IBody {
 }
 
 declare class coop$rchain$casper$protocol$Body
-  mixins coop$rchain$casper$protocol$IBody {
+  implements coop$rchain$casper$protocol$IBody {
   constructor(properties?: coop$rchain$casper$protocol$IBody): this;
   state: coop$rchain$casper$protocol$IRChainState | null;
   deploys: coop$rchain$casper$protocol$IProcessedDeploy[];
@@ -1858,7 +1858,7 @@ declare interface coop$rchain$casper$protocol$IJustification {
 }
 
 declare class coop$rchain$casper$protocol$Justification
-  mixins coop$rchain$casper$protocol$IJustification {
+  implements coop$rchain$casper$protocol$IJustification {
   constructor(properties?: coop$rchain$casper$protocol$IJustification): this;
   validator: Uint8Array;
   latestBlockHash: Uint8Array;
@@ -1905,7 +1905,7 @@ declare interface coop$rchain$casper$protocol$IRChainState {
 }
 
 declare class coop$rchain$casper$protocol$RChainState
-  mixins coop$rchain$casper$protocol$IRChainState {
+  implements coop$rchain$casper$protocol$IRChainState {
   constructor(properties?: coop$rchain$casper$protocol$IRChainState): this;
   preStateHash: Uint8Array;
   postStateHash: Uint8Array;
@@ -1953,7 +1953,7 @@ declare interface coop$rchain$casper$protocol$IEvent {
 }
 
 declare class coop$rchain$casper$protocol$Event
-  mixins coop$rchain$casper$protocol$IEvent {
+  implements coop$rchain$casper$protocol$IEvent {
   constructor(properties?: coop$rchain$casper$protocol$IEvent): this;
   produce: coop$rchain$casper$protocol$IProduceEvent | null;
   consume: coop$rchain$casper$protocol$IConsumeEvent | null;
@@ -2001,7 +2001,7 @@ declare interface coop$rchain$casper$protocol$IProduceEvent {
 }
 
 declare class coop$rchain$casper$protocol$ProduceEvent
-  mixins coop$rchain$casper$protocol$IProduceEvent {
+  implements coop$rchain$casper$protocol$IProduceEvent {
   constructor(properties?: coop$rchain$casper$protocol$IProduceEvent): this;
   channelsHash: Uint8Array;
   hash: Uint8Array;
@@ -2048,7 +2048,7 @@ declare interface coop$rchain$casper$protocol$IConsumeEvent {
 }
 
 declare class coop$rchain$casper$protocol$ConsumeEvent
-  mixins coop$rchain$casper$protocol$IConsumeEvent {
+  implements coop$rchain$casper$protocol$IConsumeEvent {
   constructor(properties?: coop$rchain$casper$protocol$IConsumeEvent): this;
   channelsHashes: Uint8Array[];
   hash: Uint8Array;
@@ -2094,7 +2094,7 @@ declare interface coop$rchain$casper$protocol$ICommEvent {
 }
 
 declare class coop$rchain$casper$protocol$CommEvent
-  mixins coop$rchain$casper$protocol$ICommEvent {
+  implements coop$rchain$casper$protocol$ICommEvent {
   constructor(properties?: coop$rchain$casper$protocol$ICommEvent): this;
   consume: coop$rchain$casper$protocol$IConsumeEvent | null;
   produces: coop$rchain$casper$protocol$IProduceEvent[];
@@ -2139,7 +2139,7 @@ declare interface coop$rchain$casper$protocol$IBond {
 }
 
 declare class coop$rchain$casper$protocol$Bond
-  mixins coop$rchain$casper$protocol$IBond {
+  implements coop$rchain$casper$protocol$IBond {
   constructor(properties?: coop$rchain$casper$protocol$IBond): this;
   validator: Uint8Array;
   stake: number | Long;
@@ -2189,7 +2189,7 @@ export interface IPar {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class Par mixins IPar {
+declare export class Par implements IPar {
   constructor(properties?: IPar): this;
   sends: ISend[];
   receives: IReceive[];
@@ -2229,7 +2229,7 @@ export interface ITaggedContinuation {
   +par_body?: IParWithRandom | null;
   +scala_body_ref?: number | Long | null;
 }
-declare export class TaggedContinuation mixins ITaggedContinuation {
+declare export class TaggedContinuation implements ITaggedContinuation {
   constructor(properties?: ITaggedContinuation): this;
   par_body: IParWithRandom | null;
   scala_body_ref: number | Long;
@@ -2270,7 +2270,7 @@ export interface IParWithRandom {
   +body?: IPar | null;
   +randomState?: Uint8Array | null;
 }
-declare export class ParWithRandom mixins IParWithRandom {
+declare export class ParWithRandom implements IParWithRandom {
   constructor(properties?: IParWithRandom): this;
   body: IPar | null;
   randomState: Uint8Array;
@@ -2307,7 +2307,7 @@ declare export class ParWithRandom mixins IParWithRandom {
 export interface IPCost {
   +cost?: number | Long | null;
 }
-declare export class PCost mixins IPCost {
+declare export class PCost implements IPCost {
   constructor(properties?: IPCost): this;
   cost: number | Long;
   static create(properties?: IPCost): PCost;
@@ -2338,7 +2338,7 @@ export interface IListParWithRandom {
   +pars?: IPar[] | null;
   +randomState?: Uint8Array | null;
 }
-declare export class ListParWithRandom mixins IListParWithRandom {
+declare export class ListParWithRandom implements IListParWithRandom {
   constructor(properties?: IListParWithRandom): this;
   pars: IPar[];
   randomState: Uint8Array;
@@ -2379,7 +2379,7 @@ export interface IVar {
   +free_var?: number | null;
   +wildcard?: Var$IWildcardMsg | null;
 }
-declare export class Var mixins IVar {
+declare export class Var implements IVar {
   constructor(properties?: IVar): this;
   bound_var: number;
   free_var: number;
@@ -2416,7 +2416,7 @@ declare var npm$namespace$Var: {
 };
 declare interface Var$IWildcardMsg {}
 
-declare class Var$WildcardMsg mixins Var$IWildcardMsg {
+declare class Var$WildcardMsg implements Var$IWildcardMsg {
   constructor(properties?: Var$IWildcardMsg): this;
   static create(properties?: Var$IWildcardMsg): Var$WildcardMsg;
   static encode(
@@ -2455,7 +2455,7 @@ export interface IBundle {
   +writeFlag?: boolean | null;
   +readFlag?: boolean | null;
 }
-declare export class Bundle mixins IBundle {
+declare export class Bundle implements IBundle {
   constructor(properties?: IBundle): this;
   body: IPar | null;
   writeFlag: boolean;
@@ -2491,7 +2491,7 @@ export interface ISend {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class Send mixins ISend {
+declare export class Send implements ISend {
   constructor(properties?: ISend): this;
   chan: IPar | null;
   data: IPar[];
@@ -2528,7 +2528,7 @@ export interface IReceiveBind {
   +remainder?: IVar | null;
   +freeCount?: number | null;
 }
-declare export class ReceiveBind mixins IReceiveBind {
+declare export class ReceiveBind implements IReceiveBind {
   constructor(properties?: IReceiveBind): this;
   patterns: IPar[];
   source: IPar | null;
@@ -2569,7 +2569,7 @@ export interface IBindPattern {
   +remainder?: IVar | null;
   +freeCount?: number | null;
 }
-declare export class BindPattern mixins IBindPattern {
+declare export class BindPattern implements IBindPattern {
   constructor(properties?: IBindPattern): this;
   patterns: IPar[];
   remainder: IVar | null;
@@ -2607,7 +2607,7 @@ declare export class BindPattern mixins IBindPattern {
 export interface IListBindPatterns {
   +patterns?: IBindPattern[] | null;
 }
-declare export class ListBindPatterns mixins IListBindPatterns {
+declare export class ListBindPatterns implements IListBindPatterns {
   constructor(properties?: IListBindPatterns): this;
   patterns: IBindPattern[];
   static create(properties?: IListBindPatterns): ListBindPatterns;
@@ -2650,7 +2650,7 @@ export interface IReceive {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class Receive mixins IReceive {
+declare export class Receive implements IReceive {
   constructor(properties?: IReceive): this;
   binds: IReceiveBind[];
   body: IPar | null;
@@ -2691,7 +2691,7 @@ export interface INew {
   +uri?: string[] | null;
   +locallyFree?: Uint8Array | null;
 }
-declare export class New mixins INew {
+declare export class New implements INew {
   constructor(properties?: INew): this;
   bindCount: number;
   p: IPar | null;
@@ -2726,7 +2726,7 @@ export interface IMatchCase {
   +source?: IPar | null;
   +freeCount?: number | null;
 }
-declare export class MatchCase mixins IMatchCase {
+declare export class MatchCase implements IMatchCase {
   constructor(properties?: IMatchCase): this;
   pattern: IPar | null;
   source: IPar | null;
@@ -2767,7 +2767,7 @@ export interface IMatch {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class Match mixins IMatch {
+declare export class Match implements IMatch {
   constructor(properties?: IMatch): this;
   target: IPar | null;
   cases: IMatchCase[];
@@ -2828,7 +2828,7 @@ export interface IExpr {
   +e_plus_plus_body?: IEPlusPlus | null;
   +e_minus_minus_body?: IEMinusMinus | null;
 }
-declare export class Expr mixins IExpr {
+declare export class Expr implements IExpr {
   constructor(properties?: IExpr): this;
   g_bool: boolean;
   g_int: number | Long;
@@ -2919,7 +2919,7 @@ export interface IEList {
   +connective_used?: boolean | null;
   +remainder?: IVar | null;
 }
-declare export class EList mixins IEList {
+declare export class EList implements IEList {
   constructor(properties?: IEList): this;
   ps: IPar[];
   locallyFree: Uint8Array;
@@ -2954,7 +2954,7 @@ export interface IETuple {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class ETuple mixins IETuple {
+declare export class ETuple implements IETuple {
   constructor(properties?: IETuple): this;
   ps: IPar[];
   locallyFree: Uint8Array;
@@ -2989,7 +2989,7 @@ export interface IESet {
   +connective_used?: boolean | null;
   +remainder?: IVar | null;
 }
-declare export class ESet mixins IESet {
+declare export class ESet implements IESet {
   constructor(properties?: IESet): this;
   ps: IPar[];
   locallyFree: Uint8Array;
@@ -3025,7 +3025,7 @@ export interface IEMap {
   +connective_used?: boolean | null;
   +remainder?: IVar | null;
 }
-declare export class EMap mixins IEMap {
+declare export class EMap implements IEMap {
   constructor(properties?: IEMap): this;
   kvs: IKeyValuePair[];
   locallyFree: Uint8Array;
@@ -3062,7 +3062,7 @@ export interface IEMethod {
   +locallyFree?: Uint8Array | null;
   +connective_used?: boolean | null;
 }
-declare export class EMethod mixins IEMethod {
+declare export class EMethod implements IEMethod {
   constructor(properties?: IEMethod): this;
   methodName: string;
   target: IPar | null;
@@ -3100,7 +3100,7 @@ export interface IKeyValuePair {
   +key?: IPar | null;
   +value?: IPar | null;
 }
-declare export class KeyValuePair mixins IKeyValuePair {
+declare export class KeyValuePair implements IKeyValuePair {
   constructor(properties?: IKeyValuePair): this;
   key: IPar | null;
   value: IPar | null;
@@ -3137,7 +3137,7 @@ declare export class KeyValuePair mixins IKeyValuePair {
 export interface IEVar {
   +v?: IVar | null;
 }
-declare export class EVar mixins IEVar {
+declare export class EVar implements IEVar {
   constructor(properties?: IEVar): this;
   v: IVar | null;
   static create(properties?: IEVar): EVar;
@@ -3167,7 +3167,7 @@ declare export class EVar mixins IEVar {
 export interface IENot {
   +p?: IPar | null;
 }
-declare export class ENot mixins IENot {
+declare export class ENot implements IENot {
   constructor(properties?: IENot): this;
   p: IPar | null;
   static create(properties?: IENot): ENot;
@@ -3197,7 +3197,7 @@ declare export class ENot mixins IENot {
 export interface IENeg {
   +p?: IPar | null;
 }
-declare export class ENeg mixins IENeg {
+declare export class ENeg implements IENeg {
   constructor(properties?: IENeg): this;
   p: IPar | null;
   static create(properties?: IENeg): ENeg;
@@ -3228,7 +3228,7 @@ export interface IEMult {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EMult mixins IEMult {
+declare export class EMult implements IEMult {
   constructor(properties?: IEMult): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3260,7 +3260,7 @@ export interface IEDiv {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EDiv mixins IEDiv {
+declare export class EDiv implements IEDiv {
   constructor(properties?: IEDiv): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3292,7 +3292,7 @@ export interface IEPlus {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EPlus mixins IEPlus {
+declare export class EPlus implements IEPlus {
   constructor(properties?: IEPlus): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3324,7 +3324,7 @@ export interface IEMinus {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EMinus mixins IEMinus {
+declare export class EMinus implements IEMinus {
   constructor(properties?: IEMinus): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3356,7 +3356,7 @@ export interface IELt {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class ELt mixins IELt {
+declare export class ELt implements IELt {
   constructor(properties?: IELt): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3388,7 +3388,7 @@ export interface IELte {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class ELte mixins IELte {
+declare export class ELte implements IELte {
   constructor(properties?: IELte): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3420,7 +3420,7 @@ export interface IEGt {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EGt mixins IEGt {
+declare export class EGt implements IEGt {
   constructor(properties?: IEGt): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3452,7 +3452,7 @@ export interface IEGte {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EGte mixins IEGte {
+declare export class EGte implements IEGte {
   constructor(properties?: IEGte): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3484,7 +3484,7 @@ export interface IEEq {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EEq mixins IEEq {
+declare export class EEq implements IEEq {
   constructor(properties?: IEEq): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3516,7 +3516,7 @@ export interface IENeq {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class ENeq mixins IENeq {
+declare export class ENeq implements IENeq {
   constructor(properties?: IENeq): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3548,7 +3548,7 @@ export interface IEAnd {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EAnd mixins IEAnd {
+declare export class EAnd implements IEAnd {
   constructor(properties?: IEAnd): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3580,7 +3580,7 @@ export interface IEOr {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EOr mixins IEOr {
+declare export class EOr implements IEOr {
   constructor(properties?: IEOr): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3612,7 +3612,7 @@ export interface IEMatches {
   +target?: IPar | null;
   +pattern?: IPar | null;
 }
-declare export class EMatches mixins IEMatches {
+declare export class EMatches implements IEMatches {
   constructor(properties?: IEMatches): this;
   target: IPar | null;
   pattern: IPar | null;
@@ -3650,7 +3650,7 @@ export interface IEPercentPercent {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EPercentPercent mixins IEPercentPercent {
+declare export class EPercentPercent implements IEPercentPercent {
   constructor(properties?: IEPercentPercent): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3690,7 +3690,7 @@ export interface IEPlusPlus {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EPlusPlus mixins IEPlusPlus {
+declare export class EPlusPlus implements IEPlusPlus {
   constructor(properties?: IEPlusPlus): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3728,7 +3728,7 @@ export interface IEMinusMinus {
   +p1?: IPar | null;
   +p2?: IPar | null;
 }
-declare export class EMinusMinus mixins IEMinusMinus {
+declare export class EMinusMinus implements IEMinusMinus {
   constructor(properties?: IEMinusMinus): this;
   p1: IPar | null;
   p2: IPar | null;
@@ -3773,7 +3773,7 @@ export interface IConnective {
   +conn_uri?: boolean | null;
   +conn_byte_array?: boolean | null;
 }
-declare export class Connective mixins IConnective {
+declare export class Connective implements IConnective {
   constructor(properties?: IConnective): this;
   conn_and_body: IConnectiveBody | null;
   conn_or_body: IConnectiveBody | null;
@@ -3828,7 +3828,7 @@ export interface IVarRef {
   +index?: number | null;
   +depth?: number | null;
 }
-declare export class VarRef mixins IVarRef {
+declare export class VarRef implements IVarRef {
   constructor(properties?: IVarRef): this;
   index: number;
   depth: number;
@@ -3859,7 +3859,7 @@ declare export class VarRef mixins IVarRef {
 export interface IConnectiveBody {
   +ps?: IPar[] | null;
 }
-declare export class ConnectiveBody mixins IConnectiveBody {
+declare export class ConnectiveBody implements IConnectiveBody {
   constructor(properties?: IConnectiveBody): this;
   ps: IPar[];
   static create(properties?: IConnectiveBody): ConnectiveBody;
@@ -3895,7 +3895,7 @@ declare export class ConnectiveBody mixins IConnectiveBody {
 export interface IGPrivate {
   +id?: Uint8Array | null;
 }
-declare export class GPrivate mixins IGPrivate {
+declare export class GPrivate implements IGPrivate {
   constructor(properties?: IGPrivate): this;
   id: Uint8Array;
   static create(properties?: IGPrivate): GPrivate;
@@ -3932,7 +3932,7 @@ export interface IEitherAny {
   +type_url?: string | null;
   +value?: Uint8Array | null;
 }
-declare export class EitherAny mixins IEitherAny {
+declare export class EitherAny implements IEitherAny {
   constructor(properties?: IEitherAny): this;
   type_url: string;
   value: Uint8Array;
@@ -3969,7 +3969,7 @@ declare export class EitherAny mixins IEitherAny {
 export interface IEitherError {
   +messages?: string[] | null;
 }
-declare export class EitherError mixins IEitherError {
+declare export class EitherError implements IEitherError {
   constructor(properties?: IEitherError): this;
   messages: string[];
   static create(properties?: IEitherError): EitherError;
@@ -4005,7 +4005,7 @@ declare export class EitherError mixins IEitherError {
 export interface IEitherSuccess {
   +response?: IEitherAny | null;
 }
-declare export class EitherSuccess mixins IEitherSuccess {
+declare export class EitherSuccess implements IEitherSuccess {
   constructor(properties?: IEitherSuccess): this;
   response: IEitherAny | null;
   static create(properties?: IEitherSuccess): EitherSuccess;
@@ -4042,7 +4042,7 @@ export interface IEither {
   +error?: IEitherError | null;
   +success?: IEitherSuccess | null;
 }
-declare export class Either mixins IEither {
+declare export class Either implements IEither {
   constructor(properties?: IEither): this;
   error: IEitherError | null;
   success: IEitherSuccess | null;
@@ -4083,7 +4083,7 @@ declare var npm$namespace$google$protobuf: {
 };
 declare interface google$protobuf$IEmpty {}
 
-declare class google$protobuf$Empty mixins google$protobuf$IEmpty {
+declare class google$protobuf$Empty implements google$protobuf$IEmpty {
   constructor(properties?: google$protobuf$IEmpty): this;
   static create(properties?: google$protobuf$IEmpty): google$protobuf$Empty;
   static encode(
@@ -4123,7 +4123,7 @@ declare interface google$protobuf$IAny {
   +value?: Uint8Array | null;
 }
 
-declare class google$protobuf$Any mixins google$protobuf$IAny {
+declare class google$protobuf$Any implements google$protobuf$IAny {
   constructor(properties?: google$protobuf$IAny): this;
   type_url: string;
   value: Uint8Array;
