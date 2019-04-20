@@ -15,7 +15,7 @@ rnode on `localhost`, you can get current block info:
 
 ```js
 const grpc = require('grpc');
-const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
+const { RNode } = require('rchain-api');
 
 const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
 rnode.showBlocks()
