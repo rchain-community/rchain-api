@@ -18,7 +18,7 @@ const grpc = require('grpc');
 const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
 
 const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
-rnode.showBlocks()
+rnode.getBlocks()
   .then((blocks) => { assert.ok(blocks[0].blockHash); });
 ```
 

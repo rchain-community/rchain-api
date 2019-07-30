@@ -94,7 +94,7 @@ exports.RNode = RNode;
  * const grpc = require('grpc');
  *
  * const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
- * rnode.showBlocks().then((blocks) => { assert.ok(blocks[0].blockHash); });
+ * rnode.getBlocks().then((blocks) => { assert.ok(blocks[0].blockHash); });
  *
  * // Deploy a simple Rholang process, given a key to authorize payment.
  * const term = '@"world"!("Hello!")';
@@ -333,13 +333,13 @@ function RNode(
    * @return BlockInfo structure that will include all metadata and also includes Tuplespace
    * @throws Error if the hash is blank or does not correspond to an existing block
    */
-  async function showBlock(blockHash /*: string */) {
+  async function getBlock(blockHash /*: string */) {
     if (blockHash.trim().length === 0 || blockHash === null || blockHash === undefined) { throw new Error('ERROR: blockHash is blank'); }
     if (typeof blockHash !== 'string') { throw new Error('ERROR: blockHash must be a string value'); }
 
     const response = await either(
       BlockQueryResponse,
-      send(f => client.showBlock({ hash: blockHash }, f)),
+      send(f => client.getBlock({ hash: blockHash }, f)),
     );
     return response.blockInfo;
   }
@@ -354,10 +354,10 @@ function RNode(
    * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function showBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
+  function getBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
-    return sendThenReceiveStream(client.showBlocks({ depth: blockDepth }))
+    return sendThenReceiveStream(client.getBlocks({ depth: blockDepth }))
       .then((parts) => {
         if (parts.length === 0) {
           throw new Error('ERROR: Failed to retrieve the requested blocks');
@@ -375,8 +375,8 @@ function RNode(
     listenForContinuationAtName,
     listenForContinuationAtPrivateName,
     listenForContinuationAtPublicName,
-    showBlock,
-    showBlocks,
+    getBlock,
+    getBlocks,
     previewPrivateNames,
   });
 }

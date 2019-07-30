@@ -38,9 +38,9 @@
         -   [Parameters][35]
     -   [previewPrivateNames][36]
         -   [Parameters][37]
-    -   [showBlock][38]
+    -   [getBlock][38]
         -   [Parameters][39]
-    -   [showBlocks][40]
+    -   [getBlocks][40]
         -   [Parameters][41]
 -   [RHOCore][42]
     -   [Examples][43]
@@ -340,7 +340,7 @@ const { RNode, REV, Ed25519keyPair, Hex } = require('rchain-api');
 const grpc = require('grpc');
 
 const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
-rnode.showBlocks().then((blocks) => { assert.ok(blocks[0].blockHash); });
+rnode.getBlocks().then((blocks) => { assert.ok(blocks[0].blockHash); });
 
 // Deploy a simple Rholang process, given a key to authorize payment.
 const term = '@"world"!("Hello!")';
@@ -435,7 +435,7 @@ Ask rnode to compute ids of top level private names, given deploy parameters.
 
 Returns **[Promise][109]&lt;[Array][113]&lt;[Buffer][96]>>** a byte Buffer for each id
 
-### showBlock
+### getBlock
 
 [src/rnodeAPI.js:336-345][117]
 
@@ -450,7 +450,7 @@ Retrieve a block with the tuplespace for a specific block hash
 
 Returns **any** BlockInfo structure that will include all metadata and also includes Tuplespace
 
-### showBlocks
+### getBlocks
 
 [src/rnodeAPI.js:357-367][118]
 
@@ -881,11 +881,11 @@ Returns **[boolean][91]**
 
 [37]: #parameters-13
 
-[38]: #showblock
+[38]: #getBlock
 
 [39]: #parameters-14
 
-[40]: #showblocks
+[40]: #getBlocks
 
 [41]: #parameters-15
 

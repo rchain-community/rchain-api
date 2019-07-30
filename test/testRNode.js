@@ -83,13 +83,13 @@ function netTests({ grpc, clock, rng }) {
       })
         .catch((oops) => { test.fail(oops.message); test.end(); });
     },
-    'test showBlocks': (test) => {
+    'test getBlocks': (test) => {
       const expected = [
         'parentsHashList', 'blockHash', 'blockSize', 'blockNumber', 'version',
         'deployCount', 'tupleSpaceHash', 'timestamp', 'faultTolerance',
         'mainParentHash', 'sender',
       ];
-      localNode().showBlocks()
+      localNode().getBlocks()
         .then((actual) => {
           test.equal(actual.length > 0, true);
           test.deepEqual(Object.keys(actual[0]), expected);
@@ -99,7 +99,7 @@ function netTests({ grpc, clock, rng }) {
     },
     'get block by hash - error test': (test) => {
       const blockHash = 'thisshouldbreak';
-      localNode().showBlock(blockHash).catch((err) => {
+      localNode().getBlock(blockHash).catch((err) => {
         test.deepEqual(err.message, 'Error: Failure to find block with hash thisshouldbreak');
         test.end();
       })
@@ -156,7 +156,7 @@ function grpcMock() {
   function DeployService(_hostPort /*: Object */, _chan /*: Object */) {
     return Object.freeze({
       doDeploy(_dd /*: Object */, _auto /*: boolean */ = false) { return 'Success!'; },
-      showBlocks(_depth /*: number */) {
+      getBlocks(_depth /*: number */) {
         const block4 = {
           value: BlockInfoWithoutTuplespace
             .encode({ blockHash: 'deadbeef' }).finish(),
