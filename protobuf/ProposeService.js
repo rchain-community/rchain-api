@@ -45,6 +45,261 @@ $root.coop = (function() {
                  */
                 var protocol = {};
 
+                protocol.ProposeService = (function() {
+
+                    /**
+                     * Constructs a new ProposeService service.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ProposeService
+                     * @extends $protobuf.rpc.Service
+                     * @constructor
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     */
+                    function ProposeService(rpcImpl, requestDelimited, responseDelimited) {
+                        $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+                    }
+
+                    (ProposeService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = ProposeService;
+
+                    /**
+                     * Creates new ProposeService service using the specified rpc implementation.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @static
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     * @returns {ProposeService} RPC service. Useful where requests and/or responses are streamed.
+                     */
+                    ProposeService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+                        return new this(rpcImpl, requestDelimited, responseDelimited);
+                    };
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.ProposeService#propose}.
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @typedef proposeCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls propose.
+                     * @function propose
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} request PrintUnmatchedSendsQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.ProposeService.proposeCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(ProposeService.prototype.propose = function propose(request, callback) {
+                        return this.rpcCall(propose, $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery, $root.Either, request, callback);
+                    }, "name", { value: "propose" });
+
+                    /**
+                     * Calls propose.
+                     * @function propose
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} request PrintUnmatchedSendsQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    return ProposeService;
+                })();
+
+                protocol.PrintUnmatchedSendsQuery = (function() {
+
+                    /**
+                     * Properties of a PrintUnmatchedSendsQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IPrintUnmatchedSendsQuery
+                     * @property {boolean|null} [printUnmatchedSends] PrintUnmatchedSendsQuery printUnmatchedSends
+                     */
+
+                    /**
+                     * Constructs a new PrintUnmatchedSendsQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a PrintUnmatchedSendsQuery.
+                     * @implements IPrintUnmatchedSendsQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery=} [properties] Properties to set
+                     */
+                    function PrintUnmatchedSendsQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * PrintUnmatchedSendsQuery printUnmatchedSends.
+                     * @member {boolean} printUnmatchedSends
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @instance
+                     */
+                    PrintUnmatchedSendsQuery.prototype.printUnmatchedSends = false;
+
+                    /**
+                     * Creates a new PrintUnmatchedSendsQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery instance
+                     */
+                    PrintUnmatchedSendsQuery.create = function create(properties) {
+                        return new PrintUnmatchedSendsQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified PrintUnmatchedSendsQuery message. Does not implicitly {@link coop.rchain.casper.protocol.PrintUnmatchedSendsQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrintUnmatchedSendsQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).bool(message.printUnmatchedSends);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified PrintUnmatchedSendsQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.PrintUnmatchedSendsQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrintUnmatchedSendsQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a PrintUnmatchedSendsQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrintUnmatchedSendsQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.printUnmatchedSends = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a PrintUnmatchedSendsQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrintUnmatchedSendsQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a PrintUnmatchedSendsQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrintUnmatchedSendsQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            if (typeof message.printUnmatchedSends !== "boolean")
+                                return "printUnmatchedSends: boolean expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a PrintUnmatchedSendsQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     */
+                    PrintUnmatchedSendsQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        if (object.printUnmatchedSends != null)
+                            message.printUnmatchedSends = Boolean(object.printUnmatchedSends);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a PrintUnmatchedSendsQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrintUnmatchedSendsQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.printUnmatchedSends = false;
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            object.printUnmatchedSends = message.printUnmatchedSends;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this PrintUnmatchedSendsQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrintUnmatchedSendsQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return PrintUnmatchedSendsQuery;
+                })();
+
                 protocol.HasBlockRequest = (function() {
 
                     /**

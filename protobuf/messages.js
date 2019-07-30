@@ -6473,10 +6473,9913 @@ $root.coop = (function() {
                     return Bond;
                 })();
 
+                protocol.DeployService = (function() {
+
+                    /**
+                     * Constructs a new DeployService service.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a DeployService
+                     * @extends $protobuf.rpc.Service
+                     * @constructor
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     */
+                    function DeployService(rpcImpl, requestDelimited, responseDelimited) {
+                        $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+                    }
+
+                    (DeployService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = DeployService;
+
+                    /**
+                     * Creates new DeployService service using the specified rpc implementation.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @static
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     * @returns {DeployService} RPC service. Useful where requests and/or responses are streamed.
+                     */
+                    DeployService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+                        return new this(rpcImpl, requestDelimited, responseDelimited);
+                    };
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#doDeploy}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef DoDeployCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls DoDeploy.
+                     * @function doDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IDeployData} request DeployData message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.DoDeployCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.doDeploy = function doDeploy(request, callback) {
+                        return this.rpcCall(doDeploy, $root.coop.rchain.casper.protocol.DeployData, $root.Either, request, callback);
+                    }, "name", { value: "DoDeploy" });
+
+                    /**
+                     * Calls DoDeploy.
+                     * @function doDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IDeployData} request DeployData message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#getBlock}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef getBlockCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls getBlock.
+                     * @function getBlock
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlockQuery} request BlockQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.getBlockCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.getBlock = function getBlock(request, callback) {
+                        return this.rpcCall(getBlock, $root.coop.rchain.casper.protocol.BlockQuery, $root.Either, request, callback);
+                    }, "name", { value: "getBlock" });
+
+                    /**
+                     * Calls getBlock.
+                     * @function getBlock
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlockQuery} request BlockQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#visualizeDag}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef visualizeDagCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls visualizeDag.
+                     * @function visualizeDag
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery} request VisualizeDagQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.visualizeDagCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.visualizeDag = function visualizeDag(request, callback) {
+                        return this.rpcCall(visualizeDag, $root.coop.rchain.casper.protocol.VisualizeDagQuery, $root.Either, request, callback);
+                    }, "name", { value: "visualizeDag" });
+
+                    /**
+                     * Calls visualizeDag.
+                     * @function visualizeDag
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery} request VisualizeDagQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#machineVerifiableDag}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef machineVerifiableDagCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls machineVerifiableDag.
+                     * @function machineVerifiableDag
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery} request MachineVerifyQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.machineVerifiableDagCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.machineVerifiableDag = function machineVerifiableDag(request, callback) {
+                        return this.rpcCall(machineVerifiableDag, $root.coop.rchain.casper.protocol.MachineVerifyQuery, $root.Either, request, callback);
+                    }, "name", { value: "machineVerifiableDag" });
+
+                    /**
+                     * Calls machineVerifiableDag.
+                     * @function machineVerifiableDag
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery} request MachineVerifyQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#showMainChain}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef showMainChainCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls showMainChain.
+                     * @function showMainChain
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} request BlocksQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.showMainChainCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.showMainChain = function showMainChain(request, callback) {
+                        return this.rpcCall(showMainChain, $root.coop.rchain.casper.protocol.BlocksQuery, $root.Either, request, callback);
+                    }, "name", { value: "showMainChain" });
+
+                    /**
+                     * Calls showMainChain.
+                     * @function showMainChain
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} request BlocksQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#getBlocks}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef getBlocksCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls getBlocks.
+                     * @function getBlocks
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} request BlocksQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.getBlocksCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.getBlocks = function getBlocks(request, callback) {
+                        return this.rpcCall(getBlocks, $root.coop.rchain.casper.protocol.BlocksQuery, $root.Either, request, callback);
+                    }, "name", { value: "getBlocks" });
+
+                    /**
+                     * Calls getBlocks.
+                     * @function getBlocks
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} request BlocksQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#listenForDataAtName}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef listenForDataAtNameCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls listenForDataAtName.
+                     * @function listenForDataAtName
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery} request DataAtNameQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.listenForDataAtNameCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.listenForDataAtName = function listenForDataAtName(request, callback) {
+                        return this.rpcCall(listenForDataAtName, $root.coop.rchain.casper.protocol.DataAtNameQuery, $root.Either, request, callback);
+                    }, "name", { value: "listenForDataAtName" });
+
+                    /**
+                     * Calls listenForDataAtName.
+                     * @function listenForDataAtName
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery} request DataAtNameQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#listenForContinuationAtName}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef listenForContinuationAtNameCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls listenForContinuationAtName.
+                     * @function listenForContinuationAtName
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery} request ContinuationAtNameQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.listenForContinuationAtNameCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.listenForContinuationAtName = function listenForContinuationAtName(request, callback) {
+                        return this.rpcCall(listenForContinuationAtName, $root.coop.rchain.casper.protocol.ContinuationAtNameQuery, $root.Either, request, callback);
+                    }, "name", { value: "listenForContinuationAtName" });
+
+                    /**
+                     * Calls listenForContinuationAtName.
+                     * @function listenForContinuationAtName
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery} request ContinuationAtNameQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#findBlockWithDeploy}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef findBlockWithDeployCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls findBlockWithDeploy.
+                     * @function findBlockWithDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery} request FindDeployInBlockQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.findBlockWithDeployCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.findBlockWithDeploy = function findBlockWithDeploy(request, callback) {
+                        return this.rpcCall(findBlockWithDeploy, $root.coop.rchain.casper.protocol.FindDeployInBlockQuery, $root.Either, request, callback);
+                    }, "name", { value: "findBlockWithDeploy" });
+
+                    /**
+                     * Calls findBlockWithDeploy.
+                     * @function findBlockWithDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery} request FindDeployInBlockQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#findDeploy}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef findDeployCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls findDeploy.
+                     * @function findDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery} request FindDeployQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.findDeployCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.findDeploy = function findDeploy(request, callback) {
+                        return this.rpcCall(findDeploy, $root.coop.rchain.casper.protocol.FindDeployQuery, $root.Either, request, callback);
+                    }, "name", { value: "findDeploy" });
+
+                    /**
+                     * Calls findDeploy.
+                     * @function findDeploy
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery} request FindDeployQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#previewPrivateNames}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef previewPrivateNamesCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls previewPrivateNames.
+                     * @function previewPrivateNames
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery} request PrivateNamePreviewQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.previewPrivateNamesCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.previewPrivateNames = function previewPrivateNames(request, callback) {
+                        return this.rpcCall(previewPrivateNames, $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery, $root.Either, request, callback);
+                    }, "name", { value: "previewPrivateNames" });
+
+                    /**
+                     * Calls previewPrivateNames.
+                     * @function previewPrivateNames
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery} request PrivateNamePreviewQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.DeployService#lastFinalizedBlock}.
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @typedef lastFinalizedBlockCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls lastFinalizedBlock.
+                     * @function lastFinalizedBlock
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery} request LastFinalizedBlockQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.DeployService.lastFinalizedBlockCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(DeployService.prototype.lastFinalizedBlock = function lastFinalizedBlock(request, callback) {
+                        return this.rpcCall(lastFinalizedBlock, $root.coop.rchain.casper.protocol.LastFinalizedBlockQuery, $root.Either, request, callback);
+                    }, "name", { value: "lastFinalizedBlock" });
+
+                    /**
+                     * Calls lastFinalizedBlock.
+                     * @function lastFinalizedBlock
+                     * @memberof coop.rchain.casper.protocol.DeployService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery} request LastFinalizedBlockQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    return DeployService;
+                })();
+
+                protocol.FindDeployQuery = (function() {
+
+                    /**
+                     * Properties of a FindDeployQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IFindDeployQuery
+                     * @property {Uint8Array|null} [deployId] FindDeployQuery deployId
+                     */
+
+                    /**
+                     * Constructs a new FindDeployQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a FindDeployQuery.
+                     * @implements IFindDeployQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery=} [properties] Properties to set
+                     */
+                    function FindDeployQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * FindDeployQuery deployId.
+                     * @member {Uint8Array} deployId
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @instance
+                     */
+                    FindDeployQuery.prototype.deployId = $util.newBuffer([]);
+
+                    /**
+                     * Creates a new FindDeployQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.FindDeployQuery} FindDeployQuery instance
+                     */
+                    FindDeployQuery.create = function create(properties) {
+                        return new FindDeployQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified FindDeployQuery message. Does not implicitly {@link coop.rchain.casper.protocol.FindDeployQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery} message FindDeployQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FindDeployQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.deployId != null && message.hasOwnProperty("deployId"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.deployId);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified FindDeployQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.FindDeployQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployQuery} message FindDeployQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FindDeployQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a FindDeployQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.FindDeployQuery} FindDeployQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FindDeployQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.FindDeployQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.deployId = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a FindDeployQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.FindDeployQuery} FindDeployQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FindDeployQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a FindDeployQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    FindDeployQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.deployId != null && message.hasOwnProperty("deployId"))
+                            if (!(message.deployId && typeof message.deployId.length === "number" || $util.isString(message.deployId)))
+                                return "deployId: buffer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a FindDeployQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.FindDeployQuery} FindDeployQuery
+                     */
+                    FindDeployQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.FindDeployQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.FindDeployQuery();
+                        if (object.deployId != null)
+                            if (typeof object.deployId === "string")
+                                $util.base64.decode(object.deployId, message.deployId = $util.newBuffer($util.base64.length(object.deployId)), 0);
+                            else if (object.deployId.length)
+                                message.deployId = object.deployId;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a FindDeployQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.FindDeployQuery} message FindDeployQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    FindDeployQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            if (options.bytes === String)
+                                object.deployId = "";
+                            else {
+                                object.deployId = [];
+                                if (options.bytes !== Array)
+                                    object.deployId = $util.newBuffer(object.deployId);
+                            }
+                        if (message.deployId != null && message.hasOwnProperty("deployId"))
+                            object.deployId = options.bytes === String ? $util.base64.encode(message.deployId, 0, message.deployId.length) : options.bytes === Array ? Array.prototype.slice.call(message.deployId) : message.deployId;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this FindDeployQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.FindDeployQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    FindDeployQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return FindDeployQuery;
+                })();
+
+                protocol.FindDeployInBlockQuery = (function() {
+
+                    /**
+                     * Properties of a FindDeployInBlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IFindDeployInBlockQuery
+                     * @property {Uint8Array|null} [user] FindDeployInBlockQuery user
+                     * @property {number|Long|null} [timestamp] FindDeployInBlockQuery timestamp
+                     */
+
+                    /**
+                     * Constructs a new FindDeployInBlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a FindDeployInBlockQuery.
+                     * @implements IFindDeployInBlockQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery=} [properties] Properties to set
+                     */
+                    function FindDeployInBlockQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * FindDeployInBlockQuery user.
+                     * @member {Uint8Array} user
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @instance
+                     */
+                    FindDeployInBlockQuery.prototype.user = $util.newBuffer([]);
+
+                    /**
+                     * FindDeployInBlockQuery timestamp.
+                     * @member {number|Long} timestamp
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @instance
+                     */
+                    FindDeployInBlockQuery.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * Creates a new FindDeployInBlockQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.FindDeployInBlockQuery} FindDeployInBlockQuery instance
+                     */
+                    FindDeployInBlockQuery.create = function create(properties) {
+                        return new FindDeployInBlockQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified FindDeployInBlockQuery message. Does not implicitly {@link coop.rchain.casper.protocol.FindDeployInBlockQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery} message FindDeployInBlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FindDeployInBlockQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.user);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.timestamp);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified FindDeployInBlockQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.FindDeployInBlockQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IFindDeployInBlockQuery} message FindDeployInBlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FindDeployInBlockQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a FindDeployInBlockQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.FindDeployInBlockQuery} FindDeployInBlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FindDeployInBlockQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.FindDeployInBlockQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.user = reader.bytes();
+                                break;
+                            case 2:
+                                message.timestamp = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a FindDeployInBlockQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.FindDeployInBlockQuery} FindDeployInBlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FindDeployInBlockQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a FindDeployInBlockQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    FindDeployInBlockQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            if (!(message.user && typeof message.user.length === "number" || $util.isString(message.user)))
+                                return "user: buffer expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a FindDeployInBlockQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.FindDeployInBlockQuery} FindDeployInBlockQuery
+                     */
+                    FindDeployInBlockQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.FindDeployInBlockQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.FindDeployInBlockQuery();
+                        if (object.user != null)
+                            if (typeof object.user === "string")
+                                $util.base64.decode(object.user, message.user = $util.newBuffer($util.base64.length(object.user)), 0);
+                            else if (object.user.length)
+                                message.user = object.user;
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a FindDeployInBlockQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.FindDeployInBlockQuery} message FindDeployInBlockQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    FindDeployInBlockQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.user = "";
+                            else {
+                                object.user = [];
+                                if (options.bytes !== Array)
+                                    object.user = $util.newBuffer(object.user);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                        }
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            object.user = options.bytes === String ? $util.base64.encode(message.user, 0, message.user.length) : options.bytes === Array ? Array.prototype.slice.call(message.user) : message.user;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this FindDeployInBlockQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.FindDeployInBlockQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    FindDeployInBlockQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return FindDeployInBlockQuery;
+                })();
+
+                protocol.BlockQuery = (function() {
+
+                    /**
+                     * Properties of a BlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IBlockQuery
+                     * @property {string|null} [hash] BlockQuery hash
+                     */
+
+                    /**
+                     * Constructs a new BlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a BlockQuery.
+                     * @implements IBlockQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IBlockQuery=} [properties] Properties to set
+                     */
+                    function BlockQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * BlockQuery hash.
+                     * @member {string} hash
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @instance
+                     */
+                    BlockQuery.prototype.hash = "";
+
+                    /**
+                     * Creates a new BlockQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.BlockQuery} BlockQuery instance
+                     */
+                    BlockQuery.create = function create(properties) {
+                        return new BlockQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified BlockQuery message. Does not implicitly {@link coop.rchain.casper.protocol.BlockQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQuery} message BlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.hash);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified BlockQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.BlockQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQuery} message BlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a BlockQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.BlockQuery} BlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.hash = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a BlockQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.BlockQuery} BlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a BlockQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    BlockQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!$util.isString(message.hash))
+                                return "hash: string expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a BlockQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.BlockQuery} BlockQuery
+                     */
+                    BlockQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockQuery();
+                        if (object.hash != null)
+                            message.hash = String(object.hash);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a BlockQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.BlockQuery} message BlockQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    BlockQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.hash = "";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = message.hash;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this BlockQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.BlockQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    BlockQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockQuery;
+                })();
+
+                protocol.BlocksQuery = (function() {
+
+                    /**
+                     * Properties of a BlocksQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IBlocksQuery
+                     * @property {number|null} [depth] BlocksQuery depth
+                     */
+
+                    /**
+                     * Constructs a new BlocksQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a BlocksQuery.
+                     * @implements IBlocksQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery=} [properties] Properties to set
+                     */
+                    function BlocksQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * BlocksQuery depth.
+                     * @member {number} depth
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @instance
+                     */
+                    BlocksQuery.prototype.depth = 0;
+
+                    /**
+                     * Creates a new BlocksQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.BlocksQuery} BlocksQuery instance
+                     */
+                    BlocksQuery.create = function create(properties) {
+                        return new BlocksQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified BlocksQuery message. Does not implicitly {@link coop.rchain.casper.protocol.BlocksQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} message BlocksQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlocksQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.depth);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified BlocksQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.BlocksQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlocksQuery} message BlocksQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlocksQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a BlocksQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.BlocksQuery} BlocksQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlocksQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlocksQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.depth = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a BlocksQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.BlocksQuery} BlocksQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlocksQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a BlocksQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    BlocksQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            if (!$util.isInteger(message.depth))
+                                return "depth: integer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a BlocksQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.BlocksQuery} BlocksQuery
+                     */
+                    BlocksQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlocksQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlocksQuery();
+                        if (object.depth != null)
+                            message.depth = object.depth | 0;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a BlocksQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.BlocksQuery} message BlocksQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    BlocksQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.depth = 0;
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            object.depth = message.depth;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this BlocksQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.BlocksQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    BlocksQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlocksQuery;
+                })();
+
+                protocol.DataAtNameQuery = (function() {
+
+                    /**
+                     * Properties of a DataAtNameQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IDataAtNameQuery
+                     * @property {number|null} [depth] DataAtNameQuery depth
+                     * @property {IPar|null} [name] DataAtNameQuery name
+                     */
+
+                    /**
+                     * Constructs a new DataAtNameQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a DataAtNameQuery.
+                     * @implements IDataAtNameQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery=} [properties] Properties to set
+                     */
+                    function DataAtNameQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * DataAtNameQuery depth.
+                     * @member {number} depth
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @instance
+                     */
+                    DataAtNameQuery.prototype.depth = 0;
+
+                    /**
+                     * DataAtNameQuery name.
+                     * @member {IPar|null|undefined} name
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @instance
+                     */
+                    DataAtNameQuery.prototype.name = null;
+
+                    /**
+                     * Creates a new DataAtNameQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.DataAtNameQuery} DataAtNameQuery instance
+                     */
+                    DataAtNameQuery.create = function create(properties) {
+                        return new DataAtNameQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified DataAtNameQuery message. Does not implicitly {@link coop.rchain.casper.protocol.DataAtNameQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery} message DataAtNameQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DataAtNameQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.depth);
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            $root.Par.encode(message.name, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified DataAtNameQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.DataAtNameQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataAtNameQuery} message DataAtNameQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DataAtNameQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a DataAtNameQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.DataAtNameQuery} DataAtNameQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DataAtNameQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DataAtNameQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.depth = reader.int32();
+                                break;
+                            case 2:
+                                message.name = $root.Par.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a DataAtNameQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.DataAtNameQuery} DataAtNameQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DataAtNameQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a DataAtNameQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    DataAtNameQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            if (!$util.isInteger(message.depth))
+                                return "depth: integer expected";
+                        if (message.name != null && message.hasOwnProperty("name")) {
+                            var error = $root.Par.verify(message.name);
+                            if (error)
+                                return "name." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a DataAtNameQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.DataAtNameQuery} DataAtNameQuery
+                     */
+                    DataAtNameQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.DataAtNameQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.DataAtNameQuery();
+                        if (object.depth != null)
+                            message.depth = object.depth | 0;
+                        if (object.name != null) {
+                            if (typeof object.name !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.DataAtNameQuery.name: object expected");
+                            message.name = $root.Par.fromObject(object.name);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a DataAtNameQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.DataAtNameQuery} message DataAtNameQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    DataAtNameQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.depth = 0;
+                            object.name = null;
+                        }
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            object.depth = message.depth;
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            object.name = $root.Par.toObject(message.name, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this DataAtNameQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.DataAtNameQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    DataAtNameQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return DataAtNameQuery;
+                })();
+
+                protocol.ContinuationAtNameQuery = (function() {
+
+                    /**
+                     * Properties of a ContinuationAtNameQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IContinuationAtNameQuery
+                     * @property {number|null} [depth] ContinuationAtNameQuery depth
+                     * @property {Array.<IPar>|null} [names] ContinuationAtNameQuery names
+                     */
+
+                    /**
+                     * Constructs a new ContinuationAtNameQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ContinuationAtNameQuery.
+                     * @implements IContinuationAtNameQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery=} [properties] Properties to set
+                     */
+                    function ContinuationAtNameQuery(properties) {
+                        this.names = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ContinuationAtNameQuery depth.
+                     * @member {number} depth
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @instance
+                     */
+                    ContinuationAtNameQuery.prototype.depth = 0;
+
+                    /**
+                     * ContinuationAtNameQuery names.
+                     * @member {Array.<IPar>} names
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @instance
+                     */
+                    ContinuationAtNameQuery.prototype.names = $util.emptyArray;
+
+                    /**
+                     * Creates a new ContinuationAtNameQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.ContinuationAtNameQuery} ContinuationAtNameQuery instance
+                     */
+                    ContinuationAtNameQuery.create = function create(properties) {
+                        return new ContinuationAtNameQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ContinuationAtNameQuery message. Does not implicitly {@link coop.rchain.casper.protocol.ContinuationAtNameQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery} message ContinuationAtNameQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ContinuationAtNameQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.depth);
+                        if (message.names != null && message.names.length)
+                            for (var i = 0; i < message.names.length; ++i)
+                                $root.Par.encode(message.names[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ContinuationAtNameQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.ContinuationAtNameQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationAtNameQuery} message ContinuationAtNameQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ContinuationAtNameQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ContinuationAtNameQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.ContinuationAtNameQuery} ContinuationAtNameQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ContinuationAtNameQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ContinuationAtNameQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.depth = reader.int32();
+                                break;
+                            case 2:
+                                if (!(message.names && message.names.length))
+                                    message.names = [];
+                                message.names.push($root.Par.decode(reader, reader.uint32()));
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ContinuationAtNameQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.ContinuationAtNameQuery} ContinuationAtNameQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ContinuationAtNameQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ContinuationAtNameQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ContinuationAtNameQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            if (!$util.isInteger(message.depth))
+                                return "depth: integer expected";
+                        if (message.names != null && message.hasOwnProperty("names")) {
+                            if (!Array.isArray(message.names))
+                                return "names: array expected";
+                            for (var i = 0; i < message.names.length; ++i) {
+                                var error = $root.Par.verify(message.names[i]);
+                                if (error)
+                                    return "names." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ContinuationAtNameQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.ContinuationAtNameQuery} ContinuationAtNameQuery
+                     */
+                    ContinuationAtNameQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ContinuationAtNameQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ContinuationAtNameQuery();
+                        if (object.depth != null)
+                            message.depth = object.depth | 0;
+                        if (object.names) {
+                            if (!Array.isArray(object.names))
+                                throw TypeError(".coop.rchain.casper.protocol.ContinuationAtNameQuery.names: array expected");
+                            message.names = [];
+                            for (var i = 0; i < object.names.length; ++i) {
+                                if (typeof object.names[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ContinuationAtNameQuery.names: object expected");
+                                message.names[i] = $root.Par.fromObject(object.names[i]);
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ContinuationAtNameQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ContinuationAtNameQuery} message ContinuationAtNameQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ContinuationAtNameQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.names = [];
+                        if (options.defaults)
+                            object.depth = 0;
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            object.depth = message.depth;
+                        if (message.names && message.names.length) {
+                            object.names = [];
+                            for (var j = 0; j < message.names.length; ++j)
+                                object.names[j] = $root.Par.toObject(message.names[j], options);
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ContinuationAtNameQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.ContinuationAtNameQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ContinuationAtNameQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ContinuationAtNameQuery;
+                })();
+
+                protocol.DeployServiceResponse = (function() {
+
+                    /**
+                     * Properties of a DeployServiceResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IDeployServiceResponse
+                     * @property {string|null} [message] DeployServiceResponse message
+                     */
+
+                    /**
+                     * Constructs a new DeployServiceResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a DeployServiceResponse.
+                     * @implements IDeployServiceResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IDeployServiceResponse=} [properties] Properties to set
+                     */
+                    function DeployServiceResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * DeployServiceResponse message.
+                     * @member {string} message
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @instance
+                     */
+                    DeployServiceResponse.prototype.message = "";
+
+                    /**
+                     * Creates a new DeployServiceResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDeployServiceResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.DeployServiceResponse} DeployServiceResponse instance
+                     */
+                    DeployServiceResponse.create = function create(properties) {
+                        return new DeployServiceResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified DeployServiceResponse message. Does not implicitly {@link coop.rchain.casper.protocol.DeployServiceResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDeployServiceResponse} message DeployServiceResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DeployServiceResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.message != null && message.hasOwnProperty("message"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.message);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified DeployServiceResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.DeployServiceResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDeployServiceResponse} message DeployServiceResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DeployServiceResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a DeployServiceResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.DeployServiceResponse} DeployServiceResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DeployServiceResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DeployServiceResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.message = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a DeployServiceResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.DeployServiceResponse} DeployServiceResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DeployServiceResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a DeployServiceResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    DeployServiceResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.message != null && message.hasOwnProperty("message"))
+                            if (!$util.isString(message.message))
+                                return "message: string expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a DeployServiceResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.DeployServiceResponse} DeployServiceResponse
+                     */
+                    DeployServiceResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.DeployServiceResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.DeployServiceResponse();
+                        if (object.message != null)
+                            message.message = String(object.message);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a DeployServiceResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.DeployServiceResponse} message DeployServiceResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    DeployServiceResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.message = "";
+                        if (message.message != null && message.hasOwnProperty("message"))
+                            object.message = message.message;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this DeployServiceResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.DeployServiceResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    DeployServiceResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return DeployServiceResponse;
+                })();
+
+                protocol.BlockQueryResponse = (function() {
+
+                    /**
+                     * Properties of a BlockQueryResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IBlockQueryResponse
+                     * @property {coop.rchain.casper.protocol.IBlockInfo|null} [blockInfo] BlockQueryResponse blockInfo
+                     */
+
+                    /**
+                     * Constructs a new BlockQueryResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a BlockQueryResponse.
+                     * @implements IBlockQueryResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IBlockQueryResponse=} [properties] Properties to set
+                     */
+                    function BlockQueryResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * BlockQueryResponse blockInfo.
+                     * @member {coop.rchain.casper.protocol.IBlockInfo|null|undefined} blockInfo
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @instance
+                     */
+                    BlockQueryResponse.prototype.blockInfo = null;
+
+                    /**
+                     * Creates a new BlockQueryResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQueryResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.BlockQueryResponse} BlockQueryResponse instance
+                     */
+                    BlockQueryResponse.create = function create(properties) {
+                        return new BlockQueryResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified BlockQueryResponse message. Does not implicitly {@link coop.rchain.casper.protocol.BlockQueryResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQueryResponse} message BlockQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockQueryResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            $root.coop.rchain.casper.protocol.BlockInfo.encode(message.blockInfo, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified BlockQueryResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.BlockQueryResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockQueryResponse} message BlockQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockQueryResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a BlockQueryResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.BlockQueryResponse} BlockQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockQueryResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockQueryResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a BlockQueryResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.BlockQueryResponse} BlockQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockQueryResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a BlockQueryResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    BlockQueryResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo")) {
+                            var error = $root.coop.rchain.casper.protocol.BlockInfo.verify(message.blockInfo);
+                            if (error)
+                                return "blockInfo." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a BlockQueryResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.BlockQueryResponse} BlockQueryResponse
+                     */
+                    BlockQueryResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockQueryResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockQueryResponse();
+                        if (object.blockInfo != null) {
+                            if (typeof object.blockInfo !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.BlockQueryResponse.blockInfo: object expected");
+                            message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.fromObject(object.blockInfo);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a BlockQueryResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.BlockQueryResponse} message BlockQueryResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    BlockQueryResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.blockInfo = null;
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            object.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.toObject(message.blockInfo, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this BlockQueryResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.BlockQueryResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    BlockQueryResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockQueryResponse;
+                })();
+
+                protocol.LightBlockQueryResponse = (function() {
+
+                    /**
+                     * Properties of a LightBlockQueryResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface ILightBlockQueryResponse
+                     * @property {coop.rchain.casper.protocol.ILightBlockInfo|null} [blockInfo] LightBlockQueryResponse blockInfo
+                     */
+
+                    /**
+                     * Constructs a new LightBlockQueryResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a LightBlockQueryResponse.
+                     * @implements ILightBlockQueryResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.ILightBlockQueryResponse=} [properties] Properties to set
+                     */
+                    function LightBlockQueryResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * LightBlockQueryResponse blockInfo.
+                     * @member {coop.rchain.casper.protocol.ILightBlockInfo|null|undefined} blockInfo
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @instance
+                     */
+                    LightBlockQueryResponse.prototype.blockInfo = null;
+
+                    /**
+                     * Creates a new LightBlockQueryResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockQueryResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.LightBlockQueryResponse} LightBlockQueryResponse instance
+                     */
+                    LightBlockQueryResponse.create = function create(properties) {
+                        return new LightBlockQueryResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified LightBlockQueryResponse message. Does not implicitly {@link coop.rchain.casper.protocol.LightBlockQueryResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockQueryResponse} message LightBlockQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LightBlockQueryResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            $root.coop.rchain.casper.protocol.LightBlockInfo.encode(message.blockInfo, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified LightBlockQueryResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.LightBlockQueryResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockQueryResponse} message LightBlockQueryResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LightBlockQueryResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a LightBlockQueryResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.LightBlockQueryResponse} LightBlockQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LightBlockQueryResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.LightBlockQueryResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockInfo = $root.coop.rchain.casper.protocol.LightBlockInfo.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a LightBlockQueryResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.LightBlockQueryResponse} LightBlockQueryResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LightBlockQueryResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a LightBlockQueryResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    LightBlockQueryResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo")) {
+                            var error = $root.coop.rchain.casper.protocol.LightBlockInfo.verify(message.blockInfo);
+                            if (error)
+                                return "blockInfo." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a LightBlockQueryResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.LightBlockQueryResponse} LightBlockQueryResponse
+                     */
+                    LightBlockQueryResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.LightBlockQueryResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.LightBlockQueryResponse();
+                        if (object.blockInfo != null) {
+                            if (typeof object.blockInfo !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.LightBlockQueryResponse.blockInfo: object expected");
+                            message.blockInfo = $root.coop.rchain.casper.protocol.LightBlockInfo.fromObject(object.blockInfo);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a LightBlockQueryResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.LightBlockQueryResponse} message LightBlockQueryResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    LightBlockQueryResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.blockInfo = null;
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            object.blockInfo = $root.coop.rchain.casper.protocol.LightBlockInfo.toObject(message.blockInfo, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this LightBlockQueryResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.LightBlockQueryResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    LightBlockQueryResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return LightBlockQueryResponse;
+                })();
+
+                protocol.VisualizeDagQuery = (function() {
+
+                    /**
+                     * Properties of a VisualizeDagQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IVisualizeDagQuery
+                     * @property {number|null} [depth] VisualizeDagQuery depth
+                     * @property {boolean|null} [showJustificationLines] VisualizeDagQuery showJustificationLines
+                     */
+
+                    /**
+                     * Constructs a new VisualizeDagQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a VisualizeDagQuery.
+                     * @implements IVisualizeDagQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery=} [properties] Properties to set
+                     */
+                    function VisualizeDagQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * VisualizeDagQuery depth.
+                     * @member {number} depth
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @instance
+                     */
+                    VisualizeDagQuery.prototype.depth = 0;
+
+                    /**
+                     * VisualizeDagQuery showJustificationLines.
+                     * @member {boolean} showJustificationLines
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @instance
+                     */
+                    VisualizeDagQuery.prototype.showJustificationLines = false;
+
+                    /**
+                     * Creates a new VisualizeDagQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.VisualizeDagQuery} VisualizeDagQuery instance
+                     */
+                    VisualizeDagQuery.create = function create(properties) {
+                        return new VisualizeDagQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified VisualizeDagQuery message. Does not implicitly {@link coop.rchain.casper.protocol.VisualizeDagQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery} message VisualizeDagQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    VisualizeDagQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.depth);
+                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).bool(message.showJustificationLines);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified VisualizeDagQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.VisualizeDagQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeDagQuery} message VisualizeDagQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    VisualizeDagQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a VisualizeDagQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.VisualizeDagQuery} VisualizeDagQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    VisualizeDagQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.VisualizeDagQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.depth = reader.int32();
+                                break;
+                            case 2:
+                                message.showJustificationLines = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a VisualizeDagQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.VisualizeDagQuery} VisualizeDagQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    VisualizeDagQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a VisualizeDagQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    VisualizeDagQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            if (!$util.isInteger(message.depth))
+                                return "depth: integer expected";
+                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
+                            if (typeof message.showJustificationLines !== "boolean")
+                                return "showJustificationLines: boolean expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a VisualizeDagQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.VisualizeDagQuery} VisualizeDagQuery
+                     */
+                    VisualizeDagQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.VisualizeDagQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.VisualizeDagQuery();
+                        if (object.depth != null)
+                            message.depth = object.depth | 0;
+                        if (object.showJustificationLines != null)
+                            message.showJustificationLines = Boolean(object.showJustificationLines);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a VisualizeDagQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.VisualizeDagQuery} message VisualizeDagQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    VisualizeDagQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.depth = 0;
+                            object.showJustificationLines = false;
+                        }
+                        if (message.depth != null && message.hasOwnProperty("depth"))
+                            object.depth = message.depth;
+                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
+                            object.showJustificationLines = message.showJustificationLines;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this VisualizeDagQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.VisualizeDagQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    VisualizeDagQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return VisualizeDagQuery;
+                })();
+
+                protocol.VisualizeBlocksResponse = (function() {
+
+                    /**
+                     * Properties of a VisualizeBlocksResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IVisualizeBlocksResponse
+                     * @property {string|null} [content] VisualizeBlocksResponse content
+                     */
+
+                    /**
+                     * Constructs a new VisualizeBlocksResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a VisualizeBlocksResponse.
+                     * @implements IVisualizeBlocksResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IVisualizeBlocksResponse=} [properties] Properties to set
+                     */
+                    function VisualizeBlocksResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * VisualizeBlocksResponse content.
+                     * @member {string} content
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @instance
+                     */
+                    VisualizeBlocksResponse.prototype.content = "";
+
+                    /**
+                     * Creates a new VisualizeBlocksResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeBlocksResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.VisualizeBlocksResponse} VisualizeBlocksResponse instance
+                     */
+                    VisualizeBlocksResponse.create = function create(properties) {
+                        return new VisualizeBlocksResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified VisualizeBlocksResponse message. Does not implicitly {@link coop.rchain.casper.protocol.VisualizeBlocksResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeBlocksResponse} message VisualizeBlocksResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    VisualizeBlocksResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified VisualizeBlocksResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.VisualizeBlocksResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IVisualizeBlocksResponse} message VisualizeBlocksResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    VisualizeBlocksResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a VisualizeBlocksResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.VisualizeBlocksResponse} VisualizeBlocksResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    VisualizeBlocksResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.VisualizeBlocksResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.content = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a VisualizeBlocksResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.VisualizeBlocksResponse} VisualizeBlocksResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    VisualizeBlocksResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a VisualizeBlocksResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    VisualizeBlocksResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            if (!$util.isString(message.content))
+                                return "content: string expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a VisualizeBlocksResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.VisualizeBlocksResponse} VisualizeBlocksResponse
+                     */
+                    VisualizeBlocksResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.VisualizeBlocksResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.VisualizeBlocksResponse();
+                        if (object.content != null)
+                            message.content = String(object.content);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a VisualizeBlocksResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.VisualizeBlocksResponse} message VisualizeBlocksResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    VisualizeBlocksResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.content = "";
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            object.content = message.content;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this VisualizeBlocksResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.VisualizeBlocksResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    VisualizeBlocksResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return VisualizeBlocksResponse;
+                })();
+
+                protocol.MachineVerifyQuery = (function() {
+
+                    /**
+                     * Properties of a MachineVerifyQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IMachineVerifyQuery
+                     */
+
+                    /**
+                     * Constructs a new MachineVerifyQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a MachineVerifyQuery.
+                     * @implements IMachineVerifyQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery=} [properties] Properties to set
+                     */
+                    function MachineVerifyQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * Creates a new MachineVerifyQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyQuery} MachineVerifyQuery instance
+                     */
+                    MachineVerifyQuery.create = function create(properties) {
+                        return new MachineVerifyQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified MachineVerifyQuery message. Does not implicitly {@link coop.rchain.casper.protocol.MachineVerifyQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery} message MachineVerifyQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    MachineVerifyQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified MachineVerifyQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.MachineVerifyQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyQuery} message MachineVerifyQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    MachineVerifyQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a MachineVerifyQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyQuery} MachineVerifyQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    MachineVerifyQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.MachineVerifyQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a MachineVerifyQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyQuery} MachineVerifyQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    MachineVerifyQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a MachineVerifyQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    MachineVerifyQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a MachineVerifyQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyQuery} MachineVerifyQuery
+                     */
+                    MachineVerifyQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.MachineVerifyQuery)
+                            return object;
+                        return new $root.coop.rchain.casper.protocol.MachineVerifyQuery();
+                    };
+
+                    /**
+                     * Creates a plain object from a MachineVerifyQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.MachineVerifyQuery} message MachineVerifyQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    MachineVerifyQuery.toObject = function toObject() {
+                        return {};
+                    };
+
+                    /**
+                     * Converts this MachineVerifyQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    MachineVerifyQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return MachineVerifyQuery;
+                })();
+
+                protocol.MachineVerifyResponse = (function() {
+
+                    /**
+                     * Properties of a MachineVerifyResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IMachineVerifyResponse
+                     * @property {string|null} [content] MachineVerifyResponse content
+                     */
+
+                    /**
+                     * Constructs a new MachineVerifyResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a MachineVerifyResponse.
+                     * @implements IMachineVerifyResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyResponse=} [properties] Properties to set
+                     */
+                    function MachineVerifyResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * MachineVerifyResponse content.
+                     * @member {string} content
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @instance
+                     */
+                    MachineVerifyResponse.prototype.content = "";
+
+                    /**
+                     * Creates a new MachineVerifyResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyResponse} MachineVerifyResponse instance
+                     */
+                    MachineVerifyResponse.create = function create(properties) {
+                        return new MachineVerifyResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified MachineVerifyResponse message. Does not implicitly {@link coop.rchain.casper.protocol.MachineVerifyResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyResponse} message MachineVerifyResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    MachineVerifyResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.content);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified MachineVerifyResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.MachineVerifyResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IMachineVerifyResponse} message MachineVerifyResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    MachineVerifyResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a MachineVerifyResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyResponse} MachineVerifyResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    MachineVerifyResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.MachineVerifyResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.content = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a MachineVerifyResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyResponse} MachineVerifyResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    MachineVerifyResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a MachineVerifyResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    MachineVerifyResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            if (!$util.isString(message.content))
+                                return "content: string expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a MachineVerifyResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.MachineVerifyResponse} MachineVerifyResponse
+                     */
+                    MachineVerifyResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.MachineVerifyResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.MachineVerifyResponse();
+                        if (object.content != null)
+                            message.content = String(object.content);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a MachineVerifyResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.MachineVerifyResponse} message MachineVerifyResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    MachineVerifyResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.content = "";
+                        if (message.content != null && message.hasOwnProperty("content"))
+                            object.content = message.content;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this MachineVerifyResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.MachineVerifyResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    MachineVerifyResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return MachineVerifyResponse;
+                })();
+
+                protocol.ListeningNameDataResponse = (function() {
+
+                    /**
+                     * Properties of a ListeningNameDataResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IListeningNameDataResponse
+                     * @property {Array.<coop.rchain.casper.protocol.IDataWithBlockInfo>|null} [blockResults] ListeningNameDataResponse blockResults
+                     * @property {number|null} [length] ListeningNameDataResponse length
+                     */
+
+                    /**
+                     * Constructs a new ListeningNameDataResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ListeningNameDataResponse.
+                     * @implements IListeningNameDataResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IListeningNameDataResponse=} [properties] Properties to set
+                     */
+                    function ListeningNameDataResponse(properties) {
+                        this.blockResults = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ListeningNameDataResponse blockResults.
+                     * @member {Array.<coop.rchain.casper.protocol.IDataWithBlockInfo>} blockResults
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @instance
+                     */
+                    ListeningNameDataResponse.prototype.blockResults = $util.emptyArray;
+
+                    /**
+                     * ListeningNameDataResponse length.
+                     * @member {number} length
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @instance
+                     */
+                    ListeningNameDataResponse.prototype.length = 0;
+
+                    /**
+                     * Creates a new ListeningNameDataResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameDataResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.ListeningNameDataResponse} ListeningNameDataResponse instance
+                     */
+                    ListeningNameDataResponse.create = function create(properties) {
+                        return new ListeningNameDataResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ListeningNameDataResponse message. Does not implicitly {@link coop.rchain.casper.protocol.ListeningNameDataResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameDataResponse} message ListeningNameDataResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ListeningNameDataResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockResults != null && message.blockResults.length)
+                            for (var i = 0; i < message.blockResults.length; ++i)
+                                $root.coop.rchain.casper.protocol.DataWithBlockInfo.encode(message.blockResults[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int32(message.length);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ListeningNameDataResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.ListeningNameDataResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameDataResponse} message ListeningNameDataResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ListeningNameDataResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ListeningNameDataResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.ListeningNameDataResponse} ListeningNameDataResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ListeningNameDataResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ListeningNameDataResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.blockResults && message.blockResults.length))
+                                    message.blockResults = [];
+                                message.blockResults.push($root.coop.rchain.casper.protocol.DataWithBlockInfo.decode(reader, reader.uint32()));
+                                break;
+                            case 2:
+                                message.length = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ListeningNameDataResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.ListeningNameDataResponse} ListeningNameDataResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ListeningNameDataResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ListeningNameDataResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ListeningNameDataResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockResults != null && message.hasOwnProperty("blockResults")) {
+                            if (!Array.isArray(message.blockResults))
+                                return "blockResults: array expected";
+                            for (var i = 0; i < message.blockResults.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.DataWithBlockInfo.verify(message.blockResults[i]);
+                                if (error)
+                                    return "blockResults." + error;
+                            }
+                        }
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            if (!$util.isInteger(message.length))
+                                return "length: integer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ListeningNameDataResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.ListeningNameDataResponse} ListeningNameDataResponse
+                     */
+                    ListeningNameDataResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ListeningNameDataResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ListeningNameDataResponse();
+                        if (object.blockResults) {
+                            if (!Array.isArray(object.blockResults))
+                                throw TypeError(".coop.rchain.casper.protocol.ListeningNameDataResponse.blockResults: array expected");
+                            message.blockResults = [];
+                            for (var i = 0; i < object.blockResults.length; ++i) {
+                                if (typeof object.blockResults[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ListeningNameDataResponse.blockResults: object expected");
+                                message.blockResults[i] = $root.coop.rchain.casper.protocol.DataWithBlockInfo.fromObject(object.blockResults[i]);
+                            }
+                        }
+                        if (object.length != null)
+                            message.length = object.length | 0;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ListeningNameDataResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ListeningNameDataResponse} message ListeningNameDataResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ListeningNameDataResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.blockResults = [];
+                        if (options.defaults)
+                            object.length = 0;
+                        if (message.blockResults && message.blockResults.length) {
+                            object.blockResults = [];
+                            for (var j = 0; j < message.blockResults.length; ++j)
+                                object.blockResults[j] = $root.coop.rchain.casper.protocol.DataWithBlockInfo.toObject(message.blockResults[j], options);
+                        }
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            object.length = message.length;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ListeningNameDataResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.ListeningNameDataResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ListeningNameDataResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ListeningNameDataResponse;
+                })();
+
+                protocol.ListeningNameContinuationResponse = (function() {
+
+                    /**
+                     * Properties of a ListeningNameContinuationResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IListeningNameContinuationResponse
+                     * @property {Array.<coop.rchain.casper.protocol.IContinuationsWithBlockInfo>|null} [blockResults] ListeningNameContinuationResponse blockResults
+                     * @property {number|null} [length] ListeningNameContinuationResponse length
+                     */
+
+                    /**
+                     * Constructs a new ListeningNameContinuationResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ListeningNameContinuationResponse.
+                     * @implements IListeningNameContinuationResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IListeningNameContinuationResponse=} [properties] Properties to set
+                     */
+                    function ListeningNameContinuationResponse(properties) {
+                        this.blockResults = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ListeningNameContinuationResponse blockResults.
+                     * @member {Array.<coop.rchain.casper.protocol.IContinuationsWithBlockInfo>} blockResults
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @instance
+                     */
+                    ListeningNameContinuationResponse.prototype.blockResults = $util.emptyArray;
+
+                    /**
+                     * ListeningNameContinuationResponse length.
+                     * @member {number} length
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @instance
+                     */
+                    ListeningNameContinuationResponse.prototype.length = 0;
+
+                    /**
+                     * Creates a new ListeningNameContinuationResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameContinuationResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.ListeningNameContinuationResponse} ListeningNameContinuationResponse instance
+                     */
+                    ListeningNameContinuationResponse.create = function create(properties) {
+                        return new ListeningNameContinuationResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ListeningNameContinuationResponse message. Does not implicitly {@link coop.rchain.casper.protocol.ListeningNameContinuationResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameContinuationResponse} message ListeningNameContinuationResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ListeningNameContinuationResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockResults != null && message.blockResults.length)
+                            for (var i = 0; i < message.blockResults.length; ++i)
+                                $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.encode(message.blockResults[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int32(message.length);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ListeningNameContinuationResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.ListeningNameContinuationResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IListeningNameContinuationResponse} message ListeningNameContinuationResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ListeningNameContinuationResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ListeningNameContinuationResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.ListeningNameContinuationResponse} ListeningNameContinuationResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ListeningNameContinuationResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.blockResults && message.blockResults.length))
+                                    message.blockResults = [];
+                                message.blockResults.push($root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.decode(reader, reader.uint32()));
+                                break;
+                            case 2:
+                                message.length = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ListeningNameContinuationResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.ListeningNameContinuationResponse} ListeningNameContinuationResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ListeningNameContinuationResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ListeningNameContinuationResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ListeningNameContinuationResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockResults != null && message.hasOwnProperty("blockResults")) {
+                            if (!Array.isArray(message.blockResults))
+                                return "blockResults: array expected";
+                            for (var i = 0; i < message.blockResults.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.verify(message.blockResults[i]);
+                                if (error)
+                                    return "blockResults." + error;
+                            }
+                        }
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            if (!$util.isInteger(message.length))
+                                return "length: integer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ListeningNameContinuationResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.ListeningNameContinuationResponse} ListeningNameContinuationResponse
+                     */
+                    ListeningNameContinuationResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse();
+                        if (object.blockResults) {
+                            if (!Array.isArray(object.blockResults))
+                                throw TypeError(".coop.rchain.casper.protocol.ListeningNameContinuationResponse.blockResults: array expected");
+                            message.blockResults = [];
+                            for (var i = 0; i < object.blockResults.length; ++i) {
+                                if (typeof object.blockResults[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ListeningNameContinuationResponse.blockResults: object expected");
+                                message.blockResults[i] = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.fromObject(object.blockResults[i]);
+                            }
+                        }
+                        if (object.length != null)
+                            message.length = object.length | 0;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ListeningNameContinuationResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ListeningNameContinuationResponse} message ListeningNameContinuationResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ListeningNameContinuationResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.blockResults = [];
+                        if (options.defaults)
+                            object.length = 0;
+                        if (message.blockResults && message.blockResults.length) {
+                            object.blockResults = [];
+                            for (var j = 0; j < message.blockResults.length; ++j)
+                                object.blockResults[j] = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.toObject(message.blockResults[j], options);
+                        }
+                        if (message.length != null && message.hasOwnProperty("length"))
+                            object.length = message.length;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ListeningNameContinuationResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.ListeningNameContinuationResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ListeningNameContinuationResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ListeningNameContinuationResponse;
+                })();
+
+                protocol.PrivateNamePreviewQuery = (function() {
+
+                    /**
+                     * Properties of a PrivateNamePreviewQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IPrivateNamePreviewQuery
+                     * @property {Uint8Array|null} [user] PrivateNamePreviewQuery user
+                     * @property {number|Long|null} [timestamp] PrivateNamePreviewQuery timestamp
+                     * @property {number|null} [nameQty] PrivateNamePreviewQuery nameQty
+                     */
+
+                    /**
+                     * Constructs a new PrivateNamePreviewQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a PrivateNamePreviewQuery.
+                     * @implements IPrivateNamePreviewQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery=} [properties] Properties to set
+                     */
+                    function PrivateNamePreviewQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * PrivateNamePreviewQuery user.
+                     * @member {Uint8Array} user
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @instance
+                     */
+                    PrivateNamePreviewQuery.prototype.user = $util.newBuffer([]);
+
+                    /**
+                     * PrivateNamePreviewQuery timestamp.
+                     * @member {number|Long} timestamp
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @instance
+                     */
+                    PrivateNamePreviewQuery.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * PrivateNamePreviewQuery nameQty.
+                     * @member {number} nameQty
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @instance
+                     */
+                    PrivateNamePreviewQuery.prototype.nameQty = 0;
+
+                    /**
+                     * Creates a new PrivateNamePreviewQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewQuery} PrivateNamePreviewQuery instance
+                     */
+                    PrivateNamePreviewQuery.create = function create(properties) {
+                        return new PrivateNamePreviewQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified PrivateNamePreviewQuery message. Does not implicitly {@link coop.rchain.casper.protocol.PrivateNamePreviewQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery} message PrivateNamePreviewQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrivateNamePreviewQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.user);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.timestamp);
+                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int32(message.nameQty);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified PrivateNamePreviewQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.PrivateNamePreviewQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewQuery} message PrivateNamePreviewQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrivateNamePreviewQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a PrivateNamePreviewQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewQuery} PrivateNamePreviewQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrivateNamePreviewQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.user = reader.bytes();
+                                break;
+                            case 2:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 3:
+                                message.nameQty = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a PrivateNamePreviewQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewQuery} PrivateNamePreviewQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrivateNamePreviewQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a PrivateNamePreviewQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrivateNamePreviewQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            if (!(message.user && typeof message.user.length === "number" || $util.isString(message.user)))
+                                return "user: buffer expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
+                            if (!$util.isInteger(message.nameQty))
+                                return "nameQty: integer expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a PrivateNamePreviewQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewQuery} PrivateNamePreviewQuery
+                     */
+                    PrivateNamePreviewQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery();
+                        if (object.user != null)
+                            if (typeof object.user === "string")
+                                $util.base64.decode(object.user, message.user = $util.newBuffer($util.base64.length(object.user)), 0);
+                            else if (object.user.length)
+                                message.user = object.user;
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.nameQty != null)
+                            message.nameQty = object.nameQty | 0;
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a PrivateNamePreviewQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.PrivateNamePreviewQuery} message PrivateNamePreviewQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrivateNamePreviewQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.user = "";
+                            else {
+                                object.user = [];
+                                if (options.bytes !== Array)
+                                    object.user = $util.newBuffer(object.user);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            object.nameQty = 0;
+                        }
+                        if (message.user != null && message.hasOwnProperty("user"))
+                            object.user = options.bytes === String ? $util.base64.encode(message.user, 0, message.user.length) : options.bytes === Array ? Array.prototype.slice.call(message.user) : message.user;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
+                            object.nameQty = message.nameQty;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this PrivateNamePreviewQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrivateNamePreviewQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return PrivateNamePreviewQuery;
+                })();
+
+                protocol.PrivateNamePreviewResponse = (function() {
+
+                    /**
+                     * Properties of a PrivateNamePreviewResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IPrivateNamePreviewResponse
+                     * @property {Array.<Uint8Array>|null} [ids] PrivateNamePreviewResponse ids
+                     */
+
+                    /**
+                     * Constructs a new PrivateNamePreviewResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a PrivateNamePreviewResponse.
+                     * @implements IPrivateNamePreviewResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewResponse=} [properties] Properties to set
+                     */
+                    function PrivateNamePreviewResponse(properties) {
+                        this.ids = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * PrivateNamePreviewResponse ids.
+                     * @member {Array.<Uint8Array>} ids
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @instance
+                     */
+                    PrivateNamePreviewResponse.prototype.ids = $util.emptyArray;
+
+                    /**
+                     * Creates a new PrivateNamePreviewResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewResponse} PrivateNamePreviewResponse instance
+                     */
+                    PrivateNamePreviewResponse.create = function create(properties) {
+                        return new PrivateNamePreviewResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified PrivateNamePreviewResponse message. Does not implicitly {@link coop.rchain.casper.protocol.PrivateNamePreviewResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewResponse} message PrivateNamePreviewResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrivateNamePreviewResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.ids != null && message.ids.length)
+                            for (var i = 0; i < message.ids.length; ++i)
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.ids[i]);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified PrivateNamePreviewResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.PrivateNamePreviewResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrivateNamePreviewResponse} message PrivateNamePreviewResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrivateNamePreviewResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a PrivateNamePreviewResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewResponse} PrivateNamePreviewResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrivateNamePreviewResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.ids && message.ids.length))
+                                    message.ids = [];
+                                message.ids.push(reader.bytes());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a PrivateNamePreviewResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewResponse} PrivateNamePreviewResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrivateNamePreviewResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a PrivateNamePreviewResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrivateNamePreviewResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.ids != null && message.hasOwnProperty("ids")) {
+                            if (!Array.isArray(message.ids))
+                                return "ids: array expected";
+                            for (var i = 0; i < message.ids.length; ++i)
+                                if (!(message.ids[i] && typeof message.ids[i].length === "number" || $util.isString(message.ids[i])))
+                                    return "ids: buffer[] expected";
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a PrivateNamePreviewResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.PrivateNamePreviewResponse} PrivateNamePreviewResponse
+                     */
+                    PrivateNamePreviewResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse();
+                        if (object.ids) {
+                            if (!Array.isArray(object.ids))
+                                throw TypeError(".coop.rchain.casper.protocol.PrivateNamePreviewResponse.ids: array expected");
+                            message.ids = [];
+                            for (var i = 0; i < object.ids.length; ++i)
+                                if (typeof object.ids[i] === "string")
+                                    $util.base64.decode(object.ids[i], message.ids[i] = $util.newBuffer($util.base64.length(object.ids[i])), 0);
+                                else if (object.ids[i].length)
+                                    message.ids[i] = object.ids[i];
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a PrivateNamePreviewResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.PrivateNamePreviewResponse} message PrivateNamePreviewResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrivateNamePreviewResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.ids = [];
+                        if (message.ids && message.ids.length) {
+                            object.ids = [];
+                            for (var j = 0; j < message.ids.length; ++j)
+                                object.ids[j] = options.bytes === String ? $util.base64.encode(message.ids[j], 0, message.ids[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.ids[j]) : message.ids[j];
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this PrivateNamePreviewResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.PrivateNamePreviewResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrivateNamePreviewResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return PrivateNamePreviewResponse;
+                })();
+
+                protocol.LastFinalizedBlockQuery = (function() {
+
+                    /**
+                     * Properties of a LastFinalizedBlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface ILastFinalizedBlockQuery
+                     */
+
+                    /**
+                     * Constructs a new LastFinalizedBlockQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a LastFinalizedBlockQuery.
+                     * @implements ILastFinalizedBlockQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery=} [properties] Properties to set
+                     */
+                    function LastFinalizedBlockQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * Creates a new LastFinalizedBlockQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockQuery} LastFinalizedBlockQuery instance
+                     */
+                    LastFinalizedBlockQuery.create = function create(properties) {
+                        return new LastFinalizedBlockQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified LastFinalizedBlockQuery message. Does not implicitly {@link coop.rchain.casper.protocol.LastFinalizedBlockQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery} message LastFinalizedBlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LastFinalizedBlockQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified LastFinalizedBlockQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.LastFinalizedBlockQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockQuery} message LastFinalizedBlockQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LastFinalizedBlockQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a LastFinalizedBlockQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockQuery} LastFinalizedBlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LastFinalizedBlockQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.LastFinalizedBlockQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a LastFinalizedBlockQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockQuery} LastFinalizedBlockQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LastFinalizedBlockQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a LastFinalizedBlockQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    LastFinalizedBlockQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a LastFinalizedBlockQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockQuery} LastFinalizedBlockQuery
+                     */
+                    LastFinalizedBlockQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.LastFinalizedBlockQuery)
+                            return object;
+                        return new $root.coop.rchain.casper.protocol.LastFinalizedBlockQuery();
+                    };
+
+                    /**
+                     * Creates a plain object from a LastFinalizedBlockQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.LastFinalizedBlockQuery} message LastFinalizedBlockQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    LastFinalizedBlockQuery.toObject = function toObject() {
+                        return {};
+                    };
+
+                    /**
+                     * Converts this LastFinalizedBlockQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    LastFinalizedBlockQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return LastFinalizedBlockQuery;
+                })();
+
+                protocol.LastFinalizedBlockResponse = (function() {
+
+                    /**
+                     * Properties of a LastFinalizedBlockResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface ILastFinalizedBlockResponse
+                     * @property {coop.rchain.casper.protocol.IBlockInfo|null} [blockInfo] LastFinalizedBlockResponse blockInfo
+                     */
+
+                    /**
+                     * Constructs a new LastFinalizedBlockResponse.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a LastFinalizedBlockResponse.
+                     * @implements ILastFinalizedBlockResponse
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockResponse=} [properties] Properties to set
+                     */
+                    function LastFinalizedBlockResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * LastFinalizedBlockResponse blockInfo.
+                     * @member {coop.rchain.casper.protocol.IBlockInfo|null|undefined} blockInfo
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @instance
+                     */
+                    LastFinalizedBlockResponse.prototype.blockInfo = null;
+
+                    /**
+                     * Creates a new LastFinalizedBlockResponse instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockResponse=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockResponse} LastFinalizedBlockResponse instance
+                     */
+                    LastFinalizedBlockResponse.create = function create(properties) {
+                        return new LastFinalizedBlockResponse(properties);
+                    };
+
+                    /**
+                     * Encodes the specified LastFinalizedBlockResponse message. Does not implicitly {@link coop.rchain.casper.protocol.LastFinalizedBlockResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockResponse} message LastFinalizedBlockResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LastFinalizedBlockResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            $root.coop.rchain.casper.protocol.BlockInfo.encode(message.blockInfo, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified LastFinalizedBlockResponse message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.LastFinalizedBlockResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILastFinalizedBlockResponse} message LastFinalizedBlockResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LastFinalizedBlockResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a LastFinalizedBlockResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockResponse} LastFinalizedBlockResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LastFinalizedBlockResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.LastFinalizedBlockResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a LastFinalizedBlockResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockResponse} LastFinalizedBlockResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LastFinalizedBlockResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a LastFinalizedBlockResponse message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    LastFinalizedBlockResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo")) {
+                            var error = $root.coop.rchain.casper.protocol.BlockInfo.verify(message.blockInfo);
+                            if (error)
+                                return "blockInfo." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a LastFinalizedBlockResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.LastFinalizedBlockResponse} LastFinalizedBlockResponse
+                     */
+                    LastFinalizedBlockResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.LastFinalizedBlockResponse)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.LastFinalizedBlockResponse();
+                        if (object.blockInfo != null) {
+                            if (typeof object.blockInfo !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.LastFinalizedBlockResponse.blockInfo: object expected");
+                            message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.fromObject(object.blockInfo);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a LastFinalizedBlockResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @static
+                     * @param {coop.rchain.casper.protocol.LastFinalizedBlockResponse} message LastFinalizedBlockResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    LastFinalizedBlockResponse.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.blockInfo = null;
+                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
+                            object.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.toObject(message.blockInfo, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this LastFinalizedBlockResponse to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.LastFinalizedBlockResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    LastFinalizedBlockResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return LastFinalizedBlockResponse;
+                })();
+
+                protocol.LightBlockInfo = (function() {
+
+                    /**
+                     * Properties of a LightBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface ILightBlockInfo
+                     * @property {string|null} [blockHash] LightBlockInfo blockHash
+                     * @property {string|null} [blockSize] LightBlockInfo blockSize
+                     * @property {number|Long|null} [blockNumber] LightBlockInfo blockNumber
+                     * @property {number|Long|null} [version] LightBlockInfo version
+                     * @property {number|null} [deployCount] LightBlockInfo deployCount
+                     * @property {string|null} [tupleSpaceHash] LightBlockInfo tupleSpaceHash
+                     * @property {number|Long|null} [timestamp] LightBlockInfo timestamp
+                     * @property {number|null} [faultTolerance] LightBlockInfo faultTolerance
+                     * @property {string|null} [mainParentHash] LightBlockInfo mainParentHash
+                     * @property {Array.<string>|null} [parentsHashList] LightBlockInfo parentsHashList
+                     * @property {string|null} [sender] LightBlockInfo sender
+                     */
+
+                    /**
+                     * Constructs a new LightBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a LightBlockInfo.
+                     * @implements ILightBlockInfo
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.ILightBlockInfo=} [properties] Properties to set
+                     */
+                    function LightBlockInfo(properties) {
+                        this.parentsHashList = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * LightBlockInfo blockHash.
+                     * @member {string} blockHash
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.blockHash = "";
+
+                    /**
+                     * LightBlockInfo blockSize.
+                     * @member {string} blockSize
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.blockSize = "";
+
+                    /**
+                     * LightBlockInfo blockNumber.
+                     * @member {number|Long} blockNumber
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.blockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * LightBlockInfo version.
+                     * @member {number|Long} version
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.version = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * LightBlockInfo deployCount.
+                     * @member {number} deployCount
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.deployCount = 0;
+
+                    /**
+                     * LightBlockInfo tupleSpaceHash.
+                     * @member {string} tupleSpaceHash
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.tupleSpaceHash = "";
+
+                    /**
+                     * LightBlockInfo timestamp.
+                     * @member {number|Long} timestamp
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * LightBlockInfo faultTolerance.
+                     * @member {number} faultTolerance
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.faultTolerance = 0;
+
+                    /**
+                     * LightBlockInfo mainParentHash.
+                     * @member {string} mainParentHash
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.mainParentHash = "";
+
+                    /**
+                     * LightBlockInfo parentsHashList.
+                     * @member {Array.<string>} parentsHashList
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.parentsHashList = $util.emptyArray;
+
+                    /**
+                     * LightBlockInfo sender.
+                     * @member {string} sender
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     */
+                    LightBlockInfo.prototype.sender = "";
+
+                    /**
+                     * Creates a new LightBlockInfo instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockInfo=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.LightBlockInfo} LightBlockInfo instance
+                     */
+                    LightBlockInfo.create = function create(properties) {
+                        return new LightBlockInfo(properties);
+                    };
+
+                    /**
+                     * Encodes the specified LightBlockInfo message. Does not implicitly {@link coop.rchain.casper.protocol.LightBlockInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockInfo} message LightBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LightBlockInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.blockHash);
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.blockSize);
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.blockNumber);
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).int64(message.version);
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            writer.uint32(/* id 5, wireType 0 =*/40).int32(message.deployCount);
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            writer.uint32(/* id 6, wireType 2 =*/50).string(message.tupleSpaceHash);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).int64(message.timestamp);
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            writer.uint32(/* id 8, wireType 5 =*/69).float(message.faultTolerance);
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            writer.uint32(/* id 9, wireType 2 =*/74).string(message.mainParentHash);
+                        if (message.parentsHashList != null && message.parentsHashList.length)
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.parentsHashList[i]);
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            writer.uint32(/* id 11, wireType 2 =*/90).string(message.sender);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified LightBlockInfo message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.LightBlockInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ILightBlockInfo} message LightBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    LightBlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a LightBlockInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.LightBlockInfo} LightBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LightBlockInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.LightBlockInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockHash = reader.string();
+                                break;
+                            case 2:
+                                message.blockSize = reader.string();
+                                break;
+                            case 3:
+                                message.blockNumber = reader.int64();
+                                break;
+                            case 4:
+                                message.version = reader.int64();
+                                break;
+                            case 5:
+                                message.deployCount = reader.int32();
+                                break;
+                            case 6:
+                                message.tupleSpaceHash = reader.string();
+                                break;
+                            case 7:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 8:
+                                message.faultTolerance = reader.float();
+                                break;
+                            case 9:
+                                message.mainParentHash = reader.string();
+                                break;
+                            case 10:
+                                if (!(message.parentsHashList && message.parentsHashList.length))
+                                    message.parentsHashList = [];
+                                message.parentsHashList.push(reader.string());
+                                break;
+                            case 11:
+                                message.sender = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a LightBlockInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.LightBlockInfo} LightBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    LightBlockInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a LightBlockInfo message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    LightBlockInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            if (!$util.isString(message.blockHash))
+                                return "blockHash: string expected";
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            if (!$util.isString(message.blockSize))
+                                return "blockSize: string expected";
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (!$util.isInteger(message.blockNumber) && !(message.blockNumber && $util.isInteger(message.blockNumber.low) && $util.isInteger(message.blockNumber.high)))
+                                return "blockNumber: integer|Long expected";
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (!$util.isInteger(message.version) && !(message.version && $util.isInteger(message.version.low) && $util.isInteger(message.version.high)))
+                                return "version: integer|Long expected";
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            if (!$util.isInteger(message.deployCount))
+                                return "deployCount: integer expected";
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            if (!$util.isString(message.tupleSpaceHash))
+                                return "tupleSpaceHash: string expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            if (typeof message.faultTolerance !== "number")
+                                return "faultTolerance: number expected";
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            if (!$util.isString(message.mainParentHash))
+                                return "mainParentHash: string expected";
+                        if (message.parentsHashList != null && message.hasOwnProperty("parentsHashList")) {
+                            if (!Array.isArray(message.parentsHashList))
+                                return "parentsHashList: array expected";
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                if (!$util.isString(message.parentsHashList[i]))
+                                    return "parentsHashList: string[] expected";
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            if (!$util.isString(message.sender))
+                                return "sender: string expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a LightBlockInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.LightBlockInfo} LightBlockInfo
+                     */
+                    LightBlockInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.LightBlockInfo)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.LightBlockInfo();
+                        if (object.blockHash != null)
+                            message.blockHash = String(object.blockHash);
+                        if (object.blockSize != null)
+                            message.blockSize = String(object.blockSize);
+                        if (object.blockNumber != null)
+                            if ($util.Long)
+                                (message.blockNumber = $util.Long.fromValue(object.blockNumber)).unsigned = false;
+                            else if (typeof object.blockNumber === "string")
+                                message.blockNumber = parseInt(object.blockNumber, 10);
+                            else if (typeof object.blockNumber === "number")
+                                message.blockNumber = object.blockNumber;
+                            else if (typeof object.blockNumber === "object")
+                                message.blockNumber = new $util.LongBits(object.blockNumber.low >>> 0, object.blockNumber.high >>> 0).toNumber();
+                        if (object.version != null)
+                            if ($util.Long)
+                                (message.version = $util.Long.fromValue(object.version)).unsigned = false;
+                            else if (typeof object.version === "string")
+                                message.version = parseInt(object.version, 10);
+                            else if (typeof object.version === "number")
+                                message.version = object.version;
+                            else if (typeof object.version === "object")
+                                message.version = new $util.LongBits(object.version.low >>> 0, object.version.high >>> 0).toNumber();
+                        if (object.deployCount != null)
+                            message.deployCount = object.deployCount | 0;
+                        if (object.tupleSpaceHash != null)
+                            message.tupleSpaceHash = String(object.tupleSpaceHash);
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.faultTolerance != null)
+                            message.faultTolerance = Number(object.faultTolerance);
+                        if (object.mainParentHash != null)
+                            message.mainParentHash = String(object.mainParentHash);
+                        if (object.parentsHashList) {
+                            if (!Array.isArray(object.parentsHashList))
+                                throw TypeError(".coop.rchain.casper.protocol.LightBlockInfo.parentsHashList: array expected");
+                            message.parentsHashList = [];
+                            for (var i = 0; i < object.parentsHashList.length; ++i)
+                                message.parentsHashList[i] = String(object.parentsHashList[i]);
+                        }
+                        if (object.sender != null)
+                            message.sender = String(object.sender);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a LightBlockInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.LightBlockInfo} message LightBlockInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    LightBlockInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.parentsHashList = [];
+                        if (options.defaults) {
+                            object.blockHash = "";
+                            object.blockSize = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.blockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.blockNumber = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.version = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.version = options.longs === String ? "0" : 0;
+                            object.deployCount = 0;
+                            object.tupleSpaceHash = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            object.faultTolerance = 0;
+                            object.mainParentHash = "";
+                            object.sender = "";
+                        }
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            object.blockHash = message.blockHash;
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            object.blockSize = message.blockSize;
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (typeof message.blockNumber === "number")
+                                object.blockNumber = options.longs === String ? String(message.blockNumber) : message.blockNumber;
+                            else
+                                object.blockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.blockNumber) : options.longs === Number ? new $util.LongBits(message.blockNumber.low >>> 0, message.blockNumber.high >>> 0).toNumber() : message.blockNumber;
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (typeof message.version === "number")
+                                object.version = options.longs === String ? String(message.version) : message.version;
+                            else
+                                object.version = options.longs === String ? $util.Long.prototype.toString.call(message.version) : options.longs === Number ? new $util.LongBits(message.version.low >>> 0, message.version.high >>> 0).toNumber() : message.version;
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            object.deployCount = message.deployCount;
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            object.tupleSpaceHash = message.tupleSpaceHash;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            object.faultTolerance = options.json && !isFinite(message.faultTolerance) ? String(message.faultTolerance) : message.faultTolerance;
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            object.mainParentHash = message.mainParentHash;
+                        if (message.parentsHashList && message.parentsHashList.length) {
+                            object.parentsHashList = [];
+                            for (var j = 0; j < message.parentsHashList.length; ++j)
+                                object.parentsHashList[j] = message.parentsHashList[j];
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            object.sender = message.sender;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this LightBlockInfo to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.LightBlockInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    LightBlockInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return LightBlockInfo;
+                })();
+
+                protocol.BlockInfo = (function() {
+
+                    /**
+                     * Properties of a BlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IBlockInfo
+                     * @property {string|null} [blockHash] BlockInfo blockHash
+                     * @property {string|null} [blockSize] BlockInfo blockSize
+                     * @property {number|Long|null} [blockNumber] BlockInfo blockNumber
+                     * @property {number|Long|null} [version] BlockInfo version
+                     * @property {number|null} [deployCount] BlockInfo deployCount
+                     * @property {string|null} [tupleSpaceHash] BlockInfo tupleSpaceHash
+                     * @property {number|Long|null} [timestamp] BlockInfo timestamp
+                     * @property {number|null} [faultTolerance] BlockInfo faultTolerance
+                     * @property {string|null} [mainParentHash] BlockInfo mainParentHash
+                     * @property {Array.<string>|null} [parentsHashList] BlockInfo parentsHashList
+                     * @property {string|null} [sender] BlockInfo sender
+                     * @property {string|null} [shardId] BlockInfo shardId
+                     * @property {Array.<string>|null} [bondsValidatorList] BlockInfo bondsValidatorList
+                     * @property {Array.<string>|null} [deployCost] BlockInfo deployCost
+                     */
+
+                    /**
+                     * Constructs a new BlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a BlockInfo.
+                     * @implements IBlockInfo
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IBlockInfo=} [properties] Properties to set
+                     */
+                    function BlockInfo(properties) {
+                        this.parentsHashList = [];
+                        this.bondsValidatorList = [];
+                        this.deployCost = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * BlockInfo blockHash.
+                     * @member {string} blockHash
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.blockHash = "";
+
+                    /**
+                     * BlockInfo blockSize.
+                     * @member {string} blockSize
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.blockSize = "";
+
+                    /**
+                     * BlockInfo blockNumber.
+                     * @member {number|Long} blockNumber
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.blockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * BlockInfo version.
+                     * @member {number|Long} version
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.version = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * BlockInfo deployCount.
+                     * @member {number} deployCount
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.deployCount = 0;
+
+                    /**
+                     * BlockInfo tupleSpaceHash.
+                     * @member {string} tupleSpaceHash
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.tupleSpaceHash = "";
+
+                    /**
+                     * BlockInfo timestamp.
+                     * @member {number|Long} timestamp
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    /**
+                     * BlockInfo faultTolerance.
+                     * @member {number} faultTolerance
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.faultTolerance = 0;
+
+                    /**
+                     * BlockInfo mainParentHash.
+                     * @member {string} mainParentHash
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.mainParentHash = "";
+
+                    /**
+                     * BlockInfo parentsHashList.
+                     * @member {Array.<string>} parentsHashList
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.parentsHashList = $util.emptyArray;
+
+                    /**
+                     * BlockInfo sender.
+                     * @member {string} sender
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.sender = "";
+
+                    /**
+                     * BlockInfo shardId.
+                     * @member {string} shardId
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.shardId = "";
+
+                    /**
+                     * BlockInfo bondsValidatorList.
+                     * @member {Array.<string>} bondsValidatorList
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.bondsValidatorList = $util.emptyArray;
+
+                    /**
+                     * BlockInfo deployCost.
+                     * @member {Array.<string>} deployCost
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     */
+                    BlockInfo.prototype.deployCost = $util.emptyArray;
+
+                    /**
+                     * Creates a new BlockInfo instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockInfo=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.BlockInfo} BlockInfo instance
+                     */
+                    BlockInfo.create = function create(properties) {
+                        return new BlockInfo(properties);
+                    };
+
+                    /**
+                     * Encodes the specified BlockInfo message. Does not implicitly {@link coop.rchain.casper.protocol.BlockInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockInfo} message BlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.blockHash);
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.blockSize);
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.blockNumber);
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).int64(message.version);
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            writer.uint32(/* id 5, wireType 0 =*/40).int32(message.deployCount);
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            writer.uint32(/* id 6, wireType 2 =*/50).string(message.tupleSpaceHash);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).int64(message.timestamp);
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            writer.uint32(/* id 8, wireType 5 =*/69).float(message.faultTolerance);
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            writer.uint32(/* id 9, wireType 2 =*/74).string(message.mainParentHash);
+                        if (message.parentsHashList != null && message.parentsHashList.length)
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.parentsHashList[i]);
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            writer.uint32(/* id 11, wireType 2 =*/90).string(message.sender);
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            writer.uint32(/* id 12, wireType 2 =*/98).string(message.shardId);
+                        if (message.bondsValidatorList != null && message.bondsValidatorList.length)
+                            for (var i = 0; i < message.bondsValidatorList.length; ++i)
+                                writer.uint32(/* id 13, wireType 2 =*/106).string(message.bondsValidatorList[i]);
+                        if (message.deployCost != null && message.deployCost.length)
+                            for (var i = 0; i < message.deployCost.length; ++i)
+                                writer.uint32(/* id 14, wireType 2 =*/114).string(message.deployCost[i]);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified BlockInfo message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.BlockInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IBlockInfo} message BlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    BlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a BlockInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.BlockInfo} BlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockHash = reader.string();
+                                break;
+                            case 2:
+                                message.blockSize = reader.string();
+                                break;
+                            case 3:
+                                message.blockNumber = reader.int64();
+                                break;
+                            case 4:
+                                message.version = reader.int64();
+                                break;
+                            case 5:
+                                message.deployCount = reader.int32();
+                                break;
+                            case 6:
+                                message.tupleSpaceHash = reader.string();
+                                break;
+                            case 7:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 8:
+                                message.faultTolerance = reader.float();
+                                break;
+                            case 9:
+                                message.mainParentHash = reader.string();
+                                break;
+                            case 10:
+                                if (!(message.parentsHashList && message.parentsHashList.length))
+                                    message.parentsHashList = [];
+                                message.parentsHashList.push(reader.string());
+                                break;
+                            case 11:
+                                message.sender = reader.string();
+                                break;
+                            case 12:
+                                message.shardId = reader.string();
+                                break;
+                            case 13:
+                                if (!(message.bondsValidatorList && message.bondsValidatorList.length))
+                                    message.bondsValidatorList = [];
+                                message.bondsValidatorList.push(reader.string());
+                                break;
+                            case 14:
+                                if (!(message.deployCost && message.deployCost.length))
+                                    message.deployCost = [];
+                                message.deployCost.push(reader.string());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a BlockInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.BlockInfo} BlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    BlockInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a BlockInfo message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    BlockInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            if (!$util.isString(message.blockHash))
+                                return "blockHash: string expected";
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            if (!$util.isString(message.blockSize))
+                                return "blockSize: string expected";
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (!$util.isInteger(message.blockNumber) && !(message.blockNumber && $util.isInteger(message.blockNumber.low) && $util.isInteger(message.blockNumber.high)))
+                                return "blockNumber: integer|Long expected";
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (!$util.isInteger(message.version) && !(message.version && $util.isInteger(message.version.low) && $util.isInteger(message.version.high)))
+                                return "version: integer|Long expected";
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            if (!$util.isInteger(message.deployCount))
+                                return "deployCount: integer expected";
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            if (!$util.isString(message.tupleSpaceHash))
+                                return "tupleSpaceHash: string expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            if (typeof message.faultTolerance !== "number")
+                                return "faultTolerance: number expected";
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            if (!$util.isString(message.mainParentHash))
+                                return "mainParentHash: string expected";
+                        if (message.parentsHashList != null && message.hasOwnProperty("parentsHashList")) {
+                            if (!Array.isArray(message.parentsHashList))
+                                return "parentsHashList: array expected";
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                if (!$util.isString(message.parentsHashList[i]))
+                                    return "parentsHashList: string[] expected";
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            if (!$util.isString(message.sender))
+                                return "sender: string expected";
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            if (!$util.isString(message.shardId))
+                                return "shardId: string expected";
+                        if (message.bondsValidatorList != null && message.hasOwnProperty("bondsValidatorList")) {
+                            if (!Array.isArray(message.bondsValidatorList))
+                                return "bondsValidatorList: array expected";
+                            for (var i = 0; i < message.bondsValidatorList.length; ++i)
+                                if (!$util.isString(message.bondsValidatorList[i]))
+                                    return "bondsValidatorList: string[] expected";
+                        }
+                        if (message.deployCost != null && message.hasOwnProperty("deployCost")) {
+                            if (!Array.isArray(message.deployCost))
+                                return "deployCost: array expected";
+                            for (var i = 0; i < message.deployCost.length; ++i)
+                                if (!$util.isString(message.deployCost[i]))
+                                    return "deployCost: string[] expected";
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a BlockInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.BlockInfo} BlockInfo
+                     */
+                    BlockInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockInfo)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockInfo();
+                        if (object.blockHash != null)
+                            message.blockHash = String(object.blockHash);
+                        if (object.blockSize != null)
+                            message.blockSize = String(object.blockSize);
+                        if (object.blockNumber != null)
+                            if ($util.Long)
+                                (message.blockNumber = $util.Long.fromValue(object.blockNumber)).unsigned = false;
+                            else if (typeof object.blockNumber === "string")
+                                message.blockNumber = parseInt(object.blockNumber, 10);
+                            else if (typeof object.blockNumber === "number")
+                                message.blockNumber = object.blockNumber;
+                            else if (typeof object.blockNumber === "object")
+                                message.blockNumber = new $util.LongBits(object.blockNumber.low >>> 0, object.blockNumber.high >>> 0).toNumber();
+                        if (object.version != null)
+                            if ($util.Long)
+                                (message.version = $util.Long.fromValue(object.version)).unsigned = false;
+                            else if (typeof object.version === "string")
+                                message.version = parseInt(object.version, 10);
+                            else if (typeof object.version === "number")
+                                message.version = object.version;
+                            else if (typeof object.version === "object")
+                                message.version = new $util.LongBits(object.version.low >>> 0, object.version.high >>> 0).toNumber();
+                        if (object.deployCount != null)
+                            message.deployCount = object.deployCount | 0;
+                        if (object.tupleSpaceHash != null)
+                            message.tupleSpaceHash = String(object.tupleSpaceHash);
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.faultTolerance != null)
+                            message.faultTolerance = Number(object.faultTolerance);
+                        if (object.mainParentHash != null)
+                            message.mainParentHash = String(object.mainParentHash);
+                        if (object.parentsHashList) {
+                            if (!Array.isArray(object.parentsHashList))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.parentsHashList: array expected");
+                            message.parentsHashList = [];
+                            for (var i = 0; i < object.parentsHashList.length; ++i)
+                                message.parentsHashList[i] = String(object.parentsHashList[i]);
+                        }
+                        if (object.sender != null)
+                            message.sender = String(object.sender);
+                        if (object.shardId != null)
+                            message.shardId = String(object.shardId);
+                        if (object.bondsValidatorList) {
+                            if (!Array.isArray(object.bondsValidatorList))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.bondsValidatorList: array expected");
+                            message.bondsValidatorList = [];
+                            for (var i = 0; i < object.bondsValidatorList.length; ++i)
+                                message.bondsValidatorList[i] = String(object.bondsValidatorList[i]);
+                        }
+                        if (object.deployCost) {
+                            if (!Array.isArray(object.deployCost))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.deployCost: array expected");
+                            message.deployCost = [];
+                            for (var i = 0; i < object.deployCost.length; ++i)
+                                message.deployCost[i] = String(object.deployCost[i]);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a BlockInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.BlockInfo} message BlockInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    BlockInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults) {
+                            object.parentsHashList = [];
+                            object.bondsValidatorList = [];
+                            object.deployCost = [];
+                        }
+                        if (options.defaults) {
+                            object.blockHash = "";
+                            object.blockSize = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.blockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.blockNumber = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.version = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.version = options.longs === String ? "0" : 0;
+                            object.deployCount = 0;
+                            object.tupleSpaceHash = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            object.faultTolerance = 0;
+                            object.mainParentHash = "";
+                            object.sender = "";
+                            object.shardId = "";
+                        }
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            object.blockHash = message.blockHash;
+                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
+                            object.blockSize = message.blockSize;
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (typeof message.blockNumber === "number")
+                                object.blockNumber = options.longs === String ? String(message.blockNumber) : message.blockNumber;
+                            else
+                                object.blockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.blockNumber) : options.longs === Number ? new $util.LongBits(message.blockNumber.low >>> 0, message.blockNumber.high >>> 0).toNumber() : message.blockNumber;
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (typeof message.version === "number")
+                                object.version = options.longs === String ? String(message.version) : message.version;
+                            else
+                                object.version = options.longs === String ? $util.Long.prototype.toString.call(message.version) : options.longs === Number ? new $util.LongBits(message.version.low >>> 0, message.version.high >>> 0).toNumber() : message.version;
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            object.deployCount = message.deployCount;
+                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
+                            object.tupleSpaceHash = message.tupleSpaceHash;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
+                            object.faultTolerance = options.json && !isFinite(message.faultTolerance) ? String(message.faultTolerance) : message.faultTolerance;
+                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
+                            object.mainParentHash = message.mainParentHash;
+                        if (message.parentsHashList && message.parentsHashList.length) {
+                            object.parentsHashList = [];
+                            for (var j = 0; j < message.parentsHashList.length; ++j)
+                                object.parentsHashList[j] = message.parentsHashList[j];
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            object.sender = message.sender;
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            object.shardId = message.shardId;
+                        if (message.bondsValidatorList && message.bondsValidatorList.length) {
+                            object.bondsValidatorList = [];
+                            for (var j = 0; j < message.bondsValidatorList.length; ++j)
+                                object.bondsValidatorList[j] = message.bondsValidatorList[j];
+                        }
+                        if (message.deployCost && message.deployCost.length) {
+                            object.deployCost = [];
+                            for (var j = 0; j < message.deployCost.length; ++j)
+                                object.deployCost[j] = message.deployCost[j];
+                        }
+                        return object;
+                    };
+
+                    /**
+                     * Converts this BlockInfo to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.BlockInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    BlockInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockInfo;
+                })();
+
+                protocol.DataWithBlockInfo = (function() {
+
+                    /**
+                     * Properties of a DataWithBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IDataWithBlockInfo
+                     * @property {Array.<IPar>|null} [postBlockData] DataWithBlockInfo postBlockData
+                     * @property {coop.rchain.casper.protocol.ILightBlockInfo|null} [block] DataWithBlockInfo block
+                     */
+
+                    /**
+                     * Constructs a new DataWithBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a DataWithBlockInfo.
+                     * @implements IDataWithBlockInfo
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IDataWithBlockInfo=} [properties] Properties to set
+                     */
+                    function DataWithBlockInfo(properties) {
+                        this.postBlockData = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * DataWithBlockInfo postBlockData.
+                     * @member {Array.<IPar>} postBlockData
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @instance
+                     */
+                    DataWithBlockInfo.prototype.postBlockData = $util.emptyArray;
+
+                    /**
+                     * DataWithBlockInfo block.
+                     * @member {coop.rchain.casper.protocol.ILightBlockInfo|null|undefined} block
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @instance
+                     */
+                    DataWithBlockInfo.prototype.block = null;
+
+                    /**
+                     * Creates a new DataWithBlockInfo instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataWithBlockInfo=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.DataWithBlockInfo} DataWithBlockInfo instance
+                     */
+                    DataWithBlockInfo.create = function create(properties) {
+                        return new DataWithBlockInfo(properties);
+                    };
+
+                    /**
+                     * Encodes the specified DataWithBlockInfo message. Does not implicitly {@link coop.rchain.casper.protocol.DataWithBlockInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataWithBlockInfo} message DataWithBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DataWithBlockInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.postBlockData != null && message.postBlockData.length)
+                            for (var i = 0; i < message.postBlockData.length; ++i)
+                                $root.Par.encode(message.postBlockData[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            $root.coop.rchain.casper.protocol.LightBlockInfo.encode(message.block, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified DataWithBlockInfo message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.DataWithBlockInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IDataWithBlockInfo} message DataWithBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    DataWithBlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a DataWithBlockInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.DataWithBlockInfo} DataWithBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DataWithBlockInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DataWithBlockInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.postBlockData && message.postBlockData.length))
+                                    message.postBlockData = [];
+                                message.postBlockData.push($root.Par.decode(reader, reader.uint32()));
+                                break;
+                            case 2:
+                                message.block = $root.coop.rchain.casper.protocol.LightBlockInfo.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a DataWithBlockInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.DataWithBlockInfo} DataWithBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    DataWithBlockInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a DataWithBlockInfo message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    DataWithBlockInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.postBlockData != null && message.hasOwnProperty("postBlockData")) {
+                            if (!Array.isArray(message.postBlockData))
+                                return "postBlockData: array expected";
+                            for (var i = 0; i < message.postBlockData.length; ++i) {
+                                var error = $root.Par.verify(message.postBlockData[i]);
+                                if (error)
+                                    return "postBlockData." + error;
+                            }
+                        }
+                        if (message.block != null && message.hasOwnProperty("block")) {
+                            var error = $root.coop.rchain.casper.protocol.LightBlockInfo.verify(message.block);
+                            if (error)
+                                return "block." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a DataWithBlockInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.DataWithBlockInfo} DataWithBlockInfo
+                     */
+                    DataWithBlockInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.DataWithBlockInfo)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.DataWithBlockInfo();
+                        if (object.postBlockData) {
+                            if (!Array.isArray(object.postBlockData))
+                                throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.postBlockData: array expected");
+                            message.postBlockData = [];
+                            for (var i = 0; i < object.postBlockData.length; ++i) {
+                                if (typeof object.postBlockData[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.postBlockData: object expected");
+                                message.postBlockData[i] = $root.Par.fromObject(object.postBlockData[i]);
+                            }
+                        }
+                        if (object.block != null) {
+                            if (typeof object.block !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.block: object expected");
+                            message.block = $root.coop.rchain.casper.protocol.LightBlockInfo.fromObject(object.block);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a DataWithBlockInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.DataWithBlockInfo} message DataWithBlockInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    DataWithBlockInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.postBlockData = [];
+                        if (options.defaults)
+                            object.block = null;
+                        if (message.postBlockData && message.postBlockData.length) {
+                            object.postBlockData = [];
+                            for (var j = 0; j < message.postBlockData.length; ++j)
+                                object.postBlockData[j] = $root.Par.toObject(message.postBlockData[j], options);
+                        }
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            object.block = $root.coop.rchain.casper.protocol.LightBlockInfo.toObject(message.block, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this DataWithBlockInfo to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.DataWithBlockInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    DataWithBlockInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return DataWithBlockInfo;
+                })();
+
+                protocol.ContinuationsWithBlockInfo = (function() {
+
+                    /**
+                     * Properties of a ContinuationsWithBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IContinuationsWithBlockInfo
+                     * @property {Array.<coop.rchain.casper.protocol.IWaitingContinuationInfo>|null} [postBlockContinuations] ContinuationsWithBlockInfo postBlockContinuations
+                     * @property {coop.rchain.casper.protocol.ILightBlockInfo|null} [block] ContinuationsWithBlockInfo block
+                     */
+
+                    /**
+                     * Constructs a new ContinuationsWithBlockInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ContinuationsWithBlockInfo.
+                     * @implements IContinuationsWithBlockInfo
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IContinuationsWithBlockInfo=} [properties] Properties to set
+                     */
+                    function ContinuationsWithBlockInfo(properties) {
+                        this.postBlockContinuations = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * ContinuationsWithBlockInfo postBlockContinuations.
+                     * @member {Array.<coop.rchain.casper.protocol.IWaitingContinuationInfo>} postBlockContinuations
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @instance
+                     */
+                    ContinuationsWithBlockInfo.prototype.postBlockContinuations = $util.emptyArray;
+
+                    /**
+                     * ContinuationsWithBlockInfo block.
+                     * @member {coop.rchain.casper.protocol.ILightBlockInfo|null|undefined} block
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @instance
+                     */
+                    ContinuationsWithBlockInfo.prototype.block = null;
+
+                    /**
+                     * Creates a new ContinuationsWithBlockInfo instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationsWithBlockInfo=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.ContinuationsWithBlockInfo} ContinuationsWithBlockInfo instance
+                     */
+                    ContinuationsWithBlockInfo.create = function create(properties) {
+                        return new ContinuationsWithBlockInfo(properties);
+                    };
+
+                    /**
+                     * Encodes the specified ContinuationsWithBlockInfo message. Does not implicitly {@link coop.rchain.casper.protocol.ContinuationsWithBlockInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationsWithBlockInfo} message ContinuationsWithBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ContinuationsWithBlockInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.postBlockContinuations != null && message.postBlockContinuations.length)
+                            for (var i = 0; i < message.postBlockContinuations.length; ++i)
+                                $root.coop.rchain.casper.protocol.WaitingContinuationInfo.encode(message.postBlockContinuations[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            $root.coop.rchain.casper.protocol.LightBlockInfo.encode(message.block, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified ContinuationsWithBlockInfo message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.ContinuationsWithBlockInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IContinuationsWithBlockInfo} message ContinuationsWithBlockInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ContinuationsWithBlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a ContinuationsWithBlockInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.ContinuationsWithBlockInfo} ContinuationsWithBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ContinuationsWithBlockInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.postBlockContinuations && message.postBlockContinuations.length))
+                                    message.postBlockContinuations = [];
+                                message.postBlockContinuations.push($root.coop.rchain.casper.protocol.WaitingContinuationInfo.decode(reader, reader.uint32()));
+                                break;
+                            case 2:
+                                message.block = $root.coop.rchain.casper.protocol.LightBlockInfo.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a ContinuationsWithBlockInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.ContinuationsWithBlockInfo} ContinuationsWithBlockInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ContinuationsWithBlockInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a ContinuationsWithBlockInfo message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ContinuationsWithBlockInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.postBlockContinuations != null && message.hasOwnProperty("postBlockContinuations")) {
+                            if (!Array.isArray(message.postBlockContinuations))
+                                return "postBlockContinuations: array expected";
+                            for (var i = 0; i < message.postBlockContinuations.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.verify(message.postBlockContinuations[i]);
+                                if (error)
+                                    return "postBlockContinuations." + error;
+                            }
+                        }
+                        if (message.block != null && message.hasOwnProperty("block")) {
+                            var error = $root.coop.rchain.casper.protocol.LightBlockInfo.verify(message.block);
+                            if (error)
+                                return "block." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a ContinuationsWithBlockInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.ContinuationsWithBlockInfo} ContinuationsWithBlockInfo
+                     */
+                    ContinuationsWithBlockInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo();
+                        if (object.postBlockContinuations) {
+                            if (!Array.isArray(object.postBlockContinuations))
+                                throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.postBlockContinuations: array expected");
+                            message.postBlockContinuations = [];
+                            for (var i = 0; i < object.postBlockContinuations.length; ++i) {
+                                if (typeof object.postBlockContinuations[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.postBlockContinuations: object expected");
+                                message.postBlockContinuations[i] = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.fromObject(object.postBlockContinuations[i]);
+                            }
+                        }
+                        if (object.block != null) {
+                            if (typeof object.block !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.block: object expected");
+                            message.block = $root.coop.rchain.casper.protocol.LightBlockInfo.fromObject(object.block);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a ContinuationsWithBlockInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.ContinuationsWithBlockInfo} message ContinuationsWithBlockInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ContinuationsWithBlockInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.postBlockContinuations = [];
+                        if (options.defaults)
+                            object.block = null;
+                        if (message.postBlockContinuations && message.postBlockContinuations.length) {
+                            object.postBlockContinuations = [];
+                            for (var j = 0; j < message.postBlockContinuations.length; ++j)
+                                object.postBlockContinuations[j] = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.toObject(message.postBlockContinuations[j], options);
+                        }
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            object.block = $root.coop.rchain.casper.protocol.LightBlockInfo.toObject(message.block, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this ContinuationsWithBlockInfo to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.ContinuationsWithBlockInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ContinuationsWithBlockInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ContinuationsWithBlockInfo;
+                })();
+
+                protocol.WaitingContinuationInfo = (function() {
+
+                    /**
+                     * Properties of a WaitingContinuationInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IWaitingContinuationInfo
+                     * @property {Array.<IBindPattern>|null} [postBlockPatterns] WaitingContinuationInfo postBlockPatterns
+                     * @property {IPar|null} [postBlockContinuation] WaitingContinuationInfo postBlockContinuation
+                     */
+
+                    /**
+                     * Constructs a new WaitingContinuationInfo.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a WaitingContinuationInfo.
+                     * @implements IWaitingContinuationInfo
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IWaitingContinuationInfo=} [properties] Properties to set
+                     */
+                    function WaitingContinuationInfo(properties) {
+                        this.postBlockPatterns = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * WaitingContinuationInfo postBlockPatterns.
+                     * @member {Array.<IBindPattern>} postBlockPatterns
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @instance
+                     */
+                    WaitingContinuationInfo.prototype.postBlockPatterns = $util.emptyArray;
+
+                    /**
+                     * WaitingContinuationInfo postBlockContinuation.
+                     * @member {IPar|null|undefined} postBlockContinuation
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @instance
+                     */
+                    WaitingContinuationInfo.prototype.postBlockContinuation = null;
+
+                    /**
+                     * Creates a new WaitingContinuationInfo instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IWaitingContinuationInfo=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.WaitingContinuationInfo} WaitingContinuationInfo instance
+                     */
+                    WaitingContinuationInfo.create = function create(properties) {
+                        return new WaitingContinuationInfo(properties);
+                    };
+
+                    /**
+                     * Encodes the specified WaitingContinuationInfo message. Does not implicitly {@link coop.rchain.casper.protocol.WaitingContinuationInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IWaitingContinuationInfo} message WaitingContinuationInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WaitingContinuationInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.postBlockPatterns != null && message.postBlockPatterns.length)
+                            for (var i = 0; i < message.postBlockPatterns.length; ++i)
+                                $root.BindPattern.encode(message.postBlockPatterns[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation"))
+                            $root.Par.encode(message.postBlockContinuation, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified WaitingContinuationInfo message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.WaitingContinuationInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IWaitingContinuationInfo} message WaitingContinuationInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    WaitingContinuationInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a WaitingContinuationInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.WaitingContinuationInfo} WaitingContinuationInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WaitingContinuationInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.WaitingContinuationInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.postBlockPatterns && message.postBlockPatterns.length))
+                                    message.postBlockPatterns = [];
+                                message.postBlockPatterns.push($root.BindPattern.decode(reader, reader.uint32()));
+                                break;
+                            case 2:
+                                message.postBlockContinuation = $root.Par.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a WaitingContinuationInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.WaitingContinuationInfo} WaitingContinuationInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    WaitingContinuationInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a WaitingContinuationInfo message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    WaitingContinuationInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.postBlockPatterns != null && message.hasOwnProperty("postBlockPatterns")) {
+                            if (!Array.isArray(message.postBlockPatterns))
+                                return "postBlockPatterns: array expected";
+                            for (var i = 0; i < message.postBlockPatterns.length; ++i) {
+                                var error = $root.BindPattern.verify(message.postBlockPatterns[i]);
+                                if (error)
+                                    return "postBlockPatterns." + error;
+                            }
+                        }
+                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation")) {
+                            var error = $root.Par.verify(message.postBlockContinuation);
+                            if (error)
+                                return "postBlockContinuation." + error;
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Creates a WaitingContinuationInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.WaitingContinuationInfo} WaitingContinuationInfo
+                     */
+                    WaitingContinuationInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.WaitingContinuationInfo)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.WaitingContinuationInfo();
+                        if (object.postBlockPatterns) {
+                            if (!Array.isArray(object.postBlockPatterns))
+                                throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockPatterns: array expected");
+                            message.postBlockPatterns = [];
+                            for (var i = 0; i < object.postBlockPatterns.length; ++i) {
+                                if (typeof object.postBlockPatterns[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockPatterns: object expected");
+                                message.postBlockPatterns[i] = $root.BindPattern.fromObject(object.postBlockPatterns[i]);
+                            }
+                        }
+                        if (object.postBlockContinuation != null) {
+                            if (typeof object.postBlockContinuation !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockContinuation: object expected");
+                            message.postBlockContinuation = $root.Par.fromObject(object.postBlockContinuation);
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a WaitingContinuationInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @static
+                     * @param {coop.rchain.casper.protocol.WaitingContinuationInfo} message WaitingContinuationInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    WaitingContinuationInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.postBlockPatterns = [];
+                        if (options.defaults)
+                            object.postBlockContinuation = null;
+                        if (message.postBlockPatterns && message.postBlockPatterns.length) {
+                            object.postBlockPatterns = [];
+                            for (var j = 0; j < message.postBlockPatterns.length; ++j)
+                                object.postBlockPatterns[j] = $root.BindPattern.toObject(message.postBlockPatterns[j], options);
+                        }
+                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation"))
+                            object.postBlockContinuation = $root.Par.toObject(message.postBlockContinuation, options);
+                        return object;
+                    };
+
+                    /**
+                     * Converts this WaitingContinuationInfo to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.WaitingContinuationInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    WaitingContinuationInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return WaitingContinuationInfo;
+                })();
+
+                protocol.ProposeService = (function() {
+
+                    /**
+                     * Constructs a new ProposeService service.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a ProposeService
+                     * @extends $protobuf.rpc.Service
+                     * @constructor
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     */
+                    function ProposeService(rpcImpl, requestDelimited, responseDelimited) {
+                        $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+                    }
+
+                    (ProposeService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = ProposeService;
+
+                    /**
+                     * Creates new ProposeService service using the specified rpc implementation.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @static
+                     * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                     * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                     * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                     * @returns {ProposeService} RPC service. Useful where requests and/or responses are streamed.
+                     */
+                    ProposeService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+                        return new this(rpcImpl, requestDelimited, responseDelimited);
+                    };
+
+                    /**
+                     * Callback as used by {@link coop.rchain.casper.protocol.ProposeService#propose}.
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @typedef proposeCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {Either} [response] Either
+                     */
+
+                    /**
+                     * Calls propose.
+                     * @function propose
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} request PrintUnmatchedSendsQuery message or plain object
+                     * @param {coop.rchain.casper.protocol.ProposeService.proposeCallback} callback Node-style callback called with the error, if any, and Either
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(ProposeService.prototype.propose = function propose(request, callback) {
+                        return this.rpcCall(propose, $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery, $root.Either, request, callback);
+                    }, "name", { value: "propose" });
+
+                    /**
+                     * Calls propose.
+                     * @function propose
+                     * @memberof coop.rchain.casper.protocol.ProposeService
+                     * @instance
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} request PrintUnmatchedSendsQuery message or plain object
+                     * @returns {Promise<Either>} Promise
+                     * @variation 2
+                     */
+
+                    return ProposeService;
+                })();
+
+                protocol.PrintUnmatchedSendsQuery = (function() {
+
+                    /**
+                     * Properties of a PrintUnmatchedSendsQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @interface IPrintUnmatchedSendsQuery
+                     * @property {boolean|null} [printUnmatchedSends] PrintUnmatchedSendsQuery printUnmatchedSends
+                     */
+
+                    /**
+                     * Constructs a new PrintUnmatchedSendsQuery.
+                     * @memberof coop.rchain.casper.protocol
+                     * @classdesc Represents a PrintUnmatchedSendsQuery.
+                     * @implements IPrintUnmatchedSendsQuery
+                     * @constructor
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery=} [properties] Properties to set
+                     */
+                    function PrintUnmatchedSendsQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    /**
+                     * PrintUnmatchedSendsQuery printUnmatchedSends.
+                     * @member {boolean} printUnmatchedSends
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @instance
+                     */
+                    PrintUnmatchedSendsQuery.prototype.printUnmatchedSends = false;
+
+                    /**
+                     * Creates a new PrintUnmatchedSendsQuery instance using the specified properties.
+                     * @function create
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery=} [properties] Properties to set
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery instance
+                     */
+                    PrintUnmatchedSendsQuery.create = function create(properties) {
+                        return new PrintUnmatchedSendsQuery(properties);
+                    };
+
+                    /**
+                     * Encodes the specified PrintUnmatchedSendsQuery message. Does not implicitly {@link coop.rchain.casper.protocol.PrintUnmatchedSendsQuery.verify|verify} messages.
+                     * @function encode
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrintUnmatchedSendsQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).bool(message.printUnmatchedSends);
+                        return writer;
+                    };
+
+                    /**
+                     * Encodes the specified PrintUnmatchedSendsQuery message, length delimited. Does not implicitly {@link coop.rchain.casper.protocol.PrintUnmatchedSendsQuery.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.IPrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PrintUnmatchedSendsQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    /**
+                     * Decodes a PrintUnmatchedSendsQuery message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrintUnmatchedSendsQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.printUnmatchedSends = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    /**
+                     * Decodes a PrintUnmatchedSendsQuery message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PrintUnmatchedSendsQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    /**
+                     * Verifies a PrintUnmatchedSendsQuery message.
+                     * @function verify
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PrintUnmatchedSendsQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            if (typeof message.printUnmatchedSends !== "boolean")
+                                return "printUnmatchedSends: boolean expected";
+                        return null;
+                    };
+
+                    /**
+                     * Creates a PrintUnmatchedSendsQuery message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} PrintUnmatchedSendsQuery
+                     */
+                    PrintUnmatchedSendsQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        if (object.printUnmatchedSends != null)
+                            message.printUnmatchedSends = Boolean(object.printUnmatchedSends);
+                        return message;
+                    };
+
+                    /**
+                     * Creates a plain object from a PrintUnmatchedSendsQuery message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @static
+                     * @param {coop.rchain.casper.protocol.PrintUnmatchedSendsQuery} message PrintUnmatchedSendsQuery
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PrintUnmatchedSendsQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.printUnmatchedSends = false;
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            object.printUnmatchedSends = message.printUnmatchedSends;
+                        return object;
+                    };
+
+                    /**
+                     * Converts this PrintUnmatchedSendsQuery to JSON.
+                     * @function toJSON
+                     * @memberof coop.rchain.casper.protocol.PrintUnmatchedSendsQuery
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PrintUnmatchedSendsQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return PrintUnmatchedSendsQuery;
+                })();
+
                 return protocol;
             })();
 
             return casper;
+        })();
+
+        rchain.comm = (function() {
+
+            /**
+             * Namespace comm.
+             * @memberof coop.rchain
+             * @namespace
+             */
+            var comm = {};
+
+            comm.protocol = (function() {
+
+                /**
+                 * Namespace protocol.
+                 * @memberof coop.rchain.comm
+                 * @namespace
+                 */
+                var protocol = {};
+
+                protocol.routing = (function() {
+
+                    /**
+                     * Namespace routing.
+                     * @memberof coop.rchain.comm.protocol
+                     * @namespace
+                     */
+                    var routing = {};
+
+                    routing.Node = (function() {
+
+                        /**
+                         * Properties of a Node.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface INode
+                         * @property {Uint8Array|null} [id] Node id
+                         * @property {Uint8Array|null} [host] Node host
+                         * @property {number|null} [tcp_port] Node tcp_port
+                         * @property {number|null} [udp_port] Node udp_port
+                         */
+
+                        /**
+                         * Constructs a new Node.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Node.
+                         * @implements INode
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.INode=} [properties] Properties to set
+                         */
+                        function Node(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Node id.
+                         * @member {Uint8Array} id
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @instance
+                         */
+                        Node.prototype.id = $util.newBuffer([]);
+
+                        /**
+                         * Node host.
+                         * @member {Uint8Array} host
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @instance
+                         */
+                        Node.prototype.host = $util.newBuffer([]);
+
+                        /**
+                         * Node tcp_port.
+                         * @member {number} tcp_port
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @instance
+                         */
+                        Node.prototype.tcp_port = 0;
+
+                        /**
+                         * Node udp_port.
+                         * @member {number} udp_port
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @instance
+                         */
+                        Node.prototype.udp_port = 0;
+
+                        /**
+                         * Creates a new Node instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.INode=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Node} Node instance
+                         */
+                        Node.create = function create(properties) {
+                            return new Node(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Node message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Node.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.INode} message Node message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Node.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.id != null && message.hasOwnProperty("id"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.id);
+                            if (message.host != null && message.hasOwnProperty("host"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.host);
+                            if (message.tcp_port != null && message.hasOwnProperty("tcp_port"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.tcp_port);
+                            if (message.udp_port != null && message.hasOwnProperty("udp_port"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.udp_port);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Node message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Node.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.INode} message Node message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Node.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Node message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Node} Node
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Node.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Node();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.id = reader.bytes();
+                                    break;
+                                case 2:
+                                    message.host = reader.bytes();
+                                    break;
+                                case 3:
+                                    message.tcp_port = reader.uint32();
+                                    break;
+                                case 4:
+                                    message.udp_port = reader.uint32();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Node message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Node} Node
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Node.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Node message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Node.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.id != null && message.hasOwnProperty("id"))
+                                if (!(message.id && typeof message.id.length === "number" || $util.isString(message.id)))
+                                    return "id: buffer expected";
+                            if (message.host != null && message.hasOwnProperty("host"))
+                                if (!(message.host && typeof message.host.length === "number" || $util.isString(message.host)))
+                                    return "host: buffer expected";
+                            if (message.tcp_port != null && message.hasOwnProperty("tcp_port"))
+                                if (!$util.isInteger(message.tcp_port))
+                                    return "tcp_port: integer expected";
+                            if (message.udp_port != null && message.hasOwnProperty("udp_port"))
+                                if (!$util.isInteger(message.udp_port))
+                                    return "udp_port: integer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Node message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Node} Node
+                         */
+                        Node.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Node)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Node();
+                            if (object.id != null)
+                                if (typeof object.id === "string")
+                                    $util.base64.decode(object.id, message.id = $util.newBuffer($util.base64.length(object.id)), 0);
+                                else if (object.id.length)
+                                    message.id = object.id;
+                            if (object.host != null)
+                                if (typeof object.host === "string")
+                                    $util.base64.decode(object.host, message.host = $util.newBuffer($util.base64.length(object.host)), 0);
+                                else if (object.host.length)
+                                    message.host = object.host;
+                            if (object.tcp_port != null)
+                                message.tcp_port = object.tcp_port >>> 0;
+                            if (object.udp_port != null)
+                                message.udp_port = object.udp_port >>> 0;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a Node message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Node} message Node
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Node.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                if (options.bytes === String)
+                                    object.id = "";
+                                else {
+                                    object.id = [];
+                                    if (options.bytes !== Array)
+                                        object.id = $util.newBuffer(object.id);
+                                }
+                                if (options.bytes === String)
+                                    object.host = "";
+                                else {
+                                    object.host = [];
+                                    if (options.bytes !== Array)
+                                        object.host = $util.newBuffer(object.host);
+                                }
+                                object.tcp_port = 0;
+                                object.udp_port = 0;
+                            }
+                            if (message.id != null && message.hasOwnProperty("id"))
+                                object.id = options.bytes === String ? $util.base64.encode(message.id, 0, message.id.length) : options.bytes === Array ? Array.prototype.slice.call(message.id) : message.id;
+                            if (message.host != null && message.hasOwnProperty("host"))
+                                object.host = options.bytes === String ? $util.base64.encode(message.host, 0, message.host.length) : options.bytes === Array ? Array.prototype.slice.call(message.host) : message.host;
+                            if (message.tcp_port != null && message.hasOwnProperty("tcp_port"))
+                                object.tcp_port = message.tcp_port;
+                            if (message.udp_port != null && message.hasOwnProperty("udp_port"))
+                                object.udp_port = message.udp_port;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Node to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Node
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Node.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Node;
+                    })();
+
+                    routing.Header = (function() {
+
+                        /**
+                         * Properties of a Header.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IHeader
+                         * @property {coop.rchain.comm.protocol.routing.INode|null} [sender] Header sender
+                         * @property {string|null} [networkId] Header networkId
+                         */
+
+                        /**
+                         * Constructs a new Header.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Header.
+                         * @implements IHeader
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IHeader=} [properties] Properties to set
+                         */
+                        function Header(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Header sender.
+                         * @member {coop.rchain.comm.protocol.routing.INode|null|undefined} sender
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @instance
+                         */
+                        Header.prototype.sender = null;
+
+                        /**
+                         * Header networkId.
+                         * @member {string} networkId
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @instance
+                         */
+                        Header.prototype.networkId = "";
+
+                        /**
+                         * Creates a new Header instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeader=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Header} Header instance
+                         */
+                        Header.create = function create(properties) {
+                            return new Header(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Header message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Header.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeader} message Header message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Header.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.sender != null && message.hasOwnProperty("sender"))
+                                $root.coop.rchain.comm.protocol.routing.Node.encode(message.sender, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.networkId);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Header message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Header.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeader} message Header message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Header.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Header message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Header} Header
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Header.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Header();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.sender = $root.coop.rchain.comm.protocol.routing.Node.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.networkId = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Header message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Header} Header
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Header.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Header message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Header.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.sender != null && message.hasOwnProperty("sender")) {
+                                var error = $root.coop.rchain.comm.protocol.routing.Node.verify(message.sender);
+                                if (error)
+                                    return "sender." + error;
+                            }
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                if (!$util.isString(message.networkId))
+                                    return "networkId: string expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Header message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Header} Header
+                         */
+                        Header.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Header)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Header();
+                            if (object.sender != null) {
+                                if (typeof object.sender !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Header.sender: object expected");
+                                message.sender = $root.coop.rchain.comm.protocol.routing.Node.fromObject(object.sender);
+                            }
+                            if (object.networkId != null)
+                                message.networkId = String(object.networkId);
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a Header message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Header} message Header
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Header.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.sender = null;
+                                object.networkId = "";
+                            }
+                            if (message.sender != null && message.hasOwnProperty("sender"))
+                                object.sender = $root.coop.rchain.comm.protocol.routing.Node.toObject(message.sender, options);
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                object.networkId = message.networkId;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Header to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Header
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Header.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Header;
+                    })();
+
+                    routing.Heartbeat = (function() {
+
+                        /**
+                         * Properties of a Heartbeat.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IHeartbeat
+                         */
+
+                        /**
+                         * Constructs a new Heartbeat.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Heartbeat.
+                         * @implements IHeartbeat
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeat=} [properties] Properties to set
+                         */
+                        function Heartbeat(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Creates a new Heartbeat instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeat=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Heartbeat} Heartbeat instance
+                         */
+                        Heartbeat.create = function create(properties) {
+                            return new Heartbeat(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Heartbeat message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Heartbeat.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeat} message Heartbeat message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Heartbeat.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Heartbeat message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Heartbeat.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeat} message Heartbeat message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Heartbeat.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Heartbeat message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Heartbeat} Heartbeat
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Heartbeat.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Heartbeat();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Heartbeat message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Heartbeat} Heartbeat
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Heartbeat.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Heartbeat message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Heartbeat.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Heartbeat message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Heartbeat} Heartbeat
+                         */
+                        Heartbeat.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Heartbeat)
+                                return object;
+                            return new $root.coop.rchain.comm.protocol.routing.Heartbeat();
+                        };
+
+                        /**
+                         * Creates a plain object from a Heartbeat message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Heartbeat} message Heartbeat
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Heartbeat.toObject = function toObject() {
+                            return {};
+                        };
+
+                        /**
+                         * Converts this Heartbeat to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Heartbeat
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Heartbeat.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Heartbeat;
+                    })();
+
+                    routing.HeartbeatResponse = (function() {
+
+                        /**
+                         * Properties of a HeartbeatResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IHeartbeatResponse
+                         */
+
+                        /**
+                         * Constructs a new HeartbeatResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a HeartbeatResponse.
+                         * @implements IHeartbeatResponse
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeatResponse=} [properties] Properties to set
+                         */
+                        function HeartbeatResponse(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Creates a new HeartbeatResponse instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeatResponse=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.HeartbeatResponse} HeartbeatResponse instance
+                         */
+                        HeartbeatResponse.create = function create(properties) {
+                            return new HeartbeatResponse(properties);
+                        };
+
+                        /**
+                         * Encodes the specified HeartbeatResponse message. Does not implicitly {@link coop.rchain.comm.protocol.routing.HeartbeatResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeatResponse} message HeartbeatResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        HeartbeatResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified HeartbeatResponse message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.HeartbeatResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IHeartbeatResponse} message HeartbeatResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        HeartbeatResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a HeartbeatResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.HeartbeatResponse} HeartbeatResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        HeartbeatResponse.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.HeartbeatResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a HeartbeatResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.HeartbeatResponse} HeartbeatResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        HeartbeatResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a HeartbeatResponse message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        HeartbeatResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a HeartbeatResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.HeartbeatResponse} HeartbeatResponse
+                         */
+                        HeartbeatResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.HeartbeatResponse)
+                                return object;
+                            return new $root.coop.rchain.comm.protocol.routing.HeartbeatResponse();
+                        };
+
+                        /**
+                         * Creates a plain object from a HeartbeatResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.HeartbeatResponse} message HeartbeatResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        HeartbeatResponse.toObject = function toObject() {
+                            return {};
+                        };
+
+                        /**
+                         * Converts this HeartbeatResponse to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.HeartbeatResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        HeartbeatResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return HeartbeatResponse;
+                    })();
+
+                    routing.ProtocolHandshake = (function() {
+
+                        /**
+                         * Properties of a ProtocolHandshake.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IProtocolHandshake
+                         * @property {Uint8Array|null} [nonce] ProtocolHandshake nonce
+                         */
+
+                        /**
+                         * Constructs a new ProtocolHandshake.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a ProtocolHandshake.
+                         * @implements IProtocolHandshake
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshake=} [properties] Properties to set
+                         */
+                        function ProtocolHandshake(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * ProtocolHandshake nonce.
+                         * @member {Uint8Array} nonce
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @instance
+                         */
+                        ProtocolHandshake.prototype.nonce = $util.newBuffer([]);
+
+                        /**
+                         * Creates a new ProtocolHandshake instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshake=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshake} ProtocolHandshake instance
+                         */
+                        ProtocolHandshake.create = function create(properties) {
+                            return new ProtocolHandshake(properties);
+                        };
+
+                        /**
+                         * Encodes the specified ProtocolHandshake message. Does not implicitly {@link coop.rchain.comm.protocol.routing.ProtocolHandshake.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshake} message ProtocolHandshake message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtocolHandshake.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.nonce);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified ProtocolHandshake message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.ProtocolHandshake.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshake} message ProtocolHandshake message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtocolHandshake.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a ProtocolHandshake message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshake} ProtocolHandshake
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtocolHandshake.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.ProtocolHandshake();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.nonce = reader.bytes();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a ProtocolHandshake message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshake} ProtocolHandshake
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtocolHandshake.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a ProtocolHandshake message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ProtocolHandshake.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                if (!(message.nonce && typeof message.nonce.length === "number" || $util.isString(message.nonce)))
+                                    return "nonce: buffer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a ProtocolHandshake message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshake} ProtocolHandshake
+                         */
+                        ProtocolHandshake.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.ProtocolHandshake)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.ProtocolHandshake();
+                            if (object.nonce != null)
+                                if (typeof object.nonce === "string")
+                                    $util.base64.decode(object.nonce, message.nonce = $util.newBuffer($util.base64.length(object.nonce)), 0);
+                                else if (object.nonce.length)
+                                    message.nonce = object.nonce;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a ProtocolHandshake message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ProtocolHandshake} message ProtocolHandshake
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ProtocolHandshake.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                if (options.bytes === String)
+                                    object.nonce = "";
+                                else {
+                                    object.nonce = [];
+                                    if (options.bytes !== Array)
+                                        object.nonce = $util.newBuffer(object.nonce);
+                                }
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                object.nonce = options.bytes === String ? $util.base64.encode(message.nonce, 0, message.nonce.length) : options.bytes === Array ? Array.prototype.slice.call(message.nonce) : message.nonce;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this ProtocolHandshake to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshake
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ProtocolHandshake.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return ProtocolHandshake;
+                    })();
+
+                    routing.ProtocolHandshakeResponse = (function() {
+
+                        /**
+                         * Properties of a ProtocolHandshakeResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IProtocolHandshakeResponse
+                         * @property {Uint8Array|null} [nonce] ProtocolHandshakeResponse nonce
+                         */
+
+                        /**
+                         * Constructs a new ProtocolHandshakeResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a ProtocolHandshakeResponse.
+                         * @implements IProtocolHandshakeResponse
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse=} [properties] Properties to set
+                         */
+                        function ProtocolHandshakeResponse(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * ProtocolHandshakeResponse nonce.
+                         * @member {Uint8Array} nonce
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @instance
+                         */
+                        ProtocolHandshakeResponse.prototype.nonce = $util.newBuffer([]);
+
+                        /**
+                         * Creates a new ProtocolHandshakeResponse instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse} ProtocolHandshakeResponse instance
+                         */
+                        ProtocolHandshakeResponse.create = function create(properties) {
+                            return new ProtocolHandshakeResponse(properties);
+                        };
+
+                        /**
+                         * Encodes the specified ProtocolHandshakeResponse message. Does not implicitly {@link coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse} message ProtocolHandshakeResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtocolHandshakeResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.nonce);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified ProtocolHandshakeResponse message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse} message ProtocolHandshakeResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ProtocolHandshakeResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a ProtocolHandshakeResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse} ProtocolHandshakeResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtocolHandshakeResponse.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.nonce = reader.bytes();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a ProtocolHandshakeResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse} ProtocolHandshakeResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ProtocolHandshakeResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a ProtocolHandshakeResponse message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ProtocolHandshakeResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                if (!(message.nonce && typeof message.nonce.length === "number" || $util.isString(message.nonce)))
+                                    return "nonce: buffer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a ProtocolHandshakeResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse} ProtocolHandshakeResponse
+                         */
+                        ProtocolHandshakeResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse();
+                            if (object.nonce != null)
+                                if (typeof object.nonce === "string")
+                                    $util.base64.decode(object.nonce, message.nonce = $util.newBuffer($util.base64.length(object.nonce)), 0);
+                                else if (object.nonce.length)
+                                    message.nonce = object.nonce;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a ProtocolHandshakeResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse} message ProtocolHandshakeResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ProtocolHandshakeResponse.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                if (options.bytes === String)
+                                    object.nonce = "";
+                                else {
+                                    object.nonce = [];
+                                    if (options.bytes !== Array)
+                                        object.nonce = $util.newBuffer(object.nonce);
+                                }
+                            if (message.nonce != null && message.hasOwnProperty("nonce"))
+                                object.nonce = options.bytes === String ? $util.base64.encode(message.nonce, 0, message.nonce.length) : options.bytes === Array ? Array.prototype.slice.call(message.nonce) : message.nonce;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this ProtocolHandshakeResponse to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ProtocolHandshakeResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return ProtocolHandshakeResponse;
+                    })();
+
+                    routing.Packet = (function() {
+
+                        /**
+                         * Properties of a Packet.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IPacket
+                         * @property {string|null} [typeId] Packet typeId
+                         * @property {Uint8Array|null} [content] Packet content
+                         */
+
+                        /**
+                         * Constructs a new Packet.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Packet.
+                         * @implements IPacket
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IPacket=} [properties] Properties to set
+                         */
+                        function Packet(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Packet typeId.
+                         * @member {string} typeId
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @instance
+                         */
+                        Packet.prototype.typeId = "";
+
+                        /**
+                         * Packet content.
+                         * @member {Uint8Array} content
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @instance
+                         */
+                        Packet.prototype.content = $util.newBuffer([]);
+
+                        /**
+                         * Creates a new Packet instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IPacket=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Packet} Packet instance
+                         */
+                        Packet.create = function create(properties) {
+                            return new Packet(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Packet message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Packet.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IPacket} message Packet message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Packet.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.typeId);
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.content);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Packet message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Packet.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IPacket} message Packet message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Packet.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Packet message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Packet} Packet
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Packet.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Packet();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.typeId = reader.string();
+                                    break;
+                                case 2:
+                                    message.content = reader.bytes();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Packet message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Packet} Packet
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Packet.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Packet message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Packet.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                if (!$util.isString(message.typeId))
+                                    return "typeId: string expected";
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                if (!(message.content && typeof message.content.length === "number" || $util.isString(message.content)))
+                                    return "content: buffer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Packet message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Packet} Packet
+                         */
+                        Packet.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Packet)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Packet();
+                            if (object.typeId != null)
+                                message.typeId = String(object.typeId);
+                            if (object.content != null)
+                                if (typeof object.content === "string")
+                                    $util.base64.decode(object.content, message.content = $util.newBuffer($util.base64.length(object.content)), 0);
+                                else if (object.content.length)
+                                    message.content = object.content;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a Packet message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Packet} message Packet
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Packet.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.typeId = "";
+                                if (options.bytes === String)
+                                    object.content = "";
+                                else {
+                                    object.content = [];
+                                    if (options.bytes !== Array)
+                                        object.content = $util.newBuffer(object.content);
+                                }
+                            }
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                object.typeId = message.typeId;
+                            if (message.content != null && message.hasOwnProperty("content"))
+                                object.content = options.bytes === String ? $util.base64.encode(message.content, 0, message.content.length) : options.bytes === Array ? Array.prototype.slice.call(message.content) : message.content;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Packet to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Packet
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Packet.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Packet;
+                    })();
+
+                    routing.Disconnect = (function() {
+
+                        /**
+                         * Properties of a Disconnect.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IDisconnect
+                         */
+
+                        /**
+                         * Constructs a new Disconnect.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Disconnect.
+                         * @implements IDisconnect
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IDisconnect=} [properties] Properties to set
+                         */
+                        function Disconnect(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Creates a new Disconnect instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IDisconnect=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Disconnect} Disconnect instance
+                         */
+                        Disconnect.create = function create(properties) {
+                            return new Disconnect(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Disconnect message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Disconnect.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IDisconnect} message Disconnect message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Disconnect.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Disconnect message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Disconnect.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IDisconnect} message Disconnect message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Disconnect.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Disconnect message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Disconnect} Disconnect
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Disconnect.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Disconnect();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Disconnect message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Disconnect} Disconnect
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Disconnect.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Disconnect message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Disconnect.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Disconnect message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Disconnect} Disconnect
+                         */
+                        Disconnect.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Disconnect)
+                                return object;
+                            return new $root.coop.rchain.comm.protocol.routing.Disconnect();
+                        };
+
+                        /**
+                         * Creates a plain object from a Disconnect message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Disconnect} message Disconnect
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Disconnect.toObject = function toObject() {
+                            return {};
+                        };
+
+                        /**
+                         * Converts this Disconnect to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Disconnect
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Disconnect.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Disconnect;
+                    })();
+
+                    routing.Protocol = (function() {
+
+                        /**
+                         * Properties of a Protocol.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IProtocol
+                         * @property {coop.rchain.comm.protocol.routing.IHeader|null} [header] Protocol header
+                         * @property {coop.rchain.comm.protocol.routing.IHeartbeat|null} [heartbeat] Protocol heartbeat
+                         * @property {coop.rchain.comm.protocol.routing.IProtocolHandshake|null} [protocol_handshake] Protocol protocol_handshake
+                         * @property {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse|null} [protocol_handshake_response] Protocol protocol_handshake_response
+                         * @property {coop.rchain.comm.protocol.routing.IPacket|null} [packet] Protocol packet
+                         * @property {coop.rchain.comm.protocol.routing.IDisconnect|null} [disconnect] Protocol disconnect
+                         */
+
+                        /**
+                         * Constructs a new Protocol.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Protocol.
+                         * @implements IProtocol
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IProtocol=} [properties] Properties to set
+                         */
+                        function Protocol(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Protocol header.
+                         * @member {coop.rchain.comm.protocol.routing.IHeader|null|undefined} header
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.header = null;
+
+                        /**
+                         * Protocol heartbeat.
+                         * @member {coop.rchain.comm.protocol.routing.IHeartbeat|null|undefined} heartbeat
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.heartbeat = null;
+
+                        /**
+                         * Protocol protocol_handshake.
+                         * @member {coop.rchain.comm.protocol.routing.IProtocolHandshake|null|undefined} protocol_handshake
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.protocol_handshake = null;
+
+                        /**
+                         * Protocol protocol_handshake_response.
+                         * @member {coop.rchain.comm.protocol.routing.IProtocolHandshakeResponse|null|undefined} protocol_handshake_response
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.protocol_handshake_response = null;
+
+                        /**
+                         * Protocol packet.
+                         * @member {coop.rchain.comm.protocol.routing.IPacket|null|undefined} packet
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.packet = null;
+
+                        /**
+                         * Protocol disconnect.
+                         * @member {coop.rchain.comm.protocol.routing.IDisconnect|null|undefined} disconnect
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Protocol.prototype.disconnect = null;
+
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+
+                        /**
+                         * Protocol message.
+                         * @member {"heartbeat"|"protocol_handshake"|"protocol_handshake_response"|"packet"|"disconnect"|undefined} message
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         */
+                        Object.defineProperty(Protocol.prototype, "message", {
+                            get: $util.oneOfGetter($oneOfFields = ["heartbeat", "protocol_handshake", "protocol_handshake_response", "packet", "disconnect"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+
+                        /**
+                         * Creates a new Protocol instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocol=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Protocol} Protocol instance
+                         */
+                        Protocol.create = function create(properties) {
+                            return new Protocol(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Protocol message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Protocol.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocol} message Protocol message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Protocol.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.header != null && message.hasOwnProperty("header"))
+                                $root.coop.rchain.comm.protocol.routing.Header.encode(message.header, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.heartbeat != null && message.hasOwnProperty("heartbeat"))
+                                $root.coop.rchain.comm.protocol.routing.Heartbeat.encode(message.heartbeat, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.protocol_handshake != null && message.hasOwnProperty("protocol_handshake"))
+                                $root.coop.rchain.comm.protocol.routing.ProtocolHandshake.encode(message.protocol_handshake, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.protocol_handshake_response != null && message.hasOwnProperty("protocol_handshake_response"))
+                                $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.encode(message.protocol_handshake_response, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            if (message.packet != null && message.hasOwnProperty("packet"))
+                                $root.coop.rchain.comm.protocol.routing.Packet.encode(message.packet, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                            if (message.disconnect != null && message.hasOwnProperty("disconnect"))
+                                $root.coop.rchain.comm.protocol.routing.Disconnect.encode(message.disconnect, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Protocol message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Protocol.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IProtocol} message Protocol message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Protocol.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Protocol message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Protocol} Protocol
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Protocol.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Protocol();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.header = $root.coop.rchain.comm.protocol.routing.Header.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.heartbeat = $root.coop.rchain.comm.protocol.routing.Heartbeat.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.protocol_handshake = $root.coop.rchain.comm.protocol.routing.ProtocolHandshake.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.protocol_handshake_response = $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.decode(reader, reader.uint32());
+                                    break;
+                                case 5:
+                                    message.packet = $root.coop.rchain.comm.protocol.routing.Packet.decode(reader, reader.uint32());
+                                    break;
+                                case 6:
+                                    message.disconnect = $root.coop.rchain.comm.protocol.routing.Disconnect.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Protocol message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Protocol} Protocol
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Protocol.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Protocol message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Protocol.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.header != null && message.hasOwnProperty("header")) {
+                                var error = $root.coop.rchain.comm.protocol.routing.Header.verify(message.header);
+                                if (error)
+                                    return "header." + error;
+                            }
+                            if (message.heartbeat != null && message.hasOwnProperty("heartbeat")) {
+                                properties.message = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.Heartbeat.verify(message.heartbeat);
+                                    if (error)
+                                        return "heartbeat." + error;
+                                }
+                            }
+                            if (message.protocol_handshake != null && message.hasOwnProperty("protocol_handshake")) {
+                                if (properties.message === 1)
+                                    return "message: multiple values";
+                                properties.message = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.ProtocolHandshake.verify(message.protocol_handshake);
+                                    if (error)
+                                        return "protocol_handshake." + error;
+                                }
+                            }
+                            if (message.protocol_handshake_response != null && message.hasOwnProperty("protocol_handshake_response")) {
+                                if (properties.message === 1)
+                                    return "message: multiple values";
+                                properties.message = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.verify(message.protocol_handshake_response);
+                                    if (error)
+                                        return "protocol_handshake_response." + error;
+                                }
+                            }
+                            if (message.packet != null && message.hasOwnProperty("packet")) {
+                                if (properties.message === 1)
+                                    return "message: multiple values";
+                                properties.message = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.Packet.verify(message.packet);
+                                    if (error)
+                                        return "packet." + error;
+                                }
+                            }
+                            if (message.disconnect != null && message.hasOwnProperty("disconnect")) {
+                                if (properties.message === 1)
+                                    return "message: multiple values";
+                                properties.message = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.Disconnect.verify(message.disconnect);
+                                    if (error)
+                                        return "disconnect." + error;
+                                }
+                            }
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Protocol message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Protocol} Protocol
+                         */
+                        Protocol.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Protocol)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Protocol();
+                            if (object.header != null) {
+                                if (typeof object.header !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.header: object expected");
+                                message.header = $root.coop.rchain.comm.protocol.routing.Header.fromObject(object.header);
+                            }
+                            if (object.heartbeat != null) {
+                                if (typeof object.heartbeat !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.heartbeat: object expected");
+                                message.heartbeat = $root.coop.rchain.comm.protocol.routing.Heartbeat.fromObject(object.heartbeat);
+                            }
+                            if (object.protocol_handshake != null) {
+                                if (typeof object.protocol_handshake !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.protocol_handshake: object expected");
+                                message.protocol_handshake = $root.coop.rchain.comm.protocol.routing.ProtocolHandshake.fromObject(object.protocol_handshake);
+                            }
+                            if (object.protocol_handshake_response != null) {
+                                if (typeof object.protocol_handshake_response !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.protocol_handshake_response: object expected");
+                                message.protocol_handshake_response = $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.fromObject(object.protocol_handshake_response);
+                            }
+                            if (object.packet != null) {
+                                if (typeof object.packet !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.packet: object expected");
+                                message.packet = $root.coop.rchain.comm.protocol.routing.Packet.fromObject(object.packet);
+                            }
+                            if (object.disconnect != null) {
+                                if (typeof object.disconnect !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Protocol.disconnect: object expected");
+                                message.disconnect = $root.coop.rchain.comm.protocol.routing.Disconnect.fromObject(object.disconnect);
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a Protocol message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Protocol} message Protocol
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Protocol.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.header = null;
+                            if (message.header != null && message.hasOwnProperty("header"))
+                                object.header = $root.coop.rchain.comm.protocol.routing.Header.toObject(message.header, options);
+                            if (message.heartbeat != null && message.hasOwnProperty("heartbeat")) {
+                                object.heartbeat = $root.coop.rchain.comm.protocol.routing.Heartbeat.toObject(message.heartbeat, options);
+                                if (options.oneofs)
+                                    object.message = "heartbeat";
+                            }
+                            if (message.protocol_handshake != null && message.hasOwnProperty("protocol_handshake")) {
+                                object.protocol_handshake = $root.coop.rchain.comm.protocol.routing.ProtocolHandshake.toObject(message.protocol_handshake, options);
+                                if (options.oneofs)
+                                    object.message = "protocol_handshake";
+                            }
+                            if (message.protocol_handshake_response != null && message.hasOwnProperty("protocol_handshake_response")) {
+                                object.protocol_handshake_response = $root.coop.rchain.comm.protocol.routing.ProtocolHandshakeResponse.toObject(message.protocol_handshake_response, options);
+                                if (options.oneofs)
+                                    object.message = "protocol_handshake_response";
+                            }
+                            if (message.packet != null && message.hasOwnProperty("packet")) {
+                                object.packet = $root.coop.rchain.comm.protocol.routing.Packet.toObject(message.packet, options);
+                                if (options.oneofs)
+                                    object.message = "packet";
+                            }
+                            if (message.disconnect != null && message.hasOwnProperty("disconnect")) {
+                                object.disconnect = $root.coop.rchain.comm.protocol.routing.Disconnect.toObject(message.disconnect, options);
+                                if (options.oneofs)
+                                    object.message = "disconnect";
+                            }
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Protocol to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Protocol
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Protocol.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Protocol;
+                    })();
+
+                    routing.TransportLayer = (function() {
+
+                        /**
+                         * Constructs a new TransportLayer service.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a TransportLayer
+                         * @extends $protobuf.rpc.Service
+                         * @constructor
+                         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                         */
+                        function TransportLayer(rpcImpl, requestDelimited, responseDelimited) {
+                            $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+                        }
+
+                        (TransportLayer.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = TransportLayer;
+
+                        /**
+                         * Creates new TransportLayer service using the specified rpc implementation.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @static
+                         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+                         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+                         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+                         * @returns {TransportLayer} RPC service. Useful where requests and/or responses are streamed.
+                         */
+                        TransportLayer.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+                            return new this(rpcImpl, requestDelimited, responseDelimited);
+                        };
+
+                        /**
+                         * Callback as used by {@link coop.rchain.comm.protocol.routing.TransportLayer#send}.
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @typedef SendCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {coop.rchain.comm.protocol.routing.TLResponse} [response] TLResponse
+                         */
+
+                        /**
+                         * Calls Send.
+                         * @function send
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @instance
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest} request TLRequest message or plain object
+                         * @param {coop.rchain.comm.protocol.routing.TransportLayer.SendCallback} callback Node-style callback called with the error, if any, and TLResponse
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(TransportLayer.prototype.send = function send(request, callback) {
+                            return this.rpcCall(send, $root.coop.rchain.comm.protocol.routing.TLRequest, $root.coop.rchain.comm.protocol.routing.TLResponse, request, callback);
+                        }, "name", { value: "Send" });
+
+                        /**
+                         * Calls Send.
+                         * @function send
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @instance
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest} request TLRequest message or plain object
+                         * @returns {Promise<coop.rchain.comm.protocol.routing.TLResponse>} Promise
+                         * @variation 2
+                         */
+
+                        /**
+                         * Callback as used by {@link coop.rchain.comm.protocol.routing.TransportLayer#stream}.
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @typedef StreamCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {coop.rchain.comm.protocol.routing.TLResponse} [response] TLResponse
+                         */
+
+                        /**
+                         * Calls Stream.
+                         * @function stream
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @instance
+                         * @param {coop.rchain.comm.protocol.routing.IChunk} request Chunk message or plain object
+                         * @param {coop.rchain.comm.protocol.routing.TransportLayer.StreamCallback} callback Node-style callback called with the error, if any, and TLResponse
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(TransportLayer.prototype.stream = function stream(request, callback) {
+                            return this.rpcCall(stream, $root.coop.rchain.comm.protocol.routing.Chunk, $root.coop.rchain.comm.protocol.routing.TLResponse, request, callback);
+                        }, "name", { value: "Stream" });
+
+                        /**
+                         * Calls Stream.
+                         * @function stream
+                         * @memberof coop.rchain.comm.protocol.routing.TransportLayer
+                         * @instance
+                         * @param {coop.rchain.comm.protocol.routing.IChunk} request Chunk message or plain object
+                         * @returns {Promise<coop.rchain.comm.protocol.routing.TLResponse>} Promise
+                         * @variation 2
+                         */
+
+                        return TransportLayer;
+                    })();
+
+                    routing.TLRequest = (function() {
+
+                        /**
+                         * Properties of a TLRequest.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface ITLRequest
+                         * @property {coop.rchain.comm.protocol.routing.IProtocol|null} [protocol] TLRequest protocol
+                         */
+
+                        /**
+                         * Constructs a new TLRequest.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a TLRequest.
+                         * @implements ITLRequest
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest=} [properties] Properties to set
+                         */
+                        function TLRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * TLRequest protocol.
+                         * @member {coop.rchain.comm.protocol.routing.IProtocol|null|undefined} protocol
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @instance
+                         */
+                        TLRequest.prototype.protocol = null;
+
+                        /**
+                         * Creates a new TLRequest instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.TLRequest} TLRequest instance
+                         */
+                        TLRequest.create = function create(properties) {
+                            return new TLRequest(properties);
+                        };
+
+                        /**
+                         * Encodes the specified TLRequest message. Does not implicitly {@link coop.rchain.comm.protocol.routing.TLRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest} message TLRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        TLRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.protocol != null && message.hasOwnProperty("protocol"))
+                                $root.coop.rchain.comm.protocol.routing.Protocol.encode(message.protocol, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified TLRequest message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.TLRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLRequest} message TLRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        TLRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a TLRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.TLRequest} TLRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        TLRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.TLRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.protocol = $root.coop.rchain.comm.protocol.routing.Protocol.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a TLRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.TLRequest} TLRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        TLRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a TLRequest message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        TLRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.protocol != null && message.hasOwnProperty("protocol")) {
+                                var error = $root.coop.rchain.comm.protocol.routing.Protocol.verify(message.protocol);
+                                if (error)
+                                    return "protocol." + error;
+                            }
+                            return null;
+                        };
+
+                        /**
+                         * Creates a TLRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.TLRequest} TLRequest
+                         */
+                        TLRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.TLRequest)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.TLRequest();
+                            if (object.protocol != null) {
+                                if (typeof object.protocol !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.TLRequest.protocol: object expected");
+                                message.protocol = $root.coop.rchain.comm.protocol.routing.Protocol.fromObject(object.protocol);
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a TLRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.TLRequest} message TLRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        TLRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.protocol = null;
+                            if (message.protocol != null && message.hasOwnProperty("protocol"))
+                                object.protocol = $root.coop.rchain.comm.protocol.routing.Protocol.toObject(message.protocol, options);
+                            return object;
+                        };
+
+                        /**
+                         * Converts this TLRequest to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.TLRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        TLRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return TLRequest;
+                    })();
+
+                    routing.InternalServerError = (function() {
+
+                        /**
+                         * Properties of an InternalServerError.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IInternalServerError
+                         * @property {Uint8Array|null} [error] InternalServerError error
+                         */
+
+                        /**
+                         * Constructs a new InternalServerError.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents an InternalServerError.
+                         * @implements IInternalServerError
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IInternalServerError=} [properties] Properties to set
+                         */
+                        function InternalServerError(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * InternalServerError error.
+                         * @member {Uint8Array} error
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @instance
+                         */
+                        InternalServerError.prototype.error = $util.newBuffer([]);
+
+                        /**
+                         * Creates a new InternalServerError instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IInternalServerError=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.InternalServerError} InternalServerError instance
+                         */
+                        InternalServerError.create = function create(properties) {
+                            return new InternalServerError(properties);
+                        };
+
+                        /**
+                         * Encodes the specified InternalServerError message. Does not implicitly {@link coop.rchain.comm.protocol.routing.InternalServerError.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IInternalServerError} message InternalServerError message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        InternalServerError.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.error != null && message.hasOwnProperty("error"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.error);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified InternalServerError message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.InternalServerError.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IInternalServerError} message InternalServerError message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        InternalServerError.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes an InternalServerError message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.InternalServerError} InternalServerError
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        InternalServerError.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.InternalServerError();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.error = reader.bytes();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes an InternalServerError message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.InternalServerError} InternalServerError
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        InternalServerError.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies an InternalServerError message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        InternalServerError.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.error != null && message.hasOwnProperty("error"))
+                                if (!(message.error && typeof message.error.length === "number" || $util.isString(message.error)))
+                                    return "error: buffer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates an InternalServerError message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.InternalServerError} InternalServerError
+                         */
+                        InternalServerError.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.InternalServerError)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.InternalServerError();
+                            if (object.error != null)
+                                if (typeof object.error === "string")
+                                    $util.base64.decode(object.error, message.error = $util.newBuffer($util.base64.length(object.error)), 0);
+                                else if (object.error.length)
+                                    message.error = object.error;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from an InternalServerError message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.InternalServerError} message InternalServerError
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        InternalServerError.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                if (options.bytes === String)
+                                    object.error = "";
+                                else {
+                                    object.error = [];
+                                    if (options.bytes !== Array)
+                                        object.error = $util.newBuffer(object.error);
+                                }
+                            if (message.error != null && message.hasOwnProperty("error"))
+                                object.error = options.bytes === String ? $util.base64.encode(message.error, 0, message.error.length) : options.bytes === Array ? Array.prototype.slice.call(message.error) : message.error;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this InternalServerError to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.InternalServerError
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        InternalServerError.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return InternalServerError;
+                    })();
+
+                    routing.Ack = (function() {
+
+                        /**
+                         * Properties of an Ack.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IAck
+                         * @property {coop.rchain.comm.protocol.routing.IHeader|null} [header] Ack header
+                         */
+
+                        /**
+                         * Constructs a new Ack.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents an Ack.
+                         * @implements IAck
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IAck=} [properties] Properties to set
+                         */
+                        function Ack(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Ack header.
+                         * @member {coop.rchain.comm.protocol.routing.IHeader|null|undefined} header
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @instance
+                         */
+                        Ack.prototype.header = null;
+
+                        /**
+                         * Creates a new Ack instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IAck=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Ack} Ack instance
+                         */
+                        Ack.create = function create(properties) {
+                            return new Ack(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Ack message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Ack.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IAck} message Ack message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Ack.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.header != null && message.hasOwnProperty("header"))
+                                $root.coop.rchain.comm.protocol.routing.Header.encode(message.header, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Ack message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Ack.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IAck} message Ack message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Ack.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes an Ack message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Ack} Ack
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Ack.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Ack();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.header = $root.coop.rchain.comm.protocol.routing.Header.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes an Ack message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Ack} Ack
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Ack.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies an Ack message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Ack.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.header != null && message.hasOwnProperty("header")) {
+                                var error = $root.coop.rchain.comm.protocol.routing.Header.verify(message.header);
+                                if (error)
+                                    return "header." + error;
+                            }
+                            return null;
+                        };
+
+                        /**
+                         * Creates an Ack message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Ack} Ack
+                         */
+                        Ack.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Ack)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Ack();
+                            if (object.header != null) {
+                                if (typeof object.header !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Ack.header: object expected");
+                                message.header = $root.coop.rchain.comm.protocol.routing.Header.fromObject(object.header);
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from an Ack message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Ack} message Ack
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Ack.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.header = null;
+                            if (message.header != null && message.hasOwnProperty("header"))
+                                object.header = $root.coop.rchain.comm.protocol.routing.Header.toObject(message.header, options);
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Ack to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Ack
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Ack.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Ack;
+                    })();
+
+                    routing.TLResponse = (function() {
+
+                        /**
+                         * Properties of a TLResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface ITLResponse
+                         * @property {coop.rchain.comm.protocol.routing.IAck|null} [ack] TLResponse ack
+                         * @property {coop.rchain.comm.protocol.routing.IInternalServerError|null} [internalServerError] TLResponse internalServerError
+                         */
+
+                        /**
+                         * Constructs a new TLResponse.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a TLResponse.
+                         * @implements ITLResponse
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.ITLResponse=} [properties] Properties to set
+                         */
+                        function TLResponse(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * TLResponse ack.
+                         * @member {coop.rchain.comm.protocol.routing.IAck|null|undefined} ack
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @instance
+                         */
+                        TLResponse.prototype.ack = null;
+
+                        /**
+                         * TLResponse internalServerError.
+                         * @member {coop.rchain.comm.protocol.routing.IInternalServerError|null|undefined} internalServerError
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @instance
+                         */
+                        TLResponse.prototype.internalServerError = null;
+
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+
+                        /**
+                         * TLResponse payload.
+                         * @member {"ack"|"internalServerError"|undefined} payload
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @instance
+                         */
+                        Object.defineProperty(TLResponse.prototype, "payload", {
+                            get: $util.oneOfGetter($oneOfFields = ["ack", "internalServerError"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+
+                        /**
+                         * Creates a new TLResponse instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLResponse=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.TLResponse} TLResponse instance
+                         */
+                        TLResponse.create = function create(properties) {
+                            return new TLResponse(properties);
+                        };
+
+                        /**
+                         * Encodes the specified TLResponse message. Does not implicitly {@link coop.rchain.comm.protocol.routing.TLResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLResponse} message TLResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        TLResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.ack != null && message.hasOwnProperty("ack"))
+                                $root.coop.rchain.comm.protocol.routing.Ack.encode(message.ack, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.internalServerError != null && message.hasOwnProperty("internalServerError"))
+                                $root.coop.rchain.comm.protocol.routing.InternalServerError.encode(message.internalServerError, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified TLResponse message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.TLResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ITLResponse} message TLResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        TLResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a TLResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.TLResponse} TLResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        TLResponse.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.TLResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.ack = $root.coop.rchain.comm.protocol.routing.Ack.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.internalServerError = $root.coop.rchain.comm.protocol.routing.InternalServerError.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a TLResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.TLResponse} TLResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        TLResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a TLResponse message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        TLResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.ack != null && message.hasOwnProperty("ack")) {
+                                properties.payload = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.Ack.verify(message.ack);
+                                    if (error)
+                                        return "ack." + error;
+                                }
+                            }
+                            if (message.internalServerError != null && message.hasOwnProperty("internalServerError")) {
+                                if (properties.payload === 1)
+                                    return "payload: multiple values";
+                                properties.payload = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.InternalServerError.verify(message.internalServerError);
+                                    if (error)
+                                        return "internalServerError." + error;
+                                }
+                            }
+                            return null;
+                        };
+
+                        /**
+                         * Creates a TLResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.TLResponse} TLResponse
+                         */
+                        TLResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.TLResponse)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.TLResponse();
+                            if (object.ack != null) {
+                                if (typeof object.ack !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.TLResponse.ack: object expected");
+                                message.ack = $root.coop.rchain.comm.protocol.routing.Ack.fromObject(object.ack);
+                            }
+                            if (object.internalServerError != null) {
+                                if (typeof object.internalServerError !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.TLResponse.internalServerError: object expected");
+                                message.internalServerError = $root.coop.rchain.comm.protocol.routing.InternalServerError.fromObject(object.internalServerError);
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a TLResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.TLResponse} message TLResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        TLResponse.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (message.ack != null && message.hasOwnProperty("ack")) {
+                                object.ack = $root.coop.rchain.comm.protocol.routing.Ack.toObject(message.ack, options);
+                                if (options.oneofs)
+                                    object.payload = "ack";
+                            }
+                            if (message.internalServerError != null && message.hasOwnProperty("internalServerError")) {
+                                object.internalServerError = $root.coop.rchain.comm.protocol.routing.InternalServerError.toObject(message.internalServerError, options);
+                                if (options.oneofs)
+                                    object.payload = "internalServerError";
+                            }
+                            return object;
+                        };
+
+                        /**
+                         * Converts this TLResponse to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.TLResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        TLResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return TLResponse;
+                    })();
+
+                    routing.ChunkHeader = (function() {
+
+                        /**
+                         * Properties of a ChunkHeader.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IChunkHeader
+                         * @property {coop.rchain.comm.protocol.routing.INode|null} [sender] ChunkHeader sender
+                         * @property {string|null} [typeId] ChunkHeader typeId
+                         * @property {boolean|null} [compressed] ChunkHeader compressed
+                         * @property {number|null} [contentLength] ChunkHeader contentLength
+                         * @property {string|null} [networkId] ChunkHeader networkId
+                         */
+
+                        /**
+                         * Constructs a new ChunkHeader.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a ChunkHeader.
+                         * @implements IChunkHeader
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IChunkHeader=} [properties] Properties to set
+                         */
+                        function ChunkHeader(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * ChunkHeader sender.
+                         * @member {coop.rchain.comm.protocol.routing.INode|null|undefined} sender
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         */
+                        ChunkHeader.prototype.sender = null;
+
+                        /**
+                         * ChunkHeader typeId.
+                         * @member {string} typeId
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         */
+                        ChunkHeader.prototype.typeId = "";
+
+                        /**
+                         * ChunkHeader compressed.
+                         * @member {boolean} compressed
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         */
+                        ChunkHeader.prototype.compressed = false;
+
+                        /**
+                         * ChunkHeader contentLength.
+                         * @member {number} contentLength
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         */
+                        ChunkHeader.prototype.contentLength = 0;
+
+                        /**
+                         * ChunkHeader networkId.
+                         * @member {string} networkId
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         */
+                        ChunkHeader.prototype.networkId = "";
+
+                        /**
+                         * Creates a new ChunkHeader instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkHeader=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkHeader} ChunkHeader instance
+                         */
+                        ChunkHeader.create = function create(properties) {
+                            return new ChunkHeader(properties);
+                        };
+
+                        /**
+                         * Encodes the specified ChunkHeader message. Does not implicitly {@link coop.rchain.comm.protocol.routing.ChunkHeader.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkHeader} message ChunkHeader message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChunkHeader.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.sender != null && message.hasOwnProperty("sender"))
+                                $root.coop.rchain.comm.protocol.routing.Node.encode(message.sender, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.typeId);
+                            if (message.compressed != null && message.hasOwnProperty("compressed"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.compressed);
+                            if (message.contentLength != null && message.hasOwnProperty("contentLength"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.contentLength);
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.networkId);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified ChunkHeader message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.ChunkHeader.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkHeader} message ChunkHeader message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChunkHeader.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a ChunkHeader message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkHeader} ChunkHeader
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChunkHeader.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.ChunkHeader();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.sender = $root.coop.rchain.comm.protocol.routing.Node.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.typeId = reader.string();
+                                    break;
+                                case 3:
+                                    message.compressed = reader.bool();
+                                    break;
+                                case 4:
+                                    message.contentLength = reader.int32();
+                                    break;
+                                case 5:
+                                    message.networkId = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a ChunkHeader message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkHeader} ChunkHeader
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChunkHeader.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a ChunkHeader message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ChunkHeader.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.sender != null && message.hasOwnProperty("sender")) {
+                                var error = $root.coop.rchain.comm.protocol.routing.Node.verify(message.sender);
+                                if (error)
+                                    return "sender." + error;
+                            }
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                if (!$util.isString(message.typeId))
+                                    return "typeId: string expected";
+                            if (message.compressed != null && message.hasOwnProperty("compressed"))
+                                if (typeof message.compressed !== "boolean")
+                                    return "compressed: boolean expected";
+                            if (message.contentLength != null && message.hasOwnProperty("contentLength"))
+                                if (!$util.isInteger(message.contentLength))
+                                    return "contentLength: integer expected";
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                if (!$util.isString(message.networkId))
+                                    return "networkId: string expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a ChunkHeader message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkHeader} ChunkHeader
+                         */
+                        ChunkHeader.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.ChunkHeader)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.ChunkHeader();
+                            if (object.sender != null) {
+                                if (typeof object.sender !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.ChunkHeader.sender: object expected");
+                                message.sender = $root.coop.rchain.comm.protocol.routing.Node.fromObject(object.sender);
+                            }
+                            if (object.typeId != null)
+                                message.typeId = String(object.typeId);
+                            if (object.compressed != null)
+                                message.compressed = Boolean(object.compressed);
+                            if (object.contentLength != null)
+                                message.contentLength = object.contentLength | 0;
+                            if (object.networkId != null)
+                                message.networkId = String(object.networkId);
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a ChunkHeader message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ChunkHeader} message ChunkHeader
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ChunkHeader.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.sender = null;
+                                object.typeId = "";
+                                object.compressed = false;
+                                object.contentLength = 0;
+                                object.networkId = "";
+                            }
+                            if (message.sender != null && message.hasOwnProperty("sender"))
+                                object.sender = $root.coop.rchain.comm.protocol.routing.Node.toObject(message.sender, options);
+                            if (message.typeId != null && message.hasOwnProperty("typeId"))
+                                object.typeId = message.typeId;
+                            if (message.compressed != null && message.hasOwnProperty("compressed"))
+                                object.compressed = message.compressed;
+                            if (message.contentLength != null && message.hasOwnProperty("contentLength"))
+                                object.contentLength = message.contentLength;
+                            if (message.networkId != null && message.hasOwnProperty("networkId"))
+                                object.networkId = message.networkId;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this ChunkHeader to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkHeader
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ChunkHeader.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return ChunkHeader;
+                    })();
+
+                    routing.ChunkData = (function() {
+
+                        /**
+                         * Properties of a ChunkData.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IChunkData
+                         * @property {Uint8Array|null} [contentData] ChunkData contentData
+                         */
+
+                        /**
+                         * Constructs a new ChunkData.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a ChunkData.
+                         * @implements IChunkData
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IChunkData=} [properties] Properties to set
+                         */
+                        function ChunkData(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * ChunkData contentData.
+                         * @member {Uint8Array} contentData
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @instance
+                         */
+                        ChunkData.prototype.contentData = $util.newBuffer([]);
+
+                        /**
+                         * Creates a new ChunkData instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkData=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkData} ChunkData instance
+                         */
+                        ChunkData.create = function create(properties) {
+                            return new ChunkData(properties);
+                        };
+
+                        /**
+                         * Encodes the specified ChunkData message. Does not implicitly {@link coop.rchain.comm.protocol.routing.ChunkData.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkData} message ChunkData message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChunkData.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.contentData != null && message.hasOwnProperty("contentData"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.contentData);
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified ChunkData message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.ChunkData.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunkData} message ChunkData message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChunkData.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a ChunkData message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkData} ChunkData
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChunkData.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.ChunkData();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.contentData = reader.bytes();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a ChunkData message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkData} ChunkData
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChunkData.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a ChunkData message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ChunkData.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.contentData != null && message.hasOwnProperty("contentData"))
+                                if (!(message.contentData && typeof message.contentData.length === "number" || $util.isString(message.contentData)))
+                                    return "contentData: buffer expected";
+                            return null;
+                        };
+
+                        /**
+                         * Creates a ChunkData message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.ChunkData} ChunkData
+                         */
+                        ChunkData.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.ChunkData)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.ChunkData();
+                            if (object.contentData != null)
+                                if (typeof object.contentData === "string")
+                                    $util.base64.decode(object.contentData, message.contentData = $util.newBuffer($util.base64.length(object.contentData)), 0);
+                                else if (object.contentData.length)
+                                    message.contentData = object.contentData;
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a ChunkData message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.ChunkData} message ChunkData
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ChunkData.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                if (options.bytes === String)
+                                    object.contentData = "";
+                                else {
+                                    object.contentData = [];
+                                    if (options.bytes !== Array)
+                                        object.contentData = $util.newBuffer(object.contentData);
+                                }
+                            if (message.contentData != null && message.hasOwnProperty("contentData"))
+                                object.contentData = options.bytes === String ? $util.base64.encode(message.contentData, 0, message.contentData.length) : options.bytes === Array ? Array.prototype.slice.call(message.contentData) : message.contentData;
+                            return object;
+                        };
+
+                        /**
+                         * Converts this ChunkData to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.ChunkData
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ChunkData.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return ChunkData;
+                    })();
+
+                    routing.Chunk = (function() {
+
+                        /**
+                         * Properties of a Chunk.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @interface IChunk
+                         * @property {coop.rchain.comm.protocol.routing.IChunkHeader|null} [header] Chunk header
+                         * @property {coop.rchain.comm.protocol.routing.IChunkData|null} [data] Chunk data
+                         */
+
+                        /**
+                         * Constructs a new Chunk.
+                         * @memberof coop.rchain.comm.protocol.routing
+                         * @classdesc Represents a Chunk.
+                         * @implements IChunk
+                         * @constructor
+                         * @param {coop.rchain.comm.protocol.routing.IChunk=} [properties] Properties to set
+                         */
+                        function Chunk(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+
+                        /**
+                         * Chunk header.
+                         * @member {coop.rchain.comm.protocol.routing.IChunkHeader|null|undefined} header
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @instance
+                         */
+                        Chunk.prototype.header = null;
+
+                        /**
+                         * Chunk data.
+                         * @member {coop.rchain.comm.protocol.routing.IChunkData|null|undefined} data
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @instance
+                         */
+                        Chunk.prototype.data = null;
+
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+
+                        /**
+                         * Chunk content.
+                         * @member {"header"|"data"|undefined} content
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @instance
+                         */
+                        Object.defineProperty(Chunk.prototype, "content", {
+                            get: $util.oneOfGetter($oneOfFields = ["header", "data"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+
+                        /**
+                         * Creates a new Chunk instance using the specified properties.
+                         * @function create
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunk=} [properties] Properties to set
+                         * @returns {coop.rchain.comm.protocol.routing.Chunk} Chunk instance
+                         */
+                        Chunk.create = function create(properties) {
+                            return new Chunk(properties);
+                        };
+
+                        /**
+                         * Encodes the specified Chunk message. Does not implicitly {@link coop.rchain.comm.protocol.routing.Chunk.verify|verify} messages.
+                         * @function encode
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunk} message Chunk message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Chunk.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.header != null && message.hasOwnProperty("header"))
+                                $root.coop.rchain.comm.protocol.routing.ChunkHeader.encode(message.header, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.data != null && message.hasOwnProperty("data"))
+                                $root.coop.rchain.comm.protocol.routing.ChunkData.encode(message.data, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+
+                        /**
+                         * Encodes the specified Chunk message, length delimited. Does not implicitly {@link coop.rchain.comm.protocol.routing.Chunk.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.IChunk} message Chunk message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Chunk.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+
+                        /**
+                         * Decodes a Chunk message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {coop.rchain.comm.protocol.routing.Chunk} Chunk
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Chunk.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.comm.protocol.routing.Chunk();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.header = $root.coop.rchain.comm.protocol.routing.ChunkHeader.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.data = $root.coop.rchain.comm.protocol.routing.ChunkData.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Decodes a Chunk message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {coop.rchain.comm.protocol.routing.Chunk} Chunk
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Chunk.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+
+                        /**
+                         * Verifies a Chunk message.
+                         * @function verify
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Chunk.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.header != null && message.hasOwnProperty("header")) {
+                                properties.content = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.ChunkHeader.verify(message.header);
+                                    if (error)
+                                        return "header." + error;
+                                }
+                            }
+                            if (message.data != null && message.hasOwnProperty("data")) {
+                                if (properties.content === 1)
+                                    return "content: multiple values";
+                                properties.content = 1;
+                                {
+                                    var error = $root.coop.rchain.comm.protocol.routing.ChunkData.verify(message.data);
+                                    if (error)
+                                        return "data." + error;
+                                }
+                            }
+                            return null;
+                        };
+
+                        /**
+                         * Creates a Chunk message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {coop.rchain.comm.protocol.routing.Chunk} Chunk
+                         */
+                        Chunk.fromObject = function fromObject(object) {
+                            if (object instanceof $root.coop.rchain.comm.protocol.routing.Chunk)
+                                return object;
+                            var message = new $root.coop.rchain.comm.protocol.routing.Chunk();
+                            if (object.header != null) {
+                                if (typeof object.header !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Chunk.header: object expected");
+                                message.header = $root.coop.rchain.comm.protocol.routing.ChunkHeader.fromObject(object.header);
+                            }
+                            if (object.data != null) {
+                                if (typeof object.data !== "object")
+                                    throw TypeError(".coop.rchain.comm.protocol.routing.Chunk.data: object expected");
+                                message.data = $root.coop.rchain.comm.protocol.routing.ChunkData.fromObject(object.data);
+                            }
+                            return message;
+                        };
+
+                        /**
+                         * Creates a plain object from a Chunk message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @static
+                         * @param {coop.rchain.comm.protocol.routing.Chunk} message Chunk
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Chunk.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (message.header != null && message.hasOwnProperty("header")) {
+                                object.header = $root.coop.rchain.comm.protocol.routing.ChunkHeader.toObject(message.header, options);
+                                if (options.oneofs)
+                                    object.content = "header";
+                            }
+                            if (message.data != null && message.hasOwnProperty("data")) {
+                                object.data = $root.coop.rchain.comm.protocol.routing.ChunkData.toObject(message.data, options);
+                                if (options.oneofs)
+                                    object.content = "data";
+                            }
+                            return object;
+                        };
+
+                        /**
+                         * Converts this Chunk to JSON.
+                         * @function toJSON
+                         * @memberof coop.rchain.comm.protocol.routing.Chunk
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Chunk.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+
+                        return Chunk;
+                    })();
+
+                    return routing;
+                })();
+
+                return protocol;
+            })();
+
+            return comm;
         })();
 
         return rchain;

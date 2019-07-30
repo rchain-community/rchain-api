@@ -1,6 +1,6 @@
 {
   "options": {
-    "java_package": "coop.rchain.models",
+    "java_package": "coop.rchain.either",
     "(scalapb.options).import": "coop.rchain.models.ParMapTypeMapper.parMapEMapTypeMapper"
   },
   "nested": {
@@ -13,66 +13,289 @@
                 "protocol": {
                   "options": {
                     "(scalapb.options).package_name": "coop.rchain.casper.protocol",
-                    "(scalapb.options).flat_package": true
+                    "(scalapb.options).flat_package": true,
+                    "(scalapb.options).single_file": true,
+                    "(scalapb.options).preamble": "sealed trait CasperMessage"
                   },
                   "nested": {
-                    "DeployService": {
-                      "methods": {
-                        "DoDeploy": {
-                          "requestType": "DeployData",
-                          "responseType": "DeployServiceResponse"
-                        },
-                        "addBlock": {
-                          "requestType": "BlockMessage",
-                          "responseType": "DeployServiceResponse"
-                        },
-                        "createBlock": {
-                          "requestType": "google.protobuf.Empty",
-                          "responseType": "DeployServiceResponse"
-                        },
-                        "showBlock": {
-                          "requestType": "BlockQuery",
-                          "responseType": "BlockQueryResponse"
-                        },
-                        "showMainChain": {
-                          "requestType": "BlocksQuery",
-                          "responseType": "BlockInfoWithoutTuplespace",
-                          "responseStream": true
-                        },
-                        "showBlocks": {
-                          "requestType": "BlocksQuery",
-                          "responseType": "BlockInfoWithoutTuplespace",
-                          "responseStream": true
-                        },
-                        "listenForDataAtName": {
-                          "requestType": "DataAtNameQuery",
-                          "responseType": "ListeningNameDataResponse"
-                        },
-                        "listenForContinuationAtName": {
-                          "requestType": "ContinuationAtNameQuery",
-                          "responseType": "ListeningNameContinuationResponse"
-                        }
-                      }
-                    },
-                    "PhloLimit": {
+                    "HasBlockRequest": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
                       "fields": {
-                        "value": {
-                          "type": "int64",
+                        "hash": {
+                          "type": "bytes",
                           "id": 1
                         }
                       }
                     },
-                    "PhloPrice": {
+                    "HasBlock": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
                       "fields": {
-                        "value": {
-                          "type": "int64",
+                        "hash": {
+                          "type": "bytes",
                           "id": 1
+                        }
+                      }
+                    },
+                    "BlockRequest": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "hash": {
+                          "type": "bytes",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "ForkChoiceTipRequest": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {}
+                    },
+                    "ApprovedBlockCandidate": {
+                      "fields": {
+                        "block": {
+                          "type": "BlockMessage",
+                          "id": 1
+                        },
+                        "requiredSigs": {
+                          "type": "int32",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "UnapprovedBlock": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "candidate": {
+                          "type": "ApprovedBlockCandidate",
+                          "id": 1
+                        },
+                        "timestamp": {
+                          "type": "int64",
+                          "id": 2
+                        },
+                        "duration": {
+                          "type": "int64",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "Signature": {
+                      "fields": {
+                        "publicKey": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "algorithm": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "sig": {
+                          "type": "bytes",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "BlockApproval": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "candidate": {
+                          "type": "ApprovedBlockCandidate",
+                          "id": 1
+                        },
+                        "sig": {
+                          "type": "Signature",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "ApprovedBlock": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "candidate": {
+                          "type": "ApprovedBlockCandidate",
+                          "id": 1
+                        },
+                        "sigs": {
+                          "rule": "repeated",
+                          "type": "Signature",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "ApprovedBlockRequest": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "identifier": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "NoApprovedBlockAvailable": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "identifier": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "nodeIdentifer": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "BlockMessage": {
+                      "options": {
+                        "(scalapb.message).extends": "CasperMessage"
+                      },
+                      "fields": {
+                        "blockHash": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "header": {
+                          "type": "Header",
+                          "id": 2
+                        },
+                        "body": {
+                          "type": "Body",
+                          "id": 3
+                        },
+                        "justifications": {
+                          "rule": "repeated",
+                          "type": "Justification",
+                          "id": 4
+                        },
+                        "sender": {
+                          "type": "bytes",
+                          "id": 5
+                        },
+                        "seqNum": {
+                          "type": "int32",
+                          "id": 6
+                        },
+                        "sig": {
+                          "type": "bytes",
+                          "id": 7
+                        },
+                        "sigAlgorithm": {
+                          "type": "string",
+                          "id": 8
+                        },
+                        "shardId": {
+                          "type": "string",
+                          "id": 9
+                        },
+                        "extraBytes": {
+                          "type": "bytes",
+                          "id": 10
+                        }
+                      }
+                    },
+                    "BlockMetadataInternal": {
+                      "options": {
+                        "(scalapb.message).type": "coop.rchain.models.BlockMetadata"
+                      },
+                      "fields": {
+                        "blockHash": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "parents": {
+                          "rule": "repeated",
+                          "type": "bytes",
+                          "id": 2,
+                          "options": {
+                            "(scalapb.field).collection_type": "collection.immutable.List"
+                          }
+                        },
+                        "sender": {
+                          "type": "bytes",
+                          "id": 3
+                        },
+                        "justifications": {
+                          "rule": "repeated",
+                          "type": "Justification",
+                          "id": 4,
+                          "options": {
+                            "(scalapb.field).collection_type": "collection.immutable.List"
+                          }
+                        },
+                        "bonds": {
+                          "rule": "repeated",
+                          "type": "Bond",
+                          "id": 5,
+                          "options": {
+                            "(scalapb.field).collection_type": "collection.immutable.List"
+                          }
+                        },
+                        "blockNum": {
+                          "type": "int64",
+                          "id": 6
+                        },
+                        "seqNum": {
+                          "type": "int32",
+                          "id": 7
+                        },
+                        "invalid": {
+                          "type": "bool",
+                          "id": 8
+                        }
+                      }
+                    },
+                    "Header": {
+                      "fields": {
+                        "parentsHashList": {
+                          "rule": "repeated",
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "postStateHash": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "deploysHash": {
+                          "type": "bytes",
+                          "id": 3
+                        },
+                        "timestamp": {
+                          "type": "int64",
+                          "id": 5
+                        },
+                        "version": {
+                          "type": "int64",
+                          "id": 6
+                        },
+                        "deployCount": {
+                          "type": "int32",
+                          "id": 7
+                        },
+                        "extraBytes": {
+                          "type": "bytes",
+                          "id": 8
                         }
                       }
                     },
                     "DeployData": {
                       "fields": {
-                        "user": {
+                        "deployer": {
                           "type": "bytes",
                           "id": 1
                         },
@@ -92,32 +315,250 @@
                           "type": "string",
                           "id": 5
                         },
-                        "from": {
-                          "type": "string",
-                          "id": 6
-                        },
                         "phloPrice": {
-                          "type": "PhloPrice",
+                          "type": "int64",
                           "id": 7
                         },
                         "phloLimit": {
-                          "type": "PhloLimit",
+                          "type": "int64",
                           "id": 8
                         },
-                        "nonce": {
-                          "type": "int32",
-                          "id": 9
+                        "validAfterBlockNumber": {
+                          "type": "int64",
+                          "id": 10
                         }
                       }
                     },
-                    "BlockRequest": {
+                    "ProcessedDeploy": {
                       "fields": {
-                        "base16Hash": {
-                          "type": "string",
+                        "deploy": {
+                          "type": "DeployData",
+                          "id": 1
+                        },
+                        "cost": {
+                          "type": "PCost",
+                          "id": 2
+                        },
+                        "deployLog": {
+                          "rule": "repeated",
+                          "type": "Event",
+                          "id": 3
+                        },
+                        "paymentLog": {
+                          "rule": "repeated",
+                          "type": "Event",
+                          "id": 4
+                        },
+                        "errored": {
+                          "type": "bool",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "Body": {
+                      "fields": {
+                        "state": {
+                          "type": "RChainState",
+                          "id": 1
+                        },
+                        "deploys": {
+                          "rule": "repeated",
+                          "type": "ProcessedDeploy",
+                          "id": 2
+                        },
+                        "extraBytes": {
+                          "type": "bytes",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "Justification": {
+                      "fields": {
+                        "validator": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "latestBlockHash": {
+                          "type": "bytes",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "RChainState": {
+                      "fields": {
+                        "preStateHash": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "postStateHash": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "bonds": {
+                          "rule": "repeated",
+                          "type": "Bond",
+                          "id": 3
+                        },
+                        "blockNumber": {
+                          "type": "int64",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "Event": {
+                      "oneofs": {
+                        "event_instance": {
+                          "oneof": [
+                            "produce",
+                            "consume",
+                            "comm"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "produce": {
+                          "type": "ProduceEvent",
+                          "id": 1
+                        },
+                        "consume": {
+                          "type": "ConsumeEvent",
+                          "id": 2
+                        },
+                        "comm": {
+                          "type": "CommEvent",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ProduceEvent": {
+                      "fields": {
+                        "channelsHash": {
+                          "type": "bytes",
                           "id": 1
                         },
                         "hash": {
                           "type": "bytes",
+                          "id": 2
+                        },
+                        "sequenceNumber": {
+                          "type": "int32",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ConsumeEvent": {
+                      "fields": {
+                        "channelsHashes": {
+                          "rule": "repeated",
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "hash": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "sequenceNumber": {
+                          "type": "int32",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CommEvent": {
+                      "fields": {
+                        "consume": {
+                          "type": "ConsumeEvent",
+                          "id": 1
+                        },
+                        "produces": {
+                          "rule": "repeated",
+                          "type": "ProduceEvent",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "Bond": {
+                      "fields": {
+                        "validator": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "stake": {
+                          "type": "int64",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "DeployService": {
+                      "methods": {
+                        "DoDeploy": {
+                          "requestType": "DeployData",
+                          "responseType": "Either"
+                        },
+                        "getBlock": {
+                          "requestType": "BlockQuery",
+                          "responseType": "Either"
+                        },
+                        "visualizeDag": {
+                          "requestType": "VisualizeDagQuery",
+                          "responseType": "Either",
+                          "responseStream": true
+                        },
+                        "machineVerifiableDag": {
+                          "requestType": "MachineVerifyQuery",
+                          "responseType": "Either"
+                        },
+                        "showMainChain": {
+                          "requestType": "BlocksQuery",
+                          "responseType": "Either",
+                          "responseStream": true
+                        },
+                        "getBlocks": {
+                          "requestType": "BlocksQuery",
+                          "responseType": "Either",
+                          "responseStream": true
+                        },
+                        "listenForDataAtName": {
+                          "requestType": "DataAtNameQuery",
+                          "responseType": "Either"
+                        },
+                        "listenForContinuationAtName": {
+                          "requestType": "ContinuationAtNameQuery",
+                          "responseType": "Either"
+                        },
+                        "findBlockWithDeploy": {
+                          "requestType": "FindDeployInBlockQuery",
+                          "responseType": "Either"
+                        },
+                        "findDeploy": {
+                          "requestType": "FindDeployQuery",
+                          "responseType": "Either"
+                        },
+                        "previewPrivateNames": {
+                          "requestType": "PrivateNamePreviewQuery",
+                          "responseType": "Either"
+                        },
+                        "lastFinalizedBlock": {
+                          "requestType": "LastFinalizedBlockQuery",
+                          "responseType": "Either"
+                        }
+                      }
+                    },
+                    "FindDeployQuery": {
+                      "fields": {
+                        "deployId": {
+                          "type": "bytes",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "FindDeployInBlockQuery": {
+                      "fields": {
+                        "user": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "timestamp": {
+                          "type": "int64",
                           "id": 2
                         }
                       }
@@ -165,110 +606,122 @@
                     },
                     "DeployServiceResponse": {
                       "fields": {
-                        "success": {
-                          "type": "bool",
-                          "id": 1
-                        },
                         "message": {
                           "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "MaybeBlockMessage": {
-                      "fields": {
-                        "block": {
-                          "type": "BlockMessage",
                           "id": 1
                         }
                       }
                     },
                     "BlockQueryResponse": {
                       "fields": {
-                        "status": {
-                          "type": "string",
-                          "id": 1
-                        },
                         "blockInfo": {
                           "type": "BlockInfo",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "LightBlockQueryResponse": {
+                      "fields": {
+                        "blockInfo": {
+                          "type": "LightBlockInfo",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "VisualizeDagQuery": {
+                      "fields": {
+                        "depth": {
+                          "type": "int32",
+                          "id": 1
+                        },
+                        "showJustificationLines": {
+                          "type": "bool",
                           "id": 2
+                        }
+                      }
+                    },
+                    "VisualizeBlocksResponse": {
+                      "fields": {
+                        "content": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "MachineVerifyQuery": {
+                      "fields": {}
+                    },
+                    "MachineVerifyResponse": {
+                      "fields": {
+                        "content": {
+                          "type": "string",
+                          "id": 1
                         }
                       }
                     },
                     "ListeningNameDataResponse": {
                       "fields": {
-                        "status": {
-                          "type": "string",
-                          "id": 1
-                        },
                         "blockResults": {
                           "rule": "repeated",
                           "type": "DataWithBlockInfo",
-                          "id": 2
+                          "id": 1
                         },
                         "length": {
                           "type": "int32",
-                          "id": 3
+                          "id": 2
                         }
                       }
                     },
                     "ListeningNameContinuationResponse": {
                       "fields": {
-                        "status": {
-                          "type": "string",
-                          "id": 1
-                        },
                         "blockResults": {
                           "rule": "repeated",
                           "type": "ContinuationsWithBlockInfo",
-                          "id": 2
+                          "id": 1
                         },
                         "length": {
+                          "type": "int32",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "PrivateNamePreviewQuery": {
+                      "fields": {
+                        "user": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "timestamp": {
+                          "type": "int64",
+                          "id": 2
+                        },
+                        "nameQty": {
                           "type": "int32",
                           "id": 3
                         }
                       }
                     },
-                    "DataWithBlockInfo": {
+                    "PrivateNamePreviewResponse": {
                       "fields": {
-                        "postBlockData": {
+                        "ids": {
                           "rule": "repeated",
-                          "type": "Par",
+                          "type": "bytes",
                           "id": 1
-                        },
-                        "block": {
-                          "type": "BlockInfoWithoutTuplespace",
-                          "id": 2
                         }
                       }
                     },
-                    "ContinuationsWithBlockInfo": {
+                    "LastFinalizedBlockQuery": {
+                      "fields": {}
+                    },
+                    "LastFinalizedBlockResponse": {
                       "fields": {
-                        "postBlockContinuations": {
-                          "rule": "repeated",
-                          "type": "WaitingContinuationInfo",
+                        "blockInfo": {
+                          "type": "BlockInfo",
                           "id": 1
-                        },
-                        "block": {
-                          "type": "BlockInfoWithoutTuplespace",
-                          "id": 2
                         }
                       }
                     },
-                    "WaitingContinuationInfo": {
-                      "fields": {
-                        "postBlockPatterns": {
-                          "rule": "repeated",
-                          "type": "BindPattern",
-                          "id": 1
-                        },
-                        "postBlockContinuation": {
-                          "type": "Par",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "BlockInfoWithoutTuplespace": {
+                    "LightBlockInfo": {
                       "fields": {
                         "blockHash": {
                           "type": "string",
@@ -343,371 +796,334 @@
                           "type": "string",
                           "id": 6
                         },
-                        "tupleSpaceDump": {
-                          "type": "string",
-                          "id": 7
-                        },
                         "timestamp": {
                           "type": "int64",
-                          "id": 8
+                          "id": 7
                         },
                         "faultTolerance": {
                           "type": "float",
-                          "id": 9
+                          "id": 8
                         },
                         "mainParentHash": {
                           "type": "string",
-                          "id": 10
+                          "id": 9
                         },
                         "parentsHashList": {
                           "rule": "repeated",
+                          "type": "string",
+                          "id": 10
+                        },
+                        "sender": {
                           "type": "string",
                           "id": 11
                         },
-                        "sender": {
+                        "shardId": {
                           "type": "string",
                           "id": 12
                         },
-                        "shardId": {
+                        "bondsValidatorList": {
+                          "rule": "repeated",
                           "type": "string",
                           "id": 13
-                        }
-                      }
-                    },
-                    "ApprovedBlockCandidate": {
-                      "fields": {
-                        "block": {
-                          "type": "BlockMessage",
-                          "id": 1
                         },
-                        "requiredSigs": {
-                          "type": "int32",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "UnapprovedBlock": {
-                      "fields": {
-                        "candidate": {
-                          "type": "ApprovedBlockCandidate",
-                          "id": 1
-                        },
-                        "timestamp": {
-                          "type": "int64",
-                          "id": 2
-                        },
-                        "duration": {
-                          "type": "int64",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "Signature": {
-                      "fields": {
-                        "publicKey": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "algorithm": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "sig": {
-                          "type": "bytes",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "BlockApproval": {
-                      "fields": {
-                        "candidate": {
-                          "type": "ApprovedBlockCandidate",
-                          "id": 1
-                        },
-                        "sig": {
-                          "type": "Signature",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ApprovedBlock": {
-                      "fields": {
-                        "candidate": {
-                          "type": "ApprovedBlockCandidate",
-                          "id": 1
-                        },
-                        "sigs": {
+                        "deployCost": {
                           "rule": "repeated",
-                          "type": "Signature",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ApprovedBlockRequest": {
-                      "fields": {
-                        "identifier": {
                           "type": "string",
-                          "id": 1
+                          "id": 14
                         }
                       }
                     },
-                    "NoApprovedBlockAvailable": {
+                    "DataWithBlockInfo": {
                       "fields": {
-                        "identifier": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "nodeIdentifer": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "BlockMessage": {
-                      "fields": {
-                        "blockHash": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "header": {
-                          "type": "Header",
-                          "id": 2
-                        },
-                        "body": {
-                          "type": "Body",
-                          "id": 3
-                        },
-                        "justifications": {
+                        "postBlockData": {
                           "rule": "repeated",
-                          "type": "Justification",
-                          "id": 4
-                        },
-                        "sender": {
-                          "type": "bytes",
-                          "id": 5
-                        },
-                        "seqNum": {
-                          "type": "int32",
-                          "id": 6
-                        },
-                        "sig": {
-                          "type": "bytes",
-                          "id": 7
-                        },
-                        "sigAlgorithm": {
-                          "type": "string",
-                          "id": 8
-                        },
-                        "shardId": {
-                          "type": "string",
-                          "id": 9
-                        },
-                        "extraBytes": {
-                          "type": "bytes",
-                          "id": 10
-                        }
-                      }
-                    },
-                    "Header": {
-                      "fields": {
-                        "parentsHashList": {
-                          "rule": "repeated",
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "postStateHash": {
-                          "type": "bytes",
-                          "id": 2
-                        },
-                        "deploysHash": {
-                          "type": "bytes",
-                          "id": 3
-                        },
-                        "timestamp": {
-                          "type": "int64",
-                          "id": 5
-                        },
-                        "version": {
-                          "type": "int64",
-                          "id": 6
-                        },
-                        "deployCount": {
-                          "type": "int32",
-                          "id": 7
-                        },
-                        "extraBytes": {
-                          "type": "bytes",
-                          "id": 8
-                        }
-                      }
-                    },
-                    "ProcessedDeploy": {
-                      "fields": {
-                        "deploy": {
-                          "type": "Deploy",
-                          "id": 1
-                        },
-                        "cost": {
-                          "type": "PCost",
-                          "id": 2
-                        },
-                        "log": {
-                          "rule": "repeated",
-                          "type": "Event",
-                          "id": 3
-                        },
-                        "errored": {
-                          "type": "bool",
-                          "id": 4
-                        }
-                      }
-                    },
-                    "Body": {
-                      "fields": {
-                        "postState": {
-                          "type": "RChainState",
-                          "id": 1
-                        },
-                        "deploys": {
-                          "rule": "repeated",
-                          "type": "ProcessedDeploy",
-                          "id": 2
-                        },
-                        "extraBytes": {
-                          "type": "bytes",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "Justification": {
-                      "fields": {
-                        "validator": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "latestBlockHash": {
-                          "type": "bytes",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "RChainState": {
-                      "fields": {
-                        "tuplespace": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "bonds": {
-                          "rule": "repeated",
-                          "type": "Bond",
-                          "id": 2
-                        },
-                        "blockNumber": {
-                          "type": "int64",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "Deploy": {
-                      "fields": {
-                        "term": {
                           "type": "Par",
                           "id": 1
                         },
-                        "raw": {
-                          "type": "DeployData",
+                        "block": {
+                          "type": "LightBlockInfo",
                           "id": 2
                         }
                       }
                     },
-                    "Event": {
-                      "oneofs": {
-                        "event_instance": {
-                          "oneof": [
-                            "produce",
-                            "consume",
-                            "comm"
-                          ]
-                        }
-                      },
+                    "ContinuationsWithBlockInfo": {
                       "fields": {
-                        "produce": {
-                          "type": "ProduceEvent",
-                          "id": 1
-                        },
-                        "consume": {
-                          "type": "ConsumeEvent",
-                          "id": 2
-                        },
-                        "comm": {
-                          "type": "CommEvent",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "ProduceEvent": {
-                      "fields": {
-                        "channelsHash": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "hash": {
-                          "type": "bytes",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ConsumeEvent": {
-                      "fields": {
-                        "channelsHash": {
-                          "type": "bytes",
-                          "id": 1
-                        },
-                        "hash": {
-                          "type": "bytes",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "CommEvent": {
-                      "fields": {
-                        "consume": {
-                          "type": "ConsumeEvent",
-                          "id": 1
-                        },
-                        "produces": {
+                        "postBlockContinuations": {
                           "rule": "repeated",
-                          "type": "ProduceEvent",
+                          "type": "WaitingContinuationInfo",
+                          "id": 1
+                        },
+                        "block": {
+                          "type": "LightBlockInfo",
                           "id": 2
                         }
                       }
                     },
-                    "Bond": {
+                    "WaitingContinuationInfo": {
                       "fields": {
-                        "validator": {
-                          "type": "bytes",
+                        "postBlockPatterns": {
+                          "rule": "repeated",
+                          "type": "BindPattern",
                           "id": 1
                         },
-                        "stake": {
-                          "type": "int64",
+                        "postBlockContinuation": {
+                          "type": "Par",
                           "id": 2
+                        }
+                      }
+                    },
+                    "ProposeService": {
+                      "methods": {
+                        "propose": {
+                          "requestType": "PrintUnmatchedSendsQuery",
+                          "responseType": "Either"
+                        }
+                      }
+                    },
+                    "PrintUnmatchedSendsQuery": {
+                      "fields": {
+                        "printUnmatchedSends": {
+                          "type": "bool",
+                          "id": 1
                         }
                       }
                     }
                   }
                 }
               }
-            }
-          }
-        }
-      }
-    },
-    "google": {
-      "nested": {
-        "protobuf": {
-          "nested": {
-            "Empty": {
-              "fields": {}
+            },
+            "comm": {
+              "nested": {
+                "protocol": {
+                  "nested": {
+                    "routing": {
+                      "options": {
+                        "(scalapb.options).package_name": "coop.rchain.comm.protocol.routing",
+                        "(scalapb.options).flat_package": true
+                      },
+                      "nested": {
+                        "Node": {
+                          "fields": {
+                            "id": {
+                              "type": "bytes",
+                              "id": 1
+                            },
+                            "host": {
+                              "type": "bytes",
+                              "id": 2
+                            },
+                            "tcp_port": {
+                              "type": "uint32",
+                              "id": 3
+                            },
+                            "udp_port": {
+                              "type": "uint32",
+                              "id": 4
+                            }
+                          }
+                        },
+                        "Header": {
+                          "fields": {
+                            "sender": {
+                              "type": "Node",
+                              "id": 1
+                            },
+                            "networkId": {
+                              "type": "string",
+                              "id": 2
+                            }
+                          }
+                        },
+                        "Heartbeat": {
+                          "fields": {}
+                        },
+                        "HeartbeatResponse": {
+                          "fields": {}
+                        },
+                        "ProtocolHandshake": {
+                          "fields": {
+                            "nonce": {
+                              "type": "bytes",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "ProtocolHandshakeResponse": {
+                          "fields": {
+                            "nonce": {
+                              "type": "bytes",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Packet": {
+                          "fields": {
+                            "typeId": {
+                              "type": "string",
+                              "id": 1
+                            },
+                            "content": {
+                              "type": "bytes",
+                              "id": 2
+                            }
+                          }
+                        },
+                        "Disconnect": {
+                          "fields": {}
+                        },
+                        "Protocol": {
+                          "oneofs": {
+                            "message": {
+                              "oneof": [
+                                "heartbeat",
+                                "protocol_handshake",
+                                "protocol_handshake_response",
+                                "packet",
+                                "disconnect"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "header": {
+                              "type": "Header",
+                              "id": 1
+                            },
+                            "heartbeat": {
+                              "type": "Heartbeat",
+                              "id": 2
+                            },
+                            "protocol_handshake": {
+                              "type": "ProtocolHandshake",
+                              "id": 3
+                            },
+                            "protocol_handshake_response": {
+                              "type": "ProtocolHandshakeResponse",
+                              "id": 4
+                            },
+                            "packet": {
+                              "type": "Packet",
+                              "id": 5
+                            },
+                            "disconnect": {
+                              "type": "Disconnect",
+                              "id": 6
+                            }
+                          }
+                        },
+                        "TransportLayer": {
+                          "methods": {
+                            "Send": {
+                              "requestType": "TLRequest",
+                              "responseType": "TLResponse"
+                            },
+                            "Stream": {
+                              "requestType": "Chunk",
+                              "requestStream": true,
+                              "responseType": "TLResponse"
+                            }
+                          }
+                        },
+                        "TLRequest": {
+                          "fields": {
+                            "protocol": {
+                              "type": "Protocol",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "InternalServerError": {
+                          "fields": {
+                            "error": {
+                              "type": "bytes",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Ack": {
+                          "fields": {
+                            "header": {
+                              "type": "Header",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "TLResponse": {
+                          "oneofs": {
+                            "payload": {
+                              "oneof": [
+                                "ack",
+                                "internalServerError"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "ack": {
+                              "type": "Ack",
+                              "id": 1
+                            },
+                            "internalServerError": {
+                              "type": "InternalServerError",
+                              "id": 2
+                            }
+                          }
+                        },
+                        "ChunkHeader": {
+                          "fields": {
+                            "sender": {
+                              "type": "Node",
+                              "id": 1
+                            },
+                            "typeId": {
+                              "type": "string",
+                              "id": 2
+                            },
+                            "compressed": {
+                              "type": "bool",
+                              "id": 3
+                            },
+                            "contentLength": {
+                              "type": "int32",
+                              "id": 4
+                            },
+                            "networkId": {
+                              "type": "string",
+                              "id": 5
+                            }
+                          }
+                        },
+                        "ChunkData": {
+                          "fields": {
+                            "contentData": {
+                              "type": "bytes",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Chunk": {
+                          "oneofs": {
+                            "content": {
+                              "oneof": [
+                                "header",
+                                "data"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "header": {
+                              "type": "ChunkHeader",
+                              "id": 1
+                            },
+                            "data": {
+                              "type": "ChunkData",
+                              "id": 2
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -740,9 +1156,9 @@
           "type": "Match",
           "id": 6
         },
-        "ids": {
+        "unforgeables": {
           "rule": "repeated",
-          "type": "GPrivate",
+          "type": "GUnforgeable",
           "id": 7
         },
         "bundles": {
@@ -808,13 +1224,9 @@
     },
     "PCost": {
       "fields": {
-        "iterations": {
-          "type": "int32",
-          "id": 1
-        },
         "cost": {
           "type": "uint64",
-          "id": 2
+          "id": 1
         }
       }
     },
@@ -831,26 +1243,6 @@
           "options": {
             "(scalapb.field).type": "coop.rchain.crypto.hash.Blake2b512Random"
           }
-        }
-      }
-    },
-    "ListParWithRandomAndPhlos": {
-      "fields": {
-        "pars": {
-          "rule": "repeated",
-          "type": "Par",
-          "id": 1
-        },
-        "randomState": {
-          "type": "bytes",
-          "id": 2,
-          "options": {
-            "(scalapb.field).type": "coop.rchain.crypto.hash.Blake2b512Random"
-          }
-        },
-        "cost": {
-          "type": "uint64",
-          "id": 3
         }
       }
     },
@@ -1002,9 +1394,13 @@
           "type": "bool",
           "id": 3
         },
+        "peek": {
+          "type": "bool",
+          "id": 4
+        },
         "bindCount": {
           "type": "int32",
-          "id": 4
+          "id": 5
         },
         "locallyFree": {
           "type": "bytes",
@@ -1037,9 +1433,17 @@
           "type": "string",
           "id": 3
         },
+        "deployId": {
+          "type": "DeployId",
+          "id": 4
+        },
+        "deployerId": {
+          "type": "DeployerId",
+          "id": 5
+        },
         "locallyFree": {
           "type": "bytes",
-          "id": 4,
+          "id": 6,
           "options": {
             "(scalapb.field).type": "coop.rchain.models.AlwaysEqual[scala.collection.immutable.BitSet]"
           }
@@ -1127,7 +1531,8 @@
             "e_matches_body",
             "e_percent_percent_body",
             "e_plus_plus_body",
-            "e_minus_minus_body"
+            "e_minus_minus_body",
+            "e_mod_body"
           ]
         }
       },
@@ -1253,6 +1658,10 @@
         "e_minus_minus_body": {
           "type": "EMinusMinus",
           "id": 30
+        },
+        "e_mod_body": {
+          "type": "EMod",
+          "id": 31
         }
       }
     },
@@ -1449,6 +1858,24 @@
       }
     },
     "EDiv": {
+      "fields": {
+        "p1": {
+          "type": "Par",
+          "id": 1,
+          "options": {
+            "(scalapb.field).no_box": true
+          }
+        },
+        "p2": {
+          "type": "Par",
+          "id": 2,
+          "options": {
+            "(scalapb.field).no_box": true
+          }
+        }
+      }
+    },
+    "EMod": {
       "fields": {
         "p1": {
           "type": "Par",
@@ -1794,11 +2221,140 @@
         }
       }
     },
+    "DeployId": {
+      "fields": {
+        "sig": {
+          "type": "bytes",
+          "id": 1
+        }
+      }
+    },
+    "DeployerId": {
+      "fields": {
+        "publicKey": {
+          "type": "bytes",
+          "id": 1
+        }
+      }
+    },
+    "GUnforgeable": {
+      "oneofs": {
+        "unf_instance": {
+          "oneof": [
+            "g_private_body",
+            "g_deploy_id_body",
+            "g_deployer_id_body"
+          ]
+        }
+      },
+      "fields": {
+        "g_private_body": {
+          "type": "GPrivate",
+          "id": 1
+        },
+        "g_deploy_id_body": {
+          "type": "GDeployId",
+          "id": 2
+        },
+        "g_deployer_id_body": {
+          "type": "GDeployerId",
+          "id": 3
+        }
+      }
+    },
     "GPrivate": {
       "fields": {
         "id": {
           "type": "bytes",
           "id": 1
+        }
+      }
+    },
+    "GDeployId": {
+      "fields": {
+        "sig": {
+          "type": "bytes",
+          "id": 1
+        }
+      }
+    },
+    "GDeployerId": {
+      "fields": {
+        "publicKey": {
+          "type": "bytes",
+          "id": 1
+        }
+      }
+    },
+    "EitherAny": {
+      "fields": {
+        "type_url": {
+          "type": "string",
+          "id": 1
+        },
+        "value": {
+          "type": "bytes",
+          "id": 2
+        }
+      }
+    },
+    "EitherError": {
+      "fields": {
+        "messages": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 1
+        }
+      }
+    },
+    "EitherSuccess": {
+      "fields": {
+        "response": {
+          "type": "EitherAny",
+          "id": 1
+        }
+      }
+    },
+    "Either": {
+      "oneofs": {
+        "content": {
+          "oneof": [
+            "error",
+            "success"
+          ]
+        }
+      },
+      "fields": {
+        "error": {
+          "type": "EitherError",
+          "id": 1
+        },
+        "success": {
+          "type": "EitherSuccess",
+          "id": 2
+        }
+      }
+    },
+    "google": {
+      "nested": {
+        "protobuf": {
+          "nested": {
+            "Empty": {
+              "fields": {}
+            },
+            "Any": {
+              "fields": {
+                "type_url": {
+                  "type": "string",
+                  "id": 1
+                },
+                "value": {
+                  "type": "bytes",
+                  "id": 2
+                }
+              }
+            }
+          }
         }
       }
     }

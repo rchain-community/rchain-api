@@ -20,7 +20,7 @@ $root.Par = (function() {
      * @property {Array.<INew>|null} [news] Par news
      * @property {Array.<IExpr>|null} [exprs] Par exprs
      * @property {Array.<IMatch>|null} [matches] Par matches
-     * @property {Array.<IGPrivate>|null} [ids] Par ids
+     * @property {Array.<IGUnforgeable>|null} [unforgeables] Par unforgeables
      * @property {Array.<IBundle>|null} [bundles] Par bundles
      * @property {Array.<IConnective>|null} [connectives] Par connectives
      * @property {Uint8Array|null} [locallyFree] Par locallyFree
@@ -30,7 +30,12 @@ $root.Par = (function() {
     /**
      * Constructs a new Par.
      * @exports Par
-     * @classdesc Represents a Par.
+     * @classdesc Rholang process
+     * 
+     * For example, `@0!(1) | @2!(3) | for(x <- @0) { Nil }` has two sends
+     * and one receive.
+     * 
+     * The Nil process is a `Par` with no sends, receives, etc.
      * @implements IPar
      * @constructor
      * @param {IPar=} [properties] Properties to set
@@ -41,7 +46,7 @@ $root.Par = (function() {
         this.news = [];
         this.exprs = [];
         this.matches = [];
-        this.ids = [];
+        this.unforgeables = [];
         this.bundles = [];
         this.connectives = [];
         if (properties)
@@ -91,12 +96,12 @@ $root.Par = (function() {
     Par.prototype.matches = $util.emptyArray;
 
     /**
-     * Par ids.
-     * @member {Array.<IGPrivate>} ids
+     * Par unforgeables.
+     * @member {Array.<IGUnforgeable>} unforgeables
      * @memberof Par
      * @instance
      */
-    Par.prototype.ids = $util.emptyArray;
+    Par.prototype.unforgeables = $util.emptyArray;
 
     /**
      * Par bundles.
@@ -169,9 +174,9 @@ $root.Par = (function() {
         if (message.matches != null && message.matches.length)
             for (var i = 0; i < message.matches.length; ++i)
                 $root.Match.encode(message.matches[i], writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-        if (message.ids != null && message.ids.length)
-            for (var i = 0; i < message.ids.length; ++i)
-                $root.GPrivate.encode(message.ids[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+        if (message.unforgeables != null && message.unforgeables.length)
+            for (var i = 0; i < message.unforgeables.length; ++i)
+                $root.GUnforgeable.encode(message.unforgeables[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
         if (message.connectives != null && message.connectives.length)
             for (var i = 0; i < message.connectives.length; ++i)
                 $root.Connective.encode(message.connectives[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
@@ -242,9 +247,9 @@ $root.Par = (function() {
                 message.matches.push($root.Match.decode(reader, reader.uint32()));
                 break;
             case 7:
-                if (!(message.ids && message.ids.length))
-                    message.ids = [];
-                message.ids.push($root.GPrivate.decode(reader, reader.uint32()));
+                if (!(message.unforgeables && message.unforgeables.length))
+                    message.unforgeables = [];
+                message.unforgeables.push($root.GUnforgeable.decode(reader, reader.uint32()));
                 break;
             case 11:
                 if (!(message.bundles && message.bundles.length))
@@ -342,13 +347,13 @@ $root.Par = (function() {
                     return "matches." + error;
             }
         }
-        if (message.ids != null && message.hasOwnProperty("ids")) {
-            if (!Array.isArray(message.ids))
-                return "ids: array expected";
-            for (var i = 0; i < message.ids.length; ++i) {
-                var error = $root.GPrivate.verify(message.ids[i]);
+        if (message.unforgeables != null && message.hasOwnProperty("unforgeables")) {
+            if (!Array.isArray(message.unforgeables))
+                return "unforgeables: array expected";
+            for (var i = 0; i < message.unforgeables.length; ++i) {
+                var error = $root.GUnforgeable.verify(message.unforgeables[i]);
                 if (error)
-                    return "ids." + error;
+                    return "unforgeables." + error;
             }
         }
         if (message.bundles != null && message.hasOwnProperty("bundles")) {
@@ -440,14 +445,14 @@ $root.Par = (function() {
                 message.matches[i] = $root.Match.fromObject(object.matches[i]);
             }
         }
-        if (object.ids) {
-            if (!Array.isArray(object.ids))
-                throw TypeError(".Par.ids: array expected");
-            message.ids = [];
-            for (var i = 0; i < object.ids.length; ++i) {
-                if (typeof object.ids[i] !== "object")
-                    throw TypeError(".Par.ids: object expected");
-                message.ids[i] = $root.GPrivate.fromObject(object.ids[i]);
+        if (object.unforgeables) {
+            if (!Array.isArray(object.unforgeables))
+                throw TypeError(".Par.unforgeables: array expected");
+            message.unforgeables = [];
+            for (var i = 0; i < object.unforgeables.length; ++i) {
+                if (typeof object.unforgeables[i] !== "object")
+                    throw TypeError(".Par.unforgeables: object expected");
+                message.unforgeables[i] = $root.GUnforgeable.fromObject(object.unforgeables[i]);
             }
         }
         if (object.bundles) {
@@ -499,7 +504,7 @@ $root.Par = (function() {
             object.news = [];
             object.exprs = [];
             object.matches = [];
-            object.ids = [];
+            object.unforgeables = [];
             object.connectives = [];
             object.bundles = [];
         }
@@ -538,10 +543,10 @@ $root.Par = (function() {
             for (var j = 0; j < message.matches.length; ++j)
                 object.matches[j] = $root.Match.toObject(message.matches[j], options);
         }
-        if (message.ids && message.ids.length) {
-            object.ids = [];
-            for (var j = 0; j < message.ids.length; ++j)
-                object.ids[j] = $root.GPrivate.toObject(message.ids[j], options);
+        if (message.unforgeables && message.unforgeables.length) {
+            object.unforgeables = [];
+            for (var j = 0; j < message.unforgeables.length; ++j)
+                object.unforgeables[j] = $root.GUnforgeable.toObject(message.unforgeables[j], options);
         }
         if (message.connectives && message.connectives.length) {
             object.connectives = [];
@@ -587,7 +592,7 @@ $root.TaggedContinuation = (function() {
     /**
      * Constructs a new TaggedContinuation.
      * @exports TaggedContinuation
-     * @classdesc Represents a TaggedContinuation.
+     * @classdesc Either rholang code or code built in to the interpreter.
      * @implements ITaggedContinuation
      * @constructor
      * @param {ITaggedContinuation=} [properties] Properties to set
@@ -836,7 +841,8 @@ $root.ParWithRandom = (function() {
     /**
      * Constructs a new ParWithRandom.
      * @exports ParWithRandom
-     * @classdesc Represents a ParWithRandom.
+     * @classdesc Rholang code along with the state of a split random number
+     * generator for generating new unforgeable names.
      * @implements IParWithRandom
      * @constructor
      * @param {IParWithRandom=} [properties] Properties to set
@@ -1053,14 +1059,13 @@ $root.PCost = (function() {
      * Properties of a PCost.
      * @exports IPCost
      * @interface IPCost
-     * @property {number|null} [iterations] PCost iterations
      * @property {number|Long|null} [cost] PCost cost
      */
 
     /**
      * Constructs a new PCost.
      * @exports PCost
-     * @classdesc Represents a PCost.
+     * @classdesc Cost of the performed operations.
      * @implements IPCost
      * @constructor
      * @param {IPCost=} [properties] Properties to set
@@ -1071,14 +1076,6 @@ $root.PCost = (function() {
                 if (properties[keys[i]] != null)
                     this[keys[i]] = properties[keys[i]];
     }
-
-    /**
-     * PCost iterations.
-     * @member {number} iterations
-     * @memberof PCost
-     * @instance
-     */
-    PCost.prototype.iterations = 0;
 
     /**
      * PCost cost.
@@ -1112,10 +1109,8 @@ $root.PCost = (function() {
     PCost.encode = function encode(message, writer) {
         if (!writer)
             writer = $Writer.create();
-        if (message.iterations != null && message.hasOwnProperty("iterations"))
-            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.iterations);
         if (message.cost != null && message.hasOwnProperty("cost"))
-            writer.uint32(/* id 2, wireType 0 =*/16).uint64(message.cost);
+            writer.uint32(/* id 1, wireType 0 =*/8).uint64(message.cost);
         return writer;
     };
 
@@ -1151,9 +1146,6 @@ $root.PCost = (function() {
             var tag = reader.uint32();
             switch (tag >>> 3) {
             case 1:
-                message.iterations = reader.int32();
-                break;
-            case 2:
                 message.cost = reader.uint64();
                 break;
             default:
@@ -1191,9 +1183,6 @@ $root.PCost = (function() {
     PCost.verify = function verify(message) {
         if (typeof message !== "object" || message === null)
             return "object expected";
-        if (message.iterations != null && message.hasOwnProperty("iterations"))
-            if (!$util.isInteger(message.iterations))
-                return "iterations: integer expected";
         if (message.cost != null && message.hasOwnProperty("cost"))
             if (!$util.isInteger(message.cost) && !(message.cost && $util.isInteger(message.cost.low) && $util.isInteger(message.cost.high)))
                 return "cost: integer|Long expected";
@@ -1212,8 +1201,6 @@ $root.PCost = (function() {
         if (object instanceof $root.PCost)
             return object;
         var message = new $root.PCost();
-        if (object.iterations != null)
-            message.iterations = object.iterations | 0;
         if (object.cost != null)
             if ($util.Long)
                 (message.cost = $util.Long.fromValue(object.cost)).unsigned = true;
@@ -1239,16 +1226,12 @@ $root.PCost = (function() {
         if (!options)
             options = {};
         var object = {};
-        if (options.defaults) {
-            object.iterations = 0;
+        if (options.defaults)
             if ($util.Long) {
                 var long = new $util.Long(0, 0, true);
                 object.cost = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
             } else
                 object.cost = options.longs === String ? "0" : 0;
-        }
-        if (message.iterations != null && message.hasOwnProperty("iterations"))
-            object.iterations = message.iterations;
         if (message.cost != null && message.hasOwnProperty("cost"))
             if (typeof message.cost === "number")
                 object.cost = options.longs === String ? String(message.cost) : message.cost;
@@ -1509,283 +1492,6 @@ $root.ListParWithRandom = (function() {
     };
 
     return ListParWithRandom;
-})();
-
-$root.ListParWithRandomAndPhlos = (function() {
-
-    /**
-     * Properties of a ListParWithRandomAndPhlos.
-     * @exports IListParWithRandomAndPhlos
-     * @interface IListParWithRandomAndPhlos
-     * @property {Array.<IPar>|null} [pars] ListParWithRandomAndPhlos pars
-     * @property {Uint8Array|null} [randomState] ListParWithRandomAndPhlos randomState
-     * @property {number|Long|null} [cost] ListParWithRandomAndPhlos cost
-     */
-
-    /**
-     * Constructs a new ListParWithRandomAndPhlos.
-     * @exports ListParWithRandomAndPhlos
-     * @classdesc Represents a ListParWithRandomAndPhlos.
-     * @implements IListParWithRandomAndPhlos
-     * @constructor
-     * @param {IListParWithRandomAndPhlos=} [properties] Properties to set
-     */
-    function ListParWithRandomAndPhlos(properties) {
-        this.pars = [];
-        if (properties)
-            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * ListParWithRandomAndPhlos pars.
-     * @member {Array.<IPar>} pars
-     * @memberof ListParWithRandomAndPhlos
-     * @instance
-     */
-    ListParWithRandomAndPhlos.prototype.pars = $util.emptyArray;
-
-    /**
-     * ListParWithRandomAndPhlos randomState.
-     * @member {Uint8Array} randomState
-     * @memberof ListParWithRandomAndPhlos
-     * @instance
-     */
-    ListParWithRandomAndPhlos.prototype.randomState = $util.newBuffer([]);
-
-    /**
-     * ListParWithRandomAndPhlos cost.
-     * @member {number|Long} cost
-     * @memberof ListParWithRandomAndPhlos
-     * @instance
-     */
-    ListParWithRandomAndPhlos.prototype.cost = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
-
-    /**
-     * Creates a new ListParWithRandomAndPhlos instance using the specified properties.
-     * @function create
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {IListParWithRandomAndPhlos=} [properties] Properties to set
-     * @returns {ListParWithRandomAndPhlos} ListParWithRandomAndPhlos instance
-     */
-    ListParWithRandomAndPhlos.create = function create(properties) {
-        return new ListParWithRandomAndPhlos(properties);
-    };
-
-    /**
-     * Encodes the specified ListParWithRandomAndPhlos message. Does not implicitly {@link ListParWithRandomAndPhlos.verify|verify} messages.
-     * @function encode
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {IListParWithRandomAndPhlos} message ListParWithRandomAndPhlos message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    ListParWithRandomAndPhlos.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.pars != null && message.pars.length)
-            for (var i = 0; i < message.pars.length; ++i)
-                $root.Par.encode(message.pars[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-        if (message.randomState != null && message.hasOwnProperty("randomState"))
-            writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.randomState);
-        if (message.cost != null && message.hasOwnProperty("cost"))
-            writer.uint32(/* id 3, wireType 0 =*/24).uint64(message.cost);
-        return writer;
-    };
-
-    /**
-     * Encodes the specified ListParWithRandomAndPhlos message, length delimited. Does not implicitly {@link ListParWithRandomAndPhlos.verify|verify} messages.
-     * @function encodeDelimited
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {IListParWithRandomAndPhlos} message ListParWithRandomAndPhlos message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    ListParWithRandomAndPhlos.encodeDelimited = function encodeDelimited(message, writer) {
-        return this.encode(message, writer).ldelim();
-    };
-
-    /**
-     * Decodes a ListParWithRandomAndPhlos message from the specified reader or buffer.
-     * @function decode
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {ListParWithRandomAndPhlos} ListParWithRandomAndPhlos
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    ListParWithRandomAndPhlos.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.ListParWithRandomAndPhlos();
-        while (reader.pos < end) {
-            var tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                if (!(message.pars && message.pars.length))
-                    message.pars = [];
-                message.pars.push($root.Par.decode(reader, reader.uint32()));
-                break;
-            case 2:
-                message.randomState = reader.bytes();
-                break;
-            case 3:
-                message.cost = reader.uint64();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    /**
-     * Decodes a ListParWithRandomAndPhlos message from the specified reader or buffer, length delimited.
-     * @function decodeDelimited
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @returns {ListParWithRandomAndPhlos} ListParWithRandomAndPhlos
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    ListParWithRandomAndPhlos.decodeDelimited = function decodeDelimited(reader) {
-        if (!(reader instanceof $Reader))
-            reader = new $Reader(reader);
-        return this.decode(reader, reader.uint32());
-    };
-
-    /**
-     * Verifies a ListParWithRandomAndPhlos message.
-     * @function verify
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {Object.<string,*>} message Plain object to verify
-     * @returns {string|null} `null` if valid, otherwise the reason why it is not
-     */
-    ListParWithRandomAndPhlos.verify = function verify(message) {
-        if (typeof message !== "object" || message === null)
-            return "object expected";
-        if (message.pars != null && message.hasOwnProperty("pars")) {
-            if (!Array.isArray(message.pars))
-                return "pars: array expected";
-            for (var i = 0; i < message.pars.length; ++i) {
-                var error = $root.Par.verify(message.pars[i]);
-                if (error)
-                    return "pars." + error;
-            }
-        }
-        if (message.randomState != null && message.hasOwnProperty("randomState"))
-            if (!(message.randomState && typeof message.randomState.length === "number" || $util.isString(message.randomState)))
-                return "randomState: buffer expected";
-        if (message.cost != null && message.hasOwnProperty("cost"))
-            if (!$util.isInteger(message.cost) && !(message.cost && $util.isInteger(message.cost.low) && $util.isInteger(message.cost.high)))
-                return "cost: integer|Long expected";
-        return null;
-    };
-
-    /**
-     * Creates a ListParWithRandomAndPhlos message from a plain object. Also converts values to their respective internal types.
-     * @function fromObject
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {Object.<string,*>} object Plain object
-     * @returns {ListParWithRandomAndPhlos} ListParWithRandomAndPhlos
-     */
-    ListParWithRandomAndPhlos.fromObject = function fromObject(object) {
-        if (object instanceof $root.ListParWithRandomAndPhlos)
-            return object;
-        var message = new $root.ListParWithRandomAndPhlos();
-        if (object.pars) {
-            if (!Array.isArray(object.pars))
-                throw TypeError(".ListParWithRandomAndPhlos.pars: array expected");
-            message.pars = [];
-            for (var i = 0; i < object.pars.length; ++i) {
-                if (typeof object.pars[i] !== "object")
-                    throw TypeError(".ListParWithRandomAndPhlos.pars: object expected");
-                message.pars[i] = $root.Par.fromObject(object.pars[i]);
-            }
-        }
-        if (object.randomState != null)
-            if (typeof object.randomState === "string")
-                $util.base64.decode(object.randomState, message.randomState = $util.newBuffer($util.base64.length(object.randomState)), 0);
-            else if (object.randomState.length)
-                message.randomState = object.randomState;
-        if (object.cost != null)
-            if ($util.Long)
-                (message.cost = $util.Long.fromValue(object.cost)).unsigned = true;
-            else if (typeof object.cost === "string")
-                message.cost = parseInt(object.cost, 10);
-            else if (typeof object.cost === "number")
-                message.cost = object.cost;
-            else if (typeof object.cost === "object")
-                message.cost = new $util.LongBits(object.cost.low >>> 0, object.cost.high >>> 0).toNumber(true);
-        return message;
-    };
-
-    /**
-     * Creates a plain object from a ListParWithRandomAndPhlos message. Also converts values to other types if specified.
-     * @function toObject
-     * @memberof ListParWithRandomAndPhlos
-     * @static
-     * @param {ListParWithRandomAndPhlos} message ListParWithRandomAndPhlos
-     * @param {$protobuf.IConversionOptions} [options] Conversion options
-     * @returns {Object.<string,*>} Plain object
-     */
-    ListParWithRandomAndPhlos.toObject = function toObject(message, options) {
-        if (!options)
-            options = {};
-        var object = {};
-        if (options.arrays || options.defaults)
-            object.pars = [];
-        if (options.defaults) {
-            if (options.bytes === String)
-                object.randomState = "";
-            else {
-                object.randomState = [];
-                if (options.bytes !== Array)
-                    object.randomState = $util.newBuffer(object.randomState);
-            }
-            if ($util.Long) {
-                var long = new $util.Long(0, 0, true);
-                object.cost = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-            } else
-                object.cost = options.longs === String ? "0" : 0;
-        }
-        if (message.pars && message.pars.length) {
-            object.pars = [];
-            for (var j = 0; j < message.pars.length; ++j)
-                object.pars[j] = $root.Par.toObject(message.pars[j], options);
-        }
-        if (message.randomState != null && message.hasOwnProperty("randomState"))
-            object.randomState = options.bytes === String ? $util.base64.encode(message.randomState, 0, message.randomState.length) : options.bytes === Array ? Array.prototype.slice.call(message.randomState) : message.randomState;
-        if (message.cost != null && message.hasOwnProperty("cost"))
-            if (typeof message.cost === "number")
-                object.cost = options.longs === String ? String(message.cost) : message.cost;
-            else
-                object.cost = options.longs === String ? $util.Long.prototype.toString.call(message.cost) : options.longs === Number ? new $util.LongBits(message.cost.low >>> 0, message.cost.high >>> 0).toNumber(true) : message.cost;
-        return object;
-    };
-
-    /**
-     * Converts this ListParWithRandomAndPhlos to JSON.
-     * @function toJSON
-     * @memberof ListParWithRandomAndPhlos
-     * @instance
-     * @returns {Object.<string,*>} JSON object
-     */
-    ListParWithRandomAndPhlos.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-    };
-
-    return ListParWithRandomAndPhlos;
 })();
 
 $root.Var = (function() {
@@ -2229,7 +1935,10 @@ $root.Bundle = (function() {
     /**
      * Constructs a new Bundle.
      * @exports Bundle
-     * @classdesc Represents a Bundle.
+     * @classdesc Nothing can be received from a (quoted) bundle with `readFlag = false`.
+     * Likeise nothing can be sent to a (quoted) bundle with `writeFlag = false`.
+     * 
+     * If both flags are set to false, bundle allows only for equivalance check.
      * @implements IBundle
      * @constructor
      * @param {IBundle=} [properties] Properties to set
@@ -2468,7 +2177,9 @@ $root.Send = (function() {
     /**
      * Constructs a new Send.
      * @exports Send
-     * @classdesc Represents a Send.
+     * @classdesc A send is written `chan!(data)` or `chan!!(data)` for a persistent send.
+     * 
+     * Upon send, all free variables in data are substituted with their values.
      * @implements ISend
      * @constructor
      * @param {ISend=} [properties] Properties to set
@@ -3526,6 +3237,7 @@ $root.Receive = (function() {
      * @property {Array.<IReceiveBind>|null} [binds] Receive binds
      * @property {IPar|null} [body] Receive body
      * @property {boolean|null} [persistent] Receive persistent
+     * @property {boolean|null} [peek] Receive peek
      * @property {number|null} [bindCount] Receive bindCount
      * @property {Uint8Array|null} [locallyFree] Receive locallyFree
      * @property {boolean|null} [connective_used] Receive connective_used
@@ -3534,7 +3246,11 @@ $root.Receive = (function() {
     /**
      * Constructs a new Receive.
      * @exports Receive
-     * @classdesc Represents a Receive.
+     * @classdesc A receive is written `for(binds) { body }`
+     * i.e. `for(patterns <- source) { body }`
+     * or for a persistent recieve: `for(patterns <= source) { body }`.
+     * 
+     * It's an error for free Variable to occur more than once in a pattern.
      * @implements IReceive
      * @constructor
      * @param {IReceive=} [properties] Properties to set
@@ -3570,6 +3286,14 @@ $root.Receive = (function() {
      * @instance
      */
     Receive.prototype.persistent = false;
+
+    /**
+     * Receive peek.
+     * @member {boolean} peek
+     * @memberof Receive
+     * @instance
+     */
+    Receive.prototype.peek = false;
 
     /**
      * Receive bindCount.
@@ -3626,8 +3350,10 @@ $root.Receive = (function() {
             $root.Par.encode(message.body, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.persistent);
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.peek);
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
-            writer.uint32(/* id 4, wireType 0 =*/32).int32(message.bindCount);
+            writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bindCount);
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.locallyFree);
         if (message.connective_used != null && message.hasOwnProperty("connective_used"))
@@ -3678,6 +3404,9 @@ $root.Receive = (function() {
                 message.persistent = reader.bool();
                 break;
             case 4:
+                message.peek = reader.bool();
+                break;
+            case 5:
                 message.bindCount = reader.int32();
                 break;
             case 6:
@@ -3738,6 +3467,9 @@ $root.Receive = (function() {
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             if (typeof message.persistent !== "boolean")
                 return "persistent: boolean expected";
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            if (typeof message.peek !== "boolean")
+                return "peek: boolean expected";
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
             if (!$util.isInteger(message.bindCount))
                 return "bindCount: integer expected";
@@ -3779,6 +3511,8 @@ $root.Receive = (function() {
         }
         if (object.persistent != null)
             message.persistent = Boolean(object.persistent);
+        if (object.peek != null)
+            message.peek = Boolean(object.peek);
         if (object.bindCount != null)
             message.bindCount = object.bindCount | 0;
         if (object.locallyFree != null)
@@ -3809,6 +3543,7 @@ $root.Receive = (function() {
         if (options.defaults) {
             object.body = null;
             object.persistent = false;
+            object.peek = false;
             object.bindCount = 0;
             if (options.bytes === String)
                 object.locallyFree = "";
@@ -3828,6 +3563,8 @@ $root.Receive = (function() {
             object.body = $root.Par.toObject(message.body, options);
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             object.persistent = message.persistent;
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            object.peek = message.peek;
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
             object.bindCount = message.bindCount;
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
@@ -3860,6 +3597,8 @@ $root.New = (function() {
      * @property {number|null} [bindCount] New bindCount
      * @property {IPar|null} [p] New p
      * @property {Array.<string>|null} [uri] New uri
+     * @property {IDeployId|null} [deployId] New deployId
+     * @property {IDeployerId|null} [deployerId] New deployerId
      * @property {Uint8Array|null} [locallyFree] New locallyFree
      */
 
@@ -3904,6 +3643,22 @@ $root.New = (function() {
     New.prototype.uri = $util.emptyArray;
 
     /**
+     * New deployId.
+     * @member {IDeployId|null|undefined} deployId
+     * @memberof New
+     * @instance
+     */
+    New.prototype.deployId = null;
+
+    /**
+     * New deployerId.
+     * @member {IDeployerId|null|undefined} deployerId
+     * @memberof New
+     * @instance
+     */
+    New.prototype.deployerId = null;
+
+    /**
      * New locallyFree.
      * @member {Uint8Array} locallyFree
      * @memberof New
@@ -3942,8 +3697,12 @@ $root.New = (function() {
         if (message.uri != null && message.uri.length)
             for (var i = 0; i < message.uri.length; ++i)
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.uri[i]);
+        if (message.deployId != null && message.hasOwnProperty("deployId"))
+            $root.DeployId.encode(message.deployId, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+        if (message.deployerId != null && message.hasOwnProperty("deployerId"))
+            $root.DeployerId.encode(message.deployerId, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
-            writer.uint32(/* id 4, wireType 2 =*/34).bytes(message.locallyFree);
+            writer.uint32(/* id 6, wireType 2 =*/50).bytes(message.locallyFree);
         return writer;
     };
 
@@ -3990,6 +3749,12 @@ $root.New = (function() {
                 message.uri.push(reader.string());
                 break;
             case 4:
+                message.deployId = $root.DeployId.decode(reader, reader.uint32());
+                break;
+            case 5:
+                message.deployerId = $root.DeployerId.decode(reader, reader.uint32());
+                break;
+            case 6:
                 message.locallyFree = reader.bytes();
                 break;
             default:
@@ -4042,6 +3807,16 @@ $root.New = (function() {
                 if (!$util.isString(message.uri[i]))
                     return "uri: string[] expected";
         }
+        if (message.deployId != null && message.hasOwnProperty("deployId")) {
+            var error = $root.DeployId.verify(message.deployId);
+            if (error)
+                return "deployId." + error;
+        }
+        if (message.deployerId != null && message.hasOwnProperty("deployerId")) {
+            var error = $root.DeployerId.verify(message.deployerId);
+            if (error)
+                return "deployerId." + error;
+        }
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             if (!(message.locallyFree && typeof message.locallyFree.length === "number" || $util.isString(message.locallyFree)))
                 return "locallyFree: buffer expected";
@@ -4074,6 +3849,16 @@ $root.New = (function() {
             for (var i = 0; i < object.uri.length; ++i)
                 message.uri[i] = String(object.uri[i]);
         }
+        if (object.deployId != null) {
+            if (typeof object.deployId !== "object")
+                throw TypeError(".New.deployId: object expected");
+            message.deployId = $root.DeployId.fromObject(object.deployId);
+        }
+        if (object.deployerId != null) {
+            if (typeof object.deployerId !== "object")
+                throw TypeError(".New.deployerId: object expected");
+            message.deployerId = $root.DeployerId.fromObject(object.deployerId);
+        }
         if (object.locallyFree != null)
             if (typeof object.locallyFree === "string")
                 $util.base64.decode(object.locallyFree, message.locallyFree = $util.newBuffer($util.base64.length(object.locallyFree)), 0);
@@ -4100,6 +3885,8 @@ $root.New = (function() {
         if (options.defaults) {
             object.bindCount = 0;
             object.p = null;
+            object.deployId = null;
+            object.deployerId = null;
             if (options.bytes === String)
                 object.locallyFree = "";
             else {
@@ -4117,6 +3904,10 @@ $root.New = (function() {
             for (var j = 0; j < message.uri.length; ++j)
                 object.uri[j] = message.uri[j];
         }
+        if (message.deployId != null && message.hasOwnProperty("deployId"))
+            object.deployId = $root.DeployId.toObject(message.deployId, options);
+        if (message.deployerId != null && message.hasOwnProperty("deployerId"))
+            object.deployerId = $root.DeployerId.toObject(message.deployerId, options);
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             object.locallyFree = options.bytes === String ? $util.base64.encode(message.locallyFree, 0, message.locallyFree.length) : options.bytes === Array ? Array.prototype.slice.call(message.locallyFree) : message.locallyFree;
         return object;
@@ -4703,6 +4494,7 @@ $root.Expr = (function() {
      * @property {IEPercentPercent|null} [e_percent_percent_body] Expr e_percent_percent_body
      * @property {IEPlusPlus|null} [e_plus_plus_body] Expr e_plus_plus_body
      * @property {IEMinusMinus|null} [e_minus_minus_body] Expr e_minus_minus_body
+     * @property {IEMod|null} [e_mod_body] Expr e_mod_body
      */
 
     /**
@@ -4952,17 +4744,25 @@ $root.Expr = (function() {
      */
     Expr.prototype.e_minus_minus_body = null;
 
+    /**
+     * Expr e_mod_body.
+     * @member {IEMod|null|undefined} e_mod_body
+     * @memberof Expr
+     * @instance
+     */
+    Expr.prototype.e_mod_body = null;
+
     // OneOf field names bound to virtual getters and setters
     var $oneOfFields;
 
     /**
      * Expr expr_instance.
-     * @member {"g_bool"|"g_int"|"g_string"|"g_uri"|"g_byte_array"|"e_not_body"|"e_neg_body"|"e_mult_body"|"e_div_body"|"e_plus_body"|"e_minus_body"|"e_lt_body"|"e_lte_body"|"e_gt_body"|"e_gte_body"|"e_eq_body"|"e_neq_body"|"e_and_body"|"e_or_body"|"e_var_body"|"e_list_body"|"e_tuple_body"|"e_set_body"|"e_map_body"|"e_method_body"|"e_matches_body"|"e_percent_percent_body"|"e_plus_plus_body"|"e_minus_minus_body"|undefined} expr_instance
+     * @member {"g_bool"|"g_int"|"g_string"|"g_uri"|"g_byte_array"|"e_not_body"|"e_neg_body"|"e_mult_body"|"e_div_body"|"e_plus_body"|"e_minus_body"|"e_lt_body"|"e_lte_body"|"e_gt_body"|"e_gte_body"|"e_eq_body"|"e_neq_body"|"e_and_body"|"e_or_body"|"e_var_body"|"e_list_body"|"e_tuple_body"|"e_set_body"|"e_map_body"|"e_method_body"|"e_matches_body"|"e_percent_percent_body"|"e_plus_plus_body"|"e_minus_minus_body"|"e_mod_body"|undefined} expr_instance
      * @memberof Expr
      * @instance
      */
     Object.defineProperty(Expr.prototype, "expr_instance", {
-        get: $util.oneOfGetter($oneOfFields = ["g_bool", "g_int", "g_string", "g_uri", "g_byte_array", "e_not_body", "e_neg_body", "e_mult_body", "e_div_body", "e_plus_body", "e_minus_body", "e_lt_body", "e_lte_body", "e_gt_body", "e_gte_body", "e_eq_body", "e_neq_body", "e_and_body", "e_or_body", "e_var_body", "e_list_body", "e_tuple_body", "e_set_body", "e_map_body", "e_method_body", "e_matches_body", "e_percent_percent_body", "e_plus_plus_body", "e_minus_minus_body"]),
+        get: $util.oneOfGetter($oneOfFields = ["g_bool", "g_int", "g_string", "g_uri", "g_byte_array", "e_not_body", "e_neg_body", "e_mult_body", "e_div_body", "e_plus_body", "e_minus_body", "e_lt_body", "e_lte_body", "e_gt_body", "e_gte_body", "e_eq_body", "e_neq_body", "e_and_body", "e_or_body", "e_var_body", "e_list_body", "e_tuple_body", "e_set_body", "e_map_body", "e_method_body", "e_matches_body", "e_percent_percent_body", "e_plus_plus_body", "e_minus_minus_body", "e_mod_body"]),
         set: $util.oneOfSetter($oneOfFields)
     });
 
@@ -5048,6 +4848,8 @@ $root.Expr = (function() {
             $root.EPlusPlus.encode(message.e_plus_plus_body, writer.uint32(/* id 29, wireType 2 =*/234).fork()).ldelim();
         if (message.e_minus_minus_body != null && message.hasOwnProperty("e_minus_minus_body"))
             $root.EMinusMinus.encode(message.e_minus_minus_body, writer.uint32(/* id 30, wireType 2 =*/242).fork()).ldelim();
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body"))
+            $root.EMod.encode(message.e_mod_body, writer.uint32(/* id 31, wireType 2 =*/250).fork()).ldelim();
         return writer;
     };
 
@@ -5168,6 +4970,9 @@ $root.Expr = (function() {
                 break;
             case 30:
                 message.e_minus_minus_body = $root.EMinusMinus.decode(reader, reader.uint32());
+                break;
+            case 31:
+                message.e_mod_body = $root.EMod.decode(reader, reader.uint32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -5478,6 +5283,16 @@ $root.Expr = (function() {
                     return "e_minus_minus_body." + error;
             }
         }
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body")) {
+            if (properties.expr_instance === 1)
+                return "expr_instance: multiple values";
+            properties.expr_instance = 1;
+            {
+                var error = $root.EMod.verify(message.e_mod_body);
+                if (error)
+                    return "e_mod_body." + error;
+            }
+        }
         return null;
     };
 
@@ -5632,6 +5447,11 @@ $root.Expr = (function() {
             if (typeof object.e_minus_minus_body !== "object")
                 throw TypeError(".Expr.e_minus_minus_body: object expected");
             message.e_minus_minus_body = $root.EMinusMinus.fromObject(object.e_minus_minus_body);
+        }
+        if (object.e_mod_body != null) {
+            if (typeof object.e_mod_body !== "object")
+                throw TypeError(".Expr.e_mod_body: object expected");
+            message.e_mod_body = $root.EMod.fromObject(object.e_mod_body);
         }
         return message;
     };
@@ -5796,6 +5616,11 @@ $root.Expr = (function() {
             object.e_minus_minus_body = $root.EMinusMinus.toObject(message.e_minus_minus_body, options);
             if (options.oneofs)
                 object.expr_instance = "e_minus_minus_body";
+        }
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body")) {
+            object.e_mod_body = $root.EMod.toObject(message.e_mod_body, options);
+            if (options.oneofs)
+                object.expr_instance = "e_mod_body";
         }
         return object;
     };
@@ -6963,7 +6788,7 @@ $root.EMethod = (function() {
     /**
      * Constructs a new EMethod.
      * @exports EMethod
-     * @classdesc Represents a EMethod.
+     * @classdesc `target.method(arguments)`
      * @implements IEMethod
      * @constructor
      * @param {IEMethod=} [properties] Properties to set
@@ -8493,6 +8318,226 @@ $root.EDiv = (function() {
     };
 
     return EDiv;
+})();
+
+$root.EMod = (function() {
+
+    /**
+     * Properties of a EMod.
+     * @exports IEMod
+     * @interface IEMod
+     * @property {IPar|null} [p1] EMod p1
+     * @property {IPar|null} [p2] EMod p2
+     */
+
+    /**
+     * Constructs a new EMod.
+     * @exports EMod
+     * @classdesc Represents a EMod.
+     * @implements IEMod
+     * @constructor
+     * @param {IEMod=} [properties] Properties to set
+     */
+    function EMod(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * EMod p1.
+     * @member {IPar|null|undefined} p1
+     * @memberof EMod
+     * @instance
+     */
+    EMod.prototype.p1 = null;
+
+    /**
+     * EMod p2.
+     * @member {IPar|null|undefined} p2
+     * @memberof EMod
+     * @instance
+     */
+    EMod.prototype.p2 = null;
+
+    /**
+     * Creates a new EMod instance using the specified properties.
+     * @function create
+     * @memberof EMod
+     * @static
+     * @param {IEMod=} [properties] Properties to set
+     * @returns {EMod} EMod instance
+     */
+    EMod.create = function create(properties) {
+        return new EMod(properties);
+    };
+
+    /**
+     * Encodes the specified EMod message. Does not implicitly {@link EMod.verify|verify} messages.
+     * @function encode
+     * @memberof EMod
+     * @static
+     * @param {IEMod} message EMod message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    EMod.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.p1 != null && message.hasOwnProperty("p1"))
+            $root.Par.encode(message.p1, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.p2 != null && message.hasOwnProperty("p2"))
+            $root.Par.encode(message.p2, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified EMod message, length delimited. Does not implicitly {@link EMod.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof EMod
+     * @static
+     * @param {IEMod} message EMod message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    EMod.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a EMod message from the specified reader or buffer.
+     * @function decode
+     * @memberof EMod
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {EMod} EMod
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    EMod.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EMod();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.p1 = $root.Par.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.p2 = $root.Par.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a EMod message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof EMod
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {EMod} EMod
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    EMod.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a EMod message.
+     * @function verify
+     * @memberof EMod
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    EMod.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.p1 != null && message.hasOwnProperty("p1")) {
+            var error = $root.Par.verify(message.p1);
+            if (error)
+                return "p1." + error;
+        }
+        if (message.p2 != null && message.hasOwnProperty("p2")) {
+            var error = $root.Par.verify(message.p2);
+            if (error)
+                return "p2." + error;
+        }
+        return null;
+    };
+
+    /**
+     * Creates a EMod message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof EMod
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {EMod} EMod
+     */
+    EMod.fromObject = function fromObject(object) {
+        if (object instanceof $root.EMod)
+            return object;
+        var message = new $root.EMod();
+        if (object.p1 != null) {
+            if (typeof object.p1 !== "object")
+                throw TypeError(".EMod.p1: object expected");
+            message.p1 = $root.Par.fromObject(object.p1);
+        }
+        if (object.p2 != null) {
+            if (typeof object.p2 !== "object")
+                throw TypeError(".EMod.p2: object expected");
+            message.p2 = $root.Par.fromObject(object.p2);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a EMod message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof EMod
+     * @static
+     * @param {EMod} message EMod
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    EMod.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.p1 = null;
+            object.p2 = null;
+        }
+        if (message.p1 != null && message.hasOwnProperty("p1"))
+            object.p1 = $root.Par.toObject(message.p1, options);
+        if (message.p2 != null && message.hasOwnProperty("p2"))
+            object.p2 = $root.Par.toObject(message.p2, options);
+        return object;
+    };
+
+    /**
+     * Converts this EMod to JSON.
+     * @function toJSON
+     * @memberof EMod
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    EMod.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return EMod;
 })();
 
 $root.EPlus = (function() {
@@ -10928,7 +10973,9 @@ $root.EPercentPercent = (function() {
     /**
      * Constructs a new EPercentPercent.
      * @exports EPercentPercent
-     * @classdesc Represents a EPercentPercent.
+     * @classdesc String interpolation
+     * 
+     * `"Hello, {name}" %% {"name": "Bob"}` denotes `"Hello, Bob"`
      * @implements IEPercentPercent
      * @constructor
      * @param {IEPercentPercent=} [properties] Properties to set
@@ -12446,6 +12493,677 @@ $root.ConnectiveBody = (function() {
     return ConnectiveBody;
 })();
 
+$root.DeployId = (function() {
+
+    /**
+     * Properties of a DeployId.
+     * @exports IDeployId
+     * @interface IDeployId
+     * @property {Uint8Array|null} [sig] DeployId sig
+     */
+
+    /**
+     * Constructs a new DeployId.
+     * @exports DeployId
+     * @classdesc Represents a DeployId.
+     * @implements IDeployId
+     * @constructor
+     * @param {IDeployId=} [properties] Properties to set
+     */
+    function DeployId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * DeployId sig.
+     * @member {Uint8Array} sig
+     * @memberof DeployId
+     * @instance
+     */
+    DeployId.prototype.sig = $util.newBuffer([]);
+
+    /**
+     * Creates a new DeployId instance using the specified properties.
+     * @function create
+     * @memberof DeployId
+     * @static
+     * @param {IDeployId=} [properties] Properties to set
+     * @returns {DeployId} DeployId instance
+     */
+    DeployId.create = function create(properties) {
+        return new DeployId(properties);
+    };
+
+    /**
+     * Encodes the specified DeployId message. Does not implicitly {@link DeployId.verify|verify} messages.
+     * @function encode
+     * @memberof DeployId
+     * @static
+     * @param {IDeployId} message DeployId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeployId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sig);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified DeployId message, length delimited. Does not implicitly {@link DeployId.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof DeployId
+     * @static
+     * @param {IDeployId} message DeployId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeployId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a DeployId message from the specified reader or buffer.
+     * @function decode
+     * @memberof DeployId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {DeployId} DeployId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeployId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeployId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.sig = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a DeployId message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof DeployId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {DeployId} DeployId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeployId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a DeployId message.
+     * @function verify
+     * @memberof DeployId
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    DeployId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                return "sig: buffer expected";
+        return null;
+    };
+
+    /**
+     * Creates a DeployId message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof DeployId
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {DeployId} DeployId
+     */
+    DeployId.fromObject = function fromObject(object) {
+        if (object instanceof $root.DeployId)
+            return object;
+        var message = new $root.DeployId();
+        if (object.sig != null)
+            if (typeof object.sig === "string")
+                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+            else if (object.sig.length)
+                message.sig = object.sig;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a DeployId message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof DeployId
+     * @static
+     * @param {DeployId} message DeployId
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    DeployId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.sig = "";
+            else {
+                object.sig = [];
+                if (options.bytes !== Array)
+                    object.sig = $util.newBuffer(object.sig);
+            }
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+        return object;
+    };
+
+    /**
+     * Converts this DeployId to JSON.
+     * @function toJSON
+     * @memberof DeployId
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    DeployId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return DeployId;
+})();
+
+$root.DeployerId = (function() {
+
+    /**
+     * Properties of a DeployerId.
+     * @exports IDeployerId
+     * @interface IDeployerId
+     * @property {Uint8Array|null} [publicKey] DeployerId publicKey
+     */
+
+    /**
+     * Constructs a new DeployerId.
+     * @exports DeployerId
+     * @classdesc Represents a DeployerId.
+     * @implements IDeployerId
+     * @constructor
+     * @param {IDeployerId=} [properties] Properties to set
+     */
+    function DeployerId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * DeployerId publicKey.
+     * @member {Uint8Array} publicKey
+     * @memberof DeployerId
+     * @instance
+     */
+    DeployerId.prototype.publicKey = $util.newBuffer([]);
+
+    /**
+     * Creates a new DeployerId instance using the specified properties.
+     * @function create
+     * @memberof DeployerId
+     * @static
+     * @param {IDeployerId=} [properties] Properties to set
+     * @returns {DeployerId} DeployerId instance
+     */
+    DeployerId.create = function create(properties) {
+        return new DeployerId(properties);
+    };
+
+    /**
+     * Encodes the specified DeployerId message. Does not implicitly {@link DeployerId.verify|verify} messages.
+     * @function encode
+     * @memberof DeployerId
+     * @static
+     * @param {IDeployerId} message DeployerId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeployerId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.publicKey);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified DeployerId message, length delimited. Does not implicitly {@link DeployerId.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof DeployerId
+     * @static
+     * @param {IDeployerId} message DeployerId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    DeployerId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a DeployerId message from the specified reader or buffer.
+     * @function decode
+     * @memberof DeployerId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {DeployerId} DeployerId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeployerId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeployerId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.publicKey = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a DeployerId message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof DeployerId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {DeployerId} DeployerId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    DeployerId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a DeployerId message.
+     * @function verify
+     * @memberof DeployerId
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    DeployerId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
+                return "publicKey: buffer expected";
+        return null;
+    };
+
+    /**
+     * Creates a DeployerId message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof DeployerId
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {DeployerId} DeployerId
+     */
+    DeployerId.fromObject = function fromObject(object) {
+        if (object instanceof $root.DeployerId)
+            return object;
+        var message = new $root.DeployerId();
+        if (object.publicKey != null)
+            if (typeof object.publicKey === "string")
+                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
+            else if (object.publicKey.length)
+                message.publicKey = object.publicKey;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a DeployerId message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof DeployerId
+     * @static
+     * @param {DeployerId} message DeployerId
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    DeployerId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.publicKey = "";
+            else {
+                object.publicKey = [];
+                if (options.bytes !== Array)
+                    object.publicKey = $util.newBuffer(object.publicKey);
+            }
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+        return object;
+    };
+
+    /**
+     * Converts this DeployerId to JSON.
+     * @function toJSON
+     * @memberof DeployerId
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    DeployerId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return DeployerId;
+})();
+
+$root.GUnforgeable = (function() {
+
+    /**
+     * Properties of a GUnforgeable.
+     * @exports IGUnforgeable
+     * @interface IGUnforgeable
+     * @property {IGPrivate|null} [g_private_body] GUnforgeable g_private_body
+     * @property {IGDeployId|null} [g_deploy_id_body] GUnforgeable g_deploy_id_body
+     * @property {IGDeployerId|null} [g_deployer_id_body] GUnforgeable g_deployer_id_body
+     */
+
+    /**
+     * Constructs a new GUnforgeable.
+     * @exports GUnforgeable
+     * @classdesc Represents a GUnforgeable.
+     * @implements IGUnforgeable
+     * @constructor
+     * @param {IGUnforgeable=} [properties] Properties to set
+     */
+    function GUnforgeable(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * GUnforgeable g_private_body.
+     * @member {IGPrivate|null|undefined} g_private_body
+     * @memberof GUnforgeable
+     * @instance
+     */
+    GUnforgeable.prototype.g_private_body = null;
+
+    /**
+     * GUnforgeable g_deploy_id_body.
+     * @member {IGDeployId|null|undefined} g_deploy_id_body
+     * @memberof GUnforgeable
+     * @instance
+     */
+    GUnforgeable.prototype.g_deploy_id_body = null;
+
+    /**
+     * GUnforgeable g_deployer_id_body.
+     * @member {IGDeployerId|null|undefined} g_deployer_id_body
+     * @memberof GUnforgeable
+     * @instance
+     */
+    GUnforgeable.prototype.g_deployer_id_body = null;
+
+    // OneOf field names bound to virtual getters and setters
+    var $oneOfFields;
+
+    /**
+     * GUnforgeable unf_instance.
+     * @member {"g_private_body"|"g_deploy_id_body"|"g_deployer_id_body"|undefined} unf_instance
+     * @memberof GUnforgeable
+     * @instance
+     */
+    Object.defineProperty(GUnforgeable.prototype, "unf_instance", {
+        get: $util.oneOfGetter($oneOfFields = ["g_private_body", "g_deploy_id_body", "g_deployer_id_body"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    /**
+     * Creates a new GUnforgeable instance using the specified properties.
+     * @function create
+     * @memberof GUnforgeable
+     * @static
+     * @param {IGUnforgeable=} [properties] Properties to set
+     * @returns {GUnforgeable} GUnforgeable instance
+     */
+    GUnforgeable.create = function create(properties) {
+        return new GUnforgeable(properties);
+    };
+
+    /**
+     * Encodes the specified GUnforgeable message. Does not implicitly {@link GUnforgeable.verify|verify} messages.
+     * @function encode
+     * @memberof GUnforgeable
+     * @static
+     * @param {IGUnforgeable} message GUnforgeable message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GUnforgeable.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body"))
+            $root.GPrivate.encode(message.g_private_body, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body"))
+            $root.GDeployId.encode(message.g_deploy_id_body, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body"))
+            $root.GDeployerId.encode(message.g_deployer_id_body, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+        return writer;
+    };
+
+    /**
+     * Encodes the specified GUnforgeable message, length delimited. Does not implicitly {@link GUnforgeable.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof GUnforgeable
+     * @static
+     * @param {IGUnforgeable} message GUnforgeable message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GUnforgeable.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a GUnforgeable message from the specified reader or buffer.
+     * @function decode
+     * @memberof GUnforgeable
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {GUnforgeable} GUnforgeable
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GUnforgeable.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GUnforgeable();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.g_private_body = $root.GPrivate.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.g_deploy_id_body = $root.GDeployId.decode(reader, reader.uint32());
+                break;
+            case 3:
+                message.g_deployer_id_body = $root.GDeployerId.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a GUnforgeable message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof GUnforgeable
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {GUnforgeable} GUnforgeable
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GUnforgeable.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a GUnforgeable message.
+     * @function verify
+     * @memberof GUnforgeable
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    GUnforgeable.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        var properties = {};
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body")) {
+            properties.unf_instance = 1;
+            {
+                var error = $root.GPrivate.verify(message.g_private_body);
+                if (error)
+                    return "g_private_body." + error;
+            }
+        }
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body")) {
+            if (properties.unf_instance === 1)
+                return "unf_instance: multiple values";
+            properties.unf_instance = 1;
+            {
+                var error = $root.GDeployId.verify(message.g_deploy_id_body);
+                if (error)
+                    return "g_deploy_id_body." + error;
+            }
+        }
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body")) {
+            if (properties.unf_instance === 1)
+                return "unf_instance: multiple values";
+            properties.unf_instance = 1;
+            {
+                var error = $root.GDeployerId.verify(message.g_deployer_id_body);
+                if (error)
+                    return "g_deployer_id_body." + error;
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Creates a GUnforgeable message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof GUnforgeable
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {GUnforgeable} GUnforgeable
+     */
+    GUnforgeable.fromObject = function fromObject(object) {
+        if (object instanceof $root.GUnforgeable)
+            return object;
+        var message = new $root.GUnforgeable();
+        if (object.g_private_body != null) {
+            if (typeof object.g_private_body !== "object")
+                throw TypeError(".GUnforgeable.g_private_body: object expected");
+            message.g_private_body = $root.GPrivate.fromObject(object.g_private_body);
+        }
+        if (object.g_deploy_id_body != null) {
+            if (typeof object.g_deploy_id_body !== "object")
+                throw TypeError(".GUnforgeable.g_deploy_id_body: object expected");
+            message.g_deploy_id_body = $root.GDeployId.fromObject(object.g_deploy_id_body);
+        }
+        if (object.g_deployer_id_body != null) {
+            if (typeof object.g_deployer_id_body !== "object")
+                throw TypeError(".GUnforgeable.g_deployer_id_body: object expected");
+            message.g_deployer_id_body = $root.GDeployerId.fromObject(object.g_deployer_id_body);
+        }
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a GUnforgeable message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof GUnforgeable
+     * @static
+     * @param {GUnforgeable} message GUnforgeable
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    GUnforgeable.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body")) {
+            object.g_private_body = $root.GPrivate.toObject(message.g_private_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_private_body";
+        }
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body")) {
+            object.g_deploy_id_body = $root.GDeployId.toObject(message.g_deploy_id_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_deploy_id_body";
+        }
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body")) {
+            object.g_deployer_id_body = $root.GDeployerId.toObject(message.g_deployer_id_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_deployer_id_body";
+        }
+        return object;
+    };
+
+    /**
+     * Converts this GUnforgeable to JSON.
+     * @function toJSON
+     * @memberof GUnforgeable
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    GUnforgeable.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GUnforgeable;
+})();
+
 $root.GPrivate = (function() {
 
     /**
@@ -12640,6 +13358,398 @@ $root.GPrivate = (function() {
     };
 
     return GPrivate;
+})();
+
+$root.GDeployId = (function() {
+
+    /**
+     * Properties of a GDeployId.
+     * @exports IGDeployId
+     * @interface IGDeployId
+     * @property {Uint8Array|null} [sig] GDeployId sig
+     */
+
+    /**
+     * Constructs a new GDeployId.
+     * @exports GDeployId
+     * @classdesc Represents a GDeployId.
+     * @implements IGDeployId
+     * @constructor
+     * @param {IGDeployId=} [properties] Properties to set
+     */
+    function GDeployId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * GDeployId sig.
+     * @member {Uint8Array} sig
+     * @memberof GDeployId
+     * @instance
+     */
+    GDeployId.prototype.sig = $util.newBuffer([]);
+
+    /**
+     * Creates a new GDeployId instance using the specified properties.
+     * @function create
+     * @memberof GDeployId
+     * @static
+     * @param {IGDeployId=} [properties] Properties to set
+     * @returns {GDeployId} GDeployId instance
+     */
+    GDeployId.create = function create(properties) {
+        return new GDeployId(properties);
+    };
+
+    /**
+     * Encodes the specified GDeployId message. Does not implicitly {@link GDeployId.verify|verify} messages.
+     * @function encode
+     * @memberof GDeployId
+     * @static
+     * @param {IGDeployId} message GDeployId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GDeployId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.sig);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified GDeployId message, length delimited. Does not implicitly {@link GDeployId.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof GDeployId
+     * @static
+     * @param {IGDeployId} message GDeployId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GDeployId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a GDeployId message from the specified reader or buffer.
+     * @function decode
+     * @memberof GDeployId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {GDeployId} GDeployId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GDeployId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GDeployId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.sig = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a GDeployId message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof GDeployId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {GDeployId} GDeployId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GDeployId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a GDeployId message.
+     * @function verify
+     * @memberof GDeployId
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    GDeployId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                return "sig: buffer expected";
+        return null;
+    };
+
+    /**
+     * Creates a GDeployId message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof GDeployId
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {GDeployId} GDeployId
+     */
+    GDeployId.fromObject = function fromObject(object) {
+        if (object instanceof $root.GDeployId)
+            return object;
+        var message = new $root.GDeployId();
+        if (object.sig != null)
+            if (typeof object.sig === "string")
+                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+            else if (object.sig.length)
+                message.sig = object.sig;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a GDeployId message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof GDeployId
+     * @static
+     * @param {GDeployId} message GDeployId
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    GDeployId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.sig = "";
+            else {
+                object.sig = [];
+                if (options.bytes !== Array)
+                    object.sig = $util.newBuffer(object.sig);
+            }
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+        return object;
+    };
+
+    /**
+     * Converts this GDeployId to JSON.
+     * @function toJSON
+     * @memberof GDeployId
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    GDeployId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GDeployId;
+})();
+
+$root.GDeployerId = (function() {
+
+    /**
+     * Properties of a GDeployerId.
+     * @exports IGDeployerId
+     * @interface IGDeployerId
+     * @property {Uint8Array|null} [publicKey] GDeployerId publicKey
+     */
+
+    /**
+     * Constructs a new GDeployerId.
+     * @exports GDeployerId
+     * @classdesc Represents a GDeployerId.
+     * @implements IGDeployerId
+     * @constructor
+     * @param {IGDeployerId=} [properties] Properties to set
+     */
+    function GDeployerId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    /**
+     * GDeployerId publicKey.
+     * @member {Uint8Array} publicKey
+     * @memberof GDeployerId
+     * @instance
+     */
+    GDeployerId.prototype.publicKey = $util.newBuffer([]);
+
+    /**
+     * Creates a new GDeployerId instance using the specified properties.
+     * @function create
+     * @memberof GDeployerId
+     * @static
+     * @param {IGDeployerId=} [properties] Properties to set
+     * @returns {GDeployerId} GDeployerId instance
+     */
+    GDeployerId.create = function create(properties) {
+        return new GDeployerId(properties);
+    };
+
+    /**
+     * Encodes the specified GDeployerId message. Does not implicitly {@link GDeployerId.verify|verify} messages.
+     * @function encode
+     * @memberof GDeployerId
+     * @static
+     * @param {IGDeployerId} message GDeployerId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GDeployerId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.publicKey);
+        return writer;
+    };
+
+    /**
+     * Encodes the specified GDeployerId message, length delimited. Does not implicitly {@link GDeployerId.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof GDeployerId
+     * @static
+     * @param {IGDeployerId} message GDeployerId message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    GDeployerId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a GDeployerId message from the specified reader or buffer.
+     * @function decode
+     * @memberof GDeployerId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @param {number} [length] Message length if known beforehand
+     * @returns {GDeployerId} GDeployerId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GDeployerId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GDeployerId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.publicKey = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    /**
+     * Decodes a GDeployerId message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof GDeployerId
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {GDeployerId} GDeployerId
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    GDeployerId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a GDeployerId message.
+     * @function verify
+     * @memberof GDeployerId
+     * @static
+     * @param {Object.<string,*>} message Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    GDeployerId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
+                return "publicKey: buffer expected";
+        return null;
+    };
+
+    /**
+     * Creates a GDeployerId message from a plain object. Also converts values to their respective internal types.
+     * @function fromObject
+     * @memberof GDeployerId
+     * @static
+     * @param {Object.<string,*>} object Plain object
+     * @returns {GDeployerId} GDeployerId
+     */
+    GDeployerId.fromObject = function fromObject(object) {
+        if (object instanceof $root.GDeployerId)
+            return object;
+        var message = new $root.GDeployerId();
+        if (object.publicKey != null)
+            if (typeof object.publicKey === "string")
+                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
+            else if (object.publicKey.length)
+                message.publicKey = object.publicKey;
+        return message;
+    };
+
+    /**
+     * Creates a plain object from a GDeployerId message. Also converts values to other types if specified.
+     * @function toObject
+     * @memberof GDeployerId
+     * @static
+     * @param {GDeployerId} message GDeployerId
+     * @param {$protobuf.IConversionOptions} [options] Conversion options
+     * @returns {Object.<string,*>} Plain object
+     */
+    GDeployerId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.publicKey = "";
+            else {
+                object.publicKey = [];
+                if (options.bytes !== Array)
+                    object.publicKey = $util.newBuffer(object.publicKey);
+            }
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+        return object;
+    };
+
+    /**
+     * Converts this GDeployerId to JSON.
+     * @function toJSON
+     * @memberof GDeployerId
+     * @instance
+     * @returns {Object.<string,*>} JSON object
+     */
+    GDeployerId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GDeployerId;
 })();
 
 module.exports = $root;
