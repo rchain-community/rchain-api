@@ -2,3 +2,4 @@
 node_modules/
 /rclient/keystore.json
 /rclient/registry.json
+.vscode/
