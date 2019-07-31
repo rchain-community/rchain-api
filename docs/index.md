@@ -464,7 +464,7 @@ including the number of blocks specified by the block_depth
 
 -   Throws **any** Error if blockDepth &lt; 1 or no blocks were able to be retrieved
 
-Returns **[Promise][109]&lt;BlockInfoWithoutTuplespace>** List of BlockInfoWithoutTuplespace structures for each block retrieved
+Returns **[Promise][109]&lt;LightBlockInfo>** List of LightBlockInfo structures for each block retrieved
 
 ## RHOCore
 

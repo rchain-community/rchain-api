@@ -2,9 +2,7 @@
 // @flow
 
 const ttest = require('tape');
-const CasperMessage = require('../protobuf/CasperMessage');
-
-const { BlockInfoWithoutTuplespace } = CasperMessage.coop.rchain.casper.protocol;
+const { LightBlockInfo } = require('../protobuf/DeployService').coop.rchain.casper.protocol;
 
 const api = require('..');
 
@@ -158,7 +156,7 @@ function grpcMock() {
       doDeploy(_dd /*: Object */, _auto /*: boolean */ = false) { return 'Success!'; },
       getBlocks(_depth /*: number */) {
         const block4 = {
-          value: BlockInfoWithoutTuplespace
+          value: LightBlockInfo
             .encode({ blockHash: 'deadbeef' }).finish(),
         };
 

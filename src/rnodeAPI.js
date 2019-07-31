@@ -1,10 +1,10 @@
 /* rnodeAPI -- RChain node Casper gRPC API endpoints
 
 refs:
-  - [CasperMessage.proto][1] and RhoTypes.proto.
+  - [DeployService.proto][1] and RhoTypes.proto.
   - [gRPC in node.js][2]
 
-[1]: https://github.com/rchain/rchain/blob/dev/models/src/main/protobuf/CasperMessage.proto
+[1]: https://github.com/rchain/rchain/blob/release-rnode-v0.9.11/models/src/main/protobuf/DeployService.proto
 [2]: https://grpc.io/docs/tutorials/basic/node.html
 
 */
@@ -15,14 +15,14 @@ const assert = require('assert');
 const protoLoader = require('@grpc/proto-loader');
 const {
   BlockQueryResponse,
-  BlockInfoWithoutTuplespace,
+  LightBlockInfo,
   DataWithBlockInfo,
   DeployData,
   DeployServiceResponse,
   ListeningNameContinuationResponse,
   ListeningNameDataResponse,
   PrivateNamePreviewResponse,
-} = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
+} = require('../protobuf/DeployService').coop.rchain.casper.protocol;
 const RHOCore = require('./RHOCore');
 const Hex = require('./hex');
 const { RholangCrypto } = require('./signing');
@@ -35,7 +35,7 @@ const def = obj => Object.freeze(obj); // cf. ocap design note
 // https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
 const packageDefinition = protoLoader.loadSync(
-  __dirname + '/../protobuf/CasperMessage.proto', // eslint-disable-line
+  __dirname + '/../protobuf/DeployService.proto', // eslint-disable-line
   likeLoad,
 );
 
@@ -66,7 +66,7 @@ exports.RNode = RNode;
  *
  *
  * Methods are asynchronous; they return promises. Where
- * CasperMessage.proto specifies an Either, this API
+ * DeployService.proto specifies an Either, this API
  * resolves the promise on success or rejects it on failure.
  *
  * The promise may also reject for the usual gRPC reasons such as
@@ -74,12 +74,12 @@ exports.RNode = RNode;
  *
  * Refs:
  *  - [Node API Specification][nodeAPI] May 2018
- *  - [CasperMessage.proto][cAPI] v0.9.1 bf1b2c6 Mar 28, 2019 and dependencies such as
+ *  - [DeployService.proto][cAPI] and dependencies such as
  *    - [RhoTypes.proto][rAPI]
  *  - [RChain Protocol Documentation][apidoc]
  *
- * [cAPI]: https://github.com/rchain/rchain/blob/bf1b2c6/models/src/main/protobuf/CasperMessage.proto
- * [rAPI]: https://github.com/rchain/rchain/blob/bf1b2c6/models/src/main/protobuf/RhoTypes.proto
+ * [cAPI]: https://github.com/rchain/rchain/blob/release-rnode-v0.9.11/models/src/main/protobuf/DeployService.proto
+ * [rAPI]: https://github.com/rchain/rchain/blob/release-rnode-v0.9.11/models/src/main/protobuf/RhoTypes.proto
  * [apidoc]: https://github.com/rchain/rchain/blob/dev/docs/rnode-api/index.md
  *
  * [nodeAPI]:  https://rchain.atlassian.net/wiki/spaces/CORE/pages/392462355/Node+API+Specification
@@ -351,10 +351,10 @@ function RNode(
    * @memberof RNode
    * @instance
    * @param blockDepth: Number indicating the number of blocks to retrieve
-   * @return List of BlockInfoWithoutTuplespace structures for each block retrieved
+   * @return List of LightBlockInfo structures for each block retrieved
    * @throws Error if blockDepth < 1 or no blocks were able to be retrieved
    */
-  function getBlocks(blockDepth /*: number */ = 1) /*: Promise<BlockInfoWithoutTuplespace> */{
+  function getBlocks(blockDepth /*: number */ = 1) /*: Promise<LightBlockInfo> */{
     if (!Number.isInteger(blockDepth)) { throw new Error('ERROR: blockDepth must be an integer'); }
     if (blockDepth < 1) { throw new Error('ERROR: blockDepth parameter must be >= 1'); }
     return sendThenReceiveStream(client.getBlocks({ depth: blockDepth }))
@@ -362,7 +362,7 @@ function RNode(
         if (parts.length === 0) {
           throw new Error('ERROR: Failed to retrieve the requested blocks');
         }
-        return parts.map(x => eitherSync(BlockInfoWithoutTuplespace, x));
+        return parts.map(x => eitherSync(LightBlockInfo, x));
       });
   }
 
