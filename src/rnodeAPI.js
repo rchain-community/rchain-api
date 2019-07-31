@@ -34,8 +34,12 @@ const def = obj => Object.freeze(obj); // cf. ocap design note
 // Options for similarity to grpc.load behavior
 // https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
 const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
-const packageDefinition = protoLoader.loadSync(
+const deployServiceDefinition = protoLoader.loadSync(
   __dirname + '/../protobuf/DeployService.proto', // eslint-disable-line
+  likeLoad,
+);
+const proposeServiceDefinition = protoLoader.loadSync(
+  __dirname + '/../protobuf/ProposeService.proto', // eslint-disable-line
   likeLoad,
 );
 
@@ -111,11 +115,14 @@ function RNode(
   assert.ok(host, 'endPoint.host missing');
   assert.ok(port, 'endPoint.port missing');
 
-  const proto = grpc.loadPackageDefinition(packageDefinition);
-  const casper = proto.coop.rchain.casper.protocol;
-
-  const client /*: DeployService */ = new casper.DeployService(
+  const deployProto = grpc.loadPackageDefinition(deployServiceDefinition);
+  const client /*: DeployService */ = new deployProto.coop.rchain.casper.protocol.DeployService(
     `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
+  );
+
+  const proposeProto = grpc.loadPackageDefinition(proposeServiceDefinition);
+  const proposeClient /*: ProposeService */ = new proposeProto.coop.rchain.casper.protocol.ProposeService(
+    `${host}:${port}`, grpc.credentials.createInsecure(),  // ISSUE: let caller do secure?
   );
 
   /**
@@ -176,7 +183,7 @@ function RNode(
     }
     let out = await either(DeployServiceResponse, send(f => client.doDeploy(deployData, f)));
     if (autoCreateBlock) {
-      out = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+      out = await either(DeployServiceResponse, send(f => proposeClient.propose({}, f)));
     }
     return out.message;
   }
@@ -188,7 +195,7 @@ function RNode(
    * @return A promise for response message
    */
   async function createBlock() /*: Promise<string>*/ {
-    const r = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+    const r = await either(DeployServiceResponse, send(f => proposeClient.propose({}, f)));
     return r.message;
   }
 
