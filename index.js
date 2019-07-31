@@ -65,7 +65,7 @@ export type { IRNode };
  */
 exports.RNode = RNode;
 exports.Block = Block;
-exports.CasperMessage = require('./protobuf/CasperMessage');
+//exports.CasperMessage = require('./protobuf/CasperMessage');
 
 /**
  * REV transaction, vault support
