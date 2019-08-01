@@ -5,7 +5,7 @@ const { URL } = require('url');
 
 const { Writer } = require('protobufjs');
 // ISSUE: generated code isn't annotated. $FlowFixMe
-const { Par, GPrivate } = require('../protobuf/RhoTypes');
+const { Par, GPrivate, GUnforgeable, GDeployId, GDeployerId  } = require('../protobuf/RhoTypes');
 
 const hex = require('./hex');
 
@@ -25,10 +25,17 @@ exports.fromJSData = fromJSData;
  * @memberof RHOCore
  */
 function fromJSData(data /*: mixed */) /* : IPar */ {
-  // ISSUE: why doesn't x instanceof GPrivate work???
-  const GP = GPrivate.fromObject({ id: 'dead' }).constructor;
+
+  // ISSUE: why doesn't x instanceof doesn't work on data passed into???
+  const GU = GUnforgeable.fromObject({ g_private_body: {id:'dead'} }).constructor;
+  const GP = GPrivate.fromObject({id:'dead'}).constructor;
+  const GD = GDeployId.fromObject({sig:'dead'}).constructor;
+  const GDr = GDeployerId.fromObject({publicKey:'dead'}).constructor;
 
   function expr1(kv /*: IPar*/) { return { exprs: [kv] }; }
+  function gPrivate(kv /*: GPrivate*/) { return { g_private_body: kv }; }
+  function gDeployId(kv /*: GDeployId*/) { return { g_deploy_id_body: kv }; }
+  function gDeployerId(kv /*: GDeployerId*/) { return { g_deployer_id_body: kv }; }
 
   function recur(x) /*: IPar */{
     switch (typeof x) {
@@ -49,8 +56,17 @@ function fromJSData(data /*: mixed */) /* : IPar */ {
         if (x instanceof URL) {
           return expr1({ g_uri: x.href });
         }
+        if (x instanceof GU) {
+          return { unforgeables: [x] };
+        }
         if (x instanceof GP) {
-          return { ids: [x] };
+          return gPrivate(x);
+        }
+        if (x instanceof GD) {
+          return gDeployId(x);
+        }
+        if (x instanceof GDr) {
+          return gDeployerId(x);
         }
         if (x instanceof Uint8Array) {
           return expr1({ g_byte_array: Buffer.from(x) });
@@ -230,11 +246,11 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
         return { k: key, v: val };
       });
       return props.reduce((acc, { k, v }) => ({ [k]: v, ...acc }), {});
-    } else if (p.ids && p.ids.length) {
-      if (p.ids.length !== 1) {
-        throw new Error(`not RHOCore? >1 ids ${JSON.stringify(p)}`);
+    } else if (p.unforgeables && p.unforgeables.length) {
+      if (p.unforgeables.length !== 1) {
+        throw new Error(`not RHOCore? >1 unforgeables ${JSON.stringify(p)}`);
       }
-      return GPrivate.fromObject(p.ids[0]);
+      return GUnforgeable.fromObject(p.unforgeables[0]);
     } else {
       // TODO: check that everything else is empty
       return null;
@@ -259,7 +275,7 @@ function toRholang(par /*: IPar */) /*: string */ {
   const src = x => JSON.stringify(x);
 
   function recur(p /*: IPar */) {
-    if (p.ids && p.ids.length) {
+    if (p.unforgeables && p.unforgeables.length) {
       throw new Error('Unforgeable names have no rholang syntax.');
     } else if (p.exprs && p.exprs.length > 0) {
       if (p.exprs.length > 1) {

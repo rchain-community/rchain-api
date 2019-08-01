@@ -5,7 +5,7 @@ const { URL } = require('url');
 const ttest = require('tape');
 
 const { RHOCore, Hex, Ed25519keyPair } = require('..');
-const { Par, GPrivate } = require('../protobuf/RhoTypes');
+const { Par, GUnforgeable, GPrivate } = require('../protobuf/RhoTypes');
 
 const testData = require('./RHOCoreSuite.json');
 
@@ -81,12 +81,14 @@ function testRHOCore() {
     },
     'RHOCore extension: private names': (test) => {
       const destid = h2b('476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4');
-      const par = { ids: [{ id: destid }] };
+      const par = { unforgeables: [{ g_private_body: {id: destid} }] };
       rtest({
         rho: par,
-        data: GPrivate.fromObject({ id: destid }),
+        data: GUnforgeable.fromObject({
+          g_private_body: GPrivate.fromObject({ id: destid })
+        }),
         rholang: null,
-        hex: '3a220a20476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4',
+        hex: '3a240a220a20476ec6197e7106e0f0c64fc4cc39e5439658f6b8540b95765496cfe01e92c6b4',
       })(test);
     },
     'BasicWallet transfer signature': (test) => {
