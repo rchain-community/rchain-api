@@ -201,31 +201,31 @@ function toJSData(par /*: IPar */) /*: JsonExt<URL | GPrivate> */{
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
       const ex = p.exprs[0];
-      if (typeof ex.g_bool !== 'undefined') {
+      if (ex.hasOwnProperty("g_bool")) {
         return ex.g_bool;
       }
-      if (typeof ex.g_int !== 'undefined') {
+      if (ex.hasOwnProperty("g_int")) {
         return parseInt(ex.g_int, 10); // ISSUE: overflow
       }
-      if (typeof ex.g_string !== 'undefined' && ex.g_string !== null) {
+      if (ex.hasOwnProperty("g_string") && ex.g_string !== null) {
         return ex.g_string;
       }
-      if (typeof ex.g_byte_array !== 'undefined' && ex.g_string !== null) {
+      if (ex.hasOwnProperty("g_byte_array") && ex.g_string !== null) {
         return ex.g_byte_array;
       }
-      if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
+      if (ex.hasOwnProperty("g_uri") && ex.g_uri !== null) {
         return new URL(ex.g_uri);
       }
-      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
+      if (ex.hasOwnProperty("e_list_body") && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
         return ex.e_list_body.ps.map(recur);
       }
       // interpret tuple as list. IOU tests.
-      if (typeof ex.e_tuple_body !== 'undefined' && ex.e_tuple_body !== null
+      if (ex.hasOwnProperty("e_tuple_body") && ex.e_tuple_body !== null
           && Array.isArray(ex.e_tuple_body.ps)) {
         return ex.e_tuple_body.ps.map(recur);
       }
-      if (typeof ex.e_map_body !== 'undefined' && ex.e_map_body !== null
+      if (ex.hasOwnProperty("e_map_body") && ex.e_map_body !== null
           && Array.isArray(ex.e_map_body.kvs)) {
         const props = ex.e_map_body.kvs.map((kv) => {
           const key = recur(kv.key || {});
@@ -282,31 +282,31 @@ function toRholang(par /*: IPar */) /*: string */ {
         throw new Error(`${p.exprs.length} exprs not part of RHOCore`);
       }
       const ex = p.exprs[0];
-      if (typeof ex.g_bool !== 'undefined') {
+      if (ex.hasOwnProperty("g_bool")) {
         return src(ex.g_bool);
       }
-      if (typeof ex.g_int !== 'undefined') {
+      if (ex.hasOwnProperty("g_int")) {
         return src(ex.g_int);
       }
-      if (typeof ex.g_string !== 'undefined' && ex.g_string !== null) {
+      if (ex.hasOwnProperty("g_string") && ex.g_string !== null) {
         return src(ex.g_string);
       }
-      if (typeof ex.g_byte_array !== 'undefined' && ex.g_byte_array !== null) {
+      if (ex.hasOwnProperty("g_byte_array") && ex.g_byte_array !== null) {
         return `"${hex.encode(ex.g_byte_array)}".hexToBytes()`;
       }
-      if (typeof ex.g_uri !== 'undefined' && ex.g_uri !== null) {
+      if (ex.hasOwnProperty("g_uri") && ex.g_uri !== null) {
         const uri = ex.g_uri;
         if (uri.match(/`/g)) {
           throw new Error(`not implemented: URIs containing back-tick: ${uri}`);
         }
         return `\`${uri}\``;
       }
-      if (typeof ex.e_list_body !== 'undefined' && ex.e_list_body !== null
+      if (ex.hasOwnProperty("e_list_body") && ex.e_list_body !== null
           && Array.isArray(ex.e_list_body.ps)) {
         const items /*: string[] */= (ex.e_list_body.ps || []).map(recur);
         return `[${items.join(', ')}]`;
       }
-      if (typeof ex.e_map_body !== 'undefined' && ex.e_map_body !== null
+      if (ex.hasOwnProperty("e_map_body") && ex.e_map_body !== null
           && Array.isArray(ex.e_map_body.kvs)) {
         const properties = (ex.e_map_body.kvs || []).map(
           ({ key, value }) => `${recur(key || null)}: ${recur(value || null)}`,
