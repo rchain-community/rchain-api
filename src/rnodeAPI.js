@@ -12,8 +12,8 @@ refs:
 // @flow strict
 
 const assert = require('assert');
-const protoLoader = require('@grpc/proto-loader');
 const {
+  DeployService,
   BlockQueryResponse,
   BlockInfoWithoutTuplespace,
   DataWithBlockInfo,
@@ -22,7 +22,8 @@ const {
   ListeningNameContinuationResponse,
   ListeningNameDataResponse,
   PrivateNamePreviewResponse,
-} = require('../protobuf/CasperMessage').coop.rchain.casper.protocol;
+} = require('../protobuf/DeployService').coop.rchain.casper.protocol;
+const { ProposeService } = require('../protobuf/ProposeService').coop.rchain.casper.protocol;
 const RHOCore = require('./RHOCore');
 const Hex = require('./hex');
 const { RholangCrypto } = require('./signing');
@@ -30,15 +31,6 @@ const { RholangCrypto } = require('./signing');
 const { blake2b256Hash, ed25519Verify } = RholangCrypto;
 
 const def = obj => Object.freeze(obj); // cf. ocap design note
-
-// Options for similarity to grpc.load behavior
-// https://grpc.io/docs/tutorials/basic/node.html#loading-service-descriptors-from-proto-files
-const likeLoad = { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true };
-const packageDefinition = protoLoader.loadSync(
-  __dirname + '/../protobuf/CasperMessage.proto', // eslint-disable-line
-  likeLoad,
-);
-
 
 /*::
 import type { JsonExt } from './RHOCore';
@@ -51,10 +43,9 @@ type JSData = JsonExt<URL | GPrivate>;
 type EndPoint = { host: string, port: number };
 import GRPCAccess from 'grpc';
 
-export type IRNode = $Call<typeof RNode, GRPCAccess, EndPoint>;
+export type IRNode = $Call<typeof RNode, GRPCAccess, EndPoint, EndPoint>;
 
 export type IDeployData = coop$rchain$casper$protocol$IDeployData;
-type DeployService = coop$rchain$casper$protocol$DeployService;
 
 type Decoder<T> = { decode(reader: Uint8Array): T };
 */
@@ -106,17 +97,41 @@ exports.RNode = RNode;
 function RNode(
   grpc /*: GRPCAccess */,
   endPoint /*: { host: string, port: number } */,
+  internalEndPoint /*: ?{ host: string, port: number } */,
 ) /*: IRNode */ {
-  const { host, port } = endPoint;
-  assert.ok(host, 'endPoint.host missing');
-  assert.ok(port, 'endPoint.port missing');
+  function makeRpcImpl(base, { host, port }) { // limit scope of client
+    assert.ok(host, 'endPoint.host missing');
+    assert.ok(port, 'endPoint.port missing');
 
-  const proto = grpc.loadPackageDefinition(packageDefinition);
-  const casper = proto.coop.rchain.casper.protocol;
+    const Client = grpc.makeGenericClientConstructor({});
+    const client = new Client(
+      `${host}:${port}`,
+      grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
+    );
 
-  const client /*: DeployService */ = new casper.DeployService(
-    `${host}:${port}`, grpc.credentials.createInsecure(), // ISSUE: let caller do secure?
+    function rpc(method, requestData, callback) {
+      console.log('@@rpc', { method, name: method.name, requestData, client });
+      client.makeUnaryRequest(
+        base + method.name,
+        arg => arg,
+        arg => arg,
+        requestData,
+        (...args) => {
+          console.log('@@rpc callback:', args);
+          callback(...args);
+        },
+      );
+    }
+
+    return rpc;
+  }
+
+  const client = DeployService.create(
+    makeRpcImpl('/coop.rchain.casper.protocol.DeployService/', endPoint), false, false,
   );
+  const proposeClient = internalEndPoint ? ProposeService.create(
+    makeRpcImpl('/coop.rchain.casper.protocol.ProposeService/', internalEndPoint), false, false,
+  ) : null;
 
   /**
    * Ask rnode to compute ids of top level private names, given deploy parameters.
@@ -176,7 +191,9 @@ function RNode(
     }
     let out = await either(DeployServiceResponse, send(f => client.doDeploy(deployData, f)));
     if (autoCreateBlock) {
-      out = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+      // TODO: printUnmatchedSends
+      if (!proposeClient) { throw new TypeError('need internalEndPoint to propose'); }
+      out = await either(DeployServiceResponse, send(f => proposeClient.propose({}, f)));
     }
     return out.message;
   }
@@ -187,8 +204,9 @@ function RNode(
    * @instance
    * @return A promise for response message
    */
-  async function createBlock() /*: Promise<string>*/ {
-    const r = await either(DeployServiceResponse, send(f => client.createBlock({}, f)));
+  async function propose() /*: Promise<string>*/ {
+    if (!proposeClient) { throw new TypeError('need internalEndPoint to propose'); }
+    const r = await either(DeployServiceResponse, send(f => proposeClient.propose({}, f)));
     return r.message;
   }
 
@@ -199,6 +217,8 @@ function RNode(
 
   function eitherSync/*::<T>*/(cls /*: Decoder<T>*/, x /*: IEither*/) /*: T*/{
     if (x.success) {
+      console.log('@@@either success', { cls, value: x.success.response.value });
+      console.log('@@constructor?', new cls());
       /* $FlowFixMe$ ISSUE: Either.proto fibs a bit*/
       return cls.decode(x.success.response.value);
     }
@@ -368,7 +388,7 @@ function RNode(
 
   return def({
     doDeploy,
-    createBlock,
+    propose,
     listenForDataAtName,
     listenForDataAtPrivateName,
     listenForDataAtPublicName,

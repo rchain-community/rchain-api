@@ -44,7 +44,7 @@ function testRNode(suite2) {
 const defaultSec = Hex.decode('b18e1d0045995ec3d010c387ccfeb984d783af8fbb0f40fa7db126d889f6dadd');
 
 function netTests({ grpc, clock, rng }) {
-  const localNode = () => RNode(grpc, { host: 'localhost', port: 40401 });
+  const localNode = () => RNode(grpc, { host: 'localhost', port: 40401, internalPort: 40402 });
 
   function hashTest(test, hashBytes, hashData, fname) {
     const returnChannel = rng().toString(36).substring(7);
@@ -153,36 +153,49 @@ function payFor(d0, key, phloPrice = 1, phloLimit = 10000000) {
 
 exports.grpcMock = grpcMock;
 function grpcMock() {
-  function DeployService(_hostPort /*: Object */, _chan /*: Object */) {
-    return Object.freeze({
-      doDeploy(_dd /*: Object */, _auto /*: boolean */ = false) { return 'Success!'; },
-      showBlocks(_depth /*: number */) {
-        const block4 = {
-          value: BlockInfoWithoutTuplespace
-            .encode({ blockHash: 'deadbeef' }).finish(),
-        };
+  function getBlocks(_depth /*: number */) {
+    const block4 = {
+      value: LightBlockInfo
+        .encode({ blockHash: 'deadbeef' }).finish(),
+    };
 
-        return Object.freeze({
-          on(name /*: string */, handler /*: (...args: any[]) => void */) {
-            if (name === 'data') {
-              handler({ success: { response: block4 } });
-            } else if (name === 'end') {
-              handler();
-            }
-          },
-        });
+    return Object.freeze({
+      on(name /*: string */, handler /*: (...args: any[]) => void */) {
+        if (name === 'data') {
+          handler({ success: { response: block4 } });
+        } else if (name === 'end') {
+          handler();
+        }
       },
     });
   }
 
-  const casper = { DeployService };
-  const proto = { coop: { rchain: { casper: { protocol: casper } } } };
+  function makeGenericClientConstructor(_opts /*: {}*/) {
+    function Client(_url, _thingy) {
+      return Object.freeze({
+        makeUnaryRequest(name, fn1, fn2, requestData, callback) {
+          switch (name) {
+            case 'doDeploy':
+              callback(null, 'Success!');
+              break;
+            case 'getBlocks':
+              callback(null, getBlocks(1));
+              break;
+            default:
+              throw new Error(`not implemented: ${name}`);
+          }
+        },
+      });
+    }
+
+    return Client;
+  }
+
   return Object.freeze({
-    loadPackageDefinition(_d /*: Object */) { return proto; },
+    makeGenericClientConstructor,
     credentials: { createInsecure() { } },
   });
 }
-
 
 if (require.main === module) {
   // Access ambient stuff only when invoked as main module.
