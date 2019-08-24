@@ -7,6 +7,3755 @@ var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.ut
 
 var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
 
+$root.coop = (function() {
+
+    var coop = {};
+
+    coop.rchain = (function() {
+
+        var rchain = {};
+
+        rchain.casper = (function() {
+
+            var casper = {};
+
+            casper.protocol = (function() {
+
+                var protocol = {};
+
+                protocol.ProposeService = (function() {
+
+                    function ProposeService(rpcImpl, requestDelimited, responseDelimited) {
+                        $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+                    }
+
+                    (ProposeService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = ProposeService;
+
+                    ProposeService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+                        return new this(rpcImpl, requestDelimited, responseDelimited);
+                    };
+
+
+                    Object.defineProperty(ProposeService.prototype.propose = function propose(request, callback) {
+                        return this.rpcCall(propose, $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery, $root.Either, request, callback);
+                    }, "name", { value: "propose" });
+
+                    return ProposeService;
+                })();
+
+                protocol.PrintUnmatchedSendsQuery = (function() {
+
+                    function PrintUnmatchedSendsQuery(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    PrintUnmatchedSendsQuery.prototype.printUnmatchedSends = false;
+
+                    PrintUnmatchedSendsQuery.create = function create(properties) {
+                        return new PrintUnmatchedSendsQuery(properties);
+                    };
+
+                    PrintUnmatchedSendsQuery.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            writer.uint32(8).bool(message.printUnmatchedSends);
+                        return writer;
+                    };
+
+                    PrintUnmatchedSendsQuery.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    PrintUnmatchedSendsQuery.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.printUnmatchedSends = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    PrintUnmatchedSendsQuery.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    PrintUnmatchedSendsQuery.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            if (typeof message.printUnmatchedSends !== "boolean")
+                                return "printUnmatchedSends: boolean expected";
+                        return null;
+                    };
+
+                    PrintUnmatchedSendsQuery.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.PrintUnmatchedSendsQuery();
+                        if (object.printUnmatchedSends != null)
+                            message.printUnmatchedSends = Boolean(object.printUnmatchedSends);
+                        return message;
+                    };
+
+                    PrintUnmatchedSendsQuery.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.printUnmatchedSends = false;
+                        if (message.printUnmatchedSends != null && message.hasOwnProperty("printUnmatchedSends"))
+                            object.printUnmatchedSends = message.printUnmatchedSends;
+                        return object;
+                    };
+
+                    PrintUnmatchedSendsQuery.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return PrintUnmatchedSendsQuery;
+                })();
+
+                protocol.HasBlockRequest = (function() {
+
+                    function HasBlockRequest(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    HasBlockRequest.prototype.hash = $util.newBuffer([]);
+
+                    HasBlockRequest.create = function create(properties) {
+                        return new HasBlockRequest(properties);
+                    };
+
+                    HasBlockRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(10).bytes(message.hash);
+                        return writer;
+                    };
+
+                    HasBlockRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    HasBlockRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.HasBlockRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.hash = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    HasBlockRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    HasBlockRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        return null;
+                    };
+
+                    HasBlockRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.HasBlockRequest)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.HasBlockRequest();
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        return message;
+                    };
+
+                    HasBlockRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        return object;
+                    };
+
+                    HasBlockRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return HasBlockRequest;
+                })();
+
+                protocol.HasBlock = (function() {
+
+                    function HasBlock(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    HasBlock.prototype.hash = $util.newBuffer([]);
+
+                    HasBlock.create = function create(properties) {
+                        return new HasBlock(properties);
+                    };
+
+                    HasBlock.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(10).bytes(message.hash);
+                        return writer;
+                    };
+
+                    HasBlock.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    HasBlock.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.HasBlock();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.hash = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    HasBlock.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    HasBlock.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        return null;
+                    };
+
+                    HasBlock.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.HasBlock)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.HasBlock();
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        return message;
+                    };
+
+                    HasBlock.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        return object;
+                    };
+
+                    HasBlock.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return HasBlock;
+                })();
+
+                protocol.BlockRequest = (function() {
+
+                    function BlockRequest(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    BlockRequest.prototype.hash = $util.newBuffer([]);
+
+                    BlockRequest.create = function create(properties) {
+                        return new BlockRequest(properties);
+                    };
+
+                    BlockRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(10).bytes(message.hash);
+                        return writer;
+                    };
+
+                    BlockRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    BlockRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.hash = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    BlockRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    BlockRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        return null;
+                    };
+
+                    BlockRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockRequest)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockRequest();
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        return message;
+                    };
+
+                    BlockRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        return object;
+                    };
+
+                    BlockRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockRequest;
+                })();
+
+                protocol.ForkChoiceTipRequest = (function() {
+
+                    function ForkChoiceTipRequest(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ForkChoiceTipRequest.create = function create(properties) {
+                        return new ForkChoiceTipRequest(properties);
+                    };
+
+                    ForkChoiceTipRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        return writer;
+                    };
+
+                    ForkChoiceTipRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ForkChoiceTipRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ForkChoiceTipRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ForkChoiceTipRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ForkChoiceTipRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        return null;
+                    };
+
+                    ForkChoiceTipRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ForkChoiceTipRequest)
+                            return object;
+                        return new $root.coop.rchain.casper.protocol.ForkChoiceTipRequest();
+                    };
+
+                    ForkChoiceTipRequest.toObject = function toObject() {
+                        return {};
+                    };
+
+                    ForkChoiceTipRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ForkChoiceTipRequest;
+                })();
+
+                protocol.ApprovedBlockCandidate = (function() {
+
+                    function ApprovedBlockCandidate(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ApprovedBlockCandidate.prototype.block = null;
+                    ApprovedBlockCandidate.prototype.requiredSigs = 0;
+
+                    ApprovedBlockCandidate.create = function create(properties) {
+                        return new ApprovedBlockCandidate(properties);
+                    };
+
+                    ApprovedBlockCandidate.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            $root.coop.rchain.casper.protocol.BlockMessage.encode(message.block, writer.uint32(10).fork()).ldelim();
+                        if (message.requiredSigs != null && message.hasOwnProperty("requiredSigs"))
+                            writer.uint32(16).int32(message.requiredSigs);
+                        return writer;
+                    };
+
+                    ApprovedBlockCandidate.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ApprovedBlockCandidate.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ApprovedBlockCandidate();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.block = $root.coop.rchain.casper.protocol.BlockMessage.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                message.requiredSigs = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ApprovedBlockCandidate.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ApprovedBlockCandidate.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.block != null && message.hasOwnProperty("block")) {
+                            var error = $root.coop.rchain.casper.protocol.BlockMessage.verify(message.block);
+                            if (error)
+                                return "block." + error;
+                        }
+                        if (message.requiredSigs != null && message.hasOwnProperty("requiredSigs"))
+                            if (!$util.isInteger(message.requiredSigs))
+                                return "requiredSigs: integer expected";
+                        return null;
+                    };
+
+                    ApprovedBlockCandidate.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ApprovedBlockCandidate)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ApprovedBlockCandidate();
+                        if (object.block != null) {
+                            if (typeof object.block !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.ApprovedBlockCandidate.block: object expected");
+                            message.block = $root.coop.rchain.casper.protocol.BlockMessage.fromObject(object.block);
+                        }
+                        if (object.requiredSigs != null)
+                            message.requiredSigs = object.requiredSigs | 0;
+                        return message;
+                    };
+
+                    ApprovedBlockCandidate.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.block = null;
+                            object.requiredSigs = 0;
+                        }
+                        if (message.block != null && message.hasOwnProperty("block"))
+                            object.block = $root.coop.rchain.casper.protocol.BlockMessage.toObject(message.block, options);
+                        if (message.requiredSigs != null && message.hasOwnProperty("requiredSigs"))
+                            object.requiredSigs = message.requiredSigs;
+                        return object;
+                    };
+
+                    ApprovedBlockCandidate.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ApprovedBlockCandidate;
+                })();
+
+                protocol.UnapprovedBlock = (function() {
+
+                    function UnapprovedBlock(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    UnapprovedBlock.prototype.candidate = null;
+                    UnapprovedBlock.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    UnapprovedBlock.prototype.duration = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    UnapprovedBlock.create = function create(properties) {
+                        return new UnapprovedBlock(properties);
+                    };
+
+                    UnapprovedBlock.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.encode(message.candidate, writer.uint32(10).fork()).ldelim();
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(16).int64(message.timestamp);
+                        if (message.duration != null && message.hasOwnProperty("duration"))
+                            writer.uint32(24).int64(message.duration);
+                        return writer;
+                    };
+
+                    UnapprovedBlock.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    UnapprovedBlock.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.UnapprovedBlock();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 3:
+                                message.duration = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    UnapprovedBlock.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    UnapprovedBlock.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.candidate != null && message.hasOwnProperty("candidate")) {
+                            var error = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.verify(message.candidate);
+                            if (error)
+                                return "candidate." + error;
+                        }
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.duration != null && message.hasOwnProperty("duration"))
+                            if (!$util.isInteger(message.duration) && !(message.duration && $util.isInteger(message.duration.low) && $util.isInteger(message.duration.high)))
+                                return "duration: integer|Long expected";
+                        return null;
+                    };
+
+                    UnapprovedBlock.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.UnapprovedBlock)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.UnapprovedBlock();
+                        if (object.candidate != null) {
+                            if (typeof object.candidate !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.UnapprovedBlock.candidate: object expected");
+                            message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.fromObject(object.candidate);
+                        }
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.duration != null)
+                            if ($util.Long)
+                                (message.duration = $util.Long.fromValue(object.duration)).unsigned = false;
+                            else if (typeof object.duration === "string")
+                                message.duration = parseInt(object.duration, 10);
+                            else if (typeof object.duration === "number")
+                                message.duration = object.duration;
+                            else if (typeof object.duration === "object")
+                                message.duration = new $util.LongBits(object.duration.low >>> 0, object.duration.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    UnapprovedBlock.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.candidate = null;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.duration = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.duration = options.longs === String ? "0" : 0;
+                        }
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            object.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.toObject(message.candidate, options);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.duration != null && message.hasOwnProperty("duration"))
+                            if (typeof message.duration === "number")
+                                object.duration = options.longs === String ? String(message.duration) : message.duration;
+                            else
+                                object.duration = options.longs === String ? $util.Long.prototype.toString.call(message.duration) : options.longs === Number ? new $util.LongBits(message.duration.low >>> 0, message.duration.high >>> 0).toNumber() : message.duration;
+                        return object;
+                    };
+
+                    UnapprovedBlock.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return UnapprovedBlock;
+                })();
+
+                protocol.Signature = (function() {
+
+                    function Signature(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Signature.prototype.publicKey = $util.newBuffer([]);
+                    Signature.prototype.algorithm = "";
+                    Signature.prototype.sig = $util.newBuffer([]);
+
+                    Signature.create = function create(properties) {
+                        return new Signature(properties);
+                    };
+
+                    Signature.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+                            writer.uint32(10).bytes(message.publicKey);
+                        if (message.algorithm != null && message.hasOwnProperty("algorithm"))
+                            writer.uint32(18).string(message.algorithm);
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            writer.uint32(26).bytes(message.sig);
+                        return writer;
+                    };
+
+                    Signature.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Signature.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Signature();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.publicKey = reader.bytes();
+                                break;
+                            case 2:
+                                message.algorithm = reader.string();
+                                break;
+                            case 3:
+                                message.sig = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Signature.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Signature.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+                            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
+                                return "publicKey: buffer expected";
+                        if (message.algorithm != null && message.hasOwnProperty("algorithm"))
+                            if (!$util.isString(message.algorithm))
+                                return "algorithm: string expected";
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                                return "sig: buffer expected";
+                        return null;
+                    };
+
+                    Signature.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Signature)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Signature();
+                        if (object.publicKey != null)
+                            if (typeof object.publicKey === "string")
+                                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
+                            else if (object.publicKey.length)
+                                message.publicKey = object.publicKey;
+                        if (object.algorithm != null)
+                            message.algorithm = String(object.algorithm);
+                        if (object.sig != null)
+                            if (typeof object.sig === "string")
+                                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+                            else if (object.sig.length)
+                                message.sig = object.sig;
+                        return message;
+                    };
+
+                    Signature.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.publicKey = "";
+                            else {
+                                object.publicKey = [];
+                                if (options.bytes !== Array)
+                                    object.publicKey = $util.newBuffer(object.publicKey);
+                            }
+                            object.algorithm = "";
+                            if (options.bytes === String)
+                                object.sig = "";
+                            else {
+                                object.sig = [];
+                                if (options.bytes !== Array)
+                                    object.sig = $util.newBuffer(object.sig);
+                            }
+                        }
+                        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+                            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+                        if (message.algorithm != null && message.hasOwnProperty("algorithm"))
+                            object.algorithm = message.algorithm;
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+                        return object;
+                    };
+
+                    Signature.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Signature;
+                })();
+
+                protocol.BlockApproval = (function() {
+
+                    function BlockApproval(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    BlockApproval.prototype.candidate = null;
+                    BlockApproval.prototype.sig = null;
+
+                    BlockApproval.create = function create(properties) {
+                        return new BlockApproval(properties);
+                    };
+
+                    BlockApproval.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.encode(message.candidate, writer.uint32(10).fork()).ldelim();
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            $root.coop.rchain.casper.protocol.Signature.encode(message.sig, writer.uint32(18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    BlockApproval.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    BlockApproval.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockApproval();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                message.sig = $root.coop.rchain.casper.protocol.Signature.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    BlockApproval.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    BlockApproval.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.candidate != null && message.hasOwnProperty("candidate")) {
+                            var error = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.verify(message.candidate);
+                            if (error)
+                                return "candidate." + error;
+                        }
+                        if (message.sig != null && message.hasOwnProperty("sig")) {
+                            var error = $root.coop.rchain.casper.protocol.Signature.verify(message.sig);
+                            if (error)
+                                return "sig." + error;
+                        }
+                        return null;
+                    };
+
+                    BlockApproval.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockApproval)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockApproval();
+                        if (object.candidate != null) {
+                            if (typeof object.candidate !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.BlockApproval.candidate: object expected");
+                            message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.fromObject(object.candidate);
+                        }
+                        if (object.sig != null) {
+                            if (typeof object.sig !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.BlockApproval.sig: object expected");
+                            message.sig = $root.coop.rchain.casper.protocol.Signature.fromObject(object.sig);
+                        }
+                        return message;
+                    };
+
+                    BlockApproval.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.candidate = null;
+                            object.sig = null;
+                        }
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            object.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.toObject(message.candidate, options);
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            object.sig = $root.coop.rchain.casper.protocol.Signature.toObject(message.sig, options);
+                        return object;
+                    };
+
+                    BlockApproval.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockApproval;
+                })();
+
+                protocol.ApprovedBlock = (function() {
+
+                    function ApprovedBlock(properties) {
+                        this.sigs = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ApprovedBlock.prototype.candidate = null;
+                    ApprovedBlock.prototype.sigs = $util.emptyArray;
+
+                    ApprovedBlock.create = function create(properties) {
+                        return new ApprovedBlock(properties);
+                    };
+
+                    ApprovedBlock.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.encode(message.candidate, writer.uint32(10).fork()).ldelim();
+                        if (message.sigs != null && message.sigs.length)
+                            for (var i = 0; i < message.sigs.length; ++i)
+                                $root.coop.rchain.casper.protocol.Signature.encode(message.sigs[i], writer.uint32(18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    ApprovedBlock.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ApprovedBlock.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ApprovedBlock();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                if (!(message.sigs && message.sigs.length))
+                                    message.sigs = [];
+                                message.sigs.push($root.coop.rchain.casper.protocol.Signature.decode(reader, reader.uint32()));
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ApprovedBlock.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ApprovedBlock.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.candidate != null && message.hasOwnProperty("candidate")) {
+                            var error = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.verify(message.candidate);
+                            if (error)
+                                return "candidate." + error;
+                        }
+                        if (message.sigs != null && message.hasOwnProperty("sigs")) {
+                            if (!Array.isArray(message.sigs))
+                                return "sigs: array expected";
+                            for (var i = 0; i < message.sigs.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Signature.verify(message.sigs[i]);
+                                if (error)
+                                    return "sigs." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    ApprovedBlock.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ApprovedBlock)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ApprovedBlock();
+                        if (object.candidate != null) {
+                            if (typeof object.candidate !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.ApprovedBlock.candidate: object expected");
+                            message.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.fromObject(object.candidate);
+                        }
+                        if (object.sigs) {
+                            if (!Array.isArray(object.sigs))
+                                throw TypeError(".coop.rchain.casper.protocol.ApprovedBlock.sigs: array expected");
+                            message.sigs = [];
+                            for (var i = 0; i < object.sigs.length; ++i) {
+                                if (typeof object.sigs[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ApprovedBlock.sigs: object expected");
+                                message.sigs[i] = $root.coop.rchain.casper.protocol.Signature.fromObject(object.sigs[i]);
+                            }
+                        }
+                        return message;
+                    };
+
+                    ApprovedBlock.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.sigs = [];
+                        if (options.defaults)
+                            object.candidate = null;
+                        if (message.candidate != null && message.hasOwnProperty("candidate"))
+                            object.candidate = $root.coop.rchain.casper.protocol.ApprovedBlockCandidate.toObject(message.candidate, options);
+                        if (message.sigs && message.sigs.length) {
+                            object.sigs = [];
+                            for (var j = 0; j < message.sigs.length; ++j)
+                                object.sigs[j] = $root.coop.rchain.casper.protocol.Signature.toObject(message.sigs[j], options);
+                        }
+                        return object;
+                    };
+
+                    ApprovedBlock.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ApprovedBlock;
+                })();
+
+                protocol.ApprovedBlockRequest = (function() {
+
+                    function ApprovedBlockRequest(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ApprovedBlockRequest.prototype.identifier = "";
+
+                    ApprovedBlockRequest.create = function create(properties) {
+                        return new ApprovedBlockRequest(properties);
+                    };
+
+                    ApprovedBlockRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            writer.uint32(10).string(message.identifier);
+                        return writer;
+                    };
+
+                    ApprovedBlockRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ApprovedBlockRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ApprovedBlockRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.identifier = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ApprovedBlockRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ApprovedBlockRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            if (!$util.isString(message.identifier))
+                                return "identifier: string expected";
+                        return null;
+                    };
+
+                    ApprovedBlockRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ApprovedBlockRequest)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ApprovedBlockRequest();
+                        if (object.identifier != null)
+                            message.identifier = String(object.identifier);
+                        return message;
+                    };
+
+                    ApprovedBlockRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.identifier = "";
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            object.identifier = message.identifier;
+                        return object;
+                    };
+
+                    ApprovedBlockRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ApprovedBlockRequest;
+                })();
+
+                protocol.NoApprovedBlockAvailable = (function() {
+
+                    function NoApprovedBlockAvailable(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    NoApprovedBlockAvailable.prototype.identifier = "";
+                    NoApprovedBlockAvailable.prototype.nodeIdentifer = "";
+
+                    NoApprovedBlockAvailable.create = function create(properties) {
+                        return new NoApprovedBlockAvailable(properties);
+                    };
+
+                    NoApprovedBlockAvailable.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            writer.uint32(10).string(message.identifier);
+                        if (message.nodeIdentifer != null && message.hasOwnProperty("nodeIdentifer"))
+                            writer.uint32(18).string(message.nodeIdentifer);
+                        return writer;
+                    };
+
+                    NoApprovedBlockAvailable.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    NoApprovedBlockAvailable.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.NoApprovedBlockAvailable();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.identifier = reader.string();
+                                break;
+                            case 2:
+                                message.nodeIdentifer = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    NoApprovedBlockAvailable.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    NoApprovedBlockAvailable.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            if (!$util.isString(message.identifier))
+                                return "identifier: string expected";
+                        if (message.nodeIdentifer != null && message.hasOwnProperty("nodeIdentifer"))
+                            if (!$util.isString(message.nodeIdentifer))
+                                return "nodeIdentifer: string expected";
+                        return null;
+                    };
+
+                    NoApprovedBlockAvailable.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.NoApprovedBlockAvailable)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.NoApprovedBlockAvailable();
+                        if (object.identifier != null)
+                            message.identifier = String(object.identifier);
+                        if (object.nodeIdentifer != null)
+                            message.nodeIdentifer = String(object.nodeIdentifer);
+                        return message;
+                    };
+
+                    NoApprovedBlockAvailable.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.identifier = "";
+                            object.nodeIdentifer = "";
+                        }
+                        if (message.identifier != null && message.hasOwnProperty("identifier"))
+                            object.identifier = message.identifier;
+                        if (message.nodeIdentifer != null && message.hasOwnProperty("nodeIdentifer"))
+                            object.nodeIdentifer = message.nodeIdentifer;
+                        return object;
+                    };
+
+                    NoApprovedBlockAvailable.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return NoApprovedBlockAvailable;
+                })();
+
+                protocol.BlockMessage = (function() {
+
+                    function BlockMessage(properties) {
+                        this.justifications = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    BlockMessage.prototype.blockHash = $util.newBuffer([]);
+                    BlockMessage.prototype.header = null;
+                    BlockMessage.prototype.body = null;
+                    BlockMessage.prototype.justifications = $util.emptyArray;
+                    BlockMessage.prototype.sender = $util.newBuffer([]);
+                    BlockMessage.prototype.seqNum = 0;
+                    BlockMessage.prototype.sig = $util.newBuffer([]);
+                    BlockMessage.prototype.sigAlgorithm = "";
+                    BlockMessage.prototype.shardId = "";
+                    BlockMessage.prototype.extraBytes = $util.newBuffer([]);
+
+                    BlockMessage.create = function create(properties) {
+                        return new BlockMessage(properties);
+                    };
+
+                    BlockMessage.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            writer.uint32(10).bytes(message.blockHash);
+                        if (message.header != null && message.hasOwnProperty("header"))
+                            $root.coop.rchain.casper.protocol.Header.encode(message.header, writer.uint32(18).fork()).ldelim();
+                        if (message.body != null && message.hasOwnProperty("body"))
+                            $root.coop.rchain.casper.protocol.Body.encode(message.body, writer.uint32(26).fork()).ldelim();
+                        if (message.justifications != null && message.justifications.length)
+                            for (var i = 0; i < message.justifications.length; ++i)
+                                $root.coop.rchain.casper.protocol.Justification.encode(message.justifications[i], writer.uint32(34).fork()).ldelim();
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            writer.uint32(42).bytes(message.sender);
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            writer.uint32(48).int32(message.seqNum);
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            writer.uint32(58).bytes(message.sig);
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            writer.uint32(66).string(message.sigAlgorithm);
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            writer.uint32(74).string(message.shardId);
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            writer.uint32(82).bytes(message.extraBytes);
+                        return writer;
+                    };
+
+                    BlockMessage.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    BlockMessage.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockMessage();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockHash = reader.bytes();
+                                break;
+                            case 2:
+                                message.header = $root.coop.rchain.casper.protocol.Header.decode(reader, reader.uint32());
+                                break;
+                            case 3:
+                                message.body = $root.coop.rchain.casper.protocol.Body.decode(reader, reader.uint32());
+                                break;
+                            case 4:
+                                if (!(message.justifications && message.justifications.length))
+                                    message.justifications = [];
+                                message.justifications.push($root.coop.rchain.casper.protocol.Justification.decode(reader, reader.uint32()));
+                                break;
+                            case 5:
+                                message.sender = reader.bytes();
+                                break;
+                            case 6:
+                                message.seqNum = reader.int32();
+                                break;
+                            case 7:
+                                message.sig = reader.bytes();
+                                break;
+                            case 8:
+                                message.sigAlgorithm = reader.string();
+                                break;
+                            case 9:
+                                message.shardId = reader.string();
+                                break;
+                            case 10:
+                                message.extraBytes = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    BlockMessage.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    BlockMessage.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            if (!(message.blockHash && typeof message.blockHash.length === "number" || $util.isString(message.blockHash)))
+                                return "blockHash: buffer expected";
+                        if (message.header != null && message.hasOwnProperty("header")) {
+                            var error = $root.coop.rchain.casper.protocol.Header.verify(message.header);
+                            if (error)
+                                return "header." + error;
+                        }
+                        if (message.body != null && message.hasOwnProperty("body")) {
+                            var error = $root.coop.rchain.casper.protocol.Body.verify(message.body);
+                            if (error)
+                                return "body." + error;
+                        }
+                        if (message.justifications != null && message.hasOwnProperty("justifications")) {
+                            if (!Array.isArray(message.justifications))
+                                return "justifications: array expected";
+                            for (var i = 0; i < message.justifications.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Justification.verify(message.justifications[i]);
+                                if (error)
+                                    return "justifications." + error;
+                            }
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
+                                return "sender: buffer expected";
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            if (!$util.isInteger(message.seqNum))
+                                return "seqNum: integer expected";
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                                return "sig: buffer expected";
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            if (!$util.isString(message.sigAlgorithm))
+                                return "sigAlgorithm: string expected";
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            if (!$util.isString(message.shardId))
+                                return "shardId: string expected";
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            if (!(message.extraBytes && typeof message.extraBytes.length === "number" || $util.isString(message.extraBytes)))
+                                return "extraBytes: buffer expected";
+                        return null;
+                    };
+
+                    BlockMessage.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockMessage)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockMessage();
+                        if (object.blockHash != null)
+                            if (typeof object.blockHash === "string")
+                                $util.base64.decode(object.blockHash, message.blockHash = $util.newBuffer($util.base64.length(object.blockHash)), 0);
+                            else if (object.blockHash.length)
+                                message.blockHash = object.blockHash;
+                        if (object.header != null) {
+                            if (typeof object.header !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMessage.header: object expected");
+                            message.header = $root.coop.rchain.casper.protocol.Header.fromObject(object.header);
+                        }
+                        if (object.body != null) {
+                            if (typeof object.body !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMessage.body: object expected");
+                            message.body = $root.coop.rchain.casper.protocol.Body.fromObject(object.body);
+                        }
+                        if (object.justifications) {
+                            if (!Array.isArray(object.justifications))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMessage.justifications: array expected");
+                            message.justifications = [];
+                            for (var i = 0; i < object.justifications.length; ++i) {
+                                if (typeof object.justifications[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.BlockMessage.justifications: object expected");
+                                message.justifications[i] = $root.coop.rchain.casper.protocol.Justification.fromObject(object.justifications[i]);
+                            }
+                        }
+                        if (object.sender != null)
+                            if (typeof object.sender === "string")
+                                $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
+                            else if (object.sender.length)
+                                message.sender = object.sender;
+                        if (object.seqNum != null)
+                            message.seqNum = object.seqNum | 0;
+                        if (object.sig != null)
+                            if (typeof object.sig === "string")
+                                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+                            else if (object.sig.length)
+                                message.sig = object.sig;
+                        if (object.sigAlgorithm != null)
+                            message.sigAlgorithm = String(object.sigAlgorithm);
+                        if (object.shardId != null)
+                            message.shardId = String(object.shardId);
+                        if (object.extraBytes != null)
+                            if (typeof object.extraBytes === "string")
+                                $util.base64.decode(object.extraBytes, message.extraBytes = $util.newBuffer($util.base64.length(object.extraBytes)), 0);
+                            else if (object.extraBytes.length)
+                                message.extraBytes = object.extraBytes;
+                        return message;
+                    };
+
+                    BlockMessage.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.justifications = [];
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.blockHash = "";
+                            else {
+                                object.blockHash = [];
+                                if (options.bytes !== Array)
+                                    object.blockHash = $util.newBuffer(object.blockHash);
+                            }
+                            object.header = null;
+                            object.body = null;
+                            if (options.bytes === String)
+                                object.sender = "";
+                            else {
+                                object.sender = [];
+                                if (options.bytes !== Array)
+                                    object.sender = $util.newBuffer(object.sender);
+                            }
+                            object.seqNum = 0;
+                            if (options.bytes === String)
+                                object.sig = "";
+                            else {
+                                object.sig = [];
+                                if (options.bytes !== Array)
+                                    object.sig = $util.newBuffer(object.sig);
+                            }
+                            object.sigAlgorithm = "";
+                            object.shardId = "";
+                            if (options.bytes === String)
+                                object.extraBytes = "";
+                            else {
+                                object.extraBytes = [];
+                                if (options.bytes !== Array)
+                                    object.extraBytes = $util.newBuffer(object.extraBytes);
+                            }
+                        }
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            object.blockHash = options.bytes === String ? $util.base64.encode(message.blockHash, 0, message.blockHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.blockHash) : message.blockHash;
+                        if (message.header != null && message.hasOwnProperty("header"))
+                            object.header = $root.coop.rchain.casper.protocol.Header.toObject(message.header, options);
+                        if (message.body != null && message.hasOwnProperty("body"))
+                            object.body = $root.coop.rchain.casper.protocol.Body.toObject(message.body, options);
+                        if (message.justifications && message.justifications.length) {
+                            object.justifications = [];
+                            for (var j = 0; j < message.justifications.length; ++j)
+                                object.justifications[j] = $root.coop.rchain.casper.protocol.Justification.toObject(message.justifications[j], options);
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            object.seqNum = message.seqNum;
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            object.sigAlgorithm = message.sigAlgorithm;
+                        if (message.shardId != null && message.hasOwnProperty("shardId"))
+                            object.shardId = message.shardId;
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            object.extraBytes = options.bytes === String ? $util.base64.encode(message.extraBytes, 0, message.extraBytes.length) : options.bytes === Array ? Array.prototype.slice.call(message.extraBytes) : message.extraBytes;
+                        return object;
+                    };
+
+                    BlockMessage.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockMessage;
+                })();
+
+                protocol.BlockMetadataInternal = (function() {
+
+                    function BlockMetadataInternal(properties) {
+                        this.parents = [];
+                        this.justifications = [];
+                        this.bonds = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    BlockMetadataInternal.prototype.blockHash = $util.newBuffer([]);
+                    BlockMetadataInternal.prototype.parents = $util.emptyArray;
+                    BlockMetadataInternal.prototype.sender = $util.newBuffer([]);
+                    BlockMetadataInternal.prototype.justifications = $util.emptyArray;
+                    BlockMetadataInternal.prototype.bonds = $util.emptyArray;
+                    BlockMetadataInternal.prototype.blockNum = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    BlockMetadataInternal.prototype.seqNum = 0;
+                    BlockMetadataInternal.prototype.invalid = false;
+
+                    BlockMetadataInternal.create = function create(properties) {
+                        return new BlockMetadataInternal(properties);
+                    };
+
+                    BlockMetadataInternal.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            writer.uint32(10).bytes(message.blockHash);
+                        if (message.parents != null && message.parents.length)
+                            for (var i = 0; i < message.parents.length; ++i)
+                                writer.uint32(18).bytes(message.parents[i]);
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            writer.uint32(26).bytes(message.sender);
+                        if (message.justifications != null && message.justifications.length)
+                            for (var i = 0; i < message.justifications.length; ++i)
+                                $root.coop.rchain.casper.protocol.Justification.encode(message.justifications[i], writer.uint32(34).fork()).ldelim();
+                        if (message.bonds != null && message.bonds.length)
+                            for (var i = 0; i < message.bonds.length; ++i)
+                                $root.coop.rchain.casper.protocol.Bond.encode(message.bonds[i], writer.uint32(42).fork()).ldelim();
+                        if (message.blockNum != null && message.hasOwnProperty("blockNum"))
+                            writer.uint32(48).int64(message.blockNum);
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            writer.uint32(56).int32(message.seqNum);
+                        if (message.invalid != null && message.hasOwnProperty("invalid"))
+                            writer.uint32(64).bool(message.invalid);
+                        return writer;
+                    };
+
+                    BlockMetadataInternal.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    BlockMetadataInternal.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockMetadataInternal();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.blockHash = reader.bytes();
+                                break;
+                            case 2:
+                                if (!(message.parents && message.parents.length))
+                                    message.parents = [];
+                                message.parents.push(reader.bytes());
+                                break;
+                            case 3:
+                                message.sender = reader.bytes();
+                                break;
+                            case 4:
+                                if (!(message.justifications && message.justifications.length))
+                                    message.justifications = [];
+                                message.justifications.push($root.coop.rchain.casper.protocol.Justification.decode(reader, reader.uint32()));
+                                break;
+                            case 5:
+                                if (!(message.bonds && message.bonds.length))
+                                    message.bonds = [];
+                                message.bonds.push($root.coop.rchain.casper.protocol.Bond.decode(reader, reader.uint32()));
+                                break;
+                            case 6:
+                                message.blockNum = reader.int64();
+                                break;
+                            case 7:
+                                message.seqNum = reader.int32();
+                                break;
+                            case 8:
+                                message.invalid = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    BlockMetadataInternal.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    BlockMetadataInternal.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            if (!(message.blockHash && typeof message.blockHash.length === "number" || $util.isString(message.blockHash)))
+                                return "blockHash: buffer expected";
+                        if (message.parents != null && message.hasOwnProperty("parents")) {
+                            if (!Array.isArray(message.parents))
+                                return "parents: array expected";
+                            for (var i = 0; i < message.parents.length; ++i)
+                                if (!(message.parents[i] && typeof message.parents[i].length === "number" || $util.isString(message.parents[i])))
+                                    return "parents: buffer[] expected";
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            if (!(message.sender && typeof message.sender.length === "number" || $util.isString(message.sender)))
+                                return "sender: buffer expected";
+                        if (message.justifications != null && message.hasOwnProperty("justifications")) {
+                            if (!Array.isArray(message.justifications))
+                                return "justifications: array expected";
+                            for (var i = 0; i < message.justifications.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Justification.verify(message.justifications[i]);
+                                if (error)
+                                    return "justifications." + error;
+                            }
+                        }
+                        if (message.bonds != null && message.hasOwnProperty("bonds")) {
+                            if (!Array.isArray(message.bonds))
+                                return "bonds: array expected";
+                            for (var i = 0; i < message.bonds.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Bond.verify(message.bonds[i]);
+                                if (error)
+                                    return "bonds." + error;
+                            }
+                        }
+                        if (message.blockNum != null && message.hasOwnProperty("blockNum"))
+                            if (!$util.isInteger(message.blockNum) && !(message.blockNum && $util.isInteger(message.blockNum.low) && $util.isInteger(message.blockNum.high)))
+                                return "blockNum: integer|Long expected";
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            if (!$util.isInteger(message.seqNum))
+                                return "seqNum: integer expected";
+                        if (message.invalid != null && message.hasOwnProperty("invalid"))
+                            if (typeof message.invalid !== "boolean")
+                                return "invalid: boolean expected";
+                        return null;
+                    };
+
+                    BlockMetadataInternal.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.BlockMetadataInternal)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.BlockMetadataInternal();
+                        if (object.blockHash != null)
+                            if (typeof object.blockHash === "string")
+                                $util.base64.decode(object.blockHash, message.blockHash = $util.newBuffer($util.base64.length(object.blockHash)), 0);
+                            else if (object.blockHash.length)
+                                message.blockHash = object.blockHash;
+                        if (object.parents) {
+                            if (!Array.isArray(object.parents))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMetadataInternal.parents: array expected");
+                            message.parents = [];
+                            for (var i = 0; i < object.parents.length; ++i)
+                                if (typeof object.parents[i] === "string")
+                                    $util.base64.decode(object.parents[i], message.parents[i] = $util.newBuffer($util.base64.length(object.parents[i])), 0);
+                                else if (object.parents[i].length)
+                                    message.parents[i] = object.parents[i];
+                        }
+                        if (object.sender != null)
+                            if (typeof object.sender === "string")
+                                $util.base64.decode(object.sender, message.sender = $util.newBuffer($util.base64.length(object.sender)), 0);
+                            else if (object.sender.length)
+                                message.sender = object.sender;
+                        if (object.justifications) {
+                            if (!Array.isArray(object.justifications))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMetadataInternal.justifications: array expected");
+                            message.justifications = [];
+                            for (var i = 0; i < object.justifications.length; ++i) {
+                                if (typeof object.justifications[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.BlockMetadataInternal.justifications: object expected");
+                                message.justifications[i] = $root.coop.rchain.casper.protocol.Justification.fromObject(object.justifications[i]);
+                            }
+                        }
+                        if (object.bonds) {
+                            if (!Array.isArray(object.bonds))
+                                throw TypeError(".coop.rchain.casper.protocol.BlockMetadataInternal.bonds: array expected");
+                            message.bonds = [];
+                            for (var i = 0; i < object.bonds.length; ++i) {
+                                if (typeof object.bonds[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.BlockMetadataInternal.bonds: object expected");
+                                message.bonds[i] = $root.coop.rchain.casper.protocol.Bond.fromObject(object.bonds[i]);
+                            }
+                        }
+                        if (object.blockNum != null)
+                            if ($util.Long)
+                                (message.blockNum = $util.Long.fromValue(object.blockNum)).unsigned = false;
+                            else if (typeof object.blockNum === "string")
+                                message.blockNum = parseInt(object.blockNum, 10);
+                            else if (typeof object.blockNum === "number")
+                                message.blockNum = object.blockNum;
+                            else if (typeof object.blockNum === "object")
+                                message.blockNum = new $util.LongBits(object.blockNum.low >>> 0, object.blockNum.high >>> 0).toNumber();
+                        if (object.seqNum != null)
+                            message.seqNum = object.seqNum | 0;
+                        if (object.invalid != null)
+                            message.invalid = Boolean(object.invalid);
+                        return message;
+                    };
+
+                    BlockMetadataInternal.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults) {
+                            object.parents = [];
+                            object.justifications = [];
+                            object.bonds = [];
+                        }
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.blockHash = "";
+                            else {
+                                object.blockHash = [];
+                                if (options.bytes !== Array)
+                                    object.blockHash = $util.newBuffer(object.blockHash);
+                            }
+                            if (options.bytes === String)
+                                object.sender = "";
+                            else {
+                                object.sender = [];
+                                if (options.bytes !== Array)
+                                    object.sender = $util.newBuffer(object.sender);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.blockNum = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.blockNum = options.longs === String ? "0" : 0;
+                            object.seqNum = 0;
+                            object.invalid = false;
+                        }
+                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
+                            object.blockHash = options.bytes === String ? $util.base64.encode(message.blockHash, 0, message.blockHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.blockHash) : message.blockHash;
+                        if (message.parents && message.parents.length) {
+                            object.parents = [];
+                            for (var j = 0; j < message.parents.length; ++j)
+                                object.parents[j] = options.bytes === String ? $util.base64.encode(message.parents[j], 0, message.parents[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.parents[j]) : message.parents[j];
+                        }
+                        if (message.sender != null && message.hasOwnProperty("sender"))
+                            object.sender = options.bytes === String ? $util.base64.encode(message.sender, 0, message.sender.length) : options.bytes === Array ? Array.prototype.slice.call(message.sender) : message.sender;
+                        if (message.justifications && message.justifications.length) {
+                            object.justifications = [];
+                            for (var j = 0; j < message.justifications.length; ++j)
+                                object.justifications[j] = $root.coop.rchain.casper.protocol.Justification.toObject(message.justifications[j], options);
+                        }
+                        if (message.bonds && message.bonds.length) {
+                            object.bonds = [];
+                            for (var j = 0; j < message.bonds.length; ++j)
+                                object.bonds[j] = $root.coop.rchain.casper.protocol.Bond.toObject(message.bonds[j], options);
+                        }
+                        if (message.blockNum != null && message.hasOwnProperty("blockNum"))
+                            if (typeof message.blockNum === "number")
+                                object.blockNum = options.longs === String ? String(message.blockNum) : message.blockNum;
+                            else
+                                object.blockNum = options.longs === String ? $util.Long.prototype.toString.call(message.blockNum) : options.longs === Number ? new $util.LongBits(message.blockNum.low >>> 0, message.blockNum.high >>> 0).toNumber() : message.blockNum;
+                        if (message.seqNum != null && message.hasOwnProperty("seqNum"))
+                            object.seqNum = message.seqNum;
+                        if (message.invalid != null && message.hasOwnProperty("invalid"))
+                            object.invalid = message.invalid;
+                        return object;
+                    };
+
+                    BlockMetadataInternal.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return BlockMetadataInternal;
+                })();
+
+                protocol.Header = (function() {
+
+                    function Header(properties) {
+                        this.parentsHashList = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Header.prototype.parentsHashList = $util.emptyArray;
+                    Header.prototype.postStateHash = $util.newBuffer([]);
+                    Header.prototype.deploysHash = $util.newBuffer([]);
+                    Header.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    Header.prototype.version = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    Header.prototype.deployCount = 0;
+                    Header.prototype.extraBytes = $util.newBuffer([]);
+
+                    Header.create = function create(properties) {
+                        return new Header(properties);
+                    };
+
+                    Header.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.parentsHashList != null && message.parentsHashList.length)
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                writer.uint32(10).bytes(message.parentsHashList[i]);
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            writer.uint32(18).bytes(message.postStateHash);
+                        if (message.deploysHash != null && message.hasOwnProperty("deploysHash"))
+                            writer.uint32(26).bytes(message.deploysHash);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(40).int64(message.timestamp);
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            writer.uint32(48).int64(message.version);
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            writer.uint32(56).int32(message.deployCount);
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            writer.uint32(66).bytes(message.extraBytes);
+                        return writer;
+                    };
+
+                    Header.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Header.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Header();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.parentsHashList && message.parentsHashList.length))
+                                    message.parentsHashList = [];
+                                message.parentsHashList.push(reader.bytes());
+                                break;
+                            case 2:
+                                message.postStateHash = reader.bytes();
+                                break;
+                            case 3:
+                                message.deploysHash = reader.bytes();
+                                break;
+                            case 5:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 6:
+                                message.version = reader.int64();
+                                break;
+                            case 7:
+                                message.deployCount = reader.int32();
+                                break;
+                            case 8:
+                                message.extraBytes = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Header.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Header.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.parentsHashList != null && message.hasOwnProperty("parentsHashList")) {
+                            if (!Array.isArray(message.parentsHashList))
+                                return "parentsHashList: array expected";
+                            for (var i = 0; i < message.parentsHashList.length; ++i)
+                                if (!(message.parentsHashList[i] && typeof message.parentsHashList[i].length === "number" || $util.isString(message.parentsHashList[i])))
+                                    return "parentsHashList: buffer[] expected";
+                        }
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            if (!(message.postStateHash && typeof message.postStateHash.length === "number" || $util.isString(message.postStateHash)))
+                                return "postStateHash: buffer expected";
+                        if (message.deploysHash != null && message.hasOwnProperty("deploysHash"))
+                            if (!(message.deploysHash && typeof message.deploysHash.length === "number" || $util.isString(message.deploysHash)))
+                                return "deploysHash: buffer expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (!$util.isInteger(message.version) && !(message.version && $util.isInteger(message.version.low) && $util.isInteger(message.version.high)))
+                                return "version: integer|Long expected";
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            if (!$util.isInteger(message.deployCount))
+                                return "deployCount: integer expected";
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            if (!(message.extraBytes && typeof message.extraBytes.length === "number" || $util.isString(message.extraBytes)))
+                                return "extraBytes: buffer expected";
+                        return null;
+                    };
+
+                    Header.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Header)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Header();
+                        if (object.parentsHashList) {
+                            if (!Array.isArray(object.parentsHashList))
+                                throw TypeError(".coop.rchain.casper.protocol.Header.parentsHashList: array expected");
+                            message.parentsHashList = [];
+                            for (var i = 0; i < object.parentsHashList.length; ++i)
+                                if (typeof object.parentsHashList[i] === "string")
+                                    $util.base64.decode(object.parentsHashList[i], message.parentsHashList[i] = $util.newBuffer($util.base64.length(object.parentsHashList[i])), 0);
+                                else if (object.parentsHashList[i].length)
+                                    message.parentsHashList[i] = object.parentsHashList[i];
+                        }
+                        if (object.postStateHash != null)
+                            if (typeof object.postStateHash === "string")
+                                $util.base64.decode(object.postStateHash, message.postStateHash = $util.newBuffer($util.base64.length(object.postStateHash)), 0);
+                            else if (object.postStateHash.length)
+                                message.postStateHash = object.postStateHash;
+                        if (object.deploysHash != null)
+                            if (typeof object.deploysHash === "string")
+                                $util.base64.decode(object.deploysHash, message.deploysHash = $util.newBuffer($util.base64.length(object.deploysHash)), 0);
+                            else if (object.deploysHash.length)
+                                message.deploysHash = object.deploysHash;
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.version != null)
+                            if ($util.Long)
+                                (message.version = $util.Long.fromValue(object.version)).unsigned = false;
+                            else if (typeof object.version === "string")
+                                message.version = parseInt(object.version, 10);
+                            else if (typeof object.version === "number")
+                                message.version = object.version;
+                            else if (typeof object.version === "object")
+                                message.version = new $util.LongBits(object.version.low >>> 0, object.version.high >>> 0).toNumber();
+                        if (object.deployCount != null)
+                            message.deployCount = object.deployCount | 0;
+                        if (object.extraBytes != null)
+                            if (typeof object.extraBytes === "string")
+                                $util.base64.decode(object.extraBytes, message.extraBytes = $util.newBuffer($util.base64.length(object.extraBytes)), 0);
+                            else if (object.extraBytes.length)
+                                message.extraBytes = object.extraBytes;
+                        return message;
+                    };
+
+                    Header.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.parentsHashList = [];
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.postStateHash = "";
+                            else {
+                                object.postStateHash = [];
+                                if (options.bytes !== Array)
+                                    object.postStateHash = $util.newBuffer(object.postStateHash);
+                            }
+                            if (options.bytes === String)
+                                object.deploysHash = "";
+                            else {
+                                object.deploysHash = [];
+                                if (options.bytes !== Array)
+                                    object.deploysHash = $util.newBuffer(object.deploysHash);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.version = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.version = options.longs === String ? "0" : 0;
+                            object.deployCount = 0;
+                            if (options.bytes === String)
+                                object.extraBytes = "";
+                            else {
+                                object.extraBytes = [];
+                                if (options.bytes !== Array)
+                                    object.extraBytes = $util.newBuffer(object.extraBytes);
+                            }
+                        }
+                        if (message.parentsHashList && message.parentsHashList.length) {
+                            object.parentsHashList = [];
+                            for (var j = 0; j < message.parentsHashList.length; ++j)
+                                object.parentsHashList[j] = options.bytes === String ? $util.base64.encode(message.parentsHashList[j], 0, message.parentsHashList[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.parentsHashList[j]) : message.parentsHashList[j];
+                        }
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            object.postStateHash = options.bytes === String ? $util.base64.encode(message.postStateHash, 0, message.postStateHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.postStateHash) : message.postStateHash;
+                        if (message.deploysHash != null && message.hasOwnProperty("deploysHash"))
+                            object.deploysHash = options.bytes === String ? $util.base64.encode(message.deploysHash, 0, message.deploysHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.deploysHash) : message.deploysHash;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.version != null && message.hasOwnProperty("version"))
+                            if (typeof message.version === "number")
+                                object.version = options.longs === String ? String(message.version) : message.version;
+                            else
+                                object.version = options.longs === String ? $util.Long.prototype.toString.call(message.version) : options.longs === Number ? new $util.LongBits(message.version.low >>> 0, message.version.high >>> 0).toNumber() : message.version;
+                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
+                            object.deployCount = message.deployCount;
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            object.extraBytes = options.bytes === String ? $util.base64.encode(message.extraBytes, 0, message.extraBytes.length) : options.bytes === Array ? Array.prototype.slice.call(message.extraBytes) : message.extraBytes;
+                        return object;
+                    };
+
+                    Header.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Header;
+                })();
+
+                protocol.DeployData = (function() {
+
+                    function DeployData(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    DeployData.prototype.deployer = $util.newBuffer([]);
+                    DeployData.prototype.term = "";
+                    DeployData.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.sig = $util.newBuffer([]);
+                    DeployData.prototype.sigAlgorithm = "";
+                    DeployData.prototype.phloPrice = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.phloLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.validAfterBlockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    DeployData.create = function create(properties) {
+                        return new DeployData(properties);
+                    };
+
+                    DeployData.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            writer.uint32(10).bytes(message.deployer);
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            writer.uint32(18).string(message.term);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(24).int64(message.timestamp);
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            writer.uint32(34).bytes(message.sig);
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            writer.uint32(42).string(message.sigAlgorithm);
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            writer.uint32(56).int64(message.phloPrice);
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            writer.uint32(64).int64(message.phloLimit);
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            writer.uint32(80).int64(message.validAfterBlockNumber);
+                        return writer;
+                    };
+
+                    DeployData.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    DeployData.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DeployData();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.deployer = reader.bytes();
+                                break;
+                            case 2:
+                                message.term = reader.string();
+                                break;
+                            case 3:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 4:
+                                message.sig = reader.bytes();
+                                break;
+                            case 5:
+                                message.sigAlgorithm = reader.string();
+                                break;
+                            case 7:
+                                message.phloPrice = reader.int64();
+                                break;
+                            case 8:
+                                message.phloLimit = reader.int64();
+                                break;
+                            case 10:
+                                message.validAfterBlockNumber = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    DeployData.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    DeployData.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            if (!(message.deployer && typeof message.deployer.length === "number" || $util.isString(message.deployer)))
+                                return "deployer: buffer expected";
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            if (!$util.isString(message.term))
+                                return "term: string expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                                return "sig: buffer expected";
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            if (!$util.isString(message.sigAlgorithm))
+                                return "sigAlgorithm: string expected";
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            if (!$util.isInteger(message.phloPrice) && !(message.phloPrice && $util.isInteger(message.phloPrice.low) && $util.isInteger(message.phloPrice.high)))
+                                return "phloPrice: integer|Long expected";
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            if (!$util.isInteger(message.phloLimit) && !(message.phloLimit && $util.isInteger(message.phloLimit.low) && $util.isInteger(message.phloLimit.high)))
+                                return "phloLimit: integer|Long expected";
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            if (!$util.isInteger(message.validAfterBlockNumber) && !(message.validAfterBlockNumber && $util.isInteger(message.validAfterBlockNumber.low) && $util.isInteger(message.validAfterBlockNumber.high)))
+                                return "validAfterBlockNumber: integer|Long expected";
+                        return null;
+                    };
+
+                    DeployData.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.DeployData)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.DeployData();
+                        if (object.deployer != null)
+                            if (typeof object.deployer === "string")
+                                $util.base64.decode(object.deployer, message.deployer = $util.newBuffer($util.base64.length(object.deployer)), 0);
+                            else if (object.deployer.length)
+                                message.deployer = object.deployer;
+                        if (object.term != null)
+                            message.term = String(object.term);
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.sig != null)
+                            if (typeof object.sig === "string")
+                                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+                            else if (object.sig.length)
+                                message.sig = object.sig;
+                        if (object.sigAlgorithm != null)
+                            message.sigAlgorithm = String(object.sigAlgorithm);
+                        if (object.phloPrice != null)
+                            if ($util.Long)
+                                (message.phloPrice = $util.Long.fromValue(object.phloPrice)).unsigned = false;
+                            else if (typeof object.phloPrice === "string")
+                                message.phloPrice = parseInt(object.phloPrice, 10);
+                            else if (typeof object.phloPrice === "number")
+                                message.phloPrice = object.phloPrice;
+                            else if (typeof object.phloPrice === "object")
+                                message.phloPrice = new $util.LongBits(object.phloPrice.low >>> 0, object.phloPrice.high >>> 0).toNumber();
+                        if (object.phloLimit != null)
+                            if ($util.Long)
+                                (message.phloLimit = $util.Long.fromValue(object.phloLimit)).unsigned = false;
+                            else if (typeof object.phloLimit === "string")
+                                message.phloLimit = parseInt(object.phloLimit, 10);
+                            else if (typeof object.phloLimit === "number")
+                                message.phloLimit = object.phloLimit;
+                            else if (typeof object.phloLimit === "object")
+                                message.phloLimit = new $util.LongBits(object.phloLimit.low >>> 0, object.phloLimit.high >>> 0).toNumber();
+                        if (object.validAfterBlockNumber != null)
+                            if ($util.Long)
+                                (message.validAfterBlockNumber = $util.Long.fromValue(object.validAfterBlockNumber)).unsigned = false;
+                            else if (typeof object.validAfterBlockNumber === "string")
+                                message.validAfterBlockNumber = parseInt(object.validAfterBlockNumber, 10);
+                            else if (typeof object.validAfterBlockNumber === "number")
+                                message.validAfterBlockNumber = object.validAfterBlockNumber;
+                            else if (typeof object.validAfterBlockNumber === "object")
+                                message.validAfterBlockNumber = new $util.LongBits(object.validAfterBlockNumber.low >>> 0, object.validAfterBlockNumber.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    DeployData.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.deployer = "";
+                            else {
+                                object.deployer = [];
+                                if (options.bytes !== Array)
+                                    object.deployer = $util.newBuffer(object.deployer);
+                            }
+                            object.term = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            if (options.bytes === String)
+                                object.sig = "";
+                            else {
+                                object.sig = [];
+                                if (options.bytes !== Array)
+                                    object.sig = $util.newBuffer(object.sig);
+                            }
+                            object.sigAlgorithm = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.phloPrice = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.phloPrice = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.phloLimit = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.phloLimit = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.validAfterBlockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.validAfterBlockNumber = options.longs === String ? "0" : 0;
+                        }
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            object.deployer = options.bytes === String ? $util.base64.encode(message.deployer, 0, message.deployer.length) : options.bytes === Array ? Array.prototype.slice.call(message.deployer) : message.deployer;
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            object.term = message.term;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            object.sigAlgorithm = message.sigAlgorithm;
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            if (typeof message.phloPrice === "number")
+                                object.phloPrice = options.longs === String ? String(message.phloPrice) : message.phloPrice;
+                            else
+                                object.phloPrice = options.longs === String ? $util.Long.prototype.toString.call(message.phloPrice) : options.longs === Number ? new $util.LongBits(message.phloPrice.low >>> 0, message.phloPrice.high >>> 0).toNumber() : message.phloPrice;
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            if (typeof message.phloLimit === "number")
+                                object.phloLimit = options.longs === String ? String(message.phloLimit) : message.phloLimit;
+                            else
+                                object.phloLimit = options.longs === String ? $util.Long.prototype.toString.call(message.phloLimit) : options.longs === Number ? new $util.LongBits(message.phloLimit.low >>> 0, message.phloLimit.high >>> 0).toNumber() : message.phloLimit;
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            if (typeof message.validAfterBlockNumber === "number")
+                                object.validAfterBlockNumber = options.longs === String ? String(message.validAfterBlockNumber) : message.validAfterBlockNumber;
+                            else
+                                object.validAfterBlockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.validAfterBlockNumber) : options.longs === Number ? new $util.LongBits(message.validAfterBlockNumber.low >>> 0, message.validAfterBlockNumber.high >>> 0).toNumber() : message.validAfterBlockNumber;
+                        return object;
+                    };
+
+                    DeployData.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return DeployData;
+                })();
+
+                protocol.ProcessedDeploy = (function() {
+
+                    function ProcessedDeploy(properties) {
+                        this.deployLog = [];
+                        this.paymentLog = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ProcessedDeploy.prototype.deploy = null;
+                    ProcessedDeploy.prototype.cost = null;
+                    ProcessedDeploy.prototype.deployLog = $util.emptyArray;
+                    ProcessedDeploy.prototype.paymentLog = $util.emptyArray;
+                    ProcessedDeploy.prototype.errored = false;
+
+                    ProcessedDeploy.create = function create(properties) {
+                        return new ProcessedDeploy(properties);
+                    };
+
+                    ProcessedDeploy.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.deploy != null && message.hasOwnProperty("deploy"))
+                            $root.coop.rchain.casper.protocol.DeployData.encode(message.deploy, writer.uint32(10).fork()).ldelim();
+                        if (message.cost != null && message.hasOwnProperty("cost"))
+                            $root.PCost.encode(message.cost, writer.uint32(18).fork()).ldelim();
+                        if (message.deployLog != null && message.deployLog.length)
+                            for (var i = 0; i < message.deployLog.length; ++i)
+                                $root.coop.rchain.casper.protocol.Event.encode(message.deployLog[i], writer.uint32(26).fork()).ldelim();
+                        if (message.paymentLog != null && message.paymentLog.length)
+                            for (var i = 0; i < message.paymentLog.length; ++i)
+                                $root.coop.rchain.casper.protocol.Event.encode(message.paymentLog[i], writer.uint32(34).fork()).ldelim();
+                        if (message.errored != null && message.hasOwnProperty("errored"))
+                            writer.uint32(40).bool(message.errored);
+                        return writer;
+                    };
+
+                    ProcessedDeploy.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ProcessedDeploy.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ProcessedDeploy();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.deploy = $root.coop.rchain.casper.protocol.DeployData.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                message.cost = $root.PCost.decode(reader, reader.uint32());
+                                break;
+                            case 3:
+                                if (!(message.deployLog && message.deployLog.length))
+                                    message.deployLog = [];
+                                message.deployLog.push($root.coop.rchain.casper.protocol.Event.decode(reader, reader.uint32()));
+                                break;
+                            case 4:
+                                if (!(message.paymentLog && message.paymentLog.length))
+                                    message.paymentLog = [];
+                                message.paymentLog.push($root.coop.rchain.casper.protocol.Event.decode(reader, reader.uint32()));
+                                break;
+                            case 5:
+                                message.errored = reader.bool();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ProcessedDeploy.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ProcessedDeploy.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.deploy != null && message.hasOwnProperty("deploy")) {
+                            var error = $root.coop.rchain.casper.protocol.DeployData.verify(message.deploy);
+                            if (error)
+                                return "deploy." + error;
+                        }
+                        if (message.cost != null && message.hasOwnProperty("cost")) {
+                            var error = $root.PCost.verify(message.cost);
+                            if (error)
+                                return "cost." + error;
+                        }
+                        if (message.deployLog != null && message.hasOwnProperty("deployLog")) {
+                            if (!Array.isArray(message.deployLog))
+                                return "deployLog: array expected";
+                            for (var i = 0; i < message.deployLog.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Event.verify(message.deployLog[i]);
+                                if (error)
+                                    return "deployLog." + error;
+                            }
+                        }
+                        if (message.paymentLog != null && message.hasOwnProperty("paymentLog")) {
+                            if (!Array.isArray(message.paymentLog))
+                                return "paymentLog: array expected";
+                            for (var i = 0; i < message.paymentLog.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Event.verify(message.paymentLog[i]);
+                                if (error)
+                                    return "paymentLog." + error;
+                            }
+                        }
+                        if (message.errored != null && message.hasOwnProperty("errored"))
+                            if (typeof message.errored !== "boolean")
+                                return "errored: boolean expected";
+                        return null;
+                    };
+
+                    ProcessedDeploy.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ProcessedDeploy)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ProcessedDeploy();
+                        if (object.deploy != null) {
+                            if (typeof object.deploy !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.deploy: object expected");
+                            message.deploy = $root.coop.rchain.casper.protocol.DeployData.fromObject(object.deploy);
+                        }
+                        if (object.cost != null) {
+                            if (typeof object.cost !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.cost: object expected");
+                            message.cost = $root.PCost.fromObject(object.cost);
+                        }
+                        if (object.deployLog) {
+                            if (!Array.isArray(object.deployLog))
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.deployLog: array expected");
+                            message.deployLog = [];
+                            for (var i = 0; i < object.deployLog.length; ++i) {
+                                if (typeof object.deployLog[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.deployLog: object expected");
+                                message.deployLog[i] = $root.coop.rchain.casper.protocol.Event.fromObject(object.deployLog[i]);
+                            }
+                        }
+                        if (object.paymentLog) {
+                            if (!Array.isArray(object.paymentLog))
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.paymentLog: array expected");
+                            message.paymentLog = [];
+                            for (var i = 0; i < object.paymentLog.length; ++i) {
+                                if (typeof object.paymentLog[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.paymentLog: object expected");
+                                message.paymentLog[i] = $root.coop.rchain.casper.protocol.Event.fromObject(object.paymentLog[i]);
+                            }
+                        }
+                        if (object.errored != null)
+                            message.errored = Boolean(object.errored);
+                        return message;
+                    };
+
+                    ProcessedDeploy.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults) {
+                            object.deployLog = [];
+                            object.paymentLog = [];
+                        }
+                        if (options.defaults) {
+                            object.deploy = null;
+                            object.cost = null;
+                            object.errored = false;
+                        }
+                        if (message.deploy != null && message.hasOwnProperty("deploy"))
+                            object.deploy = $root.coop.rchain.casper.protocol.DeployData.toObject(message.deploy, options);
+                        if (message.cost != null && message.hasOwnProperty("cost"))
+                            object.cost = $root.PCost.toObject(message.cost, options);
+                        if (message.deployLog && message.deployLog.length) {
+                            object.deployLog = [];
+                            for (var j = 0; j < message.deployLog.length; ++j)
+                                object.deployLog[j] = $root.coop.rchain.casper.protocol.Event.toObject(message.deployLog[j], options);
+                        }
+                        if (message.paymentLog && message.paymentLog.length) {
+                            object.paymentLog = [];
+                            for (var j = 0; j < message.paymentLog.length; ++j)
+                                object.paymentLog[j] = $root.coop.rchain.casper.protocol.Event.toObject(message.paymentLog[j], options);
+                        }
+                        if (message.errored != null && message.hasOwnProperty("errored"))
+                            object.errored = message.errored;
+                        return object;
+                    };
+
+                    ProcessedDeploy.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ProcessedDeploy;
+                })();
+
+                protocol.Body = (function() {
+
+                    function Body(properties) {
+                        this.deploys = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Body.prototype.state = null;
+                    Body.prototype.deploys = $util.emptyArray;
+                    Body.prototype.extraBytes = $util.newBuffer([]);
+
+                    Body.create = function create(properties) {
+                        return new Body(properties);
+                    };
+
+                    Body.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.state != null && message.hasOwnProperty("state"))
+                            $root.coop.rchain.casper.protocol.RChainState.encode(message.state, writer.uint32(10).fork()).ldelim();
+                        if (message.deploys != null && message.deploys.length)
+                            for (var i = 0; i < message.deploys.length; ++i)
+                                $root.coop.rchain.casper.protocol.ProcessedDeploy.encode(message.deploys[i], writer.uint32(18).fork()).ldelim();
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            writer.uint32(26).bytes(message.extraBytes);
+                        return writer;
+                    };
+
+                    Body.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Body.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Body();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.state = $root.coop.rchain.casper.protocol.RChainState.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                if (!(message.deploys && message.deploys.length))
+                                    message.deploys = [];
+                                message.deploys.push($root.coop.rchain.casper.protocol.ProcessedDeploy.decode(reader, reader.uint32()));
+                                break;
+                            case 3:
+                                message.extraBytes = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Body.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Body.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.state != null && message.hasOwnProperty("state")) {
+                            var error = $root.coop.rchain.casper.protocol.RChainState.verify(message.state);
+                            if (error)
+                                return "state." + error;
+                        }
+                        if (message.deploys != null && message.hasOwnProperty("deploys")) {
+                            if (!Array.isArray(message.deploys))
+                                return "deploys: array expected";
+                            for (var i = 0; i < message.deploys.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.ProcessedDeploy.verify(message.deploys[i]);
+                                if (error)
+                                    return "deploys." + error;
+                            }
+                        }
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            if (!(message.extraBytes && typeof message.extraBytes.length === "number" || $util.isString(message.extraBytes)))
+                                return "extraBytes: buffer expected";
+                        return null;
+                    };
+
+                    Body.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Body)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Body();
+                        if (object.state != null) {
+                            if (typeof object.state !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.Body.state: object expected");
+                            message.state = $root.coop.rchain.casper.protocol.RChainState.fromObject(object.state);
+                        }
+                        if (object.deploys) {
+                            if (!Array.isArray(object.deploys))
+                                throw TypeError(".coop.rchain.casper.protocol.Body.deploys: array expected");
+                            message.deploys = [];
+                            for (var i = 0; i < object.deploys.length; ++i) {
+                                if (typeof object.deploys[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.Body.deploys: object expected");
+                                message.deploys[i] = $root.coop.rchain.casper.protocol.ProcessedDeploy.fromObject(object.deploys[i]);
+                            }
+                        }
+                        if (object.extraBytes != null)
+                            if (typeof object.extraBytes === "string")
+                                $util.base64.decode(object.extraBytes, message.extraBytes = $util.newBuffer($util.base64.length(object.extraBytes)), 0);
+                            else if (object.extraBytes.length)
+                                message.extraBytes = object.extraBytes;
+                        return message;
+                    };
+
+                    Body.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.deploys = [];
+                        if (options.defaults) {
+                            object.state = null;
+                            if (options.bytes === String)
+                                object.extraBytes = "";
+                            else {
+                                object.extraBytes = [];
+                                if (options.bytes !== Array)
+                                    object.extraBytes = $util.newBuffer(object.extraBytes);
+                            }
+                        }
+                        if (message.state != null && message.hasOwnProperty("state"))
+                            object.state = $root.coop.rchain.casper.protocol.RChainState.toObject(message.state, options);
+                        if (message.deploys && message.deploys.length) {
+                            object.deploys = [];
+                            for (var j = 0; j < message.deploys.length; ++j)
+                                object.deploys[j] = $root.coop.rchain.casper.protocol.ProcessedDeploy.toObject(message.deploys[j], options);
+                        }
+                        if (message.extraBytes != null && message.hasOwnProperty("extraBytes"))
+                            object.extraBytes = options.bytes === String ? $util.base64.encode(message.extraBytes, 0, message.extraBytes.length) : options.bytes === Array ? Array.prototype.slice.call(message.extraBytes) : message.extraBytes;
+                        return object;
+                    };
+
+                    Body.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Body;
+                })();
+
+                protocol.Justification = (function() {
+
+                    function Justification(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Justification.prototype.validator = $util.newBuffer([]);
+                    Justification.prototype.latestBlockHash = $util.newBuffer([]);
+
+                    Justification.create = function create(properties) {
+                        return new Justification(properties);
+                    };
+
+                    Justification.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            writer.uint32(10).bytes(message.validator);
+                        if (message.latestBlockHash != null && message.hasOwnProperty("latestBlockHash"))
+                            writer.uint32(18).bytes(message.latestBlockHash);
+                        return writer;
+                    };
+
+                    Justification.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Justification.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Justification();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.validator = reader.bytes();
+                                break;
+                            case 2:
+                                message.latestBlockHash = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Justification.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Justification.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            if (!(message.validator && typeof message.validator.length === "number" || $util.isString(message.validator)))
+                                return "validator: buffer expected";
+                        if (message.latestBlockHash != null && message.hasOwnProperty("latestBlockHash"))
+                            if (!(message.latestBlockHash && typeof message.latestBlockHash.length === "number" || $util.isString(message.latestBlockHash)))
+                                return "latestBlockHash: buffer expected";
+                        return null;
+                    };
+
+                    Justification.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Justification)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Justification();
+                        if (object.validator != null)
+                            if (typeof object.validator === "string")
+                                $util.base64.decode(object.validator, message.validator = $util.newBuffer($util.base64.length(object.validator)), 0);
+                            else if (object.validator.length)
+                                message.validator = object.validator;
+                        if (object.latestBlockHash != null)
+                            if (typeof object.latestBlockHash === "string")
+                                $util.base64.decode(object.latestBlockHash, message.latestBlockHash = $util.newBuffer($util.base64.length(object.latestBlockHash)), 0);
+                            else if (object.latestBlockHash.length)
+                                message.latestBlockHash = object.latestBlockHash;
+                        return message;
+                    };
+
+                    Justification.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.validator = "";
+                            else {
+                                object.validator = [];
+                                if (options.bytes !== Array)
+                                    object.validator = $util.newBuffer(object.validator);
+                            }
+                            if (options.bytes === String)
+                                object.latestBlockHash = "";
+                            else {
+                                object.latestBlockHash = [];
+                                if (options.bytes !== Array)
+                                    object.latestBlockHash = $util.newBuffer(object.latestBlockHash);
+                            }
+                        }
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            object.validator = options.bytes === String ? $util.base64.encode(message.validator, 0, message.validator.length) : options.bytes === Array ? Array.prototype.slice.call(message.validator) : message.validator;
+                        if (message.latestBlockHash != null && message.hasOwnProperty("latestBlockHash"))
+                            object.latestBlockHash = options.bytes === String ? $util.base64.encode(message.latestBlockHash, 0, message.latestBlockHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.latestBlockHash) : message.latestBlockHash;
+                        return object;
+                    };
+
+                    Justification.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Justification;
+                })();
+
+                protocol.RChainState = (function() {
+
+                    function RChainState(properties) {
+                        this.bonds = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    RChainState.prototype.preStateHash = $util.newBuffer([]);
+                    RChainState.prototype.postStateHash = $util.newBuffer([]);
+                    RChainState.prototype.bonds = $util.emptyArray;
+                    RChainState.prototype.blockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    RChainState.create = function create(properties) {
+                        return new RChainState(properties);
+                    };
+
+                    RChainState.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.preStateHash != null && message.hasOwnProperty("preStateHash"))
+                            writer.uint32(10).bytes(message.preStateHash);
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            writer.uint32(18).bytes(message.postStateHash);
+                        if (message.bonds != null && message.bonds.length)
+                            for (var i = 0; i < message.bonds.length; ++i)
+                                $root.coop.rchain.casper.protocol.Bond.encode(message.bonds[i], writer.uint32(26).fork()).ldelim();
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            writer.uint32(32).int64(message.blockNumber);
+                        return writer;
+                    };
+
+                    RChainState.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    RChainState.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.RChainState();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.preStateHash = reader.bytes();
+                                break;
+                            case 2:
+                                message.postStateHash = reader.bytes();
+                                break;
+                            case 3:
+                                if (!(message.bonds && message.bonds.length))
+                                    message.bonds = [];
+                                message.bonds.push($root.coop.rchain.casper.protocol.Bond.decode(reader, reader.uint32()));
+                                break;
+                            case 4:
+                                message.blockNumber = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    RChainState.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    RChainState.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.preStateHash != null && message.hasOwnProperty("preStateHash"))
+                            if (!(message.preStateHash && typeof message.preStateHash.length === "number" || $util.isString(message.preStateHash)))
+                                return "preStateHash: buffer expected";
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            if (!(message.postStateHash && typeof message.postStateHash.length === "number" || $util.isString(message.postStateHash)))
+                                return "postStateHash: buffer expected";
+                        if (message.bonds != null && message.hasOwnProperty("bonds")) {
+                            if (!Array.isArray(message.bonds))
+                                return "bonds: array expected";
+                            for (var i = 0; i < message.bonds.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Bond.verify(message.bonds[i]);
+                                if (error)
+                                    return "bonds." + error;
+                            }
+                        }
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (!$util.isInteger(message.blockNumber) && !(message.blockNumber && $util.isInteger(message.blockNumber.low) && $util.isInteger(message.blockNumber.high)))
+                                return "blockNumber: integer|Long expected";
+                        return null;
+                    };
+
+                    RChainState.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.RChainState)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.RChainState();
+                        if (object.preStateHash != null)
+                            if (typeof object.preStateHash === "string")
+                                $util.base64.decode(object.preStateHash, message.preStateHash = $util.newBuffer($util.base64.length(object.preStateHash)), 0);
+                            else if (object.preStateHash.length)
+                                message.preStateHash = object.preStateHash;
+                        if (object.postStateHash != null)
+                            if (typeof object.postStateHash === "string")
+                                $util.base64.decode(object.postStateHash, message.postStateHash = $util.newBuffer($util.base64.length(object.postStateHash)), 0);
+                            else if (object.postStateHash.length)
+                                message.postStateHash = object.postStateHash;
+                        if (object.bonds) {
+                            if (!Array.isArray(object.bonds))
+                                throw TypeError(".coop.rchain.casper.protocol.RChainState.bonds: array expected");
+                            message.bonds = [];
+                            for (var i = 0; i < object.bonds.length; ++i) {
+                                if (typeof object.bonds[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.RChainState.bonds: object expected");
+                                message.bonds[i] = $root.coop.rchain.casper.protocol.Bond.fromObject(object.bonds[i]);
+                            }
+                        }
+                        if (object.blockNumber != null)
+                            if ($util.Long)
+                                (message.blockNumber = $util.Long.fromValue(object.blockNumber)).unsigned = false;
+                            else if (typeof object.blockNumber === "string")
+                                message.blockNumber = parseInt(object.blockNumber, 10);
+                            else if (typeof object.blockNumber === "number")
+                                message.blockNumber = object.blockNumber;
+                            else if (typeof object.blockNumber === "object")
+                                message.blockNumber = new $util.LongBits(object.blockNumber.low >>> 0, object.blockNumber.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    RChainState.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.bonds = [];
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.preStateHash = "";
+                            else {
+                                object.preStateHash = [];
+                                if (options.bytes !== Array)
+                                    object.preStateHash = $util.newBuffer(object.preStateHash);
+                            }
+                            if (options.bytes === String)
+                                object.postStateHash = "";
+                            else {
+                                object.postStateHash = [];
+                                if (options.bytes !== Array)
+                                    object.postStateHash = $util.newBuffer(object.postStateHash);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.blockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.blockNumber = options.longs === String ? "0" : 0;
+                        }
+                        if (message.preStateHash != null && message.hasOwnProperty("preStateHash"))
+                            object.preStateHash = options.bytes === String ? $util.base64.encode(message.preStateHash, 0, message.preStateHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.preStateHash) : message.preStateHash;
+                        if (message.postStateHash != null && message.hasOwnProperty("postStateHash"))
+                            object.postStateHash = options.bytes === String ? $util.base64.encode(message.postStateHash, 0, message.postStateHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.postStateHash) : message.postStateHash;
+                        if (message.bonds && message.bonds.length) {
+                            object.bonds = [];
+                            for (var j = 0; j < message.bonds.length; ++j)
+                                object.bonds[j] = $root.coop.rchain.casper.protocol.Bond.toObject(message.bonds[j], options);
+                        }
+                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
+                            if (typeof message.blockNumber === "number")
+                                object.blockNumber = options.longs === String ? String(message.blockNumber) : message.blockNumber;
+                            else
+                                object.blockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.blockNumber) : options.longs === Number ? new $util.LongBits(message.blockNumber.low >>> 0, message.blockNumber.high >>> 0).toNumber() : message.blockNumber;
+                        return object;
+                    };
+
+                    RChainState.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return RChainState;
+                })();
+
+                protocol.Event = (function() {
+
+                    function Event(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Event.prototype.produce = null;
+                    Event.prototype.consume = null;
+                    Event.prototype.comm = null;
+
+                    var $oneOfFields;
+
+                    Object.defineProperty(Event.prototype, "event_instance", {
+                        get: $util.oneOfGetter($oneOfFields = ["produce", "consume", "comm"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+
+                    Event.create = function create(properties) {
+                        return new Event(properties);
+                    };
+
+                    Event.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.produce != null && message.hasOwnProperty("produce"))
+                            $root.coop.rchain.casper.protocol.ProduceEvent.encode(message.produce, writer.uint32(10).fork()).ldelim();
+                        if (message.consume != null && message.hasOwnProperty("consume"))
+                            $root.coop.rchain.casper.protocol.ConsumeEvent.encode(message.consume, writer.uint32(18).fork()).ldelim();
+                        if (message.comm != null && message.hasOwnProperty("comm"))
+                            $root.coop.rchain.casper.protocol.CommEvent.encode(message.comm, writer.uint32(26).fork()).ldelim();
+                        return writer;
+                    };
+
+                    Event.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Event.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Event();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.produce = $root.coop.rchain.casper.protocol.ProduceEvent.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                message.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.decode(reader, reader.uint32());
+                                break;
+                            case 3:
+                                message.comm = $root.coop.rchain.casper.protocol.CommEvent.decode(reader, reader.uint32());
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Event.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Event.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        var properties = {};
+                        if (message.produce != null && message.hasOwnProperty("produce")) {
+                            properties.event_instance = 1;
+                            {
+                                var error = $root.coop.rchain.casper.protocol.ProduceEvent.verify(message.produce);
+                                if (error)
+                                    return "produce." + error;
+                            }
+                        }
+                        if (message.consume != null && message.hasOwnProperty("consume")) {
+                            if (properties.event_instance === 1)
+                                return "event_instance: multiple values";
+                            properties.event_instance = 1;
+                            {
+                                var error = $root.coop.rchain.casper.protocol.ConsumeEvent.verify(message.consume);
+                                if (error)
+                                    return "consume." + error;
+                            }
+                        }
+                        if (message.comm != null && message.hasOwnProperty("comm")) {
+                            if (properties.event_instance === 1)
+                                return "event_instance: multiple values";
+                            properties.event_instance = 1;
+                            {
+                                var error = $root.coop.rchain.casper.protocol.CommEvent.verify(message.comm);
+                                if (error)
+                                    return "comm." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    Event.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Event)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Event();
+                        if (object.produce != null) {
+                            if (typeof object.produce !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.Event.produce: object expected");
+                            message.produce = $root.coop.rchain.casper.protocol.ProduceEvent.fromObject(object.produce);
+                        }
+                        if (object.consume != null) {
+                            if (typeof object.consume !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.Event.consume: object expected");
+                            message.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.fromObject(object.consume);
+                        }
+                        if (object.comm != null) {
+                            if (typeof object.comm !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.Event.comm: object expected");
+                            message.comm = $root.coop.rchain.casper.protocol.CommEvent.fromObject(object.comm);
+                        }
+                        return message;
+                    };
+
+                    Event.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (message.produce != null && message.hasOwnProperty("produce")) {
+                            object.produce = $root.coop.rchain.casper.protocol.ProduceEvent.toObject(message.produce, options);
+                            if (options.oneofs)
+                                object.event_instance = "produce";
+                        }
+                        if (message.consume != null && message.hasOwnProperty("consume")) {
+                            object.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.toObject(message.consume, options);
+                            if (options.oneofs)
+                                object.event_instance = "consume";
+                        }
+                        if (message.comm != null && message.hasOwnProperty("comm")) {
+                            object.comm = $root.coop.rchain.casper.protocol.CommEvent.toObject(message.comm, options);
+                            if (options.oneofs)
+                                object.event_instance = "comm";
+                        }
+                        return object;
+                    };
+
+                    Event.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Event;
+                })();
+
+                protocol.ProduceEvent = (function() {
+
+                    function ProduceEvent(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ProduceEvent.prototype.channelsHash = $util.newBuffer([]);
+                    ProduceEvent.prototype.hash = $util.newBuffer([]);
+                    ProduceEvent.prototype.persistent = false;
+                    ProduceEvent.prototype.sequenceNumber = 0;
+
+                    ProduceEvent.create = function create(properties) {
+                        return new ProduceEvent(properties);
+                    };
+
+                    ProduceEvent.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.channelsHash != null && message.hasOwnProperty("channelsHash"))
+                            writer.uint32(10).bytes(message.channelsHash);
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(18).bytes(message.hash);
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            writer.uint32(24).bool(message.persistent);
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            writer.uint32(32).int32(message.sequenceNumber);
+                        return writer;
+                    };
+
+                    ProduceEvent.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ProduceEvent.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ProduceEvent();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.channelsHash = reader.bytes();
+                                break;
+                            case 2:
+                                message.hash = reader.bytes();
+                                break;
+                            case 3:
+                                message.persistent = reader.bool();
+                                break;
+                            case 4:
+                                message.sequenceNumber = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ProduceEvent.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ProduceEvent.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.channelsHash != null && message.hasOwnProperty("channelsHash"))
+                            if (!(message.channelsHash && typeof message.channelsHash.length === "number" || $util.isString(message.channelsHash)))
+                                return "channelsHash: buffer expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            if (typeof message.persistent !== "boolean")
+                                return "persistent: boolean expected";
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            if (!$util.isInteger(message.sequenceNumber))
+                                return "sequenceNumber: integer expected";
+                        return null;
+                    };
+
+                    ProduceEvent.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ProduceEvent)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ProduceEvent();
+                        if (object.channelsHash != null)
+                            if (typeof object.channelsHash === "string")
+                                $util.base64.decode(object.channelsHash, message.channelsHash = $util.newBuffer($util.base64.length(object.channelsHash)), 0);
+                            else if (object.channelsHash.length)
+                                message.channelsHash = object.channelsHash;
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        if (object.persistent != null)
+                            message.persistent = Boolean(object.persistent);
+                        if (object.sequenceNumber != null)
+                            message.sequenceNumber = object.sequenceNumber | 0;
+                        return message;
+                    };
+
+                    ProduceEvent.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.channelsHash = "";
+                            else {
+                                object.channelsHash = [];
+                                if (options.bytes !== Array)
+                                    object.channelsHash = $util.newBuffer(object.channelsHash);
+                            }
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                            object.persistent = false;
+                            object.sequenceNumber = 0;
+                        }
+                        if (message.channelsHash != null && message.hasOwnProperty("channelsHash"))
+                            object.channelsHash = options.bytes === String ? $util.base64.encode(message.channelsHash, 0, message.channelsHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelsHash) : message.channelsHash;
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            object.persistent = message.persistent;
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            object.sequenceNumber = message.sequenceNumber;
+                        return object;
+                    };
+
+                    ProduceEvent.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ProduceEvent;
+                })();
+
+                protocol.ConsumeEvent = (function() {
+
+                    function ConsumeEvent(properties) {
+                        this.channelsHashes = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    ConsumeEvent.prototype.channelsHashes = $util.emptyArray;
+                    ConsumeEvent.prototype.hash = $util.newBuffer([]);
+                    ConsumeEvent.prototype.persistent = false;
+                    ConsumeEvent.prototype.sequenceNumber = 0;
+
+                    ConsumeEvent.create = function create(properties) {
+                        return new ConsumeEvent(properties);
+                    };
+
+                    ConsumeEvent.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.channelsHashes != null && message.channelsHashes.length)
+                            for (var i = 0; i < message.channelsHashes.length; ++i)
+                                writer.uint32(10).bytes(message.channelsHashes[i]);
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(18).bytes(message.hash);
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            writer.uint32(24).bool(message.persistent);
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            writer.uint32(32).int32(message.sequenceNumber);
+                        return writer;
+                    };
+
+                    ConsumeEvent.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    ConsumeEvent.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ConsumeEvent();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                if (!(message.channelsHashes && message.channelsHashes.length))
+                                    message.channelsHashes = [];
+                                message.channelsHashes.push(reader.bytes());
+                                break;
+                            case 2:
+                                message.hash = reader.bytes();
+                                break;
+                            case 3:
+                                message.persistent = reader.bool();
+                                break;
+                            case 4:
+                                message.sequenceNumber = reader.int32();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    ConsumeEvent.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    ConsumeEvent.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.channelsHashes != null && message.hasOwnProperty("channelsHashes")) {
+                            if (!Array.isArray(message.channelsHashes))
+                                return "channelsHashes: array expected";
+                            for (var i = 0; i < message.channelsHashes.length; ++i)
+                                if (!(message.channelsHashes[i] && typeof message.channelsHashes[i].length === "number" || $util.isString(message.channelsHashes[i])))
+                                    return "channelsHashes: buffer[] expected";
+                        }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            if (typeof message.persistent !== "boolean")
+                                return "persistent: boolean expected";
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            if (!$util.isInteger(message.sequenceNumber))
+                                return "sequenceNumber: integer expected";
+                        return null;
+                    };
+
+                    ConsumeEvent.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.ConsumeEvent)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.ConsumeEvent();
+                        if (object.channelsHashes) {
+                            if (!Array.isArray(object.channelsHashes))
+                                throw TypeError(".coop.rchain.casper.protocol.ConsumeEvent.channelsHashes: array expected");
+                            message.channelsHashes = [];
+                            for (var i = 0; i < object.channelsHashes.length; ++i)
+                                if (typeof object.channelsHashes[i] === "string")
+                                    $util.base64.decode(object.channelsHashes[i], message.channelsHashes[i] = $util.newBuffer($util.base64.length(object.channelsHashes[i])), 0);
+                                else if (object.channelsHashes[i].length)
+                                    message.channelsHashes[i] = object.channelsHashes[i];
+                        }
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        if (object.persistent != null)
+                            message.persistent = Boolean(object.persistent);
+                        if (object.sequenceNumber != null)
+                            message.sequenceNumber = object.sequenceNumber | 0;
+                        return message;
+                    };
+
+                    ConsumeEvent.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.channelsHashes = [];
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                            object.persistent = false;
+                            object.sequenceNumber = 0;
+                        }
+                        if (message.channelsHashes && message.channelsHashes.length) {
+                            object.channelsHashes = [];
+                            for (var j = 0; j < message.channelsHashes.length; ++j)
+                                object.channelsHashes[j] = options.bytes === String ? $util.base64.encode(message.channelsHashes[j], 0, message.channelsHashes[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.channelsHashes[j]) : message.channelsHashes[j];
+                        }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            object.persistent = message.persistent;
+                        if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
+                            object.sequenceNumber = message.sequenceNumber;
+                        return object;
+                    };
+
+                    ConsumeEvent.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return ConsumeEvent;
+                })();
+
+                protocol.CommEvent = (function() {
+
+                    function CommEvent(properties) {
+                        this.produces = [];
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    CommEvent.prototype.consume = null;
+                    CommEvent.prototype.produces = $util.emptyArray;
+
+                    CommEvent.create = function create(properties) {
+                        return new CommEvent(properties);
+                    };
+
+                    CommEvent.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.consume != null && message.hasOwnProperty("consume"))
+                            $root.coop.rchain.casper.protocol.ConsumeEvent.encode(message.consume, writer.uint32(10).fork()).ldelim();
+                        if (message.produces != null && message.produces.length)
+                            for (var i = 0; i < message.produces.length; ++i)
+                                $root.coop.rchain.casper.protocol.ProduceEvent.encode(message.produces[i], writer.uint32(18).fork()).ldelim();
+                        return writer;
+                    };
+
+                    CommEvent.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    CommEvent.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.CommEvent();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.decode(reader, reader.uint32());
+                                break;
+                            case 2:
+                                if (!(message.produces && message.produces.length))
+                                    message.produces = [];
+                                message.produces.push($root.coop.rchain.casper.protocol.ProduceEvent.decode(reader, reader.uint32()));
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    CommEvent.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    CommEvent.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.consume != null && message.hasOwnProperty("consume")) {
+                            var error = $root.coop.rchain.casper.protocol.ConsumeEvent.verify(message.consume);
+                            if (error)
+                                return "consume." + error;
+                        }
+                        if (message.produces != null && message.hasOwnProperty("produces")) {
+                            if (!Array.isArray(message.produces))
+                                return "produces: array expected";
+                            for (var i = 0; i < message.produces.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.ProduceEvent.verify(message.produces[i]);
+                                if (error)
+                                    return "produces." + error;
+                            }
+                        }
+                        return null;
+                    };
+
+                    CommEvent.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.CommEvent)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.CommEvent();
+                        if (object.consume != null) {
+                            if (typeof object.consume !== "object")
+                                throw TypeError(".coop.rchain.casper.protocol.CommEvent.consume: object expected");
+                            message.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.fromObject(object.consume);
+                        }
+                        if (object.produces) {
+                            if (!Array.isArray(object.produces))
+                                throw TypeError(".coop.rchain.casper.protocol.CommEvent.produces: array expected");
+                            message.produces = [];
+                            for (var i = 0; i < object.produces.length; ++i) {
+                                if (typeof object.produces[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.CommEvent.produces: object expected");
+                                message.produces[i] = $root.coop.rchain.casper.protocol.ProduceEvent.fromObject(object.produces[i]);
+                            }
+                        }
+                        return message;
+                    };
+
+                    CommEvent.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.arrays || options.defaults)
+                            object.produces = [];
+                        if (options.defaults)
+                            object.consume = null;
+                        if (message.consume != null && message.hasOwnProperty("consume"))
+                            object.consume = $root.coop.rchain.casper.protocol.ConsumeEvent.toObject(message.consume, options);
+                        if (message.produces && message.produces.length) {
+                            object.produces = [];
+                            for (var j = 0; j < message.produces.length; ++j)
+                                object.produces[j] = $root.coop.rchain.casper.protocol.ProduceEvent.toObject(message.produces[j], options);
+                        }
+                        return object;
+                    };
+
+                    CommEvent.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return CommEvent;
+                })();
+
+                protocol.Bond = (function() {
+
+                    function Bond(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    Bond.prototype.validator = $util.newBuffer([]);
+                    Bond.prototype.stake = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    Bond.create = function create(properties) {
+                        return new Bond(properties);
+                    };
+
+                    Bond.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            writer.uint32(10).bytes(message.validator);
+                        if (message.stake != null && message.hasOwnProperty("stake"))
+                            writer.uint32(16).int64(message.stake);
+                        return writer;
+                    };
+
+                    Bond.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    Bond.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.Bond();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.validator = reader.bytes();
+                                break;
+                            case 2:
+                                message.stake = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    Bond.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    Bond.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            if (!(message.validator && typeof message.validator.length === "number" || $util.isString(message.validator)))
+                                return "validator: buffer expected";
+                        if (message.stake != null && message.hasOwnProperty("stake"))
+                            if (!$util.isInteger(message.stake) && !(message.stake && $util.isInteger(message.stake.low) && $util.isInteger(message.stake.high)))
+                                return "stake: integer|Long expected";
+                        return null;
+                    };
+
+                    Bond.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.Bond)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.Bond();
+                        if (object.validator != null)
+                            if (typeof object.validator === "string")
+                                $util.base64.decode(object.validator, message.validator = $util.newBuffer($util.base64.length(object.validator)), 0);
+                            else if (object.validator.length)
+                                message.validator = object.validator;
+                        if (object.stake != null)
+                            if ($util.Long)
+                                (message.stake = $util.Long.fromValue(object.stake)).unsigned = false;
+                            else if (typeof object.stake === "string")
+                                message.stake = parseInt(object.stake, 10);
+                            else if (typeof object.stake === "number")
+                                message.stake = object.stake;
+                            else if (typeof object.stake === "object")
+                                message.stake = new $util.LongBits(object.stake.low >>> 0, object.stake.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    Bond.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.validator = "";
+                            else {
+                                object.validator = [];
+                                if (options.bytes !== Array)
+                                    object.validator = $util.newBuffer(object.validator);
+                            }
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.stake = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.stake = options.longs === String ? "0" : 0;
+                        }
+                        if (message.validator != null && message.hasOwnProperty("validator"))
+                            object.validator = options.bytes === String ? $util.base64.encode(message.validator, 0, message.validator.length) : options.bytes === Array ? Array.prototype.slice.call(message.validator) : message.validator;
+                        if (message.stake != null && message.hasOwnProperty("stake"))
+                            if (typeof message.stake === "number")
+                                object.stake = options.longs === String ? String(message.stake) : message.stake;
+                            else
+                                object.stake = options.longs === String ? $util.Long.prototype.toString.call(message.stake) : options.longs === Number ? new $util.LongBits(message.stake.low >>> 0, message.stake.high >>> 0).toNumber() : message.stake;
+                        return object;
+                    };
+
+                    Bond.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return Bond;
+                })();
+
+                return protocol;
+            })();
+
+            return casper;
+        })();
+
+        return rchain;
+    })();
+
+    return coop;
+})();
+
 $root.Par = (function() {
 
     function Par(properties) {
@@ -7591,6 +11340,634 @@ $root.GDeployerId = (function() {
     };
 
     return GDeployerId;
+})();
+
+$root.EitherAny = (function() {
+
+    function EitherAny(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    EitherAny.prototype.type_url = "";
+    EitherAny.prototype.value = $util.newBuffer([]);
+
+    EitherAny.create = function create(properties) {
+        return new EitherAny(properties);
+    };
+
+    EitherAny.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.type_url != null && message.hasOwnProperty("type_url"))
+            writer.uint32(10).string(message.type_url);
+        if (message.value != null && message.hasOwnProperty("value"))
+            writer.uint32(18).bytes(message.value);
+        return writer;
+    };
+
+    EitherAny.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    EitherAny.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EitherAny();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.type_url = reader.string();
+                break;
+            case 2:
+                message.value = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    EitherAny.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    EitherAny.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.type_url != null && message.hasOwnProperty("type_url"))
+            if (!$util.isString(message.type_url))
+                return "type_url: string expected";
+        if (message.value != null && message.hasOwnProperty("value"))
+            if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
+                return "value: buffer expected";
+        return null;
+    };
+
+    EitherAny.fromObject = function fromObject(object) {
+        if (object instanceof $root.EitherAny)
+            return object;
+        var message = new $root.EitherAny();
+        if (object.type_url != null)
+            message.type_url = String(object.type_url);
+        if (object.value != null)
+            if (typeof object.value === "string")
+                $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
+            else if (object.value.length)
+                message.value = object.value;
+        return message;
+    };
+
+    EitherAny.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.type_url = "";
+            if (options.bytes === String)
+                object.value = "";
+            else {
+                object.value = [];
+                if (options.bytes !== Array)
+                    object.value = $util.newBuffer(object.value);
+            }
+        }
+        if (message.type_url != null && message.hasOwnProperty("type_url"))
+            object.type_url = message.type_url;
+        if (message.value != null && message.hasOwnProperty("value"))
+            object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
+        return object;
+    };
+
+    EitherAny.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return EitherAny;
+})();
+
+$root.EitherError = (function() {
+
+    function EitherError(properties) {
+        this.messages = [];
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    EitherError.prototype.messages = $util.emptyArray;
+
+    EitherError.create = function create(properties) {
+        return new EitherError(properties);
+    };
+
+    EitherError.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.messages != null && message.messages.length)
+            for (var i = 0; i < message.messages.length; ++i)
+                writer.uint32(10).string(message.messages[i]);
+        return writer;
+    };
+
+    EitherError.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    EitherError.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EitherError();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                if (!(message.messages && message.messages.length))
+                    message.messages = [];
+                message.messages.push(reader.string());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    EitherError.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    EitherError.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.messages != null && message.hasOwnProperty("messages")) {
+            if (!Array.isArray(message.messages))
+                return "messages: array expected";
+            for (var i = 0; i < message.messages.length; ++i)
+                if (!$util.isString(message.messages[i]))
+                    return "messages: string[] expected";
+        }
+        return null;
+    };
+
+    EitherError.fromObject = function fromObject(object) {
+        if (object instanceof $root.EitherError)
+            return object;
+        var message = new $root.EitherError();
+        if (object.messages) {
+            if (!Array.isArray(object.messages))
+                throw TypeError(".EitherError.messages: array expected");
+            message.messages = [];
+            for (var i = 0; i < object.messages.length; ++i)
+                message.messages[i] = String(object.messages[i]);
+        }
+        return message;
+    };
+
+    EitherError.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.arrays || options.defaults)
+            object.messages = [];
+        if (message.messages && message.messages.length) {
+            object.messages = [];
+            for (var j = 0; j < message.messages.length; ++j)
+                object.messages[j] = message.messages[j];
+        }
+        return object;
+    };
+
+    EitherError.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return EitherError;
+})();
+
+$root.EitherSuccess = (function() {
+
+    function EitherSuccess(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    EitherSuccess.prototype.response = null;
+
+    EitherSuccess.create = function create(properties) {
+        return new EitherSuccess(properties);
+    };
+
+    EitherSuccess.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.response != null && message.hasOwnProperty("response"))
+            $root.EitherAny.encode(message.response, writer.uint32(10).fork()).ldelim();
+        return writer;
+    };
+
+    EitherSuccess.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    EitherSuccess.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EitherSuccess();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.response = $root.EitherAny.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    EitherSuccess.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    EitherSuccess.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.response != null && message.hasOwnProperty("response")) {
+            var error = $root.EitherAny.verify(message.response);
+            if (error)
+                return "response." + error;
+        }
+        return null;
+    };
+
+    EitherSuccess.fromObject = function fromObject(object) {
+        if (object instanceof $root.EitherSuccess)
+            return object;
+        var message = new $root.EitherSuccess();
+        if (object.response != null) {
+            if (typeof object.response !== "object")
+                throw TypeError(".EitherSuccess.response: object expected");
+            message.response = $root.EitherAny.fromObject(object.response);
+        }
+        return message;
+    };
+
+    EitherSuccess.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            object.response = null;
+        if (message.response != null && message.hasOwnProperty("response"))
+            object.response = $root.EitherAny.toObject(message.response, options);
+        return object;
+    };
+
+    EitherSuccess.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return EitherSuccess;
+})();
+
+$root.Either = (function() {
+
+    function Either(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    Either.prototype.error = null;
+    Either.prototype.success = null;
+
+    var $oneOfFields;
+
+    Object.defineProperty(Either.prototype, "content", {
+        get: $util.oneOfGetter($oneOfFields = ["error", "success"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    Either.create = function create(properties) {
+        return new Either(properties);
+    };
+
+    Either.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.error != null && message.hasOwnProperty("error"))
+            $root.EitherError.encode(message.error, writer.uint32(10).fork()).ldelim();
+        if (message.success != null && message.hasOwnProperty("success"))
+            $root.EitherSuccess.encode(message.success, writer.uint32(18).fork()).ldelim();
+        return writer;
+    };
+
+    Either.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    Either.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Either();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.error = $root.EitherError.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.success = $root.EitherSuccess.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    Either.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    Either.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        var properties = {};
+        if (message.error != null && message.hasOwnProperty("error")) {
+            properties.content = 1;
+            {
+                var error = $root.EitherError.verify(message.error);
+                if (error)
+                    return "error." + error;
+            }
+        }
+        if (message.success != null && message.hasOwnProperty("success")) {
+            if (properties.content === 1)
+                return "content: multiple values";
+            properties.content = 1;
+            {
+                var error = $root.EitherSuccess.verify(message.success);
+                if (error)
+                    return "success." + error;
+            }
+        }
+        return null;
+    };
+
+    Either.fromObject = function fromObject(object) {
+        if (object instanceof $root.Either)
+            return object;
+        var message = new $root.Either();
+        if (object.error != null) {
+            if (typeof object.error !== "object")
+                throw TypeError(".Either.error: object expected");
+            message.error = $root.EitherError.fromObject(object.error);
+        }
+        if (object.success != null) {
+            if (typeof object.success !== "object")
+                throw TypeError(".Either.success: object expected");
+            message.success = $root.EitherSuccess.fromObject(object.success);
+        }
+        return message;
+    };
+
+    Either.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (message.error != null && message.hasOwnProperty("error")) {
+            object.error = $root.EitherError.toObject(message.error, options);
+            if (options.oneofs)
+                object.content = "error";
+        }
+        if (message.success != null && message.hasOwnProperty("success")) {
+            object.success = $root.EitherSuccess.toObject(message.success, options);
+            if (options.oneofs)
+                object.content = "success";
+        }
+        return object;
+    };
+
+    Either.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return Either;
+})();
+
+$root.google = (function() {
+
+    var google = {};
+
+    google.protobuf = (function() {
+
+        var protobuf = {};
+
+        protobuf.Empty = (function() {
+
+            function Empty(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            Empty.create = function create(properties) {
+                return new Empty(properties);
+            };
+
+            Empty.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                return writer;
+            };
+
+            Empty.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            Empty.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Empty();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            Empty.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            Empty.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                return null;
+            };
+
+            Empty.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.Empty)
+                    return object;
+                return new $root.google.protobuf.Empty();
+            };
+
+            Empty.toObject = function toObject() {
+                return {};
+            };
+
+            Empty.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Empty;
+        })();
+
+        protobuf.Any = (function() {
+
+            function Any(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            Any.prototype.type_url = "";
+            Any.prototype.value = $util.newBuffer([]);
+
+            Any.create = function create(properties) {
+                return new Any(properties);
+            };
+
+            Any.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.type_url != null && message.hasOwnProperty("type_url"))
+                    writer.uint32(10).string(message.type_url);
+                if (message.value != null && message.hasOwnProperty("value"))
+                    writer.uint32(18).bytes(message.value);
+                return writer;
+            };
+
+            Any.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            Any.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Any();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.type_url = reader.string();
+                        break;
+                    case 2:
+                        message.value = reader.bytes();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            Any.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            Any.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.type_url != null && message.hasOwnProperty("type_url"))
+                    if (!$util.isString(message.type_url))
+                        return "type_url: string expected";
+                if (message.value != null && message.hasOwnProperty("value"))
+                    if (!(message.value && typeof message.value.length === "number" || $util.isString(message.value)))
+                        return "value: buffer expected";
+                return null;
+            };
+
+            Any.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.Any)
+                    return object;
+                var message = new $root.google.protobuf.Any();
+                if (object.type_url != null)
+                    message.type_url = String(object.type_url);
+                if (object.value != null)
+                    if (typeof object.value === "string")
+                        $util.base64.decode(object.value, message.value = $util.newBuffer($util.base64.length(object.value)), 0);
+                    else if (object.value.length)
+                        message.value = object.value;
+                return message;
+            };
+
+            Any.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.type_url = "";
+                    if (options.bytes === String)
+                        object.value = "";
+                    else {
+                        object.value = [];
+                        if (options.bytes !== Array)
+                            object.value = $util.newBuffer(object.value);
+                    }
+                }
+                if (message.type_url != null && message.hasOwnProperty("type_url"))
+                    object.type_url = message.type_url;
+                if (message.value != null && message.hasOwnProperty("value"))
+                    object.value = options.bytes === String ? $util.base64.encode(message.value, 0, message.value.length) : options.bytes === Array ? Array.prototype.slice.call(message.value) : message.value;
+                return object;
+            };
+
+            Any.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Any;
+        })();
+
+        return protobuf;
+    })();
+
+    return google;
 })();
 
 module.exports = $root;

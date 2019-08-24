@@ -23,149 +23,42 @@ $root.coop = (function() {
 
                 var protocol = {};
 
-                protocol.DeployService = (function() {
+                protocol.HasBlockRequest = (function() {
 
-                    function DeployService(rpcImpl, requestDelimited, responseDelimited) {
-                        $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
-                    }
-
-                    (DeployService.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = DeployService;
-
-                    DeployService.create = function create(rpcImpl, requestDelimited, responseDelimited) {
-                        return new this(rpcImpl, requestDelimited, responseDelimited);
-                    };
-
-
-                    Object.defineProperty(DeployService.prototype.doDeploy = function doDeploy(request, callback) {
-                        return this.rpcCall(doDeploy, $root.coop.rchain.casper.protocol.DeployData, $root.Either, request, callback);
-                    }, "name", { value: "DoDeploy" });
-
-
-                    Object.defineProperty(DeployService.prototype.createBlock = function createBlock(request, callback) {
-                        return this.rpcCall(createBlock, $root.google.protobuf.Empty, $root.Either, request, callback);
-                    }, "name", { value: "createBlock" });
-
-
-                    Object.defineProperty(DeployService.prototype.showBlock = function showBlock(request, callback) {
-                        return this.rpcCall(showBlock, $root.coop.rchain.casper.protocol.BlockQuery, $root.Either, request, callback);
-                    }, "name", { value: "showBlock" });
-
-
-                    Object.defineProperty(DeployService.prototype.visualizeDag = function visualizeDag(request, callback) {
-                        return this.rpcCall(visualizeDag, $root.coop.rchain.casper.protocol.VisualizeDagQuery, $root.Either, request, callback);
-                    }, "name", { value: "visualizeDag" });
-
-
-                    Object.defineProperty(DeployService.prototype.showMainChain = function showMainChain(request, callback) {
-                        return this.rpcCall(showMainChain, $root.coop.rchain.casper.protocol.BlocksQuery, $root.Either, request, callback);
-                    }, "name", { value: "showMainChain" });
-
-
-                    Object.defineProperty(DeployService.prototype.showBlocks = function showBlocks(request, callback) {
-                        return this.rpcCall(showBlocks, $root.coop.rchain.casper.protocol.BlocksQuery, $root.Either, request, callback);
-                    }, "name", { value: "showBlocks" });
-
-
-                    Object.defineProperty(DeployService.prototype.listenForDataAtName = function listenForDataAtName(request, callback) {
-                        return this.rpcCall(listenForDataAtName, $root.coop.rchain.casper.protocol.DataAtNameQuery, $root.Either, request, callback);
-                    }, "name", { value: "listenForDataAtName" });
-
-
-                    Object.defineProperty(DeployService.prototype.listenForContinuationAtName = function listenForContinuationAtName(request, callback) {
-                        return this.rpcCall(listenForContinuationAtName, $root.coop.rchain.casper.protocol.ContinuationAtNameQuery, $root.Either, request, callback);
-                    }, "name", { value: "listenForContinuationAtName" });
-
-
-                    Object.defineProperty(DeployService.prototype.findBlockWithDeploy = function findBlockWithDeploy(request, callback) {
-                        return this.rpcCall(findBlockWithDeploy, $root.coop.rchain.casper.protocol.FindDeployInBlockQuery, $root.Either, request, callback);
-                    }, "name", { value: "findBlockWithDeploy" });
-
-
-                    Object.defineProperty(DeployService.prototype.previewPrivateNames = function previewPrivateNames(request, callback) {
-                        return this.rpcCall(previewPrivateNames, $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery, $root.Either, request, callback);
-                    }, "name", { value: "previewPrivateNames" });
-
-                    return DeployService;
-                })();
-
-                protocol.DeployData = (function() {
-
-                    function DeployData(properties) {
+                    function HasBlockRequest(properties) {
                         if (properties)
                             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
 
-                    DeployData.prototype.deployer = $util.newBuffer([]);
-                    DeployData.prototype.term = "";
-                    DeployData.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    DeployData.prototype.sig = $util.newBuffer([]);
-                    DeployData.prototype.sigAlgorithm = "";
-                    DeployData.prototype.phloPrice = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    DeployData.prototype.phloLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    DeployData.prototype.validAfterBlockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    HasBlockRequest.prototype.hash = $util.newBuffer([]);
 
-                    DeployData.create = function create(properties) {
-                        return new DeployData(properties);
+                    HasBlockRequest.create = function create(properties) {
+                        return new HasBlockRequest(properties);
                     };
 
-                    DeployData.encode = function encode(message, writer) {
+                    HasBlockRequest.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
-                        if (message.deployer != null && message.hasOwnProperty("deployer"))
-                            writer.uint32(10).bytes(message.deployer);
-                        if (message.term != null && message.hasOwnProperty("term"))
-                            writer.uint32(18).string(message.term);
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            writer.uint32(24).int64(message.timestamp);
-                        if (message.sig != null && message.hasOwnProperty("sig"))
-                            writer.uint32(34).bytes(message.sig);
-                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
-                            writer.uint32(42).string(message.sigAlgorithm);
-                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
-                            writer.uint32(56).int64(message.phloPrice);
-                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
-                            writer.uint32(64).int64(message.phloLimit);
-                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
-                            writer.uint32(80).int64(message.validAfterBlockNumber);
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(10).bytes(message.hash);
                         return writer;
                     };
 
-                    DeployData.encodeDelimited = function encodeDelimited(message, writer) {
+                    HasBlockRequest.encodeDelimited = function encodeDelimited(message, writer) {
                         return this.encode(message, writer).ldelim();
                     };
 
-                    DeployData.decode = function decode(reader, length) {
+                    HasBlockRequest.decode = function decode(reader, length) {
                         if (!(reader instanceof $Reader))
                             reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DeployData();
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.HasBlockRequest();
                         while (reader.pos < end) {
                             var tag = reader.uint32();
                             switch (tag >>> 3) {
                             case 1:
-                                message.deployer = reader.bytes();
-                                break;
-                            case 2:
-                                message.term = reader.string();
-                                break;
-                            case 3:
-                                message.timestamp = reader.int64();
-                                break;
-                            case 4:
-                                message.sig = reader.bytes();
-                                break;
-                            case 5:
-                                message.sigAlgorithm = reader.string();
-                                break;
-                            case 7:
-                                message.phloPrice = reader.int64();
-                                break;
-                            case 8:
-                                message.phloLimit = reader.int64();
-                                break;
-                            case 10:
-                                message.validAfterBlockNumber = reader.int64();
+                                message.hash = reader.bytes();
                                 break;
                             default:
                                 reader.skipType(tag & 7);
@@ -175,177 +68,151 @@ $root.coop = (function() {
                         return message;
                     };
 
-                    DeployData.decodeDelimited = function decodeDelimited(reader) {
+                    HasBlockRequest.decodeDelimited = function decodeDelimited(reader) {
                         if (!(reader instanceof $Reader))
                             reader = new $Reader(reader);
                         return this.decode(reader, reader.uint32());
                     };
 
-                    DeployData.verify = function verify(message) {
+                    HasBlockRequest.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
-                        if (message.deployer != null && message.hasOwnProperty("deployer"))
-                            if (!(message.deployer && typeof message.deployer.length === "number" || $util.isString(message.deployer)))
-                                return "deployer: buffer expected";
-                        if (message.term != null && message.hasOwnProperty("term"))
-                            if (!$util.isString(message.term))
-                                return "term: string expected";
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
-                                return "timestamp: integer|Long expected";
-                        if (message.sig != null && message.hasOwnProperty("sig"))
-                            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
-                                return "sig: buffer expected";
-                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
-                            if (!$util.isString(message.sigAlgorithm))
-                                return "sigAlgorithm: string expected";
-                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
-                            if (!$util.isInteger(message.phloPrice) && !(message.phloPrice && $util.isInteger(message.phloPrice.low) && $util.isInteger(message.phloPrice.high)))
-                                return "phloPrice: integer|Long expected";
-                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
-                            if (!$util.isInteger(message.phloLimit) && !(message.phloLimit && $util.isInteger(message.phloLimit.low) && $util.isInteger(message.phloLimit.high)))
-                                return "phloLimit: integer|Long expected";
-                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
-                            if (!$util.isInteger(message.validAfterBlockNumber) && !(message.validAfterBlockNumber && $util.isInteger(message.validAfterBlockNumber.low) && $util.isInteger(message.validAfterBlockNumber.high)))
-                                return "validAfterBlockNumber: integer|Long expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
                         return null;
                     };
 
-                    DeployData.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.DeployData)
+                    HasBlockRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.HasBlockRequest)
                             return object;
-                        var message = new $root.coop.rchain.casper.protocol.DeployData();
-                        if (object.deployer != null)
-                            if (typeof object.deployer === "string")
-                                $util.base64.decode(object.deployer, message.deployer = $util.newBuffer($util.base64.length(object.deployer)), 0);
-                            else if (object.deployer.length)
-                                message.deployer = object.deployer;
-                        if (object.term != null)
-                            message.term = String(object.term);
-                        if (object.timestamp != null)
-                            if ($util.Long)
-                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
-                            else if (typeof object.timestamp === "string")
-                                message.timestamp = parseInt(object.timestamp, 10);
-                            else if (typeof object.timestamp === "number")
-                                message.timestamp = object.timestamp;
-                            else if (typeof object.timestamp === "object")
-                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
-                        if (object.sig != null)
-                            if (typeof object.sig === "string")
-                                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
-                            else if (object.sig.length)
-                                message.sig = object.sig;
-                        if (object.sigAlgorithm != null)
-                            message.sigAlgorithm = String(object.sigAlgorithm);
-                        if (object.phloPrice != null)
-                            if ($util.Long)
-                                (message.phloPrice = $util.Long.fromValue(object.phloPrice)).unsigned = false;
-                            else if (typeof object.phloPrice === "string")
-                                message.phloPrice = parseInt(object.phloPrice, 10);
-                            else if (typeof object.phloPrice === "number")
-                                message.phloPrice = object.phloPrice;
-                            else if (typeof object.phloPrice === "object")
-                                message.phloPrice = new $util.LongBits(object.phloPrice.low >>> 0, object.phloPrice.high >>> 0).toNumber();
-                        if (object.phloLimit != null)
-                            if ($util.Long)
-                                (message.phloLimit = $util.Long.fromValue(object.phloLimit)).unsigned = false;
-                            else if (typeof object.phloLimit === "string")
-                                message.phloLimit = parseInt(object.phloLimit, 10);
-                            else if (typeof object.phloLimit === "number")
-                                message.phloLimit = object.phloLimit;
-                            else if (typeof object.phloLimit === "object")
-                                message.phloLimit = new $util.LongBits(object.phloLimit.low >>> 0, object.phloLimit.high >>> 0).toNumber();
-                        if (object.validAfterBlockNumber != null)
-                            if ($util.Long)
-                                (message.validAfterBlockNumber = $util.Long.fromValue(object.validAfterBlockNumber)).unsigned = false;
-                            else if (typeof object.validAfterBlockNumber === "string")
-                                message.validAfterBlockNumber = parseInt(object.validAfterBlockNumber, 10);
-                            else if (typeof object.validAfterBlockNumber === "number")
-                                message.validAfterBlockNumber = object.validAfterBlockNumber;
-                            else if (typeof object.validAfterBlockNumber === "object")
-                                message.validAfterBlockNumber = new $util.LongBits(object.validAfterBlockNumber.low >>> 0, object.validAfterBlockNumber.high >>> 0).toNumber();
+                        var message = new $root.coop.rchain.casper.protocol.HasBlockRequest();
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
                         return message;
                     };
 
-                    DeployData.toObject = function toObject(message, options) {
+                    HasBlockRequest.toObject = function toObject(message, options) {
                         if (!options)
                             options = {};
                         var object = {};
-                        if (options.defaults) {
+                        if (options.defaults)
                             if (options.bytes === String)
-                                object.deployer = "";
+                                object.hash = "";
                             else {
-                                object.deployer = [];
+                                object.hash = [];
                                 if (options.bytes !== Array)
-                                    object.deployer = $util.newBuffer(object.deployer);
+                                    object.hash = $util.newBuffer(object.hash);
                             }
-                            object.term = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.timestamp = options.longs === String ? "0" : 0;
-                            if (options.bytes === String)
-                                object.sig = "";
-                            else {
-                                object.sig = [];
-                                if (options.bytes !== Array)
-                                    object.sig = $util.newBuffer(object.sig);
-                            }
-                            object.sigAlgorithm = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.phloPrice = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.phloPrice = options.longs === String ? "0" : 0;
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.phloLimit = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.phloLimit = options.longs === String ? "0" : 0;
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.validAfterBlockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.validAfterBlockNumber = options.longs === String ? "0" : 0;
-                        }
-                        if (message.deployer != null && message.hasOwnProperty("deployer"))
-                            object.deployer = options.bytes === String ? $util.base64.encode(message.deployer, 0, message.deployer.length) : options.bytes === Array ? Array.prototype.slice.call(message.deployer) : message.deployer;
-                        if (message.term != null && message.hasOwnProperty("term"))
-                            object.term = message.term;
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (typeof message.timestamp === "number")
-                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
-                            else
-                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
-                        if (message.sig != null && message.hasOwnProperty("sig"))
-                            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
-                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
-                            object.sigAlgorithm = message.sigAlgorithm;
-                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
-                            if (typeof message.phloPrice === "number")
-                                object.phloPrice = options.longs === String ? String(message.phloPrice) : message.phloPrice;
-                            else
-                                object.phloPrice = options.longs === String ? $util.Long.prototype.toString.call(message.phloPrice) : options.longs === Number ? new $util.LongBits(message.phloPrice.low >>> 0, message.phloPrice.high >>> 0).toNumber() : message.phloPrice;
-                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
-                            if (typeof message.phloLimit === "number")
-                                object.phloLimit = options.longs === String ? String(message.phloLimit) : message.phloLimit;
-                            else
-                                object.phloLimit = options.longs === String ? $util.Long.prototype.toString.call(message.phloLimit) : options.longs === Number ? new $util.LongBits(message.phloLimit.low >>> 0, message.phloLimit.high >>> 0).toNumber() : message.phloLimit;
-                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
-                            if (typeof message.validAfterBlockNumber === "number")
-                                object.validAfterBlockNumber = options.longs === String ? String(message.validAfterBlockNumber) : message.validAfterBlockNumber;
-                            else
-                                object.validAfterBlockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.validAfterBlockNumber) : options.longs === Number ? new $util.LongBits(message.validAfterBlockNumber.low >>> 0, message.validAfterBlockNumber.high >>> 0).toNumber() : message.validAfterBlockNumber;
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
                         return object;
                     };
 
-                    DeployData.prototype.toJSON = function toJSON() {
+                    HasBlockRequest.prototype.toJSON = function toJSON() {
                         return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                     };
 
-                    return DeployData;
+                    return HasBlockRequest;
+                })();
+
+                protocol.HasBlock = (function() {
+
+                    function HasBlock(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    HasBlock.prototype.hash = $util.newBuffer([]);
+
+                    HasBlock.create = function create(properties) {
+                        return new HasBlock(properties);
+                    };
+
+                    HasBlock.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            writer.uint32(10).bytes(message.hash);
+                        return writer;
+                    };
+
+                    HasBlock.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    HasBlock.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.HasBlock();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.hash = reader.bytes();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    HasBlock.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    HasBlock.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
+                                return "hash: buffer expected";
+                        return null;
+                    };
+
+                    HasBlock.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.HasBlock)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.HasBlock();
+                        if (object.hash != null)
+                            if (typeof object.hash === "string")
+                                $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
+                            else if (object.hash.length)
+                                message.hash = object.hash;
+                        return message;
+                    };
+
+                    HasBlock.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            if (options.bytes === String)
+                                object.hash = "";
+                            else {
+                                object.hash = [];
+                                if (options.bytes !== Array)
+                                    object.hash = $util.newBuffer(object.hash);
+                            }
+                        if (message.hash != null && message.hasOwnProperty("hash"))
+                            object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        return object;
+                    };
+
+                    HasBlock.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return HasBlock;
                 })();
 
                 protocol.BlockRequest = (function() {
@@ -357,7 +224,6 @@ $root.coop = (function() {
                                     this[keys[i]] = properties[keys[i]];
                     }
 
-                    BlockRequest.prototype.base16Hash = "";
                     BlockRequest.prototype.hash = $util.newBuffer([]);
 
                     BlockRequest.create = function create(properties) {
@@ -367,10 +233,8 @@ $root.coop = (function() {
                     BlockRequest.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
-                        if (message.base16Hash != null && message.hasOwnProperty("base16Hash"))
-                            writer.uint32(10).string(message.base16Hash);
                         if (message.hash != null && message.hasOwnProperty("hash"))
-                            writer.uint32(18).bytes(message.hash);
+                            writer.uint32(10).bytes(message.hash);
                         return writer;
                     };
 
@@ -386,9 +250,6 @@ $root.coop = (function() {
                             var tag = reader.uint32();
                             switch (tag >>> 3) {
                             case 1:
-                                message.base16Hash = reader.string();
-                                break;
-                            case 2:
                                 message.hash = reader.bytes();
                                 break;
                             default:
@@ -408,9 +269,6 @@ $root.coop = (function() {
                     BlockRequest.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
-                        if (message.base16Hash != null && message.hasOwnProperty("base16Hash"))
-                            if (!$util.isString(message.base16Hash))
-                                return "base16Hash: string expected";
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
                                 return "hash: buffer expected";
@@ -421,8 +279,6 @@ $root.coop = (function() {
                         if (object instanceof $root.coop.rchain.casper.protocol.BlockRequest)
                             return object;
                         var message = new $root.coop.rchain.casper.protocol.BlockRequest();
-                        if (object.base16Hash != null)
-                            message.base16Hash = String(object.base16Hash);
                         if (object.hash != null)
                             if (typeof object.hash === "string")
                                 $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
@@ -435,8 +291,7 @@ $root.coop = (function() {
                         if (!options)
                             options = {};
                         var object = {};
-                        if (options.defaults) {
-                            object.base16Hash = "";
+                        if (options.defaults)
                             if (options.bytes === String)
                                 object.hash = "";
                             else {
@@ -444,9 +299,6 @@ $root.coop = (function() {
                                 if (options.bytes !== Array)
                                     object.hash = $util.newBuffer(object.hash);
                             }
-                        }
-                        if (message.base16Hash != null && message.hasOwnProperty("base16Hash"))
-                            object.base16Hash = message.base16Hash;
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
                         return object;
@@ -524,2533 +376,6 @@ $root.coop = (function() {
                     };
 
                     return ForkChoiceTipRequest;
-                })();
-
-                protocol.FindDeployInBlockQuery = (function() {
-
-                    function FindDeployInBlockQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    FindDeployInBlockQuery.prototype.user = $util.newBuffer([]);
-                    FindDeployInBlockQuery.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-                    FindDeployInBlockQuery.create = function create(properties) {
-                        return new FindDeployInBlockQuery(properties);
-                    };
-
-                    FindDeployInBlockQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            writer.uint32(10).bytes(message.user);
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            writer.uint32(16).int64(message.timestamp);
-                        return writer;
-                    };
-
-                    FindDeployInBlockQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    FindDeployInBlockQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.FindDeployInBlockQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.user = reader.bytes();
-                                break;
-                            case 2:
-                                message.timestamp = reader.int64();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    FindDeployInBlockQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    FindDeployInBlockQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            if (!(message.user && typeof message.user.length === "number" || $util.isString(message.user)))
-                                return "user: buffer expected";
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
-                                return "timestamp: integer|Long expected";
-                        return null;
-                    };
-
-                    FindDeployInBlockQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.FindDeployInBlockQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.FindDeployInBlockQuery();
-                        if (object.user != null)
-                            if (typeof object.user === "string")
-                                $util.base64.decode(object.user, message.user = $util.newBuffer($util.base64.length(object.user)), 0);
-                            else if (object.user.length)
-                                message.user = object.user;
-                        if (object.timestamp != null)
-                            if ($util.Long)
-                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
-                            else if (typeof object.timestamp === "string")
-                                message.timestamp = parseInt(object.timestamp, 10);
-                            else if (typeof object.timestamp === "number")
-                                message.timestamp = object.timestamp;
-                            else if (typeof object.timestamp === "object")
-                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
-                        return message;
-                    };
-
-                    FindDeployInBlockQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults) {
-                            if (options.bytes === String)
-                                object.user = "";
-                            else {
-                                object.user = [];
-                                if (options.bytes !== Array)
-                                    object.user = $util.newBuffer(object.user);
-                            }
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.timestamp = options.longs === String ? "0" : 0;
-                        }
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            object.user = options.bytes === String ? $util.base64.encode(message.user, 0, message.user.length) : options.bytes === Array ? Array.prototype.slice.call(message.user) : message.user;
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (typeof message.timestamp === "number")
-                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
-                            else
-                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
-                        return object;
-                    };
-
-                    FindDeployInBlockQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return FindDeployInBlockQuery;
-                })();
-
-                protocol.BlockQuery = (function() {
-
-                    function BlockQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    BlockQuery.prototype.hash = "";
-
-                    BlockQuery.create = function create(properties) {
-                        return new BlockQuery(properties);
-                    };
-
-                    BlockQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.hash != null && message.hasOwnProperty("hash"))
-                            writer.uint32(10).string(message.hash);
-                        return writer;
-                    };
-
-                    BlockQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    BlockQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.hash = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    BlockQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    BlockQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.hash != null && message.hasOwnProperty("hash"))
-                            if (!$util.isString(message.hash))
-                                return "hash: string expected";
-                        return null;
-                    };
-
-                    BlockQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.BlockQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.BlockQuery();
-                        if (object.hash != null)
-                            message.hash = String(object.hash);
-                        return message;
-                    };
-
-                    BlockQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.hash = "";
-                        if (message.hash != null && message.hasOwnProperty("hash"))
-                            object.hash = message.hash;
-                        return object;
-                    };
-
-                    BlockQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return BlockQuery;
-                })();
-
-                protocol.BlocksQuery = (function() {
-
-                    function BlocksQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    BlocksQuery.prototype.depth = 0;
-
-                    BlocksQuery.create = function create(properties) {
-                        return new BlocksQuery(properties);
-                    };
-
-                    BlocksQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            writer.uint32(8).int32(message.depth);
-                        return writer;
-                    };
-
-                    BlocksQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    BlocksQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlocksQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.depth = reader.int32();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    BlocksQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    BlocksQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            if (!$util.isInteger(message.depth))
-                                return "depth: integer expected";
-                        return null;
-                    };
-
-                    BlocksQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.BlocksQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.BlocksQuery();
-                        if (object.depth != null)
-                            message.depth = object.depth | 0;
-                        return message;
-                    };
-
-                    BlocksQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.depth = 0;
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            object.depth = message.depth;
-                        return object;
-                    };
-
-                    BlocksQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return BlocksQuery;
-                })();
-
-                protocol.DataAtNameQuery = (function() {
-
-                    function DataAtNameQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    DataAtNameQuery.prototype.depth = 0;
-                    DataAtNameQuery.prototype.name = null;
-
-                    DataAtNameQuery.create = function create(properties) {
-                        return new DataAtNameQuery(properties);
-                    };
-
-                    DataAtNameQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            writer.uint32(8).int32(message.depth);
-                        if (message.name != null && message.hasOwnProperty("name"))
-                            $root.Par.encode(message.name, writer.uint32(18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    DataAtNameQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    DataAtNameQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DataAtNameQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.depth = reader.int32();
-                                break;
-                            case 2:
-                                message.name = $root.Par.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    DataAtNameQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    DataAtNameQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            if (!$util.isInteger(message.depth))
-                                return "depth: integer expected";
-                        if (message.name != null && message.hasOwnProperty("name")) {
-                            var error = $root.Par.verify(message.name);
-                            if (error)
-                                return "name." + error;
-                        }
-                        return null;
-                    };
-
-                    DataAtNameQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.DataAtNameQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.DataAtNameQuery();
-                        if (object.depth != null)
-                            message.depth = object.depth | 0;
-                        if (object.name != null) {
-                            if (typeof object.name !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.DataAtNameQuery.name: object expected");
-                            message.name = $root.Par.fromObject(object.name);
-                        }
-                        return message;
-                    };
-
-                    DataAtNameQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults) {
-                            object.depth = 0;
-                            object.name = null;
-                        }
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            object.depth = message.depth;
-                        if (message.name != null && message.hasOwnProperty("name"))
-                            object.name = $root.Par.toObject(message.name, options);
-                        return object;
-                    };
-
-                    DataAtNameQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return DataAtNameQuery;
-                })();
-
-                protocol.ContinuationAtNameQuery = (function() {
-
-                    function ContinuationAtNameQuery(properties) {
-                        this.names = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    ContinuationAtNameQuery.prototype.depth = 0;
-                    ContinuationAtNameQuery.prototype.names = $util.emptyArray;
-
-                    ContinuationAtNameQuery.create = function create(properties) {
-                        return new ContinuationAtNameQuery(properties);
-                    };
-
-                    ContinuationAtNameQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            writer.uint32(8).int32(message.depth);
-                        if (message.names != null && message.names.length)
-                            for (var i = 0; i < message.names.length; ++i)
-                                $root.Par.encode(message.names[i], writer.uint32(18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    ContinuationAtNameQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    ContinuationAtNameQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ContinuationAtNameQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.depth = reader.int32();
-                                break;
-                            case 2:
-                                if (!(message.names && message.names.length))
-                                    message.names = [];
-                                message.names.push($root.Par.decode(reader, reader.uint32()));
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    ContinuationAtNameQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    ContinuationAtNameQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            if (!$util.isInteger(message.depth))
-                                return "depth: integer expected";
-                        if (message.names != null && message.hasOwnProperty("names")) {
-                            if (!Array.isArray(message.names))
-                                return "names: array expected";
-                            for (var i = 0; i < message.names.length; ++i) {
-                                var error = $root.Par.verify(message.names[i]);
-                                if (error)
-                                    return "names." + error;
-                            }
-                        }
-                        return null;
-                    };
-
-                    ContinuationAtNameQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.ContinuationAtNameQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.ContinuationAtNameQuery();
-                        if (object.depth != null)
-                            message.depth = object.depth | 0;
-                        if (object.names) {
-                            if (!Array.isArray(object.names))
-                                throw TypeError(".coop.rchain.casper.protocol.ContinuationAtNameQuery.names: array expected");
-                            message.names = [];
-                            for (var i = 0; i < object.names.length; ++i) {
-                                if (typeof object.names[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.ContinuationAtNameQuery.names: object expected");
-                                message.names[i] = $root.Par.fromObject(object.names[i]);
-                            }
-                        }
-                        return message;
-                    };
-
-                    ContinuationAtNameQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.names = [];
-                        if (options.defaults)
-                            object.depth = 0;
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            object.depth = message.depth;
-                        if (message.names && message.names.length) {
-                            object.names = [];
-                            for (var j = 0; j < message.names.length; ++j)
-                                object.names[j] = $root.Par.toObject(message.names[j], options);
-                        }
-                        return object;
-                    };
-
-                    ContinuationAtNameQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return ContinuationAtNameQuery;
-                })();
-
-                protocol.DeployServiceResponse = (function() {
-
-                    function DeployServiceResponse(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    DeployServiceResponse.prototype.message = "";
-
-                    DeployServiceResponse.create = function create(properties) {
-                        return new DeployServiceResponse(properties);
-                    };
-
-                    DeployServiceResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.message != null && message.hasOwnProperty("message"))
-                            writer.uint32(10).string(message.message);
-                        return writer;
-                    };
-
-                    DeployServiceResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    DeployServiceResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DeployServiceResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.message = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    DeployServiceResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    DeployServiceResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.message != null && message.hasOwnProperty("message"))
-                            if (!$util.isString(message.message))
-                                return "message: string expected";
-                        return null;
-                    };
-
-                    DeployServiceResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.DeployServiceResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.DeployServiceResponse();
-                        if (object.message != null)
-                            message.message = String(object.message);
-                        return message;
-                    };
-
-                    DeployServiceResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.message = "";
-                        if (message.message != null && message.hasOwnProperty("message"))
-                            object.message = message.message;
-                        return object;
-                    };
-
-                    DeployServiceResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return DeployServiceResponse;
-                })();
-
-                protocol.MaybeBlockMessage = (function() {
-
-                    function MaybeBlockMessage(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    MaybeBlockMessage.prototype.block = null;
-
-                    MaybeBlockMessage.create = function create(properties) {
-                        return new MaybeBlockMessage(properties);
-                    };
-
-                    MaybeBlockMessage.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            $root.coop.rchain.casper.protocol.BlockMessage.encode(message.block, writer.uint32(10).fork()).ldelim();
-                        return writer;
-                    };
-
-                    MaybeBlockMessage.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    MaybeBlockMessage.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.MaybeBlockMessage();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.block = $root.coop.rchain.casper.protocol.BlockMessage.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    MaybeBlockMessage.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    MaybeBlockMessage.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.block != null && message.hasOwnProperty("block")) {
-                            var error = $root.coop.rchain.casper.protocol.BlockMessage.verify(message.block);
-                            if (error)
-                                return "block." + error;
-                        }
-                        return null;
-                    };
-
-                    MaybeBlockMessage.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.MaybeBlockMessage)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.MaybeBlockMessage();
-                        if (object.block != null) {
-                            if (typeof object.block !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.MaybeBlockMessage.block: object expected");
-                            message.block = $root.coop.rchain.casper.protocol.BlockMessage.fromObject(object.block);
-                        }
-                        return message;
-                    };
-
-                    MaybeBlockMessage.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.block = null;
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            object.block = $root.coop.rchain.casper.protocol.BlockMessage.toObject(message.block, options);
-                        return object;
-                    };
-
-                    MaybeBlockMessage.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return MaybeBlockMessage;
-                })();
-
-                protocol.BlockQueryResponse = (function() {
-
-                    function BlockQueryResponse(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    BlockQueryResponse.prototype.blockInfo = null;
-
-                    BlockQueryResponse.create = function create(properties) {
-                        return new BlockQueryResponse(properties);
-                    };
-
-                    BlockQueryResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
-                            $root.coop.rchain.casper.protocol.BlockInfo.encode(message.blockInfo, writer.uint32(10).fork()).ldelim();
-                        return writer;
-                    };
-
-                    BlockQueryResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    BlockQueryResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockQueryResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    BlockQueryResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    BlockQueryResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo")) {
-                            var error = $root.coop.rchain.casper.protocol.BlockInfo.verify(message.blockInfo);
-                            if (error)
-                                return "blockInfo." + error;
-                        }
-                        return null;
-                    };
-
-                    BlockQueryResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.BlockQueryResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.BlockQueryResponse();
-                        if (object.blockInfo != null) {
-                            if (typeof object.blockInfo !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.BlockQueryResponse.blockInfo: object expected");
-                            message.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.fromObject(object.blockInfo);
-                        }
-                        return message;
-                    };
-
-                    BlockQueryResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.blockInfo = null;
-                        if (message.blockInfo != null && message.hasOwnProperty("blockInfo"))
-                            object.blockInfo = $root.coop.rchain.casper.protocol.BlockInfo.toObject(message.blockInfo, options);
-                        return object;
-                    };
-
-                    BlockQueryResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return BlockQueryResponse;
-                })();
-
-                protocol.VisualizeDagQuery = (function() {
-
-                    function VisualizeDagQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    VisualizeDagQuery.prototype.depth = 0;
-                    VisualizeDagQuery.prototype.showJustificationLines = false;
-
-                    VisualizeDagQuery.create = function create(properties) {
-                        return new VisualizeDagQuery(properties);
-                    };
-
-                    VisualizeDagQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            writer.uint32(8).int32(message.depth);
-                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
-                            writer.uint32(16).bool(message.showJustificationLines);
-                        return writer;
-                    };
-
-                    VisualizeDagQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    VisualizeDagQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.VisualizeDagQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.depth = reader.int32();
-                                break;
-                            case 2:
-                                message.showJustificationLines = reader.bool();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    VisualizeDagQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    VisualizeDagQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            if (!$util.isInteger(message.depth))
-                                return "depth: integer expected";
-                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
-                            if (typeof message.showJustificationLines !== "boolean")
-                                return "showJustificationLines: boolean expected";
-                        return null;
-                    };
-
-                    VisualizeDagQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.VisualizeDagQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.VisualizeDagQuery();
-                        if (object.depth != null)
-                            message.depth = object.depth | 0;
-                        if (object.showJustificationLines != null)
-                            message.showJustificationLines = Boolean(object.showJustificationLines);
-                        return message;
-                    };
-
-                    VisualizeDagQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults) {
-                            object.depth = 0;
-                            object.showJustificationLines = false;
-                        }
-                        if (message.depth != null && message.hasOwnProperty("depth"))
-                            object.depth = message.depth;
-                        if (message.showJustificationLines != null && message.hasOwnProperty("showJustificationLines"))
-                            object.showJustificationLines = message.showJustificationLines;
-                        return object;
-                    };
-
-                    VisualizeDagQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return VisualizeDagQuery;
-                })();
-
-                protocol.VisualizeBlocksResponse = (function() {
-
-                    function VisualizeBlocksResponse(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    VisualizeBlocksResponse.prototype.content = "";
-
-                    VisualizeBlocksResponse.create = function create(properties) {
-                        return new VisualizeBlocksResponse(properties);
-                    };
-
-                    VisualizeBlocksResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.content != null && message.hasOwnProperty("content"))
-                            writer.uint32(10).string(message.content);
-                        return writer;
-                    };
-
-                    VisualizeBlocksResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    VisualizeBlocksResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.VisualizeBlocksResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.content = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    VisualizeBlocksResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    VisualizeBlocksResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.content != null && message.hasOwnProperty("content"))
-                            if (!$util.isString(message.content))
-                                return "content: string expected";
-                        return null;
-                    };
-
-                    VisualizeBlocksResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.VisualizeBlocksResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.VisualizeBlocksResponse();
-                        if (object.content != null)
-                            message.content = String(object.content);
-                        return message;
-                    };
-
-                    VisualizeBlocksResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults)
-                            object.content = "";
-                        if (message.content != null && message.hasOwnProperty("content"))
-                            object.content = message.content;
-                        return object;
-                    };
-
-                    VisualizeBlocksResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return VisualizeBlocksResponse;
-                })();
-
-                protocol.ListeningNameDataResponse = (function() {
-
-                    function ListeningNameDataResponse(properties) {
-                        this.blockResults = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    ListeningNameDataResponse.prototype.blockResults = $util.emptyArray;
-                    ListeningNameDataResponse.prototype.length = 0;
-
-                    ListeningNameDataResponse.create = function create(properties) {
-                        return new ListeningNameDataResponse(properties);
-                    };
-
-                    ListeningNameDataResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.blockResults != null && message.blockResults.length)
-                            for (var i = 0; i < message.blockResults.length; ++i)
-                                $root.coop.rchain.casper.protocol.DataWithBlockInfo.encode(message.blockResults[i], writer.uint32(10).fork()).ldelim();
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            writer.uint32(16).int32(message.length);
-                        return writer;
-                    };
-
-                    ListeningNameDataResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    ListeningNameDataResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ListeningNameDataResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.blockResults && message.blockResults.length))
-                                    message.blockResults = [];
-                                message.blockResults.push($root.coop.rchain.casper.protocol.DataWithBlockInfo.decode(reader, reader.uint32()));
-                                break;
-                            case 2:
-                                message.length = reader.int32();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    ListeningNameDataResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    ListeningNameDataResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.blockResults != null && message.hasOwnProperty("blockResults")) {
-                            if (!Array.isArray(message.blockResults))
-                                return "blockResults: array expected";
-                            for (var i = 0; i < message.blockResults.length; ++i) {
-                                var error = $root.coop.rchain.casper.protocol.DataWithBlockInfo.verify(message.blockResults[i]);
-                                if (error)
-                                    return "blockResults." + error;
-                            }
-                        }
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            if (!$util.isInteger(message.length))
-                                return "length: integer expected";
-                        return null;
-                    };
-
-                    ListeningNameDataResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.ListeningNameDataResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.ListeningNameDataResponse();
-                        if (object.blockResults) {
-                            if (!Array.isArray(object.blockResults))
-                                throw TypeError(".coop.rchain.casper.protocol.ListeningNameDataResponse.blockResults: array expected");
-                            message.blockResults = [];
-                            for (var i = 0; i < object.blockResults.length; ++i) {
-                                if (typeof object.blockResults[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.ListeningNameDataResponse.blockResults: object expected");
-                                message.blockResults[i] = $root.coop.rchain.casper.protocol.DataWithBlockInfo.fromObject(object.blockResults[i]);
-                            }
-                        }
-                        if (object.length != null)
-                            message.length = object.length | 0;
-                        return message;
-                    };
-
-                    ListeningNameDataResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.blockResults = [];
-                        if (options.defaults)
-                            object.length = 0;
-                        if (message.blockResults && message.blockResults.length) {
-                            object.blockResults = [];
-                            for (var j = 0; j < message.blockResults.length; ++j)
-                                object.blockResults[j] = $root.coop.rchain.casper.protocol.DataWithBlockInfo.toObject(message.blockResults[j], options);
-                        }
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            object.length = message.length;
-                        return object;
-                    };
-
-                    ListeningNameDataResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return ListeningNameDataResponse;
-                })();
-
-                protocol.ListeningNameContinuationResponse = (function() {
-
-                    function ListeningNameContinuationResponse(properties) {
-                        this.blockResults = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    ListeningNameContinuationResponse.prototype.blockResults = $util.emptyArray;
-                    ListeningNameContinuationResponse.prototype.length = 0;
-
-                    ListeningNameContinuationResponse.create = function create(properties) {
-                        return new ListeningNameContinuationResponse(properties);
-                    };
-
-                    ListeningNameContinuationResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.blockResults != null && message.blockResults.length)
-                            for (var i = 0; i < message.blockResults.length; ++i)
-                                $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.encode(message.blockResults[i], writer.uint32(10).fork()).ldelim();
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            writer.uint32(16).int32(message.length);
-                        return writer;
-                    };
-
-                    ListeningNameContinuationResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    ListeningNameContinuationResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.blockResults && message.blockResults.length))
-                                    message.blockResults = [];
-                                message.blockResults.push($root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.decode(reader, reader.uint32()));
-                                break;
-                            case 2:
-                                message.length = reader.int32();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    ListeningNameContinuationResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    ListeningNameContinuationResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.blockResults != null && message.hasOwnProperty("blockResults")) {
-                            if (!Array.isArray(message.blockResults))
-                                return "blockResults: array expected";
-                            for (var i = 0; i < message.blockResults.length; ++i) {
-                                var error = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.verify(message.blockResults[i]);
-                                if (error)
-                                    return "blockResults." + error;
-                            }
-                        }
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            if (!$util.isInteger(message.length))
-                                return "length: integer expected";
-                        return null;
-                    };
-
-                    ListeningNameContinuationResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.ListeningNameContinuationResponse();
-                        if (object.blockResults) {
-                            if (!Array.isArray(object.blockResults))
-                                throw TypeError(".coop.rchain.casper.protocol.ListeningNameContinuationResponse.blockResults: array expected");
-                            message.blockResults = [];
-                            for (var i = 0; i < object.blockResults.length; ++i) {
-                                if (typeof object.blockResults[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.ListeningNameContinuationResponse.blockResults: object expected");
-                                message.blockResults[i] = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.fromObject(object.blockResults[i]);
-                            }
-                        }
-                        if (object.length != null)
-                            message.length = object.length | 0;
-                        return message;
-                    };
-
-                    ListeningNameContinuationResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.blockResults = [];
-                        if (options.defaults)
-                            object.length = 0;
-                        if (message.blockResults && message.blockResults.length) {
-                            object.blockResults = [];
-                            for (var j = 0; j < message.blockResults.length; ++j)
-                                object.blockResults[j] = $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo.toObject(message.blockResults[j], options);
-                        }
-                        if (message.length != null && message.hasOwnProperty("length"))
-                            object.length = message.length;
-                        return object;
-                    };
-
-                    ListeningNameContinuationResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return ListeningNameContinuationResponse;
-                })();
-
-                protocol.DataWithBlockInfo = (function() {
-
-                    function DataWithBlockInfo(properties) {
-                        this.postBlockData = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    DataWithBlockInfo.prototype.postBlockData = $util.emptyArray;
-                    DataWithBlockInfo.prototype.block = null;
-
-                    DataWithBlockInfo.create = function create(properties) {
-                        return new DataWithBlockInfo(properties);
-                    };
-
-                    DataWithBlockInfo.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.postBlockData != null && message.postBlockData.length)
-                            for (var i = 0; i < message.postBlockData.length; ++i)
-                                $root.Par.encode(message.postBlockData[i], writer.uint32(10).fork()).ldelim();
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.encode(message.block, writer.uint32(18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    DataWithBlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    DataWithBlockInfo.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DataWithBlockInfo();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.postBlockData && message.postBlockData.length))
-                                    message.postBlockData = [];
-                                message.postBlockData.push($root.Par.decode(reader, reader.uint32()));
-                                break;
-                            case 2:
-                                message.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    DataWithBlockInfo.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    DataWithBlockInfo.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.postBlockData != null && message.hasOwnProperty("postBlockData")) {
-                            if (!Array.isArray(message.postBlockData))
-                                return "postBlockData: array expected";
-                            for (var i = 0; i < message.postBlockData.length; ++i) {
-                                var error = $root.Par.verify(message.postBlockData[i]);
-                                if (error)
-                                    return "postBlockData." + error;
-                            }
-                        }
-                        if (message.block != null && message.hasOwnProperty("block")) {
-                            var error = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.verify(message.block);
-                            if (error)
-                                return "block." + error;
-                        }
-                        return null;
-                    };
-
-                    DataWithBlockInfo.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.DataWithBlockInfo)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.DataWithBlockInfo();
-                        if (object.postBlockData) {
-                            if (!Array.isArray(object.postBlockData))
-                                throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.postBlockData: array expected");
-                            message.postBlockData = [];
-                            for (var i = 0; i < object.postBlockData.length; ++i) {
-                                if (typeof object.postBlockData[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.postBlockData: object expected");
-                                message.postBlockData[i] = $root.Par.fromObject(object.postBlockData[i]);
-                            }
-                        }
-                        if (object.block != null) {
-                            if (typeof object.block !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.DataWithBlockInfo.block: object expected");
-                            message.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.fromObject(object.block);
-                        }
-                        return message;
-                    };
-
-                    DataWithBlockInfo.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.postBlockData = [];
-                        if (options.defaults)
-                            object.block = null;
-                        if (message.postBlockData && message.postBlockData.length) {
-                            object.postBlockData = [];
-                            for (var j = 0; j < message.postBlockData.length; ++j)
-                                object.postBlockData[j] = $root.Par.toObject(message.postBlockData[j], options);
-                        }
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            object.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.toObject(message.block, options);
-                        return object;
-                    };
-
-                    DataWithBlockInfo.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return DataWithBlockInfo;
-                })();
-
-                protocol.ContinuationsWithBlockInfo = (function() {
-
-                    function ContinuationsWithBlockInfo(properties) {
-                        this.postBlockContinuations = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    ContinuationsWithBlockInfo.prototype.postBlockContinuations = $util.emptyArray;
-                    ContinuationsWithBlockInfo.prototype.block = null;
-
-                    ContinuationsWithBlockInfo.create = function create(properties) {
-                        return new ContinuationsWithBlockInfo(properties);
-                    };
-
-                    ContinuationsWithBlockInfo.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.postBlockContinuations != null && message.postBlockContinuations.length)
-                            for (var i = 0; i < message.postBlockContinuations.length; ++i)
-                                $root.coop.rchain.casper.protocol.WaitingContinuationInfo.encode(message.postBlockContinuations[i], writer.uint32(10).fork()).ldelim();
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.encode(message.block, writer.uint32(18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    ContinuationsWithBlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    ContinuationsWithBlockInfo.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.postBlockContinuations && message.postBlockContinuations.length))
-                                    message.postBlockContinuations = [];
-                                message.postBlockContinuations.push($root.coop.rchain.casper.protocol.WaitingContinuationInfo.decode(reader, reader.uint32()));
-                                break;
-                            case 2:
-                                message.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    ContinuationsWithBlockInfo.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    ContinuationsWithBlockInfo.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.postBlockContinuations != null && message.hasOwnProperty("postBlockContinuations")) {
-                            if (!Array.isArray(message.postBlockContinuations))
-                                return "postBlockContinuations: array expected";
-                            for (var i = 0; i < message.postBlockContinuations.length; ++i) {
-                                var error = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.verify(message.postBlockContinuations[i]);
-                                if (error)
-                                    return "postBlockContinuations." + error;
-                            }
-                        }
-                        if (message.block != null && message.hasOwnProperty("block")) {
-                            var error = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.verify(message.block);
-                            if (error)
-                                return "block." + error;
-                        }
-                        return null;
-                    };
-
-                    ContinuationsWithBlockInfo.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.ContinuationsWithBlockInfo();
-                        if (object.postBlockContinuations) {
-                            if (!Array.isArray(object.postBlockContinuations))
-                                throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.postBlockContinuations: array expected");
-                            message.postBlockContinuations = [];
-                            for (var i = 0; i < object.postBlockContinuations.length; ++i) {
-                                if (typeof object.postBlockContinuations[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.postBlockContinuations: object expected");
-                                message.postBlockContinuations[i] = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.fromObject(object.postBlockContinuations[i]);
-                            }
-                        }
-                        if (object.block != null) {
-                            if (typeof object.block !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.ContinuationsWithBlockInfo.block: object expected");
-                            message.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.fromObject(object.block);
-                        }
-                        return message;
-                    };
-
-                    ContinuationsWithBlockInfo.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.postBlockContinuations = [];
-                        if (options.defaults)
-                            object.block = null;
-                        if (message.postBlockContinuations && message.postBlockContinuations.length) {
-                            object.postBlockContinuations = [];
-                            for (var j = 0; j < message.postBlockContinuations.length; ++j)
-                                object.postBlockContinuations[j] = $root.coop.rchain.casper.protocol.WaitingContinuationInfo.toObject(message.postBlockContinuations[j], options);
-                        }
-                        if (message.block != null && message.hasOwnProperty("block"))
-                            object.block = $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.toObject(message.block, options);
-                        return object;
-                    };
-
-                    ContinuationsWithBlockInfo.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return ContinuationsWithBlockInfo;
-                })();
-
-                protocol.WaitingContinuationInfo = (function() {
-
-                    function WaitingContinuationInfo(properties) {
-                        this.postBlockPatterns = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    WaitingContinuationInfo.prototype.postBlockPatterns = $util.emptyArray;
-                    WaitingContinuationInfo.prototype.postBlockContinuation = null;
-
-                    WaitingContinuationInfo.create = function create(properties) {
-                        return new WaitingContinuationInfo(properties);
-                    };
-
-                    WaitingContinuationInfo.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.postBlockPatterns != null && message.postBlockPatterns.length)
-                            for (var i = 0; i < message.postBlockPatterns.length; ++i)
-                                $root.BindPattern.encode(message.postBlockPatterns[i], writer.uint32(10).fork()).ldelim();
-                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation"))
-                            $root.Par.encode(message.postBlockContinuation, writer.uint32(18).fork()).ldelim();
-                        return writer;
-                    };
-
-                    WaitingContinuationInfo.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    WaitingContinuationInfo.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.WaitingContinuationInfo();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.postBlockPatterns && message.postBlockPatterns.length))
-                                    message.postBlockPatterns = [];
-                                message.postBlockPatterns.push($root.BindPattern.decode(reader, reader.uint32()));
-                                break;
-                            case 2:
-                                message.postBlockContinuation = $root.Par.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    WaitingContinuationInfo.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    WaitingContinuationInfo.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.postBlockPatterns != null && message.hasOwnProperty("postBlockPatterns")) {
-                            if (!Array.isArray(message.postBlockPatterns))
-                                return "postBlockPatterns: array expected";
-                            for (var i = 0; i < message.postBlockPatterns.length; ++i) {
-                                var error = $root.BindPattern.verify(message.postBlockPatterns[i]);
-                                if (error)
-                                    return "postBlockPatterns." + error;
-                            }
-                        }
-                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation")) {
-                            var error = $root.Par.verify(message.postBlockContinuation);
-                            if (error)
-                                return "postBlockContinuation." + error;
-                        }
-                        return null;
-                    };
-
-                    WaitingContinuationInfo.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.WaitingContinuationInfo)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.WaitingContinuationInfo();
-                        if (object.postBlockPatterns) {
-                            if (!Array.isArray(object.postBlockPatterns))
-                                throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockPatterns: array expected");
-                            message.postBlockPatterns = [];
-                            for (var i = 0; i < object.postBlockPatterns.length; ++i) {
-                                if (typeof object.postBlockPatterns[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockPatterns: object expected");
-                                message.postBlockPatterns[i] = $root.BindPattern.fromObject(object.postBlockPatterns[i]);
-                            }
-                        }
-                        if (object.postBlockContinuation != null) {
-                            if (typeof object.postBlockContinuation !== "object")
-                                throw TypeError(".coop.rchain.casper.protocol.WaitingContinuationInfo.postBlockContinuation: object expected");
-                            message.postBlockContinuation = $root.Par.fromObject(object.postBlockContinuation);
-                        }
-                        return message;
-                    };
-
-                    WaitingContinuationInfo.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.postBlockPatterns = [];
-                        if (options.defaults)
-                            object.postBlockContinuation = null;
-                        if (message.postBlockPatterns && message.postBlockPatterns.length) {
-                            object.postBlockPatterns = [];
-                            for (var j = 0; j < message.postBlockPatterns.length; ++j)
-                                object.postBlockPatterns[j] = $root.BindPattern.toObject(message.postBlockPatterns[j], options);
-                        }
-                        if (message.postBlockContinuation != null && message.hasOwnProperty("postBlockContinuation"))
-                            object.postBlockContinuation = $root.Par.toObject(message.postBlockContinuation, options);
-                        return object;
-                    };
-
-                    WaitingContinuationInfo.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return WaitingContinuationInfo;
-                })();
-
-                protocol.BlockInfoWithoutTuplespace = (function() {
-
-                    function BlockInfoWithoutTuplespace(properties) {
-                        this.parentsHashList = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    BlockInfoWithoutTuplespace.prototype.blockHash = "";
-                    BlockInfoWithoutTuplespace.prototype.blockSize = "";
-                    BlockInfoWithoutTuplespace.prototype.blockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfoWithoutTuplespace.prototype.version = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfoWithoutTuplespace.prototype.deployCount = 0;
-                    BlockInfoWithoutTuplespace.prototype.tupleSpaceHash = "";
-                    BlockInfoWithoutTuplespace.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfoWithoutTuplespace.prototype.faultTolerance = 0;
-                    BlockInfoWithoutTuplespace.prototype.mainParentHash = "";
-                    BlockInfoWithoutTuplespace.prototype.parentsHashList = $util.emptyArray;
-                    BlockInfoWithoutTuplespace.prototype.sender = "";
-
-                    BlockInfoWithoutTuplespace.create = function create(properties) {
-                        return new BlockInfoWithoutTuplespace(properties);
-                    };
-
-                    BlockInfoWithoutTuplespace.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            writer.uint32(10).string(message.blockHash);
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            writer.uint32(18).string(message.blockSize);
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            writer.uint32(24).int64(message.blockNumber);
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            writer.uint32(32).int64(message.version);
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            writer.uint32(40).int32(message.deployCount);
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            writer.uint32(50).string(message.tupleSpaceHash);
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            writer.uint32(56).int64(message.timestamp);
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            writer.uint32(69).float(message.faultTolerance);
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            writer.uint32(74).string(message.mainParentHash);
-                        if (message.parentsHashList != null && message.parentsHashList.length)
-                            for (var i = 0; i < message.parentsHashList.length; ++i)
-                                writer.uint32(82).string(message.parentsHashList[i]);
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            writer.uint32(90).string(message.sender);
-                        return writer;
-                    };
-
-                    BlockInfoWithoutTuplespace.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    BlockInfoWithoutTuplespace.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.blockHash = reader.string();
-                                break;
-                            case 2:
-                                message.blockSize = reader.string();
-                                break;
-                            case 3:
-                                message.blockNumber = reader.int64();
-                                break;
-                            case 4:
-                                message.version = reader.int64();
-                                break;
-                            case 5:
-                                message.deployCount = reader.int32();
-                                break;
-                            case 6:
-                                message.tupleSpaceHash = reader.string();
-                                break;
-                            case 7:
-                                message.timestamp = reader.int64();
-                                break;
-                            case 8:
-                                message.faultTolerance = reader.float();
-                                break;
-                            case 9:
-                                message.mainParentHash = reader.string();
-                                break;
-                            case 10:
-                                if (!(message.parentsHashList && message.parentsHashList.length))
-                                    message.parentsHashList = [];
-                                message.parentsHashList.push(reader.string());
-                                break;
-                            case 11:
-                                message.sender = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    BlockInfoWithoutTuplespace.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    BlockInfoWithoutTuplespace.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            if (!$util.isString(message.blockHash))
-                                return "blockHash: string expected";
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            if (!$util.isString(message.blockSize))
-                                return "blockSize: string expected";
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            if (!$util.isInteger(message.blockNumber) && !(message.blockNumber && $util.isInteger(message.blockNumber.low) && $util.isInteger(message.blockNumber.high)))
-                                return "blockNumber: integer|Long expected";
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            if (!$util.isInteger(message.version) && !(message.version && $util.isInteger(message.version.low) && $util.isInteger(message.version.high)))
-                                return "version: integer|Long expected";
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            if (!$util.isInteger(message.deployCount))
-                                return "deployCount: integer expected";
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            if (!$util.isString(message.tupleSpaceHash))
-                                return "tupleSpaceHash: string expected";
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
-                                return "timestamp: integer|Long expected";
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            if (typeof message.faultTolerance !== "number")
-                                return "faultTolerance: number expected";
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            if (!$util.isString(message.mainParentHash))
-                                return "mainParentHash: string expected";
-                        if (message.parentsHashList != null && message.hasOwnProperty("parentsHashList")) {
-                            if (!Array.isArray(message.parentsHashList))
-                                return "parentsHashList: array expected";
-                            for (var i = 0; i < message.parentsHashList.length; ++i)
-                                if (!$util.isString(message.parentsHashList[i]))
-                                    return "parentsHashList: string[] expected";
-                        }
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            if (!$util.isString(message.sender))
-                                return "sender: string expected";
-                        return null;
-                    };
-
-                    BlockInfoWithoutTuplespace.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.BlockInfoWithoutTuplespace();
-                        if (object.blockHash != null)
-                            message.blockHash = String(object.blockHash);
-                        if (object.blockSize != null)
-                            message.blockSize = String(object.blockSize);
-                        if (object.blockNumber != null)
-                            if ($util.Long)
-                                (message.blockNumber = $util.Long.fromValue(object.blockNumber)).unsigned = false;
-                            else if (typeof object.blockNumber === "string")
-                                message.blockNumber = parseInt(object.blockNumber, 10);
-                            else if (typeof object.blockNumber === "number")
-                                message.blockNumber = object.blockNumber;
-                            else if (typeof object.blockNumber === "object")
-                                message.blockNumber = new $util.LongBits(object.blockNumber.low >>> 0, object.blockNumber.high >>> 0).toNumber();
-                        if (object.version != null)
-                            if ($util.Long)
-                                (message.version = $util.Long.fromValue(object.version)).unsigned = false;
-                            else if (typeof object.version === "string")
-                                message.version = parseInt(object.version, 10);
-                            else if (typeof object.version === "number")
-                                message.version = object.version;
-                            else if (typeof object.version === "object")
-                                message.version = new $util.LongBits(object.version.low >>> 0, object.version.high >>> 0).toNumber();
-                        if (object.deployCount != null)
-                            message.deployCount = object.deployCount | 0;
-                        if (object.tupleSpaceHash != null)
-                            message.tupleSpaceHash = String(object.tupleSpaceHash);
-                        if (object.timestamp != null)
-                            if ($util.Long)
-                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
-                            else if (typeof object.timestamp === "string")
-                                message.timestamp = parseInt(object.timestamp, 10);
-                            else if (typeof object.timestamp === "number")
-                                message.timestamp = object.timestamp;
-                            else if (typeof object.timestamp === "object")
-                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
-                        if (object.faultTolerance != null)
-                            message.faultTolerance = Number(object.faultTolerance);
-                        if (object.mainParentHash != null)
-                            message.mainParentHash = String(object.mainParentHash);
-                        if (object.parentsHashList) {
-                            if (!Array.isArray(object.parentsHashList))
-                                throw TypeError(".coop.rchain.casper.protocol.BlockInfoWithoutTuplespace.parentsHashList: array expected");
-                            message.parentsHashList = [];
-                            for (var i = 0; i < object.parentsHashList.length; ++i)
-                                message.parentsHashList[i] = String(object.parentsHashList[i]);
-                        }
-                        if (object.sender != null)
-                            message.sender = String(object.sender);
-                        return message;
-                    };
-
-                    BlockInfoWithoutTuplespace.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.parentsHashList = [];
-                        if (options.defaults) {
-                            object.blockHash = "";
-                            object.blockSize = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.blockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.blockNumber = options.longs === String ? "0" : 0;
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.version = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.version = options.longs === String ? "0" : 0;
-                            object.deployCount = 0;
-                            object.tupleSpaceHash = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.timestamp = options.longs === String ? "0" : 0;
-                            object.faultTolerance = 0;
-                            object.mainParentHash = "";
-                            object.sender = "";
-                        }
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            object.blockHash = message.blockHash;
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            object.blockSize = message.blockSize;
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            if (typeof message.blockNumber === "number")
-                                object.blockNumber = options.longs === String ? String(message.blockNumber) : message.blockNumber;
-                            else
-                                object.blockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.blockNumber) : options.longs === Number ? new $util.LongBits(message.blockNumber.low >>> 0, message.blockNumber.high >>> 0).toNumber() : message.blockNumber;
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            if (typeof message.version === "number")
-                                object.version = options.longs === String ? String(message.version) : message.version;
-                            else
-                                object.version = options.longs === String ? $util.Long.prototype.toString.call(message.version) : options.longs === Number ? new $util.LongBits(message.version.low >>> 0, message.version.high >>> 0).toNumber() : message.version;
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            object.deployCount = message.deployCount;
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            object.tupleSpaceHash = message.tupleSpaceHash;
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (typeof message.timestamp === "number")
-                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
-                            else
-                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            object.faultTolerance = options.json && !isFinite(message.faultTolerance) ? String(message.faultTolerance) : message.faultTolerance;
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            object.mainParentHash = message.mainParentHash;
-                        if (message.parentsHashList && message.parentsHashList.length) {
-                            object.parentsHashList = [];
-                            for (var j = 0; j < message.parentsHashList.length; ++j)
-                                object.parentsHashList[j] = message.parentsHashList[j];
-                        }
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            object.sender = message.sender;
-                        return object;
-                    };
-
-                    BlockInfoWithoutTuplespace.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return BlockInfoWithoutTuplespace;
-                })();
-
-                protocol.BlockInfo = (function() {
-
-                    function BlockInfo(properties) {
-                        this.parentsHashList = [];
-                        this.bondsValidatorList = [];
-                        this.deployCost = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    BlockInfo.prototype.blockHash = "";
-                    BlockInfo.prototype.blockSize = "";
-                    BlockInfo.prototype.blockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfo.prototype.version = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfo.prototype.deployCount = 0;
-                    BlockInfo.prototype.tupleSpaceHash = "";
-                    BlockInfo.prototype.tupleSpaceDump = "";
-                    BlockInfo.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    BlockInfo.prototype.faultTolerance = 0;
-                    BlockInfo.prototype.mainParentHash = "";
-                    BlockInfo.prototype.parentsHashList = $util.emptyArray;
-                    BlockInfo.prototype.sender = "";
-                    BlockInfo.prototype.shardId = "";
-                    BlockInfo.prototype.bondsValidatorList = $util.emptyArray;
-                    BlockInfo.prototype.deployCost = $util.emptyArray;
-
-                    BlockInfo.create = function create(properties) {
-                        return new BlockInfo(properties);
-                    };
-
-                    BlockInfo.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            writer.uint32(10).string(message.blockHash);
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            writer.uint32(18).string(message.blockSize);
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            writer.uint32(24).int64(message.blockNumber);
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            writer.uint32(32).int64(message.version);
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            writer.uint32(40).int32(message.deployCount);
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            writer.uint32(50).string(message.tupleSpaceHash);
-                        if (message.tupleSpaceDump != null && message.hasOwnProperty("tupleSpaceDump"))
-                            writer.uint32(58).string(message.tupleSpaceDump);
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            writer.uint32(64).int64(message.timestamp);
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            writer.uint32(77).float(message.faultTolerance);
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            writer.uint32(82).string(message.mainParentHash);
-                        if (message.parentsHashList != null && message.parentsHashList.length)
-                            for (var i = 0; i < message.parentsHashList.length; ++i)
-                                writer.uint32(90).string(message.parentsHashList[i]);
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            writer.uint32(98).string(message.sender);
-                        if (message.shardId != null && message.hasOwnProperty("shardId"))
-                            writer.uint32(106).string(message.shardId);
-                        if (message.bondsValidatorList != null && message.bondsValidatorList.length)
-                            for (var i = 0; i < message.bondsValidatorList.length; ++i)
-                                writer.uint32(114).string(message.bondsValidatorList[i]);
-                        if (message.deployCost != null && message.deployCost.length)
-                            for (var i = 0; i < message.deployCost.length; ++i)
-                                writer.uint32(122).string(message.deployCost[i]);
-                        return writer;
-                    };
-
-                    BlockInfo.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    BlockInfo.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.BlockInfo();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.blockHash = reader.string();
-                                break;
-                            case 2:
-                                message.blockSize = reader.string();
-                                break;
-                            case 3:
-                                message.blockNumber = reader.int64();
-                                break;
-                            case 4:
-                                message.version = reader.int64();
-                                break;
-                            case 5:
-                                message.deployCount = reader.int32();
-                                break;
-                            case 6:
-                                message.tupleSpaceHash = reader.string();
-                                break;
-                            case 7:
-                                message.tupleSpaceDump = reader.string();
-                                break;
-                            case 8:
-                                message.timestamp = reader.int64();
-                                break;
-                            case 9:
-                                message.faultTolerance = reader.float();
-                                break;
-                            case 10:
-                                message.mainParentHash = reader.string();
-                                break;
-                            case 11:
-                                if (!(message.parentsHashList && message.parentsHashList.length))
-                                    message.parentsHashList = [];
-                                message.parentsHashList.push(reader.string());
-                                break;
-                            case 12:
-                                message.sender = reader.string();
-                                break;
-                            case 13:
-                                message.shardId = reader.string();
-                                break;
-                            case 14:
-                                if (!(message.bondsValidatorList && message.bondsValidatorList.length))
-                                    message.bondsValidatorList = [];
-                                message.bondsValidatorList.push(reader.string());
-                                break;
-                            case 15:
-                                if (!(message.deployCost && message.deployCost.length))
-                                    message.deployCost = [];
-                                message.deployCost.push(reader.string());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    BlockInfo.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    BlockInfo.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            if (!$util.isString(message.blockHash))
-                                return "blockHash: string expected";
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            if (!$util.isString(message.blockSize))
-                                return "blockSize: string expected";
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            if (!$util.isInteger(message.blockNumber) && !(message.blockNumber && $util.isInteger(message.blockNumber.low) && $util.isInteger(message.blockNumber.high)))
-                                return "blockNumber: integer|Long expected";
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            if (!$util.isInteger(message.version) && !(message.version && $util.isInteger(message.version.low) && $util.isInteger(message.version.high)))
-                                return "version: integer|Long expected";
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            if (!$util.isInteger(message.deployCount))
-                                return "deployCount: integer expected";
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            if (!$util.isString(message.tupleSpaceHash))
-                                return "tupleSpaceHash: string expected";
-                        if (message.tupleSpaceDump != null && message.hasOwnProperty("tupleSpaceDump"))
-                            if (!$util.isString(message.tupleSpaceDump))
-                                return "tupleSpaceDump: string expected";
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
-                                return "timestamp: integer|Long expected";
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            if (typeof message.faultTolerance !== "number")
-                                return "faultTolerance: number expected";
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            if (!$util.isString(message.mainParentHash))
-                                return "mainParentHash: string expected";
-                        if (message.parentsHashList != null && message.hasOwnProperty("parentsHashList")) {
-                            if (!Array.isArray(message.parentsHashList))
-                                return "parentsHashList: array expected";
-                            for (var i = 0; i < message.parentsHashList.length; ++i)
-                                if (!$util.isString(message.parentsHashList[i]))
-                                    return "parentsHashList: string[] expected";
-                        }
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            if (!$util.isString(message.sender))
-                                return "sender: string expected";
-                        if (message.shardId != null && message.hasOwnProperty("shardId"))
-                            if (!$util.isString(message.shardId))
-                                return "shardId: string expected";
-                        if (message.bondsValidatorList != null && message.hasOwnProperty("bondsValidatorList")) {
-                            if (!Array.isArray(message.bondsValidatorList))
-                                return "bondsValidatorList: array expected";
-                            for (var i = 0; i < message.bondsValidatorList.length; ++i)
-                                if (!$util.isString(message.bondsValidatorList[i]))
-                                    return "bondsValidatorList: string[] expected";
-                        }
-                        if (message.deployCost != null && message.hasOwnProperty("deployCost")) {
-                            if (!Array.isArray(message.deployCost))
-                                return "deployCost: array expected";
-                            for (var i = 0; i < message.deployCost.length; ++i)
-                                if (!$util.isString(message.deployCost[i]))
-                                    return "deployCost: string[] expected";
-                        }
-                        return null;
-                    };
-
-                    BlockInfo.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.BlockInfo)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.BlockInfo();
-                        if (object.blockHash != null)
-                            message.blockHash = String(object.blockHash);
-                        if (object.blockSize != null)
-                            message.blockSize = String(object.blockSize);
-                        if (object.blockNumber != null)
-                            if ($util.Long)
-                                (message.blockNumber = $util.Long.fromValue(object.blockNumber)).unsigned = false;
-                            else if (typeof object.blockNumber === "string")
-                                message.blockNumber = parseInt(object.blockNumber, 10);
-                            else if (typeof object.blockNumber === "number")
-                                message.blockNumber = object.blockNumber;
-                            else if (typeof object.blockNumber === "object")
-                                message.blockNumber = new $util.LongBits(object.blockNumber.low >>> 0, object.blockNumber.high >>> 0).toNumber();
-                        if (object.version != null)
-                            if ($util.Long)
-                                (message.version = $util.Long.fromValue(object.version)).unsigned = false;
-                            else if (typeof object.version === "string")
-                                message.version = parseInt(object.version, 10);
-                            else if (typeof object.version === "number")
-                                message.version = object.version;
-                            else if (typeof object.version === "object")
-                                message.version = new $util.LongBits(object.version.low >>> 0, object.version.high >>> 0).toNumber();
-                        if (object.deployCount != null)
-                            message.deployCount = object.deployCount | 0;
-                        if (object.tupleSpaceHash != null)
-                            message.tupleSpaceHash = String(object.tupleSpaceHash);
-                        if (object.tupleSpaceDump != null)
-                            message.tupleSpaceDump = String(object.tupleSpaceDump);
-                        if (object.timestamp != null)
-                            if ($util.Long)
-                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
-                            else if (typeof object.timestamp === "string")
-                                message.timestamp = parseInt(object.timestamp, 10);
-                            else if (typeof object.timestamp === "number")
-                                message.timestamp = object.timestamp;
-                            else if (typeof object.timestamp === "object")
-                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
-                        if (object.faultTolerance != null)
-                            message.faultTolerance = Number(object.faultTolerance);
-                        if (object.mainParentHash != null)
-                            message.mainParentHash = String(object.mainParentHash);
-                        if (object.parentsHashList) {
-                            if (!Array.isArray(object.parentsHashList))
-                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.parentsHashList: array expected");
-                            message.parentsHashList = [];
-                            for (var i = 0; i < object.parentsHashList.length; ++i)
-                                message.parentsHashList[i] = String(object.parentsHashList[i]);
-                        }
-                        if (object.sender != null)
-                            message.sender = String(object.sender);
-                        if (object.shardId != null)
-                            message.shardId = String(object.shardId);
-                        if (object.bondsValidatorList) {
-                            if (!Array.isArray(object.bondsValidatorList))
-                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.bondsValidatorList: array expected");
-                            message.bondsValidatorList = [];
-                            for (var i = 0; i < object.bondsValidatorList.length; ++i)
-                                message.bondsValidatorList[i] = String(object.bondsValidatorList[i]);
-                        }
-                        if (object.deployCost) {
-                            if (!Array.isArray(object.deployCost))
-                                throw TypeError(".coop.rchain.casper.protocol.BlockInfo.deployCost: array expected");
-                            message.deployCost = [];
-                            for (var i = 0; i < object.deployCost.length; ++i)
-                                message.deployCost[i] = String(object.deployCost[i]);
-                        }
-                        return message;
-                    };
-
-                    BlockInfo.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults) {
-                            object.parentsHashList = [];
-                            object.bondsValidatorList = [];
-                            object.deployCost = [];
-                        }
-                        if (options.defaults) {
-                            object.blockHash = "";
-                            object.blockSize = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.blockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.blockNumber = options.longs === String ? "0" : 0;
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.version = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.version = options.longs === String ? "0" : 0;
-                            object.deployCount = 0;
-                            object.tupleSpaceHash = "";
-                            object.tupleSpaceDump = "";
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.timestamp = options.longs === String ? "0" : 0;
-                            object.faultTolerance = 0;
-                            object.mainParentHash = "";
-                            object.sender = "";
-                            object.shardId = "";
-                        }
-                        if (message.blockHash != null && message.hasOwnProperty("blockHash"))
-                            object.blockHash = message.blockHash;
-                        if (message.blockSize != null && message.hasOwnProperty("blockSize"))
-                            object.blockSize = message.blockSize;
-                        if (message.blockNumber != null && message.hasOwnProperty("blockNumber"))
-                            if (typeof message.blockNumber === "number")
-                                object.blockNumber = options.longs === String ? String(message.blockNumber) : message.blockNumber;
-                            else
-                                object.blockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.blockNumber) : options.longs === Number ? new $util.LongBits(message.blockNumber.low >>> 0, message.blockNumber.high >>> 0).toNumber() : message.blockNumber;
-                        if (message.version != null && message.hasOwnProperty("version"))
-                            if (typeof message.version === "number")
-                                object.version = options.longs === String ? String(message.version) : message.version;
-                            else
-                                object.version = options.longs === String ? $util.Long.prototype.toString.call(message.version) : options.longs === Number ? new $util.LongBits(message.version.low >>> 0, message.version.high >>> 0).toNumber() : message.version;
-                        if (message.deployCount != null && message.hasOwnProperty("deployCount"))
-                            object.deployCount = message.deployCount;
-                        if (message.tupleSpaceHash != null && message.hasOwnProperty("tupleSpaceHash"))
-                            object.tupleSpaceHash = message.tupleSpaceHash;
-                        if (message.tupleSpaceDump != null && message.hasOwnProperty("tupleSpaceDump"))
-                            object.tupleSpaceDump = message.tupleSpaceDump;
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (typeof message.timestamp === "number")
-                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
-                            else
-                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
-                        if (message.faultTolerance != null && message.hasOwnProperty("faultTolerance"))
-                            object.faultTolerance = options.json && !isFinite(message.faultTolerance) ? String(message.faultTolerance) : message.faultTolerance;
-                        if (message.mainParentHash != null && message.hasOwnProperty("mainParentHash"))
-                            object.mainParentHash = message.mainParentHash;
-                        if (message.parentsHashList && message.parentsHashList.length) {
-                            object.parentsHashList = [];
-                            for (var j = 0; j < message.parentsHashList.length; ++j)
-                                object.parentsHashList[j] = message.parentsHashList[j];
-                        }
-                        if (message.sender != null && message.hasOwnProperty("sender"))
-                            object.sender = message.sender;
-                        if (message.shardId != null && message.hasOwnProperty("shardId"))
-                            object.shardId = message.shardId;
-                        if (message.bondsValidatorList && message.bondsValidatorList.length) {
-                            object.bondsValidatorList = [];
-                            for (var j = 0; j < message.bondsValidatorList.length; ++j)
-                                object.bondsValidatorList[j] = message.bondsValidatorList[j];
-                        }
-                        if (message.deployCost && message.deployCost.length) {
-                            object.deployCost = [];
-                            for (var j = 0; j < message.deployCost.length; ++j)
-                                object.deployCost[j] = message.deployCost[j];
-                        }
-                        return object;
-                    };
-
-                    BlockInfo.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return BlockInfo;
-                })();
-
-                protocol.PrivateNamePreviewQuery = (function() {
-
-                    function PrivateNamePreviewQuery(properties) {
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    PrivateNamePreviewQuery.prototype.user = $util.newBuffer([]);
-                    PrivateNamePreviewQuery.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-                    PrivateNamePreviewQuery.prototype.nameQty = 0;
-
-                    PrivateNamePreviewQuery.create = function create(properties) {
-                        return new PrivateNamePreviewQuery(properties);
-                    };
-
-                    PrivateNamePreviewQuery.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            writer.uint32(10).bytes(message.user);
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            writer.uint32(16).int64(message.timestamp);
-                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
-                            writer.uint32(24).int32(message.nameQty);
-                        return writer;
-                    };
-
-                    PrivateNamePreviewQuery.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    PrivateNamePreviewQuery.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                message.user = reader.bytes();
-                                break;
-                            case 2:
-                                message.timestamp = reader.int64();
-                                break;
-                            case 3:
-                                message.nameQty = reader.int32();
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    PrivateNamePreviewQuery.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    PrivateNamePreviewQuery.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            if (!(message.user && typeof message.user.length === "number" || $util.isString(message.user)))
-                                return "user: buffer expected";
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
-                                return "timestamp: integer|Long expected";
-                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
-                            if (!$util.isInteger(message.nameQty))
-                                return "nameQty: integer expected";
-                        return null;
-                    };
-
-                    PrivateNamePreviewQuery.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewQuery();
-                        if (object.user != null)
-                            if (typeof object.user === "string")
-                                $util.base64.decode(object.user, message.user = $util.newBuffer($util.base64.length(object.user)), 0);
-                            else if (object.user.length)
-                                message.user = object.user;
-                        if (object.timestamp != null)
-                            if ($util.Long)
-                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
-                            else if (typeof object.timestamp === "string")
-                                message.timestamp = parseInt(object.timestamp, 10);
-                            else if (typeof object.timestamp === "number")
-                                message.timestamp = object.timestamp;
-                            else if (typeof object.timestamp === "object")
-                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
-                        if (object.nameQty != null)
-                            message.nameQty = object.nameQty | 0;
-                        return message;
-                    };
-
-                    PrivateNamePreviewQuery.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.defaults) {
-                            if (options.bytes === String)
-                                object.user = "";
-                            else {
-                                object.user = [];
-                                if (options.bytes !== Array)
-                                    object.user = $util.newBuffer(object.user);
-                            }
-                            if ($util.Long) {
-                                var long = new $util.Long(0, 0, false);
-                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                            } else
-                                object.timestamp = options.longs === String ? "0" : 0;
-                            object.nameQty = 0;
-                        }
-                        if (message.user != null && message.hasOwnProperty("user"))
-                            object.user = options.bytes === String ? $util.base64.encode(message.user, 0, message.user.length) : options.bytes === Array ? Array.prototype.slice.call(message.user) : message.user;
-                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
-                            if (typeof message.timestamp === "number")
-                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
-                            else
-                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
-                        if (message.nameQty != null && message.hasOwnProperty("nameQty"))
-                            object.nameQty = message.nameQty;
-                        return object;
-                    };
-
-                    PrivateNamePreviewQuery.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return PrivateNamePreviewQuery;
-                })();
-
-                protocol.PrivateNamePreviewResponse = (function() {
-
-                    function PrivateNamePreviewResponse(properties) {
-                        this.ids = [];
-                        if (properties)
-                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                if (properties[keys[i]] != null)
-                                    this[keys[i]] = properties[keys[i]];
-                    }
-
-                    PrivateNamePreviewResponse.prototype.ids = $util.emptyArray;
-
-                    PrivateNamePreviewResponse.create = function create(properties) {
-                        return new PrivateNamePreviewResponse(properties);
-                    };
-
-                    PrivateNamePreviewResponse.encode = function encode(message, writer) {
-                        if (!writer)
-                            writer = $Writer.create();
-                        if (message.ids != null && message.ids.length)
-                            for (var i = 0; i < message.ids.length; ++i)
-                                writer.uint32(10).bytes(message.ids[i]);
-                        return writer;
-                    };
-
-                    PrivateNamePreviewResponse.encodeDelimited = function encodeDelimited(message, writer) {
-                        return this.encode(message, writer).ldelim();
-                    };
-
-                    PrivateNamePreviewResponse.decode = function decode(reader, length) {
-                        if (!(reader instanceof $Reader))
-                            reader = $Reader.create(reader);
-                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse();
-                        while (reader.pos < end) {
-                            var tag = reader.uint32();
-                            switch (tag >>> 3) {
-                            case 1:
-                                if (!(message.ids && message.ids.length))
-                                    message.ids = [];
-                                message.ids.push(reader.bytes());
-                                break;
-                            default:
-                                reader.skipType(tag & 7);
-                                break;
-                            }
-                        }
-                        return message;
-                    };
-
-                    PrivateNamePreviewResponse.decodeDelimited = function decodeDelimited(reader) {
-                        if (!(reader instanceof $Reader))
-                            reader = new $Reader(reader);
-                        return this.decode(reader, reader.uint32());
-                    };
-
-                    PrivateNamePreviewResponse.verify = function verify(message) {
-                        if (typeof message !== "object" || message === null)
-                            return "object expected";
-                        if (message.ids != null && message.hasOwnProperty("ids")) {
-                            if (!Array.isArray(message.ids))
-                                return "ids: array expected";
-                            for (var i = 0; i < message.ids.length; ++i)
-                                if (!(message.ids[i] && typeof message.ids[i].length === "number" || $util.isString(message.ids[i])))
-                                    return "ids: buffer[] expected";
-                        }
-                        return null;
-                    };
-
-                    PrivateNamePreviewResponse.fromObject = function fromObject(object) {
-                        if (object instanceof $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse)
-                            return object;
-                        var message = new $root.coop.rchain.casper.protocol.PrivateNamePreviewResponse();
-                        if (object.ids) {
-                            if (!Array.isArray(object.ids))
-                                throw TypeError(".coop.rchain.casper.protocol.PrivateNamePreviewResponse.ids: array expected");
-                            message.ids = [];
-                            for (var i = 0; i < object.ids.length; ++i)
-                                if (typeof object.ids[i] === "string")
-                                    $util.base64.decode(object.ids[i], message.ids[i] = $util.newBuffer($util.base64.length(object.ids[i])), 0);
-                                else if (object.ids[i].length)
-                                    message.ids[i] = object.ids[i];
-                        }
-                        return message;
-                    };
-
-                    PrivateNamePreviewResponse.toObject = function toObject(message, options) {
-                        if (!options)
-                            options = {};
-                        var object = {};
-                        if (options.arrays || options.defaults)
-                            object.ids = [];
-                        if (message.ids && message.ids.length) {
-                            object.ids = [];
-                            for (var j = 0; j < message.ids.length; ++j)
-                                object.ids[j] = options.bytes === String ? $util.base64.encode(message.ids[j], 0, message.ids[j].length) : options.bytes === Array ? Array.prototype.slice.call(message.ids[j]) : message.ids[j];
-                        }
-                        return object;
-                    };
-
-                    PrivateNamePreviewResponse.prototype.toJSON = function toJSON() {
-                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                    };
-
-                    return PrivateNamePreviewResponse;
                 })();
 
                 protocol.ApprovedBlockCandidate = (function() {
@@ -4682,10 +2007,271 @@ $root.coop = (function() {
                     return Header;
                 })();
 
+                protocol.DeployData = (function() {
+
+                    function DeployData(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+
+                    DeployData.prototype.deployer = $util.newBuffer([]);
+                    DeployData.prototype.term = "";
+                    DeployData.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.sig = $util.newBuffer([]);
+                    DeployData.prototype.sigAlgorithm = "";
+                    DeployData.prototype.phloPrice = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.phloLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    DeployData.prototype.validAfterBlockNumber = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    DeployData.create = function create(properties) {
+                        return new DeployData(properties);
+                    };
+
+                    DeployData.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            writer.uint32(10).bytes(message.deployer);
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            writer.uint32(18).string(message.term);
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            writer.uint32(24).int64(message.timestamp);
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            writer.uint32(34).bytes(message.sig);
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            writer.uint32(42).string(message.sigAlgorithm);
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            writer.uint32(56).int64(message.phloPrice);
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            writer.uint32(64).int64(message.phloLimit);
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            writer.uint32(80).int64(message.validAfterBlockNumber);
+                        return writer;
+                    };
+
+                    DeployData.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+
+                    DeployData.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.coop.rchain.casper.protocol.DeployData();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.deployer = reader.bytes();
+                                break;
+                            case 2:
+                                message.term = reader.string();
+                                break;
+                            case 3:
+                                message.timestamp = reader.int64();
+                                break;
+                            case 4:
+                                message.sig = reader.bytes();
+                                break;
+                            case 5:
+                                message.sigAlgorithm = reader.string();
+                                break;
+                            case 7:
+                                message.phloPrice = reader.int64();
+                                break;
+                            case 8:
+                                message.phloLimit = reader.int64();
+                                break;
+                            case 10:
+                                message.validAfterBlockNumber = reader.int64();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+
+                    DeployData.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+
+                    DeployData.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            if (!(message.deployer && typeof message.deployer.length === "number" || $util.isString(message.deployer)))
+                                return "deployer: buffer expected";
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            if (!$util.isString(message.term))
+                                return "term: string expected";
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (!$util.isInteger(message.timestamp) && !(message.timestamp && $util.isInteger(message.timestamp.low) && $util.isInteger(message.timestamp.high)))
+                                return "timestamp: integer|Long expected";
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                                return "sig: buffer expected";
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            if (!$util.isString(message.sigAlgorithm))
+                                return "sigAlgorithm: string expected";
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            if (!$util.isInteger(message.phloPrice) && !(message.phloPrice && $util.isInteger(message.phloPrice.low) && $util.isInteger(message.phloPrice.high)))
+                                return "phloPrice: integer|Long expected";
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            if (!$util.isInteger(message.phloLimit) && !(message.phloLimit && $util.isInteger(message.phloLimit.low) && $util.isInteger(message.phloLimit.high)))
+                                return "phloLimit: integer|Long expected";
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            if (!$util.isInteger(message.validAfterBlockNumber) && !(message.validAfterBlockNumber && $util.isInteger(message.validAfterBlockNumber.low) && $util.isInteger(message.validAfterBlockNumber.high)))
+                                return "validAfterBlockNumber: integer|Long expected";
+                        return null;
+                    };
+
+                    DeployData.fromObject = function fromObject(object) {
+                        if (object instanceof $root.coop.rchain.casper.protocol.DeployData)
+                            return object;
+                        var message = new $root.coop.rchain.casper.protocol.DeployData();
+                        if (object.deployer != null)
+                            if (typeof object.deployer === "string")
+                                $util.base64.decode(object.deployer, message.deployer = $util.newBuffer($util.base64.length(object.deployer)), 0);
+                            else if (object.deployer.length)
+                                message.deployer = object.deployer;
+                        if (object.term != null)
+                            message.term = String(object.term);
+                        if (object.timestamp != null)
+                            if ($util.Long)
+                                (message.timestamp = $util.Long.fromValue(object.timestamp)).unsigned = false;
+                            else if (typeof object.timestamp === "string")
+                                message.timestamp = parseInt(object.timestamp, 10);
+                            else if (typeof object.timestamp === "number")
+                                message.timestamp = object.timestamp;
+                            else if (typeof object.timestamp === "object")
+                                message.timestamp = new $util.LongBits(object.timestamp.low >>> 0, object.timestamp.high >>> 0).toNumber();
+                        if (object.sig != null)
+                            if (typeof object.sig === "string")
+                                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+                            else if (object.sig.length)
+                                message.sig = object.sig;
+                        if (object.sigAlgorithm != null)
+                            message.sigAlgorithm = String(object.sigAlgorithm);
+                        if (object.phloPrice != null)
+                            if ($util.Long)
+                                (message.phloPrice = $util.Long.fromValue(object.phloPrice)).unsigned = false;
+                            else if (typeof object.phloPrice === "string")
+                                message.phloPrice = parseInt(object.phloPrice, 10);
+                            else if (typeof object.phloPrice === "number")
+                                message.phloPrice = object.phloPrice;
+                            else if (typeof object.phloPrice === "object")
+                                message.phloPrice = new $util.LongBits(object.phloPrice.low >>> 0, object.phloPrice.high >>> 0).toNumber();
+                        if (object.phloLimit != null)
+                            if ($util.Long)
+                                (message.phloLimit = $util.Long.fromValue(object.phloLimit)).unsigned = false;
+                            else if (typeof object.phloLimit === "string")
+                                message.phloLimit = parseInt(object.phloLimit, 10);
+                            else if (typeof object.phloLimit === "number")
+                                message.phloLimit = object.phloLimit;
+                            else if (typeof object.phloLimit === "object")
+                                message.phloLimit = new $util.LongBits(object.phloLimit.low >>> 0, object.phloLimit.high >>> 0).toNumber();
+                        if (object.validAfterBlockNumber != null)
+                            if ($util.Long)
+                                (message.validAfterBlockNumber = $util.Long.fromValue(object.validAfterBlockNumber)).unsigned = false;
+                            else if (typeof object.validAfterBlockNumber === "string")
+                                message.validAfterBlockNumber = parseInt(object.validAfterBlockNumber, 10);
+                            else if (typeof object.validAfterBlockNumber === "number")
+                                message.validAfterBlockNumber = object.validAfterBlockNumber;
+                            else if (typeof object.validAfterBlockNumber === "object")
+                                message.validAfterBlockNumber = new $util.LongBits(object.validAfterBlockNumber.low >>> 0, object.validAfterBlockNumber.high >>> 0).toNumber();
+                        return message;
+                    };
+
+                    DeployData.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if (options.bytes === String)
+                                object.deployer = "";
+                            else {
+                                object.deployer = [];
+                                if (options.bytes !== Array)
+                                    object.deployer = $util.newBuffer(object.deployer);
+                            }
+                            object.term = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.timestamp = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.timestamp = options.longs === String ? "0" : 0;
+                            if (options.bytes === String)
+                                object.sig = "";
+                            else {
+                                object.sig = [];
+                                if (options.bytes !== Array)
+                                    object.sig = $util.newBuffer(object.sig);
+                            }
+                            object.sigAlgorithm = "";
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.phloPrice = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.phloPrice = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.phloLimit = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.phloLimit = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.validAfterBlockNumber = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.validAfterBlockNumber = options.longs === String ? "0" : 0;
+                        }
+                        if (message.deployer != null && message.hasOwnProperty("deployer"))
+                            object.deployer = options.bytes === String ? $util.base64.encode(message.deployer, 0, message.deployer.length) : options.bytes === Array ? Array.prototype.slice.call(message.deployer) : message.deployer;
+                        if (message.term != null && message.hasOwnProperty("term"))
+                            object.term = message.term;
+                        if (message.timestamp != null && message.hasOwnProperty("timestamp"))
+                            if (typeof message.timestamp === "number")
+                                object.timestamp = options.longs === String ? String(message.timestamp) : message.timestamp;
+                            else
+                                object.timestamp = options.longs === String ? $util.Long.prototype.toString.call(message.timestamp) : options.longs === Number ? new $util.LongBits(message.timestamp.low >>> 0, message.timestamp.high >>> 0).toNumber() : message.timestamp;
+                        if (message.sig != null && message.hasOwnProperty("sig"))
+                            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+                        if (message.sigAlgorithm != null && message.hasOwnProperty("sigAlgorithm"))
+                            object.sigAlgorithm = message.sigAlgorithm;
+                        if (message.phloPrice != null && message.hasOwnProperty("phloPrice"))
+                            if (typeof message.phloPrice === "number")
+                                object.phloPrice = options.longs === String ? String(message.phloPrice) : message.phloPrice;
+                            else
+                                object.phloPrice = options.longs === String ? $util.Long.prototype.toString.call(message.phloPrice) : options.longs === Number ? new $util.LongBits(message.phloPrice.low >>> 0, message.phloPrice.high >>> 0).toNumber() : message.phloPrice;
+                        if (message.phloLimit != null && message.hasOwnProperty("phloLimit"))
+                            if (typeof message.phloLimit === "number")
+                                object.phloLimit = options.longs === String ? String(message.phloLimit) : message.phloLimit;
+                            else
+                                object.phloLimit = options.longs === String ? $util.Long.prototype.toString.call(message.phloLimit) : options.longs === Number ? new $util.LongBits(message.phloLimit.low >>> 0, message.phloLimit.high >>> 0).toNumber() : message.phloLimit;
+                        if (message.validAfterBlockNumber != null && message.hasOwnProperty("validAfterBlockNumber"))
+                            if (typeof message.validAfterBlockNumber === "number")
+                                object.validAfterBlockNumber = options.longs === String ? String(message.validAfterBlockNumber) : message.validAfterBlockNumber;
+                            else
+                                object.validAfterBlockNumber = options.longs === String ? $util.Long.prototype.toString.call(message.validAfterBlockNumber) : options.longs === Number ? new $util.LongBits(message.validAfterBlockNumber.low >>> 0, message.validAfterBlockNumber.high >>> 0).toNumber() : message.validAfterBlockNumber;
+                        return object;
+                    };
+
+                    DeployData.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+
+                    return DeployData;
+                })();
+
                 protocol.ProcessedDeploy = (function() {
 
                     function ProcessedDeploy(properties) {
-                        this.log = [];
+                        this.deployLog = [];
+                        this.paymentLog = [];
                         if (properties)
                             for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                 if (properties[keys[i]] != null)
@@ -4694,7 +2280,8 @@ $root.coop = (function() {
 
                     ProcessedDeploy.prototype.deploy = null;
                     ProcessedDeploy.prototype.cost = null;
-                    ProcessedDeploy.prototype.log = $util.emptyArray;
+                    ProcessedDeploy.prototype.deployLog = $util.emptyArray;
+                    ProcessedDeploy.prototype.paymentLog = $util.emptyArray;
                     ProcessedDeploy.prototype.errored = false;
 
                     ProcessedDeploy.create = function create(properties) {
@@ -4708,11 +2295,14 @@ $root.coop = (function() {
                             $root.coop.rchain.casper.protocol.DeployData.encode(message.deploy, writer.uint32(10).fork()).ldelim();
                         if (message.cost != null && message.hasOwnProperty("cost"))
                             $root.PCost.encode(message.cost, writer.uint32(18).fork()).ldelim();
-                        if (message.log != null && message.log.length)
-                            for (var i = 0; i < message.log.length; ++i)
-                                $root.coop.rchain.casper.protocol.Event.encode(message.log[i], writer.uint32(26).fork()).ldelim();
+                        if (message.deployLog != null && message.deployLog.length)
+                            for (var i = 0; i < message.deployLog.length; ++i)
+                                $root.coop.rchain.casper.protocol.Event.encode(message.deployLog[i], writer.uint32(26).fork()).ldelim();
+                        if (message.paymentLog != null && message.paymentLog.length)
+                            for (var i = 0; i < message.paymentLog.length; ++i)
+                                $root.coop.rchain.casper.protocol.Event.encode(message.paymentLog[i], writer.uint32(34).fork()).ldelim();
                         if (message.errored != null && message.hasOwnProperty("errored"))
-                            writer.uint32(32).bool(message.errored);
+                            writer.uint32(40).bool(message.errored);
                         return writer;
                     };
 
@@ -4734,11 +2324,16 @@ $root.coop = (function() {
                                 message.cost = $root.PCost.decode(reader, reader.uint32());
                                 break;
                             case 3:
-                                if (!(message.log && message.log.length))
-                                    message.log = [];
-                                message.log.push($root.coop.rchain.casper.protocol.Event.decode(reader, reader.uint32()));
+                                if (!(message.deployLog && message.deployLog.length))
+                                    message.deployLog = [];
+                                message.deployLog.push($root.coop.rchain.casper.protocol.Event.decode(reader, reader.uint32()));
                                 break;
                             case 4:
+                                if (!(message.paymentLog && message.paymentLog.length))
+                                    message.paymentLog = [];
+                                message.paymentLog.push($root.coop.rchain.casper.protocol.Event.decode(reader, reader.uint32()));
+                                break;
+                            case 5:
                                 message.errored = reader.bool();
                                 break;
                             default:
@@ -4768,13 +2363,22 @@ $root.coop = (function() {
                             if (error)
                                 return "cost." + error;
                         }
-                        if (message.log != null && message.hasOwnProperty("log")) {
-                            if (!Array.isArray(message.log))
-                                return "log: array expected";
-                            for (var i = 0; i < message.log.length; ++i) {
-                                var error = $root.coop.rchain.casper.protocol.Event.verify(message.log[i]);
+                        if (message.deployLog != null && message.hasOwnProperty("deployLog")) {
+                            if (!Array.isArray(message.deployLog))
+                                return "deployLog: array expected";
+                            for (var i = 0; i < message.deployLog.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Event.verify(message.deployLog[i]);
                                 if (error)
-                                    return "log." + error;
+                                    return "deployLog." + error;
+                            }
+                        }
+                        if (message.paymentLog != null && message.hasOwnProperty("paymentLog")) {
+                            if (!Array.isArray(message.paymentLog))
+                                return "paymentLog: array expected";
+                            for (var i = 0; i < message.paymentLog.length; ++i) {
+                                var error = $root.coop.rchain.casper.protocol.Event.verify(message.paymentLog[i]);
+                                if (error)
+                                    return "paymentLog." + error;
                             }
                         }
                         if (message.errored != null && message.hasOwnProperty("errored"))
@@ -4797,14 +2401,24 @@ $root.coop = (function() {
                                 throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.cost: object expected");
                             message.cost = $root.PCost.fromObject(object.cost);
                         }
-                        if (object.log) {
-                            if (!Array.isArray(object.log))
-                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.log: array expected");
-                            message.log = [];
-                            for (var i = 0; i < object.log.length; ++i) {
-                                if (typeof object.log[i] !== "object")
-                                    throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.log: object expected");
-                                message.log[i] = $root.coop.rchain.casper.protocol.Event.fromObject(object.log[i]);
+                        if (object.deployLog) {
+                            if (!Array.isArray(object.deployLog))
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.deployLog: array expected");
+                            message.deployLog = [];
+                            for (var i = 0; i < object.deployLog.length; ++i) {
+                                if (typeof object.deployLog[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.deployLog: object expected");
+                                message.deployLog[i] = $root.coop.rchain.casper.protocol.Event.fromObject(object.deployLog[i]);
+                            }
+                        }
+                        if (object.paymentLog) {
+                            if (!Array.isArray(object.paymentLog))
+                                throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.paymentLog: array expected");
+                            message.paymentLog = [];
+                            for (var i = 0; i < object.paymentLog.length; ++i) {
+                                if (typeof object.paymentLog[i] !== "object")
+                                    throw TypeError(".coop.rchain.casper.protocol.ProcessedDeploy.paymentLog: object expected");
+                                message.paymentLog[i] = $root.coop.rchain.casper.protocol.Event.fromObject(object.paymentLog[i]);
                             }
                         }
                         if (object.errored != null)
@@ -4816,8 +2430,10 @@ $root.coop = (function() {
                         if (!options)
                             options = {};
                         var object = {};
-                        if (options.arrays || options.defaults)
-                            object.log = [];
+                        if (options.arrays || options.defaults) {
+                            object.deployLog = [];
+                            object.paymentLog = [];
+                        }
                         if (options.defaults) {
                             object.deploy = null;
                             object.cost = null;
@@ -4827,10 +2443,15 @@ $root.coop = (function() {
                             object.deploy = $root.coop.rchain.casper.protocol.DeployData.toObject(message.deploy, options);
                         if (message.cost != null && message.hasOwnProperty("cost"))
                             object.cost = $root.PCost.toObject(message.cost, options);
-                        if (message.log && message.log.length) {
-                            object.log = [];
-                            for (var j = 0; j < message.log.length; ++j)
-                                object.log[j] = $root.coop.rchain.casper.protocol.Event.toObject(message.log[j], options);
+                        if (message.deployLog && message.deployLog.length) {
+                            object.deployLog = [];
+                            for (var j = 0; j < message.deployLog.length; ++j)
+                                object.deployLog[j] = $root.coop.rchain.casper.protocol.Event.toObject(message.deployLog[j], options);
+                        }
+                        if (message.paymentLog && message.paymentLog.length) {
+                            object.paymentLog = [];
+                            for (var j = 0; j < message.paymentLog.length; ++j)
+                                object.paymentLog[j] = $root.coop.rchain.casper.protocol.Event.toObject(message.paymentLog[j], options);
                         }
                         if (message.errored != null && message.hasOwnProperty("errored"))
                             object.errored = message.errored;
@@ -5467,6 +3088,7 @@ $root.coop = (function() {
 
                     ProduceEvent.prototype.channelsHash = $util.newBuffer([]);
                     ProduceEvent.prototype.hash = $util.newBuffer([]);
+                    ProduceEvent.prototype.persistent = false;
                     ProduceEvent.prototype.sequenceNumber = 0;
 
                     ProduceEvent.create = function create(properties) {
@@ -5480,8 +3102,10 @@ $root.coop = (function() {
                             writer.uint32(10).bytes(message.channelsHash);
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             writer.uint32(18).bytes(message.hash);
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            writer.uint32(24).bool(message.persistent);
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                            writer.uint32(24).int32(message.sequenceNumber);
+                            writer.uint32(32).int32(message.sequenceNumber);
                         return writer;
                     };
 
@@ -5503,6 +3127,9 @@ $root.coop = (function() {
                                 message.hash = reader.bytes();
                                 break;
                             case 3:
+                                message.persistent = reader.bool();
+                                break;
+                            case 4:
                                 message.sequenceNumber = reader.int32();
                                 break;
                             default:
@@ -5528,6 +3155,9 @@ $root.coop = (function() {
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
                                 return "hash: buffer expected";
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            if (typeof message.persistent !== "boolean")
+                                return "persistent: boolean expected";
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                             if (!$util.isInteger(message.sequenceNumber))
                                 return "sequenceNumber: integer expected";
@@ -5548,6 +3178,8 @@ $root.coop = (function() {
                                 $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
                             else if (object.hash.length)
                                 message.hash = object.hash;
+                        if (object.persistent != null)
+                            message.persistent = Boolean(object.persistent);
                         if (object.sequenceNumber != null)
                             message.sequenceNumber = object.sequenceNumber | 0;
                         return message;
@@ -5572,12 +3204,15 @@ $root.coop = (function() {
                                 if (options.bytes !== Array)
                                     object.hash = $util.newBuffer(object.hash);
                             }
+                            object.persistent = false;
                             object.sequenceNumber = 0;
                         }
                         if (message.channelsHash != null && message.hasOwnProperty("channelsHash"))
                             object.channelsHash = options.bytes === String ? $util.base64.encode(message.channelsHash, 0, message.channelsHash.length) : options.bytes === Array ? Array.prototype.slice.call(message.channelsHash) : message.channelsHash;
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            object.persistent = message.persistent;
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                             object.sequenceNumber = message.sequenceNumber;
                         return object;
@@ -5602,6 +3237,7 @@ $root.coop = (function() {
 
                     ConsumeEvent.prototype.channelsHashes = $util.emptyArray;
                     ConsumeEvent.prototype.hash = $util.newBuffer([]);
+                    ConsumeEvent.prototype.persistent = false;
                     ConsumeEvent.prototype.sequenceNumber = 0;
 
                     ConsumeEvent.create = function create(properties) {
@@ -5616,8 +3252,10 @@ $root.coop = (function() {
                                 writer.uint32(10).bytes(message.channelsHashes[i]);
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             writer.uint32(18).bytes(message.hash);
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            writer.uint32(24).bool(message.persistent);
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
-                            writer.uint32(24).int32(message.sequenceNumber);
+                            writer.uint32(32).int32(message.sequenceNumber);
                         return writer;
                     };
 
@@ -5641,6 +3279,9 @@ $root.coop = (function() {
                                 message.hash = reader.bytes();
                                 break;
                             case 3:
+                                message.persistent = reader.bool();
+                                break;
+                            case 4:
                                 message.sequenceNumber = reader.int32();
                                 break;
                             default:
@@ -5670,6 +3311,9 @@ $root.coop = (function() {
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             if (!(message.hash && typeof message.hash.length === "number" || $util.isString(message.hash)))
                                 return "hash: buffer expected";
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            if (typeof message.persistent !== "boolean")
+                                return "persistent: boolean expected";
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                             if (!$util.isInteger(message.sequenceNumber))
                                 return "sequenceNumber: integer expected";
@@ -5695,6 +3339,8 @@ $root.coop = (function() {
                                 $util.base64.decode(object.hash, message.hash = $util.newBuffer($util.base64.length(object.hash)), 0);
                             else if (object.hash.length)
                                 message.hash = object.hash;
+                        if (object.persistent != null)
+                            message.persistent = Boolean(object.persistent);
                         if (object.sequenceNumber != null)
                             message.sequenceNumber = object.sequenceNumber | 0;
                         return message;
@@ -5714,6 +3360,7 @@ $root.coop = (function() {
                                 if (options.bytes !== Array)
                                     object.hash = $util.newBuffer(object.hash);
                             }
+                            object.persistent = false;
                             object.sequenceNumber = 0;
                         }
                         if (message.channelsHashes && message.channelsHashes.length) {
@@ -5723,6 +3370,8 @@ $root.coop = (function() {
                         }
                         if (message.hash != null && message.hasOwnProperty("hash"))
                             object.hash = options.bytes === String ? $util.base64.encode(message.hash, 0, message.hash.length) : options.bytes === Array ? Array.prototype.slice.call(message.hash) : message.hash;
+                        if (message.persistent != null && message.hasOwnProperty("persistent"))
+                            object.persistent = message.persistent;
                         if (message.sequenceNumber != null && message.hasOwnProperty("sequenceNumber"))
                             object.sequenceNumber = message.sequenceNumber;
                         return object;
@@ -6000,6 +3649,1148 @@ $root.coop = (function() {
     return coop;
 })();
 
+$root.scalapb = (function() {
+
+    var scalapb = {};
+
+    scalapb.ScalaPbOptions = (function() {
+
+        function ScalaPbOptions(properties) {
+            this["import"] = [];
+            this.preamble = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        ScalaPbOptions.prototype.package_name = "";
+        ScalaPbOptions.prototype.flat_package = false;
+        ScalaPbOptions.prototype["import"] = $util.emptyArray;
+        ScalaPbOptions.prototype.preamble = $util.emptyArray;
+        ScalaPbOptions.prototype.single_file = false;
+        ScalaPbOptions.prototype.no_primitive_wrappers = false;
+        ScalaPbOptions.prototype.primitive_wrappers = false;
+        ScalaPbOptions.prototype.collection_type = "";
+        ScalaPbOptions.prototype.preserve_unknown_fields = false;
+        ScalaPbOptions.prototype.object_name = "";
+        ScalaPbOptions.prototype.scope = 0;
+        ScalaPbOptions.prototype.lenses = true;
+        ScalaPbOptions.prototype.retain_source_code_info = false;
+        ScalaPbOptions.prototype.map_type = "";
+        ScalaPbOptions.prototype.test_only_no_java_conversions = false;
+
+        ScalaPbOptions.create = function create(properties) {
+            return new ScalaPbOptions(properties);
+        };
+
+        ScalaPbOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.package_name != null && message.hasOwnProperty("package_name"))
+                writer.uint32(10).string(message.package_name);
+            if (message.flat_package != null && message.hasOwnProperty("flat_package"))
+                writer.uint32(16).bool(message.flat_package);
+            if (message["import"] != null && message["import"].length)
+                for (var i = 0; i < message["import"].length; ++i)
+                    writer.uint32(26).string(message["import"][i]);
+            if (message.preamble != null && message.preamble.length)
+                for (var i = 0; i < message.preamble.length; ++i)
+                    writer.uint32(34).string(message.preamble[i]);
+            if (message.single_file != null && message.hasOwnProperty("single_file"))
+                writer.uint32(40).bool(message.single_file);
+            if (message.primitive_wrappers != null && message.hasOwnProperty("primitive_wrappers"))
+                writer.uint32(48).bool(message.primitive_wrappers);
+            if (message.no_primitive_wrappers != null && message.hasOwnProperty("no_primitive_wrappers"))
+                writer.uint32(56).bool(message.no_primitive_wrappers);
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                writer.uint32(66).string(message.collection_type);
+            if (message.preserve_unknown_fields != null && message.hasOwnProperty("preserve_unknown_fields"))
+                writer.uint32(72).bool(message.preserve_unknown_fields);
+            if (message.object_name != null && message.hasOwnProperty("object_name"))
+                writer.uint32(82).string(message.object_name);
+            if (message.scope != null && message.hasOwnProperty("scope"))
+                writer.uint32(88).int32(message.scope);
+            if (message.lenses != null && message.hasOwnProperty("lenses"))
+                writer.uint32(96).bool(message.lenses);
+            if (message.retain_source_code_info != null && message.hasOwnProperty("retain_source_code_info"))
+                writer.uint32(104).bool(message.retain_source_code_info);
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                writer.uint32(114).string(message.map_type);
+            if (message.test_only_no_java_conversions != null && message.hasOwnProperty("test_only_no_java_conversions"))
+                writer.uint32(800008).bool(message.test_only_no_java_conversions);
+            return writer;
+        };
+
+        ScalaPbOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        ScalaPbOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.ScalaPbOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.package_name = reader.string();
+                    break;
+                case 2:
+                    message.flat_package = reader.bool();
+                    break;
+                case 3:
+                    if (!(message["import"] && message["import"].length))
+                        message["import"] = [];
+                    message["import"].push(reader.string());
+                    break;
+                case 4:
+                    if (!(message.preamble && message.preamble.length))
+                        message.preamble = [];
+                    message.preamble.push(reader.string());
+                    break;
+                case 5:
+                    message.single_file = reader.bool();
+                    break;
+                case 7:
+                    message.no_primitive_wrappers = reader.bool();
+                    break;
+                case 6:
+                    message.primitive_wrappers = reader.bool();
+                    break;
+                case 8:
+                    message.collection_type = reader.string();
+                    break;
+                case 9:
+                    message.preserve_unknown_fields = reader.bool();
+                    break;
+                case 10:
+                    message.object_name = reader.string();
+                    break;
+                case 11:
+                    message.scope = reader.int32();
+                    break;
+                case 12:
+                    message.lenses = reader.bool();
+                    break;
+                case 13:
+                    message.retain_source_code_info = reader.bool();
+                    break;
+                case 14:
+                    message.map_type = reader.string();
+                    break;
+                case 100001:
+                    message.test_only_no_java_conversions = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        ScalaPbOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        ScalaPbOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.package_name != null && message.hasOwnProperty("package_name"))
+                if (!$util.isString(message.package_name))
+                    return "package_name: string expected";
+            if (message.flat_package != null && message.hasOwnProperty("flat_package"))
+                if (typeof message.flat_package !== "boolean")
+                    return "flat_package: boolean expected";
+            if (message["import"] != null && message.hasOwnProperty("import")) {
+                if (!Array.isArray(message["import"]))
+                    return "import: array expected";
+                for (var i = 0; i < message["import"].length; ++i)
+                    if (!$util.isString(message["import"][i]))
+                        return "import: string[] expected";
+            }
+            if (message.preamble != null && message.hasOwnProperty("preamble")) {
+                if (!Array.isArray(message.preamble))
+                    return "preamble: array expected";
+                for (var i = 0; i < message.preamble.length; ++i)
+                    if (!$util.isString(message.preamble[i]))
+                        return "preamble: string[] expected";
+            }
+            if (message.single_file != null && message.hasOwnProperty("single_file"))
+                if (typeof message.single_file !== "boolean")
+                    return "single_file: boolean expected";
+            if (message.no_primitive_wrappers != null && message.hasOwnProperty("no_primitive_wrappers"))
+                if (typeof message.no_primitive_wrappers !== "boolean")
+                    return "no_primitive_wrappers: boolean expected";
+            if (message.primitive_wrappers != null && message.hasOwnProperty("primitive_wrappers"))
+                if (typeof message.primitive_wrappers !== "boolean")
+                    return "primitive_wrappers: boolean expected";
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                if (!$util.isString(message.collection_type))
+                    return "collection_type: string expected";
+            if (message.preserve_unknown_fields != null && message.hasOwnProperty("preserve_unknown_fields"))
+                if (typeof message.preserve_unknown_fields !== "boolean")
+                    return "preserve_unknown_fields: boolean expected";
+            if (message.object_name != null && message.hasOwnProperty("object_name"))
+                if (!$util.isString(message.object_name))
+                    return "object_name: string expected";
+            if (message.scope != null && message.hasOwnProperty("scope"))
+                switch (message.scope) {
+                default:
+                    return "scope: enum value expected";
+                case 0:
+                case 1:
+                    break;
+                }
+            if (message.lenses != null && message.hasOwnProperty("lenses"))
+                if (typeof message.lenses !== "boolean")
+                    return "lenses: boolean expected";
+            if (message.retain_source_code_info != null && message.hasOwnProperty("retain_source_code_info"))
+                if (typeof message.retain_source_code_info !== "boolean")
+                    return "retain_source_code_info: boolean expected";
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                if (!$util.isString(message.map_type))
+                    return "map_type: string expected";
+            if (message.test_only_no_java_conversions != null && message.hasOwnProperty("test_only_no_java_conversions"))
+                if (typeof message.test_only_no_java_conversions !== "boolean")
+                    return "test_only_no_java_conversions: boolean expected";
+            return null;
+        };
+
+        ScalaPbOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.ScalaPbOptions)
+                return object;
+            var message = new $root.scalapb.ScalaPbOptions();
+            if (object.package_name != null)
+                message.package_name = String(object.package_name);
+            if (object.flat_package != null)
+                message.flat_package = Boolean(object.flat_package);
+            if (object["import"]) {
+                if (!Array.isArray(object["import"]))
+                    throw TypeError(".scalapb.ScalaPbOptions.import: array expected");
+                message["import"] = [];
+                for (var i = 0; i < object["import"].length; ++i)
+                    message["import"][i] = String(object["import"][i]);
+            }
+            if (object.preamble) {
+                if (!Array.isArray(object.preamble))
+                    throw TypeError(".scalapb.ScalaPbOptions.preamble: array expected");
+                message.preamble = [];
+                for (var i = 0; i < object.preamble.length; ++i)
+                    message.preamble[i] = String(object.preamble[i]);
+            }
+            if (object.single_file != null)
+                message.single_file = Boolean(object.single_file);
+            if (object.no_primitive_wrappers != null)
+                message.no_primitive_wrappers = Boolean(object.no_primitive_wrappers);
+            if (object.primitive_wrappers != null)
+                message.primitive_wrappers = Boolean(object.primitive_wrappers);
+            if (object.collection_type != null)
+                message.collection_type = String(object.collection_type);
+            if (object.preserve_unknown_fields != null)
+                message.preserve_unknown_fields = Boolean(object.preserve_unknown_fields);
+            if (object.object_name != null)
+                message.object_name = String(object.object_name);
+            switch (object.scope) {
+            case "FILE":
+            case 0:
+                message.scope = 0;
+                break;
+            case "PACKAGE":
+            case 1:
+                message.scope = 1;
+                break;
+            }
+            if (object.lenses != null)
+                message.lenses = Boolean(object.lenses);
+            if (object.retain_source_code_info != null)
+                message.retain_source_code_info = Boolean(object.retain_source_code_info);
+            if (object.map_type != null)
+                message.map_type = String(object.map_type);
+            if (object.test_only_no_java_conversions != null)
+                message.test_only_no_java_conversions = Boolean(object.test_only_no_java_conversions);
+            return message;
+        };
+
+        ScalaPbOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults) {
+                object["import"] = [];
+                object.preamble = [];
+            }
+            if (options.defaults) {
+                object.package_name = "";
+                object.flat_package = false;
+                object.single_file = false;
+                object.primitive_wrappers = false;
+                object.no_primitive_wrappers = false;
+                object.collection_type = "";
+                object.preserve_unknown_fields = false;
+                object.object_name = "";
+                object.scope = options.enums === String ? "FILE" : 0;
+                object.lenses = true;
+                object.retain_source_code_info = false;
+                object.map_type = "";
+                object.test_only_no_java_conversions = false;
+            }
+            if (message.package_name != null && message.hasOwnProperty("package_name"))
+                object.package_name = message.package_name;
+            if (message.flat_package != null && message.hasOwnProperty("flat_package"))
+                object.flat_package = message.flat_package;
+            if (message["import"] && message["import"].length) {
+                object["import"] = [];
+                for (var j = 0; j < message["import"].length; ++j)
+                    object["import"][j] = message["import"][j];
+            }
+            if (message.preamble && message.preamble.length) {
+                object.preamble = [];
+                for (var j = 0; j < message.preamble.length; ++j)
+                    object.preamble[j] = message.preamble[j];
+            }
+            if (message.single_file != null && message.hasOwnProperty("single_file"))
+                object.single_file = message.single_file;
+            if (message.primitive_wrappers != null && message.hasOwnProperty("primitive_wrappers"))
+                object.primitive_wrappers = message.primitive_wrappers;
+            if (message.no_primitive_wrappers != null && message.hasOwnProperty("no_primitive_wrappers"))
+                object.no_primitive_wrappers = message.no_primitive_wrappers;
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                object.collection_type = message.collection_type;
+            if (message.preserve_unknown_fields != null && message.hasOwnProperty("preserve_unknown_fields"))
+                object.preserve_unknown_fields = message.preserve_unknown_fields;
+            if (message.object_name != null && message.hasOwnProperty("object_name"))
+                object.object_name = message.object_name;
+            if (message.scope != null && message.hasOwnProperty("scope"))
+                object.scope = options.enums === String ? $root.scalapb.ScalaPbOptions.OptionsScope[message.scope] : message.scope;
+            if (message.lenses != null && message.hasOwnProperty("lenses"))
+                object.lenses = message.lenses;
+            if (message.retain_source_code_info != null && message.hasOwnProperty("retain_source_code_info"))
+                object.retain_source_code_info = message.retain_source_code_info;
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                object.map_type = message.map_type;
+            if (message.test_only_no_java_conversions != null && message.hasOwnProperty("test_only_no_java_conversions"))
+                object.test_only_no_java_conversions = message.test_only_no_java_conversions;
+            return object;
+        };
+
+        ScalaPbOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        ScalaPbOptions.OptionsScope = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "FILE"] = 0;
+            values[valuesById[1] = "PACKAGE"] = 1;
+            return values;
+        })();
+
+        return ScalaPbOptions;
+    })();
+
+    scalapb.MessageOptions = (function() {
+
+        function MessageOptions(properties) {
+            this["extends"] = [];
+            this.companion_extends = [];
+            this.annotations = [];
+            this.companion_annotations = [];
+            this.sealed_oneof_extends = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        MessageOptions.prototype["extends"] = $util.emptyArray;
+        MessageOptions.prototype.companion_extends = $util.emptyArray;
+        MessageOptions.prototype.annotations = $util.emptyArray;
+        MessageOptions.prototype.type = "";
+        MessageOptions.prototype.companion_annotations = $util.emptyArray;
+        MessageOptions.prototype.sealed_oneof_extends = $util.emptyArray;
+
+        MessageOptions.create = function create(properties) {
+            return new MessageOptions(properties);
+        };
+
+        MessageOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message["extends"] != null && message["extends"].length)
+                for (var i = 0; i < message["extends"].length; ++i)
+                    writer.uint32(10).string(message["extends"][i]);
+            if (message.companion_extends != null && message.companion_extends.length)
+                for (var i = 0; i < message.companion_extends.length; ++i)
+                    writer.uint32(18).string(message.companion_extends[i]);
+            if (message.annotations != null && message.annotations.length)
+                for (var i = 0; i < message.annotations.length; ++i)
+                    writer.uint32(26).string(message.annotations[i]);
+            if (message.type != null && message.hasOwnProperty("type"))
+                writer.uint32(34).string(message.type);
+            if (message.companion_annotations != null && message.companion_annotations.length)
+                for (var i = 0; i < message.companion_annotations.length; ++i)
+                    writer.uint32(42).string(message.companion_annotations[i]);
+            if (message.sealed_oneof_extends != null && message.sealed_oneof_extends.length)
+                for (var i = 0; i < message.sealed_oneof_extends.length; ++i)
+                    writer.uint32(50).string(message.sealed_oneof_extends[i]);
+            return writer;
+        };
+
+        MessageOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        MessageOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.MessageOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message["extends"] && message["extends"].length))
+                        message["extends"] = [];
+                    message["extends"].push(reader.string());
+                    break;
+                case 2:
+                    if (!(message.companion_extends && message.companion_extends.length))
+                        message.companion_extends = [];
+                    message.companion_extends.push(reader.string());
+                    break;
+                case 3:
+                    if (!(message.annotations && message.annotations.length))
+                        message.annotations = [];
+                    message.annotations.push(reader.string());
+                    break;
+                case 4:
+                    message.type = reader.string();
+                    break;
+                case 5:
+                    if (!(message.companion_annotations && message.companion_annotations.length))
+                        message.companion_annotations = [];
+                    message.companion_annotations.push(reader.string());
+                    break;
+                case 6:
+                    if (!(message.sealed_oneof_extends && message.sealed_oneof_extends.length))
+                        message.sealed_oneof_extends = [];
+                    message.sealed_oneof_extends.push(reader.string());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        MessageOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        MessageOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message["extends"] != null && message.hasOwnProperty("extends")) {
+                if (!Array.isArray(message["extends"]))
+                    return "extends: array expected";
+                for (var i = 0; i < message["extends"].length; ++i)
+                    if (!$util.isString(message["extends"][i]))
+                        return "extends: string[] expected";
+            }
+            if (message.companion_extends != null && message.hasOwnProperty("companion_extends")) {
+                if (!Array.isArray(message.companion_extends))
+                    return "companion_extends: array expected";
+                for (var i = 0; i < message.companion_extends.length; ++i)
+                    if (!$util.isString(message.companion_extends[i]))
+                        return "companion_extends: string[] expected";
+            }
+            if (message.annotations != null && message.hasOwnProperty("annotations")) {
+                if (!Array.isArray(message.annotations))
+                    return "annotations: array expected";
+                for (var i = 0; i < message.annotations.length; ++i)
+                    if (!$util.isString(message.annotations[i]))
+                        return "annotations: string[] expected";
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                if (!$util.isString(message.type))
+                    return "type: string expected";
+            if (message.companion_annotations != null && message.hasOwnProperty("companion_annotations")) {
+                if (!Array.isArray(message.companion_annotations))
+                    return "companion_annotations: array expected";
+                for (var i = 0; i < message.companion_annotations.length; ++i)
+                    if (!$util.isString(message.companion_annotations[i]))
+                        return "companion_annotations: string[] expected";
+            }
+            if (message.sealed_oneof_extends != null && message.hasOwnProperty("sealed_oneof_extends")) {
+                if (!Array.isArray(message.sealed_oneof_extends))
+                    return "sealed_oneof_extends: array expected";
+                for (var i = 0; i < message.sealed_oneof_extends.length; ++i)
+                    if (!$util.isString(message.sealed_oneof_extends[i]))
+                        return "sealed_oneof_extends: string[] expected";
+            }
+            return null;
+        };
+
+        MessageOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.MessageOptions)
+                return object;
+            var message = new $root.scalapb.MessageOptions();
+            if (object["extends"]) {
+                if (!Array.isArray(object["extends"]))
+                    throw TypeError(".scalapb.MessageOptions.extends: array expected");
+                message["extends"] = [];
+                for (var i = 0; i < object["extends"].length; ++i)
+                    message["extends"][i] = String(object["extends"][i]);
+            }
+            if (object.companion_extends) {
+                if (!Array.isArray(object.companion_extends))
+                    throw TypeError(".scalapb.MessageOptions.companion_extends: array expected");
+                message.companion_extends = [];
+                for (var i = 0; i < object.companion_extends.length; ++i)
+                    message.companion_extends[i] = String(object.companion_extends[i]);
+            }
+            if (object.annotations) {
+                if (!Array.isArray(object.annotations))
+                    throw TypeError(".scalapb.MessageOptions.annotations: array expected");
+                message.annotations = [];
+                for (var i = 0; i < object.annotations.length; ++i)
+                    message.annotations[i] = String(object.annotations[i]);
+            }
+            if (object.type != null)
+                message.type = String(object.type);
+            if (object.companion_annotations) {
+                if (!Array.isArray(object.companion_annotations))
+                    throw TypeError(".scalapb.MessageOptions.companion_annotations: array expected");
+                message.companion_annotations = [];
+                for (var i = 0; i < object.companion_annotations.length; ++i)
+                    message.companion_annotations[i] = String(object.companion_annotations[i]);
+            }
+            if (object.sealed_oneof_extends) {
+                if (!Array.isArray(object.sealed_oneof_extends))
+                    throw TypeError(".scalapb.MessageOptions.sealed_oneof_extends: array expected");
+                message.sealed_oneof_extends = [];
+                for (var i = 0; i < object.sealed_oneof_extends.length; ++i)
+                    message.sealed_oneof_extends[i] = String(object.sealed_oneof_extends[i]);
+            }
+            return message;
+        };
+
+        MessageOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults) {
+                object["extends"] = [];
+                object.companion_extends = [];
+                object.annotations = [];
+                object.companion_annotations = [];
+                object.sealed_oneof_extends = [];
+            }
+            if (options.defaults)
+                object.type = "";
+            if (message["extends"] && message["extends"].length) {
+                object["extends"] = [];
+                for (var j = 0; j < message["extends"].length; ++j)
+                    object["extends"][j] = message["extends"][j];
+            }
+            if (message.companion_extends && message.companion_extends.length) {
+                object.companion_extends = [];
+                for (var j = 0; j < message.companion_extends.length; ++j)
+                    object.companion_extends[j] = message.companion_extends[j];
+            }
+            if (message.annotations && message.annotations.length) {
+                object.annotations = [];
+                for (var j = 0; j < message.annotations.length; ++j)
+                    object.annotations[j] = message.annotations[j];
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = message.type;
+            if (message.companion_annotations && message.companion_annotations.length) {
+                object.companion_annotations = [];
+                for (var j = 0; j < message.companion_annotations.length; ++j)
+                    object.companion_annotations[j] = message.companion_annotations[j];
+            }
+            if (message.sealed_oneof_extends && message.sealed_oneof_extends.length) {
+                object.sealed_oneof_extends = [];
+                for (var j = 0; j < message.sealed_oneof_extends.length; ++j)
+                    object.sealed_oneof_extends[j] = message.sealed_oneof_extends[j];
+            }
+            return object;
+        };
+
+        MessageOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return MessageOptions;
+    })();
+
+    scalapb.FieldOptions = (function() {
+
+        function FieldOptions(properties) {
+            this.annotations = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        FieldOptions.prototype.type = "";
+        FieldOptions.prototype.scala_name = "";
+        FieldOptions.prototype.collection_type = "";
+        FieldOptions.prototype.key_type = "";
+        FieldOptions.prototype.value_type = "";
+        FieldOptions.prototype.annotations = $util.emptyArray;
+        FieldOptions.prototype.map_type = "";
+        FieldOptions.prototype.no_box = false;
+
+        FieldOptions.create = function create(properties) {
+            return new FieldOptions(properties);
+        };
+
+        FieldOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.type != null && message.hasOwnProperty("type"))
+                writer.uint32(10).string(message.type);
+            if (message.scala_name != null && message.hasOwnProperty("scala_name"))
+                writer.uint32(18).string(message.scala_name);
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                writer.uint32(26).string(message.collection_type);
+            if (message.key_type != null && message.hasOwnProperty("key_type"))
+                writer.uint32(34).string(message.key_type);
+            if (message.value_type != null && message.hasOwnProperty("value_type"))
+                writer.uint32(42).string(message.value_type);
+            if (message.annotations != null && message.annotations.length)
+                for (var i = 0; i < message.annotations.length; ++i)
+                    writer.uint32(50).string(message.annotations[i]);
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                writer.uint32(58).string(message.map_type);
+            if (message.no_box != null && message.hasOwnProperty("no_box"))
+                writer.uint32(240).bool(message.no_box);
+            return writer;
+        };
+
+        FieldOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        FieldOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.FieldOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.type = reader.string();
+                    break;
+                case 2:
+                    message.scala_name = reader.string();
+                    break;
+                case 3:
+                    message.collection_type = reader.string();
+                    break;
+                case 4:
+                    message.key_type = reader.string();
+                    break;
+                case 5:
+                    message.value_type = reader.string();
+                    break;
+                case 6:
+                    if (!(message.annotations && message.annotations.length))
+                        message.annotations = [];
+                    message.annotations.push(reader.string());
+                    break;
+                case 7:
+                    message.map_type = reader.string();
+                    break;
+                case 30:
+                    message.no_box = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        FieldOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        FieldOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.type != null && message.hasOwnProperty("type"))
+                if (!$util.isString(message.type))
+                    return "type: string expected";
+            if (message.scala_name != null && message.hasOwnProperty("scala_name"))
+                if (!$util.isString(message.scala_name))
+                    return "scala_name: string expected";
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                if (!$util.isString(message.collection_type))
+                    return "collection_type: string expected";
+            if (message.key_type != null && message.hasOwnProperty("key_type"))
+                if (!$util.isString(message.key_type))
+                    return "key_type: string expected";
+            if (message.value_type != null && message.hasOwnProperty("value_type"))
+                if (!$util.isString(message.value_type))
+                    return "value_type: string expected";
+            if (message.annotations != null && message.hasOwnProperty("annotations")) {
+                if (!Array.isArray(message.annotations))
+                    return "annotations: array expected";
+                for (var i = 0; i < message.annotations.length; ++i)
+                    if (!$util.isString(message.annotations[i]))
+                        return "annotations: string[] expected";
+            }
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                if (!$util.isString(message.map_type))
+                    return "map_type: string expected";
+            if (message.no_box != null && message.hasOwnProperty("no_box"))
+                if (typeof message.no_box !== "boolean")
+                    return "no_box: boolean expected";
+            return null;
+        };
+
+        FieldOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.FieldOptions)
+                return object;
+            var message = new $root.scalapb.FieldOptions();
+            if (object.type != null)
+                message.type = String(object.type);
+            if (object.scala_name != null)
+                message.scala_name = String(object.scala_name);
+            if (object.collection_type != null)
+                message.collection_type = String(object.collection_type);
+            if (object.key_type != null)
+                message.key_type = String(object.key_type);
+            if (object.value_type != null)
+                message.value_type = String(object.value_type);
+            if (object.annotations) {
+                if (!Array.isArray(object.annotations))
+                    throw TypeError(".scalapb.FieldOptions.annotations: array expected");
+                message.annotations = [];
+                for (var i = 0; i < object.annotations.length; ++i)
+                    message.annotations[i] = String(object.annotations[i]);
+            }
+            if (object.map_type != null)
+                message.map_type = String(object.map_type);
+            if (object.no_box != null)
+                message.no_box = Boolean(object.no_box);
+            return message;
+        };
+
+        FieldOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.annotations = [];
+            if (options.defaults) {
+                object.type = "";
+                object.scala_name = "";
+                object.collection_type = "";
+                object.key_type = "";
+                object.value_type = "";
+                object.map_type = "";
+                object.no_box = false;
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = message.type;
+            if (message.scala_name != null && message.hasOwnProperty("scala_name"))
+                object.scala_name = message.scala_name;
+            if (message.collection_type != null && message.hasOwnProperty("collection_type"))
+                object.collection_type = message.collection_type;
+            if (message.key_type != null && message.hasOwnProperty("key_type"))
+                object.key_type = message.key_type;
+            if (message.value_type != null && message.hasOwnProperty("value_type"))
+                object.value_type = message.value_type;
+            if (message.annotations && message.annotations.length) {
+                object.annotations = [];
+                for (var j = 0; j < message.annotations.length; ++j)
+                    object.annotations[j] = message.annotations[j];
+            }
+            if (message.map_type != null && message.hasOwnProperty("map_type"))
+                object.map_type = message.map_type;
+            if (message.no_box != null && message.hasOwnProperty("no_box"))
+                object.no_box = message.no_box;
+            return object;
+        };
+
+        FieldOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return FieldOptions;
+    })();
+
+    scalapb.EnumOptions = (function() {
+
+        function EnumOptions(properties) {
+            this["extends"] = [];
+            this.companion_extends = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        EnumOptions.prototype["extends"] = $util.emptyArray;
+        EnumOptions.prototype.companion_extends = $util.emptyArray;
+        EnumOptions.prototype.type = "";
+
+        EnumOptions.create = function create(properties) {
+            return new EnumOptions(properties);
+        };
+
+        EnumOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message["extends"] != null && message["extends"].length)
+                for (var i = 0; i < message["extends"].length; ++i)
+                    writer.uint32(10).string(message["extends"][i]);
+            if (message.companion_extends != null && message.companion_extends.length)
+                for (var i = 0; i < message.companion_extends.length; ++i)
+                    writer.uint32(18).string(message.companion_extends[i]);
+            if (message.type != null && message.hasOwnProperty("type"))
+                writer.uint32(26).string(message.type);
+            return writer;
+        };
+
+        EnumOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        EnumOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.EnumOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message["extends"] && message["extends"].length))
+                        message["extends"] = [];
+                    message["extends"].push(reader.string());
+                    break;
+                case 2:
+                    if (!(message.companion_extends && message.companion_extends.length))
+                        message.companion_extends = [];
+                    message.companion_extends.push(reader.string());
+                    break;
+                case 3:
+                    message.type = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        EnumOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        EnumOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message["extends"] != null && message.hasOwnProperty("extends")) {
+                if (!Array.isArray(message["extends"]))
+                    return "extends: array expected";
+                for (var i = 0; i < message["extends"].length; ++i)
+                    if (!$util.isString(message["extends"][i]))
+                        return "extends: string[] expected";
+            }
+            if (message.companion_extends != null && message.hasOwnProperty("companion_extends")) {
+                if (!Array.isArray(message.companion_extends))
+                    return "companion_extends: array expected";
+                for (var i = 0; i < message.companion_extends.length; ++i)
+                    if (!$util.isString(message.companion_extends[i]))
+                        return "companion_extends: string[] expected";
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                if (!$util.isString(message.type))
+                    return "type: string expected";
+            return null;
+        };
+
+        EnumOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.EnumOptions)
+                return object;
+            var message = new $root.scalapb.EnumOptions();
+            if (object["extends"]) {
+                if (!Array.isArray(object["extends"]))
+                    throw TypeError(".scalapb.EnumOptions.extends: array expected");
+                message["extends"] = [];
+                for (var i = 0; i < object["extends"].length; ++i)
+                    message["extends"][i] = String(object["extends"][i]);
+            }
+            if (object.companion_extends) {
+                if (!Array.isArray(object.companion_extends))
+                    throw TypeError(".scalapb.EnumOptions.companion_extends: array expected");
+                message.companion_extends = [];
+                for (var i = 0; i < object.companion_extends.length; ++i)
+                    message.companion_extends[i] = String(object.companion_extends[i]);
+            }
+            if (object.type != null)
+                message.type = String(object.type);
+            return message;
+        };
+
+        EnumOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults) {
+                object["extends"] = [];
+                object.companion_extends = [];
+            }
+            if (options.defaults)
+                object.type = "";
+            if (message["extends"] && message["extends"].length) {
+                object["extends"] = [];
+                for (var j = 0; j < message["extends"].length; ++j)
+                    object["extends"][j] = message["extends"][j];
+            }
+            if (message.companion_extends && message.companion_extends.length) {
+                object.companion_extends = [];
+                for (var j = 0; j < message.companion_extends.length; ++j)
+                    object.companion_extends[j] = message.companion_extends[j];
+            }
+            if (message.type != null && message.hasOwnProperty("type"))
+                object.type = message.type;
+            return object;
+        };
+
+        EnumOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return EnumOptions;
+    })();
+
+    scalapb.EnumValueOptions = (function() {
+
+        function EnumValueOptions(properties) {
+            this["extends"] = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        EnumValueOptions.prototype["extends"] = $util.emptyArray;
+
+        EnumValueOptions.create = function create(properties) {
+            return new EnumValueOptions(properties);
+        };
+
+        EnumValueOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message["extends"] != null && message["extends"].length)
+                for (var i = 0; i < message["extends"].length; ++i)
+                    writer.uint32(10).string(message["extends"][i]);
+            return writer;
+        };
+
+        EnumValueOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        EnumValueOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.EnumValueOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message["extends"] && message["extends"].length))
+                        message["extends"] = [];
+                    message["extends"].push(reader.string());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        EnumValueOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        EnumValueOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message["extends"] != null && message.hasOwnProperty("extends")) {
+                if (!Array.isArray(message["extends"]))
+                    return "extends: array expected";
+                for (var i = 0; i < message["extends"].length; ++i)
+                    if (!$util.isString(message["extends"][i]))
+                        return "extends: string[] expected";
+            }
+            return null;
+        };
+
+        EnumValueOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.EnumValueOptions)
+                return object;
+            var message = new $root.scalapb.EnumValueOptions();
+            if (object["extends"]) {
+                if (!Array.isArray(object["extends"]))
+                    throw TypeError(".scalapb.EnumValueOptions.extends: array expected");
+                message["extends"] = [];
+                for (var i = 0; i < object["extends"].length; ++i)
+                    message["extends"][i] = String(object["extends"][i]);
+            }
+            return message;
+        };
+
+        EnumValueOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object["extends"] = [];
+            if (message["extends"] && message["extends"].length) {
+                object["extends"] = [];
+                for (var j = 0; j < message["extends"].length; ++j)
+                    object["extends"][j] = message["extends"][j];
+            }
+            return object;
+        };
+
+        EnumValueOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return EnumValueOptions;
+    })();
+
+    scalapb.OneofOptions = (function() {
+
+        function OneofOptions(properties) {
+            this["extends"] = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        OneofOptions.prototype["extends"] = $util.emptyArray;
+
+        OneofOptions.create = function create(properties) {
+            return new OneofOptions(properties);
+        };
+
+        OneofOptions.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message["extends"] != null && message["extends"].length)
+                for (var i = 0; i < message["extends"].length; ++i)
+                    writer.uint32(10).string(message["extends"][i]);
+            return writer;
+        };
+
+        OneofOptions.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        OneofOptions.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.scalapb.OneofOptions();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (!(message["extends"] && message["extends"].length))
+                        message["extends"] = [];
+                    message["extends"].push(reader.string());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        OneofOptions.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        OneofOptions.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message["extends"] != null && message.hasOwnProperty("extends")) {
+                if (!Array.isArray(message["extends"]))
+                    return "extends: array expected";
+                for (var i = 0; i < message["extends"].length; ++i)
+                    if (!$util.isString(message["extends"][i]))
+                        return "extends: string[] expected";
+            }
+            return null;
+        };
+
+        OneofOptions.fromObject = function fromObject(object) {
+            if (object instanceof $root.scalapb.OneofOptions)
+                return object;
+            var message = new $root.scalapb.OneofOptions();
+            if (object["extends"]) {
+                if (!Array.isArray(object["extends"]))
+                    throw TypeError(".scalapb.OneofOptions.extends: array expected");
+                message["extends"] = [];
+                for (var i = 0; i < object["extends"].length; ++i)
+                    message["extends"][i] = String(object["extends"][i]);
+            }
+            return message;
+        };
+
+        OneofOptions.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object["extends"] = [];
+            if (message["extends"] && message["extends"].length) {
+                object["extends"] = [];
+                for (var j = 0; j < message["extends"].length; ++j)
+                    object["extends"][j] = message["extends"][j];
+            }
+            return object;
+        };
+
+        OneofOptions.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return OneofOptions;
+    })();
+
+    return scalapb;
+})();
+
 $root.Par = (function() {
 
     function Par(properties) {
@@ -6008,7 +4799,7 @@ $root.Par = (function() {
         this.news = [];
         this.exprs = [];
         this.matches = [];
-        this.ids = [];
+        this.unforgeables = [];
         this.bundles = [];
         this.connectives = [];
         if (properties)
@@ -6022,7 +4813,7 @@ $root.Par = (function() {
     Par.prototype.news = $util.emptyArray;
     Par.prototype.exprs = $util.emptyArray;
     Par.prototype.matches = $util.emptyArray;
-    Par.prototype.ids = $util.emptyArray;
+    Par.prototype.unforgeables = $util.emptyArray;
     Par.prototype.bundles = $util.emptyArray;
     Par.prototype.connectives = $util.emptyArray;
     Par.prototype.locallyFree = $util.newBuffer([]);
@@ -6050,9 +4841,9 @@ $root.Par = (function() {
         if (message.matches != null && message.matches.length)
             for (var i = 0; i < message.matches.length; ++i)
                 $root.Match.encode(message.matches[i], writer.uint32(50).fork()).ldelim();
-        if (message.ids != null && message.ids.length)
-            for (var i = 0; i < message.ids.length; ++i)
-                $root.GPrivate.encode(message.ids[i], writer.uint32(58).fork()).ldelim();
+        if (message.unforgeables != null && message.unforgeables.length)
+            for (var i = 0; i < message.unforgeables.length; ++i)
+                $root.GUnforgeable.encode(message.unforgeables[i], writer.uint32(58).fork()).ldelim();
         if (message.connectives != null && message.connectives.length)
             for (var i = 0; i < message.connectives.length; ++i)
                 $root.Connective.encode(message.connectives[i], writer.uint32(66).fork()).ldelim();
@@ -6103,9 +4894,9 @@ $root.Par = (function() {
                 message.matches.push($root.Match.decode(reader, reader.uint32()));
                 break;
             case 7:
-                if (!(message.ids && message.ids.length))
-                    message.ids = [];
-                message.ids.push($root.GPrivate.decode(reader, reader.uint32()));
+                if (!(message.unforgeables && message.unforgeables.length))
+                    message.unforgeables = [];
+                message.unforgeables.push($root.GUnforgeable.decode(reader, reader.uint32()));
                 break;
             case 11:
                 if (!(message.bundles && message.bundles.length))
@@ -6185,13 +4976,13 @@ $root.Par = (function() {
                     return "matches." + error;
             }
         }
-        if (message.ids != null && message.hasOwnProperty("ids")) {
-            if (!Array.isArray(message.ids))
-                return "ids: array expected";
-            for (var i = 0; i < message.ids.length; ++i) {
-                var error = $root.GPrivate.verify(message.ids[i]);
+        if (message.unforgeables != null && message.hasOwnProperty("unforgeables")) {
+            if (!Array.isArray(message.unforgeables))
+                return "unforgeables: array expected";
+            for (var i = 0; i < message.unforgeables.length; ++i) {
+                var error = $root.GUnforgeable.verify(message.unforgeables[i]);
                 if (error)
-                    return "ids." + error;
+                    return "unforgeables." + error;
             }
         }
         if (message.bundles != null && message.hasOwnProperty("bundles")) {
@@ -6275,14 +5066,14 @@ $root.Par = (function() {
                 message.matches[i] = $root.Match.fromObject(object.matches[i]);
             }
         }
-        if (object.ids) {
-            if (!Array.isArray(object.ids))
-                throw TypeError(".Par.ids: array expected");
-            message.ids = [];
-            for (var i = 0; i < object.ids.length; ++i) {
-                if (typeof object.ids[i] !== "object")
-                    throw TypeError(".Par.ids: object expected");
-                message.ids[i] = $root.GPrivate.fromObject(object.ids[i]);
+        if (object.unforgeables) {
+            if (!Array.isArray(object.unforgeables))
+                throw TypeError(".Par.unforgeables: array expected");
+            message.unforgeables = [];
+            for (var i = 0; i < object.unforgeables.length; ++i) {
+                if (typeof object.unforgeables[i] !== "object")
+                    throw TypeError(".Par.unforgeables: object expected");
+                message.unforgeables[i] = $root.GUnforgeable.fromObject(object.unforgeables[i]);
             }
         }
         if (object.bundles) {
@@ -6325,7 +5116,7 @@ $root.Par = (function() {
             object.news = [];
             object.exprs = [];
             object.matches = [];
-            object.ids = [];
+            object.unforgeables = [];
             object.connectives = [];
             object.bundles = [];
         }
@@ -6364,10 +5155,10 @@ $root.Par = (function() {
             for (var j = 0; j < message.matches.length; ++j)
                 object.matches[j] = $root.Match.toObject(message.matches[j], options);
         }
-        if (message.ids && message.ids.length) {
-            object.ids = [];
-            for (var j = 0; j < message.ids.length; ++j)
-                object.ids[j] = $root.GPrivate.toObject(message.ids[j], options);
+        if (message.unforgeables && message.unforgeables.length) {
+            object.unforgeables = [];
+            for (var j = 0; j < message.unforgeables.length; ++j)
+                object.unforgeables[j] = $root.GUnforgeable.toObject(message.unforgeables[j], options);
         }
         if (message.connectives && message.connectives.length) {
             object.connectives = [];
@@ -7814,6 +6605,7 @@ $root.Receive = (function() {
     Receive.prototype.binds = $util.emptyArray;
     Receive.prototype.body = null;
     Receive.prototype.persistent = false;
+    Receive.prototype.peek = false;
     Receive.prototype.bindCount = 0;
     Receive.prototype.locallyFree = $util.newBuffer([]);
     Receive.prototype.connective_used = false;
@@ -7832,8 +6624,10 @@ $root.Receive = (function() {
             $root.Par.encode(message.body, writer.uint32(18).fork()).ldelim();
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             writer.uint32(24).bool(message.persistent);
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            writer.uint32(32).bool(message.peek);
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
-            writer.uint32(32).int32(message.bindCount);
+            writer.uint32(40).int32(message.bindCount);
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             writer.uint32(50).bytes(message.locallyFree);
         if (message.connective_used != null && message.hasOwnProperty("connective_used"))
@@ -7864,6 +6658,9 @@ $root.Receive = (function() {
                 message.persistent = reader.bool();
                 break;
             case 4:
+                message.peek = reader.bool();
+                break;
+            case 5:
                 message.bindCount = reader.int32();
                 break;
             case 6:
@@ -7906,6 +6703,9 @@ $root.Receive = (function() {
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             if (typeof message.persistent !== "boolean")
                 return "persistent: boolean expected";
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            if (typeof message.peek !== "boolean")
+                return "peek: boolean expected";
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
             if (!$util.isInteger(message.bindCount))
                 return "bindCount: integer expected";
@@ -7939,6 +6739,8 @@ $root.Receive = (function() {
         }
         if (object.persistent != null)
             message.persistent = Boolean(object.persistent);
+        if (object.peek != null)
+            message.peek = Boolean(object.peek);
         if (object.bindCount != null)
             message.bindCount = object.bindCount | 0;
         if (object.locallyFree != null)
@@ -7960,6 +6762,7 @@ $root.Receive = (function() {
         if (options.defaults) {
             object.body = null;
             object.persistent = false;
+            object.peek = false;
             object.bindCount = 0;
             if (options.bytes === String)
                 object.locallyFree = "";
@@ -7979,6 +6782,8 @@ $root.Receive = (function() {
             object.body = $root.Par.toObject(message.body, options);
         if (message.persistent != null && message.hasOwnProperty("persistent"))
             object.persistent = message.persistent;
+        if (message.peek != null && message.hasOwnProperty("peek"))
+            object.peek = message.peek;
         if (message.bindCount != null && message.hasOwnProperty("bindCount"))
             object.bindCount = message.bindCount;
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
@@ -8008,6 +6813,8 @@ $root.New = (function() {
     New.prototype.bindCount = 0;
     New.prototype.p = null;
     New.prototype.uri = $util.emptyArray;
+    New.prototype.deployId = null;
+    New.prototype.deployerId = null;
     New.prototype.locallyFree = $util.newBuffer([]);
 
     New.create = function create(properties) {
@@ -8024,8 +6831,12 @@ $root.New = (function() {
         if (message.uri != null && message.uri.length)
             for (var i = 0; i < message.uri.length; ++i)
                 writer.uint32(26).string(message.uri[i]);
+        if (message.deployId != null && message.hasOwnProperty("deployId"))
+            $root.DeployId.encode(message.deployId, writer.uint32(34).fork()).ldelim();
+        if (message.deployerId != null && message.hasOwnProperty("deployerId"))
+            $root.DeployerId.encode(message.deployerId, writer.uint32(42).fork()).ldelim();
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
-            writer.uint32(34).bytes(message.locallyFree);
+            writer.uint32(50).bytes(message.locallyFree);
         return writer;
     };
 
@@ -8052,6 +6863,12 @@ $root.New = (function() {
                 message.uri.push(reader.string());
                 break;
             case 4:
+                message.deployId = $root.DeployId.decode(reader, reader.uint32());
+                break;
+            case 5:
+                message.deployerId = $root.DeployerId.decode(reader, reader.uint32());
+                break;
+            case 6:
                 message.locallyFree = reader.bytes();
                 break;
             default:
@@ -8086,6 +6903,16 @@ $root.New = (function() {
                 if (!$util.isString(message.uri[i]))
                     return "uri: string[] expected";
         }
+        if (message.deployId != null && message.hasOwnProperty("deployId")) {
+            var error = $root.DeployId.verify(message.deployId);
+            if (error)
+                return "deployId." + error;
+        }
+        if (message.deployerId != null && message.hasOwnProperty("deployerId")) {
+            var error = $root.DeployerId.verify(message.deployerId);
+            if (error)
+                return "deployerId." + error;
+        }
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             if (!(message.locallyFree && typeof message.locallyFree.length === "number" || $util.isString(message.locallyFree)))
                 return "locallyFree: buffer expected";
@@ -8110,6 +6937,16 @@ $root.New = (function() {
             for (var i = 0; i < object.uri.length; ++i)
                 message.uri[i] = String(object.uri[i]);
         }
+        if (object.deployId != null) {
+            if (typeof object.deployId !== "object")
+                throw TypeError(".New.deployId: object expected");
+            message.deployId = $root.DeployId.fromObject(object.deployId);
+        }
+        if (object.deployerId != null) {
+            if (typeof object.deployerId !== "object")
+                throw TypeError(".New.deployerId: object expected");
+            message.deployerId = $root.DeployerId.fromObject(object.deployerId);
+        }
         if (object.locallyFree != null)
             if (typeof object.locallyFree === "string")
                 $util.base64.decode(object.locallyFree, message.locallyFree = $util.newBuffer($util.base64.length(object.locallyFree)), 0);
@@ -8127,6 +6964,8 @@ $root.New = (function() {
         if (options.defaults) {
             object.bindCount = 0;
             object.p = null;
+            object.deployId = null;
+            object.deployerId = null;
             if (options.bytes === String)
                 object.locallyFree = "";
             else {
@@ -8144,6 +6983,10 @@ $root.New = (function() {
             for (var j = 0; j < message.uri.length; ++j)
                 object.uri[j] = message.uri[j];
         }
+        if (message.deployId != null && message.hasOwnProperty("deployId"))
+            object.deployId = $root.DeployId.toObject(message.deployId, options);
+        if (message.deployerId != null && message.hasOwnProperty("deployerId"))
+            object.deployerId = $root.DeployerId.toObject(message.deployerId, options);
         if (message.locallyFree != null && message.hasOwnProperty("locallyFree"))
             object.locallyFree = options.bytes === String ? $util.base64.encode(message.locallyFree, 0, message.locallyFree.length) : options.bytes === Array ? Array.prototype.slice.call(message.locallyFree) : message.locallyFree;
         return object;
@@ -8486,11 +7329,12 @@ $root.Expr = (function() {
     Expr.prototype.e_percent_percent_body = null;
     Expr.prototype.e_plus_plus_body = null;
     Expr.prototype.e_minus_minus_body = null;
+    Expr.prototype.e_mod_body = null;
 
     var $oneOfFields;
 
     Object.defineProperty(Expr.prototype, "expr_instance", {
-        get: $util.oneOfGetter($oneOfFields = ["g_bool", "g_int", "g_string", "g_uri", "g_byte_array", "e_not_body", "e_neg_body", "e_mult_body", "e_div_body", "e_plus_body", "e_minus_body", "e_lt_body", "e_lte_body", "e_gt_body", "e_gte_body", "e_eq_body", "e_neq_body", "e_and_body", "e_or_body", "e_var_body", "e_list_body", "e_tuple_body", "e_set_body", "e_map_body", "e_method_body", "e_matches_body", "e_percent_percent_body", "e_plus_plus_body", "e_minus_minus_body"]),
+        get: $util.oneOfGetter($oneOfFields = ["g_bool", "g_int", "g_string", "g_uri", "g_byte_array", "e_not_body", "e_neg_body", "e_mult_body", "e_div_body", "e_plus_body", "e_minus_body", "e_lt_body", "e_lte_body", "e_gt_body", "e_gte_body", "e_eq_body", "e_neq_body", "e_and_body", "e_or_body", "e_var_body", "e_list_body", "e_tuple_body", "e_set_body", "e_map_body", "e_method_body", "e_matches_body", "e_percent_percent_body", "e_plus_plus_body", "e_minus_minus_body", "e_mod_body"]),
         set: $util.oneOfSetter($oneOfFields)
     });
 
@@ -8559,6 +7403,8 @@ $root.Expr = (function() {
             $root.EPlusPlus.encode(message.e_plus_plus_body, writer.uint32(234).fork()).ldelim();
         if (message.e_minus_minus_body != null && message.hasOwnProperty("e_minus_minus_body"))
             $root.EMinusMinus.encode(message.e_minus_minus_body, writer.uint32(242).fork()).ldelim();
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body"))
+            $root.EMod.encode(message.e_mod_body, writer.uint32(250).fork()).ldelim();
         return writer;
     };
 
@@ -8659,6 +7505,9 @@ $root.Expr = (function() {
                 break;
             case 30:
                 message.e_minus_minus_body = $root.EMinusMinus.decode(reader, reader.uint32());
+                break;
+            case 31:
+                message.e_mod_body = $root.EMod.decode(reader, reader.uint32());
                 break;
             default:
                 reader.skipType(tag & 7);
@@ -8951,6 +7800,16 @@ $root.Expr = (function() {
                     return "e_minus_minus_body." + error;
             }
         }
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body")) {
+            if (properties.expr_instance === 1)
+                return "expr_instance: multiple values";
+            properties.expr_instance = 1;
+            {
+                var error = $root.EMod.verify(message.e_mod_body);
+                if (error)
+                    return "e_mod_body." + error;
+            }
+        }
         return null;
     };
 
@@ -9097,6 +7956,11 @@ $root.Expr = (function() {
             if (typeof object.e_minus_minus_body !== "object")
                 throw TypeError(".Expr.e_minus_minus_body: object expected");
             message.e_minus_minus_body = $root.EMinusMinus.fromObject(object.e_minus_minus_body);
+        }
+        if (object.e_mod_body != null) {
+            if (typeof object.e_mod_body !== "object")
+                throw TypeError(".Expr.e_mod_body: object expected");
+            message.e_mod_body = $root.EMod.fromObject(object.e_mod_body);
         }
         return message;
     };
@@ -9252,6 +8116,11 @@ $root.Expr = (function() {
             object.e_minus_minus_body = $root.EMinusMinus.toObject(message.e_minus_minus_body, options);
             if (options.oneofs)
                 object.expr_instance = "e_minus_minus_body";
+        }
+        if (message.e_mod_body != null && message.hasOwnProperty("e_mod_body")) {
+            object.e_mod_body = $root.EMod.toObject(message.e_mod_body, options);
+            if (options.oneofs)
+                object.expr_instance = "e_mod_body";
         }
         return object;
     };
@@ -10698,6 +9567,118 @@ $root.EDiv = (function() {
     };
 
     return EDiv;
+})();
+
+$root.EMod = (function() {
+
+    function EMod(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    EMod.prototype.p1 = null;
+    EMod.prototype.p2 = null;
+
+    EMod.create = function create(properties) {
+        return new EMod(properties);
+    };
+
+    EMod.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.p1 != null && message.hasOwnProperty("p1"))
+            $root.Par.encode(message.p1, writer.uint32(10).fork()).ldelim();
+        if (message.p2 != null && message.hasOwnProperty("p2"))
+            $root.Par.encode(message.p2, writer.uint32(18).fork()).ldelim();
+        return writer;
+    };
+
+    EMod.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    EMod.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.EMod();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.p1 = $root.Par.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.p2 = $root.Par.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    EMod.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    EMod.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.p1 != null && message.hasOwnProperty("p1")) {
+            var error = $root.Par.verify(message.p1);
+            if (error)
+                return "p1." + error;
+        }
+        if (message.p2 != null && message.hasOwnProperty("p2")) {
+            var error = $root.Par.verify(message.p2);
+            if (error)
+                return "p2." + error;
+        }
+        return null;
+    };
+
+    EMod.fromObject = function fromObject(object) {
+        if (object instanceof $root.EMod)
+            return object;
+        var message = new $root.EMod();
+        if (object.p1 != null) {
+            if (typeof object.p1 !== "object")
+                throw TypeError(".EMod.p1: object expected");
+            message.p1 = $root.Par.fromObject(object.p1);
+        }
+        if (object.p2 != null) {
+            if (typeof object.p2 !== "object")
+                throw TypeError(".EMod.p2: object expected");
+            message.p2 = $root.Par.fromObject(object.p2);
+        }
+        return message;
+    };
+
+    EMod.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults) {
+            object.p1 = null;
+            object.p2 = null;
+        }
+        if (message.p1 != null && message.hasOwnProperty("p1"))
+            object.p1 = $root.Par.toObject(message.p1, options);
+        if (message.p2 != null && message.hasOwnProperty("p2"))
+            object.p2 = $root.Par.toObject(message.p2, options);
+        return object;
+    };
+
+    EMod.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return EMod;
 })();
 
 $root.EPlus = (function() {
@@ -12760,6 +11741,354 @@ $root.ConnectiveBody = (function() {
     return ConnectiveBody;
 })();
 
+$root.DeployId = (function() {
+
+    function DeployId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    DeployId.prototype.sig = $util.newBuffer([]);
+
+    DeployId.create = function create(properties) {
+        return new DeployId(properties);
+    };
+
+    DeployId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            writer.uint32(10).bytes(message.sig);
+        return writer;
+    };
+
+    DeployId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    DeployId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeployId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.sig = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    DeployId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    DeployId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                return "sig: buffer expected";
+        return null;
+    };
+
+    DeployId.fromObject = function fromObject(object) {
+        if (object instanceof $root.DeployId)
+            return object;
+        var message = new $root.DeployId();
+        if (object.sig != null)
+            if (typeof object.sig === "string")
+                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+            else if (object.sig.length)
+                message.sig = object.sig;
+        return message;
+    };
+
+    DeployId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.sig = "";
+            else {
+                object.sig = [];
+                if (options.bytes !== Array)
+                    object.sig = $util.newBuffer(object.sig);
+            }
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+        return object;
+    };
+
+    DeployId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return DeployId;
+})();
+
+$root.DeployerId = (function() {
+
+    function DeployerId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    DeployerId.prototype.publicKey = $util.newBuffer([]);
+
+    DeployerId.create = function create(properties) {
+        return new DeployerId(properties);
+    };
+
+    DeployerId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            writer.uint32(10).bytes(message.publicKey);
+        return writer;
+    };
+
+    DeployerId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    DeployerId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.DeployerId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.publicKey = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    DeployerId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    DeployerId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
+                return "publicKey: buffer expected";
+        return null;
+    };
+
+    DeployerId.fromObject = function fromObject(object) {
+        if (object instanceof $root.DeployerId)
+            return object;
+        var message = new $root.DeployerId();
+        if (object.publicKey != null)
+            if (typeof object.publicKey === "string")
+                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
+            else if (object.publicKey.length)
+                message.publicKey = object.publicKey;
+        return message;
+    };
+
+    DeployerId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.publicKey = "";
+            else {
+                object.publicKey = [];
+                if (options.bytes !== Array)
+                    object.publicKey = $util.newBuffer(object.publicKey);
+            }
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+        return object;
+    };
+
+    DeployerId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return DeployerId;
+})();
+
+$root.GUnforgeable = (function() {
+
+    function GUnforgeable(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    GUnforgeable.prototype.g_private_body = null;
+    GUnforgeable.prototype.g_deploy_id_body = null;
+    GUnforgeable.prototype.g_deployer_id_body = null;
+
+    var $oneOfFields;
+
+    Object.defineProperty(GUnforgeable.prototype, "unf_instance", {
+        get: $util.oneOfGetter($oneOfFields = ["g_private_body", "g_deploy_id_body", "g_deployer_id_body"]),
+        set: $util.oneOfSetter($oneOfFields)
+    });
+
+    GUnforgeable.create = function create(properties) {
+        return new GUnforgeable(properties);
+    };
+
+    GUnforgeable.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body"))
+            $root.GPrivate.encode(message.g_private_body, writer.uint32(10).fork()).ldelim();
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body"))
+            $root.GDeployId.encode(message.g_deploy_id_body, writer.uint32(18).fork()).ldelim();
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body"))
+            $root.GDeployerId.encode(message.g_deployer_id_body, writer.uint32(26).fork()).ldelim();
+        return writer;
+    };
+
+    GUnforgeable.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    GUnforgeable.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GUnforgeable();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.g_private_body = $root.GPrivate.decode(reader, reader.uint32());
+                break;
+            case 2:
+                message.g_deploy_id_body = $root.GDeployId.decode(reader, reader.uint32());
+                break;
+            case 3:
+                message.g_deployer_id_body = $root.GDeployerId.decode(reader, reader.uint32());
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    GUnforgeable.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    GUnforgeable.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        var properties = {};
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body")) {
+            properties.unf_instance = 1;
+            {
+                var error = $root.GPrivate.verify(message.g_private_body);
+                if (error)
+                    return "g_private_body." + error;
+            }
+        }
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body")) {
+            if (properties.unf_instance === 1)
+                return "unf_instance: multiple values";
+            properties.unf_instance = 1;
+            {
+                var error = $root.GDeployId.verify(message.g_deploy_id_body);
+                if (error)
+                    return "g_deploy_id_body." + error;
+            }
+        }
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body")) {
+            if (properties.unf_instance === 1)
+                return "unf_instance: multiple values";
+            properties.unf_instance = 1;
+            {
+                var error = $root.GDeployerId.verify(message.g_deployer_id_body);
+                if (error)
+                    return "g_deployer_id_body." + error;
+            }
+        }
+        return null;
+    };
+
+    GUnforgeable.fromObject = function fromObject(object) {
+        if (object instanceof $root.GUnforgeable)
+            return object;
+        var message = new $root.GUnforgeable();
+        if (object.g_private_body != null) {
+            if (typeof object.g_private_body !== "object")
+                throw TypeError(".GUnforgeable.g_private_body: object expected");
+            message.g_private_body = $root.GPrivate.fromObject(object.g_private_body);
+        }
+        if (object.g_deploy_id_body != null) {
+            if (typeof object.g_deploy_id_body !== "object")
+                throw TypeError(".GUnforgeable.g_deploy_id_body: object expected");
+            message.g_deploy_id_body = $root.GDeployId.fromObject(object.g_deploy_id_body);
+        }
+        if (object.g_deployer_id_body != null) {
+            if (typeof object.g_deployer_id_body !== "object")
+                throw TypeError(".GUnforgeable.g_deployer_id_body: object expected");
+            message.g_deployer_id_body = $root.GDeployerId.fromObject(object.g_deployer_id_body);
+        }
+        return message;
+    };
+
+    GUnforgeable.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (message.g_private_body != null && message.hasOwnProperty("g_private_body")) {
+            object.g_private_body = $root.GPrivate.toObject(message.g_private_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_private_body";
+        }
+        if (message.g_deploy_id_body != null && message.hasOwnProperty("g_deploy_id_body")) {
+            object.g_deploy_id_body = $root.GDeployId.toObject(message.g_deploy_id_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_deploy_id_body";
+        }
+        if (message.g_deployer_id_body != null && message.hasOwnProperty("g_deployer_id_body")) {
+            object.g_deployer_id_body = $root.GDeployerId.toObject(message.g_deployer_id_body, options);
+            if (options.oneofs)
+                object.unf_instance = "g_deployer_id_body";
+        }
+        return object;
+    };
+
+    GUnforgeable.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GUnforgeable;
+})();
+
 $root.GPrivate = (function() {
 
     function GPrivate(properties) {
@@ -12854,6 +12183,198 @@ $root.GPrivate = (function() {
     };
 
     return GPrivate;
+})();
+
+$root.GDeployId = (function() {
+
+    function GDeployId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    GDeployId.prototype.sig = $util.newBuffer([]);
+
+    GDeployId.create = function create(properties) {
+        return new GDeployId(properties);
+    };
+
+    GDeployId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            writer.uint32(10).bytes(message.sig);
+        return writer;
+    };
+
+    GDeployId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    GDeployId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GDeployId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.sig = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    GDeployId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    GDeployId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            if (!(message.sig && typeof message.sig.length === "number" || $util.isString(message.sig)))
+                return "sig: buffer expected";
+        return null;
+    };
+
+    GDeployId.fromObject = function fromObject(object) {
+        if (object instanceof $root.GDeployId)
+            return object;
+        var message = new $root.GDeployId();
+        if (object.sig != null)
+            if (typeof object.sig === "string")
+                $util.base64.decode(object.sig, message.sig = $util.newBuffer($util.base64.length(object.sig)), 0);
+            else if (object.sig.length)
+                message.sig = object.sig;
+        return message;
+    };
+
+    GDeployId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.sig = "";
+            else {
+                object.sig = [];
+                if (options.bytes !== Array)
+                    object.sig = $util.newBuffer(object.sig);
+            }
+        if (message.sig != null && message.hasOwnProperty("sig"))
+            object.sig = options.bytes === String ? $util.base64.encode(message.sig, 0, message.sig.length) : options.bytes === Array ? Array.prototype.slice.call(message.sig) : message.sig;
+        return object;
+    };
+
+    GDeployId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GDeployId;
+})();
+
+$root.GDeployerId = (function() {
+
+    function GDeployerId(properties) {
+        if (properties)
+            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                if (properties[keys[i]] != null)
+                    this[keys[i]] = properties[keys[i]];
+    }
+
+    GDeployerId.prototype.publicKey = $util.newBuffer([]);
+
+    GDeployerId.create = function create(properties) {
+        return new GDeployerId(properties);
+    };
+
+    GDeployerId.encode = function encode(message, writer) {
+        if (!writer)
+            writer = $Writer.create();
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            writer.uint32(10).bytes(message.publicKey);
+        return writer;
+    };
+
+    GDeployerId.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    GDeployerId.decode = function decode(reader, length) {
+        if (!(reader instanceof $Reader))
+            reader = $Reader.create(reader);
+        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.GDeployerId();
+        while (reader.pos < end) {
+            var tag = reader.uint32();
+            switch (tag >>> 3) {
+            case 1:
+                message.publicKey = reader.bytes();
+                break;
+            default:
+                reader.skipType(tag & 7);
+                break;
+            }
+        }
+        return message;
+    };
+
+    GDeployerId.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    GDeployerId.verify = function verify(message) {
+        if (typeof message !== "object" || message === null)
+            return "object expected";
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            if (!(message.publicKey && typeof message.publicKey.length === "number" || $util.isString(message.publicKey)))
+                return "publicKey: buffer expected";
+        return null;
+    };
+
+    GDeployerId.fromObject = function fromObject(object) {
+        if (object instanceof $root.GDeployerId)
+            return object;
+        var message = new $root.GDeployerId();
+        if (object.publicKey != null)
+            if (typeof object.publicKey === "string")
+                $util.base64.decode(object.publicKey, message.publicKey = $util.newBuffer($util.base64.length(object.publicKey)), 0);
+            else if (object.publicKey.length)
+                message.publicKey = object.publicKey;
+        return message;
+    };
+
+    GDeployerId.toObject = function toObject(message, options) {
+        if (!options)
+            options = {};
+        var object = {};
+        if (options.defaults)
+            if (options.bytes === String)
+                object.publicKey = "";
+            else {
+                object.publicKey = [];
+                if (options.bytes !== Array)
+                    object.publicKey = $util.newBuffer(object.publicKey);
+            }
+        if (message.publicKey != null && message.hasOwnProperty("publicKey"))
+            object.publicKey = options.bytes === String ? $util.base64.encode(message.publicKey, 0, message.publicKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.publicKey) : message.publicKey;
+        return object;
+    };
+
+    GDeployerId.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+    };
+
+    return GDeployerId;
 })();
 
 $root.EitherAny = (function() {
@@ -13365,6 +12886,4525 @@ $root.google = (function() {
             };
 
             return Empty;
+        })();
+
+        protobuf.FileDescriptorSet = (function() {
+
+            function FileDescriptorSet(properties) {
+                this.file = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            FileDescriptorSet.prototype.file = $util.emptyArray;
+
+            FileDescriptorSet.create = function create(properties) {
+                return new FileDescriptorSet(properties);
+            };
+
+            FileDescriptorSet.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.file != null && message.file.length)
+                    for (var i = 0; i < message.file.length; ++i)
+                        $root.google.protobuf.FileDescriptorProto.encode(message.file[i], writer.uint32(10).fork()).ldelim();
+                return writer;
+            };
+
+            FileDescriptorSet.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            FileDescriptorSet.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FileDescriptorSet();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.file && message.file.length))
+                            message.file = [];
+                        message.file.push($root.google.protobuf.FileDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            FileDescriptorSet.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            FileDescriptorSet.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.file != null && message.hasOwnProperty("file")) {
+                    if (!Array.isArray(message.file))
+                        return "file: array expected";
+                    for (var i = 0; i < message.file.length; ++i) {
+                        var error = $root.google.protobuf.FileDescriptorProto.verify(message.file[i]);
+                        if (error)
+                            return "file." + error;
+                    }
+                }
+                return null;
+            };
+
+            FileDescriptorSet.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.FileDescriptorSet)
+                    return object;
+                var message = new $root.google.protobuf.FileDescriptorSet();
+                if (object.file) {
+                    if (!Array.isArray(object.file))
+                        throw TypeError(".google.protobuf.FileDescriptorSet.file: array expected");
+                    message.file = [];
+                    for (var i = 0; i < object.file.length; ++i) {
+                        if (typeof object.file[i] !== "object")
+                            throw TypeError(".google.protobuf.FileDescriptorSet.file: object expected");
+                        message.file[i] = $root.google.protobuf.FileDescriptorProto.fromObject(object.file[i]);
+                    }
+                }
+                return message;
+            };
+
+            FileDescriptorSet.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.file = [];
+                if (message.file && message.file.length) {
+                    object.file = [];
+                    for (var j = 0; j < message.file.length; ++j)
+                        object.file[j] = $root.google.protobuf.FileDescriptorProto.toObject(message.file[j], options);
+                }
+                return object;
+            };
+
+            FileDescriptorSet.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return FileDescriptorSet;
+        })();
+
+        protobuf.FileDescriptorProto = (function() {
+
+            function FileDescriptorProto(properties) {
+                this.dependency = [];
+                this.public_dependency = [];
+                this.weak_dependency = [];
+                this.message_type = [];
+                this.enum_type = [];
+                this.service = [];
+                this.extension = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            FileDescriptorProto.prototype.name = "";
+            FileDescriptorProto.prototype["package"] = "";
+            FileDescriptorProto.prototype.dependency = $util.emptyArray;
+            FileDescriptorProto.prototype.public_dependency = $util.emptyArray;
+            FileDescriptorProto.prototype.weak_dependency = $util.emptyArray;
+            FileDescriptorProto.prototype.message_type = $util.emptyArray;
+            FileDescriptorProto.prototype.enum_type = $util.emptyArray;
+            FileDescriptorProto.prototype.service = $util.emptyArray;
+            FileDescriptorProto.prototype.extension = $util.emptyArray;
+            FileDescriptorProto.prototype.options = null;
+            FileDescriptorProto.prototype.source_code_info = null;
+            FileDescriptorProto.prototype.syntax = "";
+
+            FileDescriptorProto.create = function create(properties) {
+                return new FileDescriptorProto(properties);
+            };
+
+            FileDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message["package"] != null && message.hasOwnProperty("package"))
+                    writer.uint32(18).string(message["package"]);
+                if (message.dependency != null && message.dependency.length)
+                    for (var i = 0; i < message.dependency.length; ++i)
+                        writer.uint32(26).string(message.dependency[i]);
+                if (message.message_type != null && message.message_type.length)
+                    for (var i = 0; i < message.message_type.length; ++i)
+                        $root.google.protobuf.DescriptorProto.encode(message.message_type[i], writer.uint32(34).fork()).ldelim();
+                if (message.enum_type != null && message.enum_type.length)
+                    for (var i = 0; i < message.enum_type.length; ++i)
+                        $root.google.protobuf.EnumDescriptorProto.encode(message.enum_type[i], writer.uint32(42).fork()).ldelim();
+                if (message.service != null && message.service.length)
+                    for (var i = 0; i < message.service.length; ++i)
+                        $root.google.protobuf.ServiceDescriptorProto.encode(message.service[i], writer.uint32(50).fork()).ldelim();
+                if (message.extension != null && message.extension.length)
+                    for (var i = 0; i < message.extension.length; ++i)
+                        $root.google.protobuf.FieldDescriptorProto.encode(message.extension[i], writer.uint32(58).fork()).ldelim();
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.FileOptions.encode(message.options, writer.uint32(66).fork()).ldelim();
+                if (message.source_code_info != null && message.hasOwnProperty("source_code_info"))
+                    $root.google.protobuf.SourceCodeInfo.encode(message.source_code_info, writer.uint32(74).fork()).ldelim();
+                if (message.public_dependency != null && message.public_dependency.length)
+                    for (var i = 0; i < message.public_dependency.length; ++i)
+                        writer.uint32(80).int32(message.public_dependency[i]);
+                if (message.weak_dependency != null && message.weak_dependency.length)
+                    for (var i = 0; i < message.weak_dependency.length; ++i)
+                        writer.uint32(88).int32(message.weak_dependency[i]);
+                if (message.syntax != null && message.hasOwnProperty("syntax"))
+                    writer.uint32(98).string(message.syntax);
+                return writer;
+            };
+
+            FileDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            FileDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FileDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        message["package"] = reader.string();
+                        break;
+                    case 3:
+                        if (!(message.dependency && message.dependency.length))
+                            message.dependency = [];
+                        message.dependency.push(reader.string());
+                        break;
+                    case 10:
+                        if (!(message.public_dependency && message.public_dependency.length))
+                            message.public_dependency = [];
+                        if ((tag & 7) === 2) {
+                            var end2 = reader.uint32() + reader.pos;
+                            while (reader.pos < end2)
+                                message.public_dependency.push(reader.int32());
+                        } else
+                            message.public_dependency.push(reader.int32());
+                        break;
+                    case 11:
+                        if (!(message.weak_dependency && message.weak_dependency.length))
+                            message.weak_dependency = [];
+                        if ((tag & 7) === 2) {
+                            var end2 = reader.uint32() + reader.pos;
+                            while (reader.pos < end2)
+                                message.weak_dependency.push(reader.int32());
+                        } else
+                            message.weak_dependency.push(reader.int32());
+                        break;
+                    case 4:
+                        if (!(message.message_type && message.message_type.length))
+                            message.message_type = [];
+                        message.message_type.push($root.google.protobuf.DescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 5:
+                        if (!(message.enum_type && message.enum_type.length))
+                            message.enum_type = [];
+                        message.enum_type.push($root.google.protobuf.EnumDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 6:
+                        if (!(message.service && message.service.length))
+                            message.service = [];
+                        message.service.push($root.google.protobuf.ServiceDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 7:
+                        if (!(message.extension && message.extension.length))
+                            message.extension = [];
+                        message.extension.push($root.google.protobuf.FieldDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 8:
+                        message.options = $root.google.protobuf.FileOptions.decode(reader, reader.uint32());
+                        break;
+                    case 9:
+                        message.source_code_info = $root.google.protobuf.SourceCodeInfo.decode(reader, reader.uint32());
+                        break;
+                    case 12:
+                        message.syntax = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            FileDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            FileDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message["package"] != null && message.hasOwnProperty("package"))
+                    if (!$util.isString(message["package"]))
+                        return "package: string expected";
+                if (message.dependency != null && message.hasOwnProperty("dependency")) {
+                    if (!Array.isArray(message.dependency))
+                        return "dependency: array expected";
+                    for (var i = 0; i < message.dependency.length; ++i)
+                        if (!$util.isString(message.dependency[i]))
+                            return "dependency: string[] expected";
+                }
+                if (message.public_dependency != null && message.hasOwnProperty("public_dependency")) {
+                    if (!Array.isArray(message.public_dependency))
+                        return "public_dependency: array expected";
+                    for (var i = 0; i < message.public_dependency.length; ++i)
+                        if (!$util.isInteger(message.public_dependency[i]))
+                            return "public_dependency: integer[] expected";
+                }
+                if (message.weak_dependency != null && message.hasOwnProperty("weak_dependency")) {
+                    if (!Array.isArray(message.weak_dependency))
+                        return "weak_dependency: array expected";
+                    for (var i = 0; i < message.weak_dependency.length; ++i)
+                        if (!$util.isInteger(message.weak_dependency[i]))
+                            return "weak_dependency: integer[] expected";
+                }
+                if (message.message_type != null && message.hasOwnProperty("message_type")) {
+                    if (!Array.isArray(message.message_type))
+                        return "message_type: array expected";
+                    for (var i = 0; i < message.message_type.length; ++i) {
+                        var error = $root.google.protobuf.DescriptorProto.verify(message.message_type[i]);
+                        if (error)
+                            return "message_type." + error;
+                    }
+                }
+                if (message.enum_type != null && message.hasOwnProperty("enum_type")) {
+                    if (!Array.isArray(message.enum_type))
+                        return "enum_type: array expected";
+                    for (var i = 0; i < message.enum_type.length; ++i) {
+                        var error = $root.google.protobuf.EnumDescriptorProto.verify(message.enum_type[i]);
+                        if (error)
+                            return "enum_type." + error;
+                    }
+                }
+                if (message.service != null && message.hasOwnProperty("service")) {
+                    if (!Array.isArray(message.service))
+                        return "service: array expected";
+                    for (var i = 0; i < message.service.length; ++i) {
+                        var error = $root.google.protobuf.ServiceDescriptorProto.verify(message.service[i]);
+                        if (error)
+                            return "service." + error;
+                    }
+                }
+                if (message.extension != null && message.hasOwnProperty("extension")) {
+                    if (!Array.isArray(message.extension))
+                        return "extension: array expected";
+                    for (var i = 0; i < message.extension.length; ++i) {
+                        var error = $root.google.protobuf.FieldDescriptorProto.verify(message.extension[i]);
+                        if (error)
+                            return "extension." + error;
+                    }
+                }
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.FileOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                if (message.source_code_info != null && message.hasOwnProperty("source_code_info")) {
+                    var error = $root.google.protobuf.SourceCodeInfo.verify(message.source_code_info);
+                    if (error)
+                        return "source_code_info." + error;
+                }
+                if (message.syntax != null && message.hasOwnProperty("syntax"))
+                    if (!$util.isString(message.syntax))
+                        return "syntax: string expected";
+                return null;
+            };
+
+            FileDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.FileDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.FileDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object["package"] != null)
+                    message["package"] = String(object["package"]);
+                if (object.dependency) {
+                    if (!Array.isArray(object.dependency))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.dependency: array expected");
+                    message.dependency = [];
+                    for (var i = 0; i < object.dependency.length; ++i)
+                        message.dependency[i] = String(object.dependency[i]);
+                }
+                if (object.public_dependency) {
+                    if (!Array.isArray(object.public_dependency))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.public_dependency: array expected");
+                    message.public_dependency = [];
+                    for (var i = 0; i < object.public_dependency.length; ++i)
+                        message.public_dependency[i] = object.public_dependency[i] | 0;
+                }
+                if (object.weak_dependency) {
+                    if (!Array.isArray(object.weak_dependency))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.weak_dependency: array expected");
+                    message.weak_dependency = [];
+                    for (var i = 0; i < object.weak_dependency.length; ++i)
+                        message.weak_dependency[i] = object.weak_dependency[i] | 0;
+                }
+                if (object.message_type) {
+                    if (!Array.isArray(object.message_type))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.message_type: array expected");
+                    message.message_type = [];
+                    for (var i = 0; i < object.message_type.length; ++i) {
+                        if (typeof object.message_type[i] !== "object")
+                            throw TypeError(".google.protobuf.FileDescriptorProto.message_type: object expected");
+                        message.message_type[i] = $root.google.protobuf.DescriptorProto.fromObject(object.message_type[i]);
+                    }
+                }
+                if (object.enum_type) {
+                    if (!Array.isArray(object.enum_type))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.enum_type: array expected");
+                    message.enum_type = [];
+                    for (var i = 0; i < object.enum_type.length; ++i) {
+                        if (typeof object.enum_type[i] !== "object")
+                            throw TypeError(".google.protobuf.FileDescriptorProto.enum_type: object expected");
+                        message.enum_type[i] = $root.google.protobuf.EnumDescriptorProto.fromObject(object.enum_type[i]);
+                    }
+                }
+                if (object.service) {
+                    if (!Array.isArray(object.service))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.service: array expected");
+                    message.service = [];
+                    for (var i = 0; i < object.service.length; ++i) {
+                        if (typeof object.service[i] !== "object")
+                            throw TypeError(".google.protobuf.FileDescriptorProto.service: object expected");
+                        message.service[i] = $root.google.protobuf.ServiceDescriptorProto.fromObject(object.service[i]);
+                    }
+                }
+                if (object.extension) {
+                    if (!Array.isArray(object.extension))
+                        throw TypeError(".google.protobuf.FileDescriptorProto.extension: array expected");
+                    message.extension = [];
+                    for (var i = 0; i < object.extension.length; ++i) {
+                        if (typeof object.extension[i] !== "object")
+                            throw TypeError(".google.protobuf.FileDescriptorProto.extension: object expected");
+                        message.extension[i] = $root.google.protobuf.FieldDescriptorProto.fromObject(object.extension[i]);
+                    }
+                }
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.FileDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.FileOptions.fromObject(object.options);
+                }
+                if (object.source_code_info != null) {
+                    if (typeof object.source_code_info !== "object")
+                        throw TypeError(".google.protobuf.FileDescriptorProto.source_code_info: object expected");
+                    message.source_code_info = $root.google.protobuf.SourceCodeInfo.fromObject(object.source_code_info);
+                }
+                if (object.syntax != null)
+                    message.syntax = String(object.syntax);
+                return message;
+            };
+
+            FileDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults) {
+                    object.dependency = [];
+                    object.message_type = [];
+                    object.enum_type = [];
+                    object.service = [];
+                    object.extension = [];
+                    object.public_dependency = [];
+                    object.weak_dependency = [];
+                }
+                if (options.defaults) {
+                    object.name = "";
+                    object["package"] = "";
+                    object.options = null;
+                    object.source_code_info = null;
+                    object.syntax = "";
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message["package"] != null && message.hasOwnProperty("package"))
+                    object["package"] = message["package"];
+                if (message.dependency && message.dependency.length) {
+                    object.dependency = [];
+                    for (var j = 0; j < message.dependency.length; ++j)
+                        object.dependency[j] = message.dependency[j];
+                }
+                if (message.message_type && message.message_type.length) {
+                    object.message_type = [];
+                    for (var j = 0; j < message.message_type.length; ++j)
+                        object.message_type[j] = $root.google.protobuf.DescriptorProto.toObject(message.message_type[j], options);
+                }
+                if (message.enum_type && message.enum_type.length) {
+                    object.enum_type = [];
+                    for (var j = 0; j < message.enum_type.length; ++j)
+                        object.enum_type[j] = $root.google.protobuf.EnumDescriptorProto.toObject(message.enum_type[j], options);
+                }
+                if (message.service && message.service.length) {
+                    object.service = [];
+                    for (var j = 0; j < message.service.length; ++j)
+                        object.service[j] = $root.google.protobuf.ServiceDescriptorProto.toObject(message.service[j], options);
+                }
+                if (message.extension && message.extension.length) {
+                    object.extension = [];
+                    for (var j = 0; j < message.extension.length; ++j)
+                        object.extension[j] = $root.google.protobuf.FieldDescriptorProto.toObject(message.extension[j], options);
+                }
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.FileOptions.toObject(message.options, options);
+                if (message.source_code_info != null && message.hasOwnProperty("source_code_info"))
+                    object.source_code_info = $root.google.protobuf.SourceCodeInfo.toObject(message.source_code_info, options);
+                if (message.public_dependency && message.public_dependency.length) {
+                    object.public_dependency = [];
+                    for (var j = 0; j < message.public_dependency.length; ++j)
+                        object.public_dependency[j] = message.public_dependency[j];
+                }
+                if (message.weak_dependency && message.weak_dependency.length) {
+                    object.weak_dependency = [];
+                    for (var j = 0; j < message.weak_dependency.length; ++j)
+                        object.weak_dependency[j] = message.weak_dependency[j];
+                }
+                if (message.syntax != null && message.hasOwnProperty("syntax"))
+                    object.syntax = message.syntax;
+                return object;
+            };
+
+            FileDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return FileDescriptorProto;
+        })();
+
+        protobuf.DescriptorProto = (function() {
+
+            function DescriptorProto(properties) {
+                this.field = [];
+                this.extension = [];
+                this.nested_type = [];
+                this.enum_type = [];
+                this.extension_range = [];
+                this.oneof_decl = [];
+                this.reserved_range = [];
+                this.reserved_name = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            DescriptorProto.prototype.name = "";
+            DescriptorProto.prototype.field = $util.emptyArray;
+            DescriptorProto.prototype.extension = $util.emptyArray;
+            DescriptorProto.prototype.nested_type = $util.emptyArray;
+            DescriptorProto.prototype.enum_type = $util.emptyArray;
+            DescriptorProto.prototype.extension_range = $util.emptyArray;
+            DescriptorProto.prototype.oneof_decl = $util.emptyArray;
+            DescriptorProto.prototype.options = null;
+            DescriptorProto.prototype.reserved_range = $util.emptyArray;
+            DescriptorProto.prototype.reserved_name = $util.emptyArray;
+
+            DescriptorProto.create = function create(properties) {
+                return new DescriptorProto(properties);
+            };
+
+            DescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.field != null && message.field.length)
+                    for (var i = 0; i < message.field.length; ++i)
+                        $root.google.protobuf.FieldDescriptorProto.encode(message.field[i], writer.uint32(18).fork()).ldelim();
+                if (message.nested_type != null && message.nested_type.length)
+                    for (var i = 0; i < message.nested_type.length; ++i)
+                        $root.google.protobuf.DescriptorProto.encode(message.nested_type[i], writer.uint32(26).fork()).ldelim();
+                if (message.enum_type != null && message.enum_type.length)
+                    for (var i = 0; i < message.enum_type.length; ++i)
+                        $root.google.protobuf.EnumDescriptorProto.encode(message.enum_type[i], writer.uint32(34).fork()).ldelim();
+                if (message.extension_range != null && message.extension_range.length)
+                    for (var i = 0; i < message.extension_range.length; ++i)
+                        $root.google.protobuf.DescriptorProto.ExtensionRange.encode(message.extension_range[i], writer.uint32(42).fork()).ldelim();
+                if (message.extension != null && message.extension.length)
+                    for (var i = 0; i < message.extension.length; ++i)
+                        $root.google.protobuf.FieldDescriptorProto.encode(message.extension[i], writer.uint32(50).fork()).ldelim();
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.MessageOptions.encode(message.options, writer.uint32(58).fork()).ldelim();
+                if (message.oneof_decl != null && message.oneof_decl.length)
+                    for (var i = 0; i < message.oneof_decl.length; ++i)
+                        $root.google.protobuf.OneofDescriptorProto.encode(message.oneof_decl[i], writer.uint32(66).fork()).ldelim();
+                if (message.reserved_range != null && message.reserved_range.length)
+                    for (var i = 0; i < message.reserved_range.length; ++i)
+                        $root.google.protobuf.DescriptorProto.ReservedRange.encode(message.reserved_range[i], writer.uint32(74).fork()).ldelim();
+                if (message.reserved_name != null && message.reserved_name.length)
+                    for (var i = 0; i < message.reserved_name.length; ++i)
+                        writer.uint32(82).string(message.reserved_name[i]);
+                return writer;
+            };
+
+            DescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            DescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.DescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        if (!(message.field && message.field.length))
+                            message.field = [];
+                        message.field.push($root.google.protobuf.FieldDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 6:
+                        if (!(message.extension && message.extension.length))
+                            message.extension = [];
+                        message.extension.push($root.google.protobuf.FieldDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 3:
+                        if (!(message.nested_type && message.nested_type.length))
+                            message.nested_type = [];
+                        message.nested_type.push($root.google.protobuf.DescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 4:
+                        if (!(message.enum_type && message.enum_type.length))
+                            message.enum_type = [];
+                        message.enum_type.push($root.google.protobuf.EnumDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 5:
+                        if (!(message.extension_range && message.extension_range.length))
+                            message.extension_range = [];
+                        message.extension_range.push($root.google.protobuf.DescriptorProto.ExtensionRange.decode(reader, reader.uint32()));
+                        break;
+                    case 8:
+                        if (!(message.oneof_decl && message.oneof_decl.length))
+                            message.oneof_decl = [];
+                        message.oneof_decl.push($root.google.protobuf.OneofDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 7:
+                        message.options = $root.google.protobuf.MessageOptions.decode(reader, reader.uint32());
+                        break;
+                    case 9:
+                        if (!(message.reserved_range && message.reserved_range.length))
+                            message.reserved_range = [];
+                        message.reserved_range.push($root.google.protobuf.DescriptorProto.ReservedRange.decode(reader, reader.uint32()));
+                        break;
+                    case 10:
+                        if (!(message.reserved_name && message.reserved_name.length))
+                            message.reserved_name = [];
+                        message.reserved_name.push(reader.string());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            DescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            DescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.field != null && message.hasOwnProperty("field")) {
+                    if (!Array.isArray(message.field))
+                        return "field: array expected";
+                    for (var i = 0; i < message.field.length; ++i) {
+                        var error = $root.google.protobuf.FieldDescriptorProto.verify(message.field[i]);
+                        if (error)
+                            return "field." + error;
+                    }
+                }
+                if (message.extension != null && message.hasOwnProperty("extension")) {
+                    if (!Array.isArray(message.extension))
+                        return "extension: array expected";
+                    for (var i = 0; i < message.extension.length; ++i) {
+                        var error = $root.google.protobuf.FieldDescriptorProto.verify(message.extension[i]);
+                        if (error)
+                            return "extension." + error;
+                    }
+                }
+                if (message.nested_type != null && message.hasOwnProperty("nested_type")) {
+                    if (!Array.isArray(message.nested_type))
+                        return "nested_type: array expected";
+                    for (var i = 0; i < message.nested_type.length; ++i) {
+                        var error = $root.google.protobuf.DescriptorProto.verify(message.nested_type[i]);
+                        if (error)
+                            return "nested_type." + error;
+                    }
+                }
+                if (message.enum_type != null && message.hasOwnProperty("enum_type")) {
+                    if (!Array.isArray(message.enum_type))
+                        return "enum_type: array expected";
+                    for (var i = 0; i < message.enum_type.length; ++i) {
+                        var error = $root.google.protobuf.EnumDescriptorProto.verify(message.enum_type[i]);
+                        if (error)
+                            return "enum_type." + error;
+                    }
+                }
+                if (message.extension_range != null && message.hasOwnProperty("extension_range")) {
+                    if (!Array.isArray(message.extension_range))
+                        return "extension_range: array expected";
+                    for (var i = 0; i < message.extension_range.length; ++i) {
+                        var error = $root.google.protobuf.DescriptorProto.ExtensionRange.verify(message.extension_range[i]);
+                        if (error)
+                            return "extension_range." + error;
+                    }
+                }
+                if (message.oneof_decl != null && message.hasOwnProperty("oneof_decl")) {
+                    if (!Array.isArray(message.oneof_decl))
+                        return "oneof_decl: array expected";
+                    for (var i = 0; i < message.oneof_decl.length; ++i) {
+                        var error = $root.google.protobuf.OneofDescriptorProto.verify(message.oneof_decl[i]);
+                        if (error)
+                            return "oneof_decl." + error;
+                    }
+                }
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.MessageOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                if (message.reserved_range != null && message.hasOwnProperty("reserved_range")) {
+                    if (!Array.isArray(message.reserved_range))
+                        return "reserved_range: array expected";
+                    for (var i = 0; i < message.reserved_range.length; ++i) {
+                        var error = $root.google.protobuf.DescriptorProto.ReservedRange.verify(message.reserved_range[i]);
+                        if (error)
+                            return "reserved_range." + error;
+                    }
+                }
+                if (message.reserved_name != null && message.hasOwnProperty("reserved_name")) {
+                    if (!Array.isArray(message.reserved_name))
+                        return "reserved_name: array expected";
+                    for (var i = 0; i < message.reserved_name.length; ++i)
+                        if (!$util.isString(message.reserved_name[i]))
+                            return "reserved_name: string[] expected";
+                }
+                return null;
+            };
+
+            DescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.DescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.DescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.field) {
+                    if (!Array.isArray(object.field))
+                        throw TypeError(".google.protobuf.DescriptorProto.field: array expected");
+                    message.field = [];
+                    for (var i = 0; i < object.field.length; ++i) {
+                        if (typeof object.field[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.field: object expected");
+                        message.field[i] = $root.google.protobuf.FieldDescriptorProto.fromObject(object.field[i]);
+                    }
+                }
+                if (object.extension) {
+                    if (!Array.isArray(object.extension))
+                        throw TypeError(".google.protobuf.DescriptorProto.extension: array expected");
+                    message.extension = [];
+                    for (var i = 0; i < object.extension.length; ++i) {
+                        if (typeof object.extension[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.extension: object expected");
+                        message.extension[i] = $root.google.protobuf.FieldDescriptorProto.fromObject(object.extension[i]);
+                    }
+                }
+                if (object.nested_type) {
+                    if (!Array.isArray(object.nested_type))
+                        throw TypeError(".google.protobuf.DescriptorProto.nested_type: array expected");
+                    message.nested_type = [];
+                    for (var i = 0; i < object.nested_type.length; ++i) {
+                        if (typeof object.nested_type[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.nested_type: object expected");
+                        message.nested_type[i] = $root.google.protobuf.DescriptorProto.fromObject(object.nested_type[i]);
+                    }
+                }
+                if (object.enum_type) {
+                    if (!Array.isArray(object.enum_type))
+                        throw TypeError(".google.protobuf.DescriptorProto.enum_type: array expected");
+                    message.enum_type = [];
+                    for (var i = 0; i < object.enum_type.length; ++i) {
+                        if (typeof object.enum_type[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.enum_type: object expected");
+                        message.enum_type[i] = $root.google.protobuf.EnumDescriptorProto.fromObject(object.enum_type[i]);
+                    }
+                }
+                if (object.extension_range) {
+                    if (!Array.isArray(object.extension_range))
+                        throw TypeError(".google.protobuf.DescriptorProto.extension_range: array expected");
+                    message.extension_range = [];
+                    for (var i = 0; i < object.extension_range.length; ++i) {
+                        if (typeof object.extension_range[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.extension_range: object expected");
+                        message.extension_range[i] = $root.google.protobuf.DescriptorProto.ExtensionRange.fromObject(object.extension_range[i]);
+                    }
+                }
+                if (object.oneof_decl) {
+                    if (!Array.isArray(object.oneof_decl))
+                        throw TypeError(".google.protobuf.DescriptorProto.oneof_decl: array expected");
+                    message.oneof_decl = [];
+                    for (var i = 0; i < object.oneof_decl.length; ++i) {
+                        if (typeof object.oneof_decl[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.oneof_decl: object expected");
+                        message.oneof_decl[i] = $root.google.protobuf.OneofDescriptorProto.fromObject(object.oneof_decl[i]);
+                    }
+                }
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.DescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.MessageOptions.fromObject(object.options);
+                }
+                if (object.reserved_range) {
+                    if (!Array.isArray(object.reserved_range))
+                        throw TypeError(".google.protobuf.DescriptorProto.reserved_range: array expected");
+                    message.reserved_range = [];
+                    for (var i = 0; i < object.reserved_range.length; ++i) {
+                        if (typeof object.reserved_range[i] !== "object")
+                            throw TypeError(".google.protobuf.DescriptorProto.reserved_range: object expected");
+                        message.reserved_range[i] = $root.google.protobuf.DescriptorProto.ReservedRange.fromObject(object.reserved_range[i]);
+                    }
+                }
+                if (object.reserved_name) {
+                    if (!Array.isArray(object.reserved_name))
+                        throw TypeError(".google.protobuf.DescriptorProto.reserved_name: array expected");
+                    message.reserved_name = [];
+                    for (var i = 0; i < object.reserved_name.length; ++i)
+                        message.reserved_name[i] = String(object.reserved_name[i]);
+                }
+                return message;
+            };
+
+            DescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults) {
+                    object.field = [];
+                    object.nested_type = [];
+                    object.enum_type = [];
+                    object.extension_range = [];
+                    object.extension = [];
+                    object.oneof_decl = [];
+                    object.reserved_range = [];
+                    object.reserved_name = [];
+                }
+                if (options.defaults) {
+                    object.name = "";
+                    object.options = null;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.field && message.field.length) {
+                    object.field = [];
+                    for (var j = 0; j < message.field.length; ++j)
+                        object.field[j] = $root.google.protobuf.FieldDescriptorProto.toObject(message.field[j], options);
+                }
+                if (message.nested_type && message.nested_type.length) {
+                    object.nested_type = [];
+                    for (var j = 0; j < message.nested_type.length; ++j)
+                        object.nested_type[j] = $root.google.protobuf.DescriptorProto.toObject(message.nested_type[j], options);
+                }
+                if (message.enum_type && message.enum_type.length) {
+                    object.enum_type = [];
+                    for (var j = 0; j < message.enum_type.length; ++j)
+                        object.enum_type[j] = $root.google.protobuf.EnumDescriptorProto.toObject(message.enum_type[j], options);
+                }
+                if (message.extension_range && message.extension_range.length) {
+                    object.extension_range = [];
+                    for (var j = 0; j < message.extension_range.length; ++j)
+                        object.extension_range[j] = $root.google.protobuf.DescriptorProto.ExtensionRange.toObject(message.extension_range[j], options);
+                }
+                if (message.extension && message.extension.length) {
+                    object.extension = [];
+                    for (var j = 0; j < message.extension.length; ++j)
+                        object.extension[j] = $root.google.protobuf.FieldDescriptorProto.toObject(message.extension[j], options);
+                }
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.MessageOptions.toObject(message.options, options);
+                if (message.oneof_decl && message.oneof_decl.length) {
+                    object.oneof_decl = [];
+                    for (var j = 0; j < message.oneof_decl.length; ++j)
+                        object.oneof_decl[j] = $root.google.protobuf.OneofDescriptorProto.toObject(message.oneof_decl[j], options);
+                }
+                if (message.reserved_range && message.reserved_range.length) {
+                    object.reserved_range = [];
+                    for (var j = 0; j < message.reserved_range.length; ++j)
+                        object.reserved_range[j] = $root.google.protobuf.DescriptorProto.ReservedRange.toObject(message.reserved_range[j], options);
+                }
+                if (message.reserved_name && message.reserved_name.length) {
+                    object.reserved_name = [];
+                    for (var j = 0; j < message.reserved_name.length; ++j)
+                        object.reserved_name[j] = message.reserved_name[j];
+                }
+                return object;
+            };
+
+            DescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            DescriptorProto.ExtensionRange = (function() {
+
+                function ExtensionRange(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                ExtensionRange.prototype.start = 0;
+                ExtensionRange.prototype.end = 0;
+
+                ExtensionRange.create = function create(properties) {
+                    return new ExtensionRange(properties);
+                };
+
+                ExtensionRange.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        writer.uint32(8).int32(message.start);
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        writer.uint32(16).int32(message.end);
+                    return writer;
+                };
+
+                ExtensionRange.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                ExtensionRange.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.DescriptorProto.ExtensionRange();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.start = reader.int32();
+                            break;
+                        case 2:
+                            message.end = reader.int32();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                ExtensionRange.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                ExtensionRange.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        if (!$util.isInteger(message.start))
+                            return "start: integer expected";
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        if (!$util.isInteger(message.end))
+                            return "end: integer expected";
+                    return null;
+                };
+
+                ExtensionRange.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.DescriptorProto.ExtensionRange)
+                        return object;
+                    var message = new $root.google.protobuf.DescriptorProto.ExtensionRange();
+                    if (object.start != null)
+                        message.start = object.start | 0;
+                    if (object.end != null)
+                        message.end = object.end | 0;
+                    return message;
+                };
+
+                ExtensionRange.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.start = 0;
+                        object.end = 0;
+                    }
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        object.start = message.start;
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        object.end = message.end;
+                    return object;
+                };
+
+                ExtensionRange.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return ExtensionRange;
+            })();
+
+            DescriptorProto.ReservedRange = (function() {
+
+                function ReservedRange(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                ReservedRange.prototype.start = 0;
+                ReservedRange.prototype.end = 0;
+
+                ReservedRange.create = function create(properties) {
+                    return new ReservedRange(properties);
+                };
+
+                ReservedRange.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        writer.uint32(8).int32(message.start);
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        writer.uint32(16).int32(message.end);
+                    return writer;
+                };
+
+                ReservedRange.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                ReservedRange.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.DescriptorProto.ReservedRange();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.start = reader.int32();
+                            break;
+                        case 2:
+                            message.end = reader.int32();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                ReservedRange.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                ReservedRange.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        if (!$util.isInteger(message.start))
+                            return "start: integer expected";
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        if (!$util.isInteger(message.end))
+                            return "end: integer expected";
+                    return null;
+                };
+
+                ReservedRange.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.DescriptorProto.ReservedRange)
+                        return object;
+                    var message = new $root.google.protobuf.DescriptorProto.ReservedRange();
+                    if (object.start != null)
+                        message.start = object.start | 0;
+                    if (object.end != null)
+                        message.end = object.end | 0;
+                    return message;
+                };
+
+                ReservedRange.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.start = 0;
+                        object.end = 0;
+                    }
+                    if (message.start != null && message.hasOwnProperty("start"))
+                        object.start = message.start;
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        object.end = message.end;
+                    return object;
+                };
+
+                ReservedRange.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return ReservedRange;
+            })();
+
+            return DescriptorProto;
+        })();
+
+        protobuf.FieldDescriptorProto = (function() {
+
+            function FieldDescriptorProto(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            FieldDescriptorProto.prototype.name = "";
+            FieldDescriptorProto.prototype.number = 0;
+            FieldDescriptorProto.prototype.label = 1;
+            FieldDescriptorProto.prototype.type = 1;
+            FieldDescriptorProto.prototype.type_name = "";
+            FieldDescriptorProto.prototype.extendee = "";
+            FieldDescriptorProto.prototype.default_value = "";
+            FieldDescriptorProto.prototype.oneof_index = 0;
+            FieldDescriptorProto.prototype.json_name = "";
+            FieldDescriptorProto.prototype.options = null;
+
+            FieldDescriptorProto.create = function create(properties) {
+                return new FieldDescriptorProto(properties);
+            };
+
+            FieldDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.extendee != null && message.hasOwnProperty("extendee"))
+                    writer.uint32(18).string(message.extendee);
+                if (message.number != null && message.hasOwnProperty("number"))
+                    writer.uint32(24).int32(message.number);
+                if (message.label != null && message.hasOwnProperty("label"))
+                    writer.uint32(32).int32(message.label);
+                if (message.type != null && message.hasOwnProperty("type"))
+                    writer.uint32(40).int32(message.type);
+                if (message.type_name != null && message.hasOwnProperty("type_name"))
+                    writer.uint32(50).string(message.type_name);
+                if (message.default_value != null && message.hasOwnProperty("default_value"))
+                    writer.uint32(58).string(message.default_value);
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.FieldOptions.encode(message.options, writer.uint32(66).fork()).ldelim();
+                if (message.oneof_index != null && message.hasOwnProperty("oneof_index"))
+                    writer.uint32(72).int32(message.oneof_index);
+                if (message.json_name != null && message.hasOwnProperty("json_name"))
+                    writer.uint32(82).string(message.json_name);
+                return writer;
+            };
+
+            FieldDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            FieldDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FieldDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 3:
+                        message.number = reader.int32();
+                        break;
+                    case 4:
+                        message.label = reader.int32();
+                        break;
+                    case 5:
+                        message.type = reader.int32();
+                        break;
+                    case 6:
+                        message.type_name = reader.string();
+                        break;
+                    case 2:
+                        message.extendee = reader.string();
+                        break;
+                    case 7:
+                        message.default_value = reader.string();
+                        break;
+                    case 9:
+                        message.oneof_index = reader.int32();
+                        break;
+                    case 10:
+                        message.json_name = reader.string();
+                        break;
+                    case 8:
+                        message.options = $root.google.protobuf.FieldOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            FieldDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            FieldDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.number != null && message.hasOwnProperty("number"))
+                    if (!$util.isInteger(message.number))
+                        return "number: integer expected";
+                if (message.label != null && message.hasOwnProperty("label"))
+                    switch (message.label) {
+                    default:
+                        return "label: enum value expected";
+                    case 1:
+                    case 2:
+                    case 3:
+                        break;
+                    }
+                if (message.type != null && message.hasOwnProperty("type"))
+                    switch (message.type) {
+                    default:
+                        return "type: enum value expected";
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 12:
+                    case 13:
+                    case 14:
+                    case 15:
+                    case 16:
+                    case 17:
+                    case 18:
+                        break;
+                    }
+                if (message.type_name != null && message.hasOwnProperty("type_name"))
+                    if (!$util.isString(message.type_name))
+                        return "type_name: string expected";
+                if (message.extendee != null && message.hasOwnProperty("extendee"))
+                    if (!$util.isString(message.extendee))
+                        return "extendee: string expected";
+                if (message.default_value != null && message.hasOwnProperty("default_value"))
+                    if (!$util.isString(message.default_value))
+                        return "default_value: string expected";
+                if (message.oneof_index != null && message.hasOwnProperty("oneof_index"))
+                    if (!$util.isInteger(message.oneof_index))
+                        return "oneof_index: integer expected";
+                if (message.json_name != null && message.hasOwnProperty("json_name"))
+                    if (!$util.isString(message.json_name))
+                        return "json_name: string expected";
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.FieldOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                return null;
+            };
+
+            FieldDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.FieldDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.FieldDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.number != null)
+                    message.number = object.number | 0;
+                switch (object.label) {
+                case "LABEL_OPTIONAL":
+                case 1:
+                    message.label = 1;
+                    break;
+                case "LABEL_REQUIRED":
+                case 2:
+                    message.label = 2;
+                    break;
+                case "LABEL_REPEATED":
+                case 3:
+                    message.label = 3;
+                    break;
+                }
+                switch (object.type) {
+                case "TYPE_DOUBLE":
+                case 1:
+                    message.type = 1;
+                    break;
+                case "TYPE_FLOAT":
+                case 2:
+                    message.type = 2;
+                    break;
+                case "TYPE_INT64":
+                case 3:
+                    message.type = 3;
+                    break;
+                case "TYPE_UINT64":
+                case 4:
+                    message.type = 4;
+                    break;
+                case "TYPE_INT32":
+                case 5:
+                    message.type = 5;
+                    break;
+                case "TYPE_FIXED64":
+                case 6:
+                    message.type = 6;
+                    break;
+                case "TYPE_FIXED32":
+                case 7:
+                    message.type = 7;
+                    break;
+                case "TYPE_BOOL":
+                case 8:
+                    message.type = 8;
+                    break;
+                case "TYPE_STRING":
+                case 9:
+                    message.type = 9;
+                    break;
+                case "TYPE_GROUP":
+                case 10:
+                    message.type = 10;
+                    break;
+                case "TYPE_MESSAGE":
+                case 11:
+                    message.type = 11;
+                    break;
+                case "TYPE_BYTES":
+                case 12:
+                    message.type = 12;
+                    break;
+                case "TYPE_UINT32":
+                case 13:
+                    message.type = 13;
+                    break;
+                case "TYPE_ENUM":
+                case 14:
+                    message.type = 14;
+                    break;
+                case "TYPE_SFIXED32":
+                case 15:
+                    message.type = 15;
+                    break;
+                case "TYPE_SFIXED64":
+                case 16:
+                    message.type = 16;
+                    break;
+                case "TYPE_SINT32":
+                case 17:
+                    message.type = 17;
+                    break;
+                case "TYPE_SINT64":
+                case 18:
+                    message.type = 18;
+                    break;
+                }
+                if (object.type_name != null)
+                    message.type_name = String(object.type_name);
+                if (object.extendee != null)
+                    message.extendee = String(object.extendee);
+                if (object.default_value != null)
+                    message.default_value = String(object.default_value);
+                if (object.oneof_index != null)
+                    message.oneof_index = object.oneof_index | 0;
+                if (object.json_name != null)
+                    message.json_name = String(object.json_name);
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.FieldDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.FieldOptions.fromObject(object.options);
+                }
+                return message;
+            };
+
+            FieldDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.name = "";
+                    object.extendee = "";
+                    object.number = 0;
+                    object.label = options.enums === String ? "LABEL_OPTIONAL" : 1;
+                    object.type = options.enums === String ? "TYPE_DOUBLE" : 1;
+                    object.type_name = "";
+                    object.default_value = "";
+                    object.options = null;
+                    object.oneof_index = 0;
+                    object.json_name = "";
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.extendee != null && message.hasOwnProperty("extendee"))
+                    object.extendee = message.extendee;
+                if (message.number != null && message.hasOwnProperty("number"))
+                    object.number = message.number;
+                if (message.label != null && message.hasOwnProperty("label"))
+                    object.label = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Label[message.label] : message.label;
+                if (message.type != null && message.hasOwnProperty("type"))
+                    object.type = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Type[message.type] : message.type;
+                if (message.type_name != null && message.hasOwnProperty("type_name"))
+                    object.type_name = message.type_name;
+                if (message.default_value != null && message.hasOwnProperty("default_value"))
+                    object.default_value = message.default_value;
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.FieldOptions.toObject(message.options, options);
+                if (message.oneof_index != null && message.hasOwnProperty("oneof_index"))
+                    object.oneof_index = message.oneof_index;
+                if (message.json_name != null && message.hasOwnProperty("json_name"))
+                    object.json_name = message.json_name;
+                return object;
+            };
+
+            FieldDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            FieldDescriptorProto.Type = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[1] = "TYPE_DOUBLE"] = 1;
+                values[valuesById[2] = "TYPE_FLOAT"] = 2;
+                values[valuesById[3] = "TYPE_INT64"] = 3;
+                values[valuesById[4] = "TYPE_UINT64"] = 4;
+                values[valuesById[5] = "TYPE_INT32"] = 5;
+                values[valuesById[6] = "TYPE_FIXED64"] = 6;
+                values[valuesById[7] = "TYPE_FIXED32"] = 7;
+                values[valuesById[8] = "TYPE_BOOL"] = 8;
+                values[valuesById[9] = "TYPE_STRING"] = 9;
+                values[valuesById[10] = "TYPE_GROUP"] = 10;
+                values[valuesById[11] = "TYPE_MESSAGE"] = 11;
+                values[valuesById[12] = "TYPE_BYTES"] = 12;
+                values[valuesById[13] = "TYPE_UINT32"] = 13;
+                values[valuesById[14] = "TYPE_ENUM"] = 14;
+                values[valuesById[15] = "TYPE_SFIXED32"] = 15;
+                values[valuesById[16] = "TYPE_SFIXED64"] = 16;
+                values[valuesById[17] = "TYPE_SINT32"] = 17;
+                values[valuesById[18] = "TYPE_SINT64"] = 18;
+                return values;
+            })();
+
+            FieldDescriptorProto.Label = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[1] = "LABEL_OPTIONAL"] = 1;
+                values[valuesById[2] = "LABEL_REQUIRED"] = 2;
+                values[valuesById[3] = "LABEL_REPEATED"] = 3;
+                return values;
+            })();
+
+            return FieldDescriptorProto;
+        })();
+
+        protobuf.OneofDescriptorProto = (function() {
+
+            function OneofDescriptorProto(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            OneofDescriptorProto.prototype.name = "";
+            OneofDescriptorProto.prototype.options = null;
+
+            OneofDescriptorProto.create = function create(properties) {
+                return new OneofDescriptorProto(properties);
+            };
+
+            OneofDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.OneofOptions.encode(message.options, writer.uint32(18).fork()).ldelim();
+                return writer;
+            };
+
+            OneofDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            OneofDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.OneofDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        message.options = $root.google.protobuf.OneofOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            OneofDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            OneofDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.OneofOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                return null;
+            };
+
+            OneofDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.OneofDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.OneofDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.OneofDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.OneofOptions.fromObject(object.options);
+                }
+                return message;
+            };
+
+            OneofDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.name = "";
+                    object.options = null;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.OneofOptions.toObject(message.options, options);
+                return object;
+            };
+
+            OneofDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return OneofDescriptorProto;
+        })();
+
+        protobuf.EnumDescriptorProto = (function() {
+
+            function EnumDescriptorProto(properties) {
+                this.value = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            EnumDescriptorProto.prototype.name = "";
+            EnumDescriptorProto.prototype.value = $util.emptyArray;
+            EnumDescriptorProto.prototype.options = null;
+
+            EnumDescriptorProto.create = function create(properties) {
+                return new EnumDescriptorProto(properties);
+            };
+
+            EnumDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.value != null && message.value.length)
+                    for (var i = 0; i < message.value.length; ++i)
+                        $root.google.protobuf.EnumValueDescriptorProto.encode(message.value[i], writer.uint32(18).fork()).ldelim();
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.EnumOptions.encode(message.options, writer.uint32(26).fork()).ldelim();
+                return writer;
+            };
+
+            EnumDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            EnumDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.EnumDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        if (!(message.value && message.value.length))
+                            message.value = [];
+                        message.value.push($root.google.protobuf.EnumValueDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 3:
+                        message.options = $root.google.protobuf.EnumOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            EnumDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            EnumDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.value != null && message.hasOwnProperty("value")) {
+                    if (!Array.isArray(message.value))
+                        return "value: array expected";
+                    for (var i = 0; i < message.value.length; ++i) {
+                        var error = $root.google.protobuf.EnumValueDescriptorProto.verify(message.value[i]);
+                        if (error)
+                            return "value." + error;
+                    }
+                }
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.EnumOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                return null;
+            };
+
+            EnumDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.EnumDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.EnumDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.value) {
+                    if (!Array.isArray(object.value))
+                        throw TypeError(".google.protobuf.EnumDescriptorProto.value: array expected");
+                    message.value = [];
+                    for (var i = 0; i < object.value.length; ++i) {
+                        if (typeof object.value[i] !== "object")
+                            throw TypeError(".google.protobuf.EnumDescriptorProto.value: object expected");
+                        message.value[i] = $root.google.protobuf.EnumValueDescriptorProto.fromObject(object.value[i]);
+                    }
+                }
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.EnumDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.EnumOptions.fromObject(object.options);
+                }
+                return message;
+            };
+
+            EnumDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.value = [];
+                if (options.defaults) {
+                    object.name = "";
+                    object.options = null;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.value && message.value.length) {
+                    object.value = [];
+                    for (var j = 0; j < message.value.length; ++j)
+                        object.value[j] = $root.google.protobuf.EnumValueDescriptorProto.toObject(message.value[j], options);
+                }
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.EnumOptions.toObject(message.options, options);
+                return object;
+            };
+
+            EnumDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return EnumDescriptorProto;
+        })();
+
+        protobuf.EnumValueDescriptorProto = (function() {
+
+            function EnumValueDescriptorProto(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            EnumValueDescriptorProto.prototype.name = "";
+            EnumValueDescriptorProto.prototype.number = 0;
+            EnumValueDescriptorProto.prototype.options = null;
+
+            EnumValueDescriptorProto.create = function create(properties) {
+                return new EnumValueDescriptorProto(properties);
+            };
+
+            EnumValueDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.number != null && message.hasOwnProperty("number"))
+                    writer.uint32(16).int32(message.number);
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.EnumValueOptions.encode(message.options, writer.uint32(26).fork()).ldelim();
+                return writer;
+            };
+
+            EnumValueDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            EnumValueDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.EnumValueDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        message.number = reader.int32();
+                        break;
+                    case 3:
+                        message.options = $root.google.protobuf.EnumValueOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            EnumValueDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            EnumValueDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.number != null && message.hasOwnProperty("number"))
+                    if (!$util.isInteger(message.number))
+                        return "number: integer expected";
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.EnumValueOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                return null;
+            };
+
+            EnumValueDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.EnumValueDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.EnumValueDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.number != null)
+                    message.number = object.number | 0;
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.EnumValueDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.EnumValueOptions.fromObject(object.options);
+                }
+                return message;
+            };
+
+            EnumValueDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.name = "";
+                    object.number = 0;
+                    object.options = null;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.number != null && message.hasOwnProperty("number"))
+                    object.number = message.number;
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.EnumValueOptions.toObject(message.options, options);
+                return object;
+            };
+
+            EnumValueDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return EnumValueDescriptorProto;
+        })();
+
+        protobuf.ServiceDescriptorProto = (function() {
+
+            function ServiceDescriptorProto(properties) {
+                this.method = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            ServiceDescriptorProto.prototype.name = "";
+            ServiceDescriptorProto.prototype.method = $util.emptyArray;
+            ServiceDescriptorProto.prototype.options = null;
+
+            ServiceDescriptorProto.create = function create(properties) {
+                return new ServiceDescriptorProto(properties);
+            };
+
+            ServiceDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.method != null && message.method.length)
+                    for (var i = 0; i < message.method.length; ++i)
+                        $root.google.protobuf.MethodDescriptorProto.encode(message.method[i], writer.uint32(18).fork()).ldelim();
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.ServiceOptions.encode(message.options, writer.uint32(26).fork()).ldelim();
+                return writer;
+            };
+
+            ServiceDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            ServiceDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.ServiceDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        if (!(message.method && message.method.length))
+                            message.method = [];
+                        message.method.push($root.google.protobuf.MethodDescriptorProto.decode(reader, reader.uint32()));
+                        break;
+                    case 3:
+                        message.options = $root.google.protobuf.ServiceOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            ServiceDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            ServiceDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.method != null && message.hasOwnProperty("method")) {
+                    if (!Array.isArray(message.method))
+                        return "method: array expected";
+                    for (var i = 0; i < message.method.length; ++i) {
+                        var error = $root.google.protobuf.MethodDescriptorProto.verify(message.method[i]);
+                        if (error)
+                            return "method." + error;
+                    }
+                }
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.ServiceOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                return null;
+            };
+
+            ServiceDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.ServiceDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.ServiceDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.method) {
+                    if (!Array.isArray(object.method))
+                        throw TypeError(".google.protobuf.ServiceDescriptorProto.method: array expected");
+                    message.method = [];
+                    for (var i = 0; i < object.method.length; ++i) {
+                        if (typeof object.method[i] !== "object")
+                            throw TypeError(".google.protobuf.ServiceDescriptorProto.method: object expected");
+                        message.method[i] = $root.google.protobuf.MethodDescriptorProto.fromObject(object.method[i]);
+                    }
+                }
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.ServiceDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.ServiceOptions.fromObject(object.options);
+                }
+                return message;
+            };
+
+            ServiceDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.method = [];
+                if (options.defaults) {
+                    object.name = "";
+                    object.options = null;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.method && message.method.length) {
+                    object.method = [];
+                    for (var j = 0; j < message.method.length; ++j)
+                        object.method[j] = $root.google.protobuf.MethodDescriptorProto.toObject(message.method[j], options);
+                }
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.ServiceOptions.toObject(message.options, options);
+                return object;
+            };
+
+            ServiceDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return ServiceDescriptorProto;
+        })();
+
+        protobuf.MethodDescriptorProto = (function() {
+
+            function MethodDescriptorProto(properties) {
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            MethodDescriptorProto.prototype.name = "";
+            MethodDescriptorProto.prototype.input_type = "";
+            MethodDescriptorProto.prototype.output_type = "";
+            MethodDescriptorProto.prototype.options = null;
+            MethodDescriptorProto.prototype.client_streaming = false;
+            MethodDescriptorProto.prototype.server_streaming = false;
+
+            MethodDescriptorProto.create = function create(properties) {
+                return new MethodDescriptorProto(properties);
+            };
+
+            MethodDescriptorProto.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.hasOwnProperty("name"))
+                    writer.uint32(10).string(message.name);
+                if (message.input_type != null && message.hasOwnProperty("input_type"))
+                    writer.uint32(18).string(message.input_type);
+                if (message.output_type != null && message.hasOwnProperty("output_type"))
+                    writer.uint32(26).string(message.output_type);
+                if (message.options != null && message.hasOwnProperty("options"))
+                    $root.google.protobuf.MethodOptions.encode(message.options, writer.uint32(34).fork()).ldelim();
+                if (message.client_streaming != null && message.hasOwnProperty("client_streaming"))
+                    writer.uint32(40).bool(message.client_streaming);
+                if (message.server_streaming != null && message.hasOwnProperty("server_streaming"))
+                    writer.uint32(48).bool(message.server_streaming);
+                return writer;
+            };
+
+            MethodDescriptorProto.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            MethodDescriptorProto.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.MethodDescriptorProto();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.name = reader.string();
+                        break;
+                    case 2:
+                        message.input_type = reader.string();
+                        break;
+                    case 3:
+                        message.output_type = reader.string();
+                        break;
+                    case 4:
+                        message.options = $root.google.protobuf.MethodOptions.decode(reader, reader.uint32());
+                        break;
+                    case 5:
+                        message.client_streaming = reader.bool();
+                        break;
+                    case 6:
+                        message.server_streaming = reader.bool();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            MethodDescriptorProto.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            MethodDescriptorProto.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name"))
+                    if (!$util.isString(message.name))
+                        return "name: string expected";
+                if (message.input_type != null && message.hasOwnProperty("input_type"))
+                    if (!$util.isString(message.input_type))
+                        return "input_type: string expected";
+                if (message.output_type != null && message.hasOwnProperty("output_type"))
+                    if (!$util.isString(message.output_type))
+                        return "output_type: string expected";
+                if (message.options != null && message.hasOwnProperty("options")) {
+                    var error = $root.google.protobuf.MethodOptions.verify(message.options);
+                    if (error)
+                        return "options." + error;
+                }
+                if (message.client_streaming != null && message.hasOwnProperty("client_streaming"))
+                    if (typeof message.client_streaming !== "boolean")
+                        return "client_streaming: boolean expected";
+                if (message.server_streaming != null && message.hasOwnProperty("server_streaming"))
+                    if (typeof message.server_streaming !== "boolean")
+                        return "server_streaming: boolean expected";
+                return null;
+            };
+
+            MethodDescriptorProto.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.MethodDescriptorProto)
+                    return object;
+                var message = new $root.google.protobuf.MethodDescriptorProto();
+                if (object.name != null)
+                    message.name = String(object.name);
+                if (object.input_type != null)
+                    message.input_type = String(object.input_type);
+                if (object.output_type != null)
+                    message.output_type = String(object.output_type);
+                if (object.options != null) {
+                    if (typeof object.options !== "object")
+                        throw TypeError(".google.protobuf.MethodDescriptorProto.options: object expected");
+                    message.options = $root.google.protobuf.MethodOptions.fromObject(object.options);
+                }
+                if (object.client_streaming != null)
+                    message.client_streaming = Boolean(object.client_streaming);
+                if (object.server_streaming != null)
+                    message.server_streaming = Boolean(object.server_streaming);
+                return message;
+            };
+
+            MethodDescriptorProto.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.defaults) {
+                    object.name = "";
+                    object.input_type = "";
+                    object.output_type = "";
+                    object.options = null;
+                    object.client_streaming = false;
+                    object.server_streaming = false;
+                }
+                if (message.name != null && message.hasOwnProperty("name"))
+                    object.name = message.name;
+                if (message.input_type != null && message.hasOwnProperty("input_type"))
+                    object.input_type = message.input_type;
+                if (message.output_type != null && message.hasOwnProperty("output_type"))
+                    object.output_type = message.output_type;
+                if (message.options != null && message.hasOwnProperty("options"))
+                    object.options = $root.google.protobuf.MethodOptions.toObject(message.options, options);
+                if (message.client_streaming != null && message.hasOwnProperty("client_streaming"))
+                    object.client_streaming = message.client_streaming;
+                if (message.server_streaming != null && message.hasOwnProperty("server_streaming"))
+                    object.server_streaming = message.server_streaming;
+                return object;
+            };
+
+            MethodDescriptorProto.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return MethodDescriptorProto;
+        })();
+
+        protobuf.FileOptions = (function() {
+
+            function FileOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            FileOptions.prototype.java_package = "";
+            FileOptions.prototype.java_outer_classname = "";
+            FileOptions.prototype.java_multiple_files = false;
+            FileOptions.prototype.java_generate_equals_and_hash = false;
+            FileOptions.prototype.java_string_check_utf8 = false;
+            FileOptions.prototype.optimize_for = 1;
+            FileOptions.prototype.go_package = "";
+            FileOptions.prototype.cc_generic_services = false;
+            FileOptions.prototype.java_generic_services = false;
+            FileOptions.prototype.py_generic_services = false;
+            FileOptions.prototype.deprecated = false;
+            FileOptions.prototype.cc_enable_arenas = false;
+            FileOptions.prototype.objc_class_prefix = "";
+            FileOptions.prototype.csharp_namespace = "";
+            FileOptions.prototype.uninterpreted_option = $util.emptyArray;
+            FileOptions.prototype[".scalapb.options"] = null;
+
+            FileOptions.create = function create(properties) {
+                return new FileOptions(properties);
+            };
+
+            FileOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.java_package != null && message.hasOwnProperty("java_package"))
+                    writer.uint32(10).string(message.java_package);
+                if (message.java_outer_classname != null && message.hasOwnProperty("java_outer_classname"))
+                    writer.uint32(66).string(message.java_outer_classname);
+                if (message.optimize_for != null && message.hasOwnProperty("optimize_for"))
+                    writer.uint32(72).int32(message.optimize_for);
+                if (message.java_multiple_files != null && message.hasOwnProperty("java_multiple_files"))
+                    writer.uint32(80).bool(message.java_multiple_files);
+                if (message.go_package != null && message.hasOwnProperty("go_package"))
+                    writer.uint32(90).string(message.go_package);
+                if (message.cc_generic_services != null && message.hasOwnProperty("cc_generic_services"))
+                    writer.uint32(128).bool(message.cc_generic_services);
+                if (message.java_generic_services != null && message.hasOwnProperty("java_generic_services"))
+                    writer.uint32(136).bool(message.java_generic_services);
+                if (message.py_generic_services != null && message.hasOwnProperty("py_generic_services"))
+                    writer.uint32(144).bool(message.py_generic_services);
+                if (message.java_generate_equals_and_hash != null && message.hasOwnProperty("java_generate_equals_and_hash"))
+                    writer.uint32(160).bool(message.java_generate_equals_and_hash);
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(184).bool(message.deprecated);
+                if (message.java_string_check_utf8 != null && message.hasOwnProperty("java_string_check_utf8"))
+                    writer.uint32(216).bool(message.java_string_check_utf8);
+                if (message.cc_enable_arenas != null && message.hasOwnProperty("cc_enable_arenas"))
+                    writer.uint32(248).bool(message.cc_enable_arenas);
+                if (message.objc_class_prefix != null && message.hasOwnProperty("objc_class_prefix"))
+                    writer.uint32(290).string(message.objc_class_prefix);
+                if (message.csharp_namespace != null && message.hasOwnProperty("csharp_namespace"))
+                    writer.uint32(298).string(message.csharp_namespace);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.options"] != null && message.hasOwnProperty(".scalapb.options"))
+                    $root.scalapb.ScalaPbOptions.encode(message[".scalapb.options"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            FileOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            FileOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FileOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.java_package = reader.string();
+                        break;
+                    case 8:
+                        message.java_outer_classname = reader.string();
+                        break;
+                    case 10:
+                        message.java_multiple_files = reader.bool();
+                        break;
+                    case 20:
+                        message.java_generate_equals_and_hash = reader.bool();
+                        break;
+                    case 27:
+                        message.java_string_check_utf8 = reader.bool();
+                        break;
+                    case 9:
+                        message.optimize_for = reader.int32();
+                        break;
+                    case 11:
+                        message.go_package = reader.string();
+                        break;
+                    case 16:
+                        message.cc_generic_services = reader.bool();
+                        break;
+                    case 17:
+                        message.java_generic_services = reader.bool();
+                        break;
+                    case 18:
+                        message.py_generic_services = reader.bool();
+                        break;
+                    case 23:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 31:
+                        message.cc_enable_arenas = reader.bool();
+                        break;
+                    case 36:
+                        message.objc_class_prefix = reader.string();
+                        break;
+                    case 37:
+                        message.csharp_namespace = reader.string();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.options"] = $root.scalapb.ScalaPbOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            FileOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            FileOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.java_package != null && message.hasOwnProperty("java_package"))
+                    if (!$util.isString(message.java_package))
+                        return "java_package: string expected";
+                if (message.java_outer_classname != null && message.hasOwnProperty("java_outer_classname"))
+                    if (!$util.isString(message.java_outer_classname))
+                        return "java_outer_classname: string expected";
+                if (message.java_multiple_files != null && message.hasOwnProperty("java_multiple_files"))
+                    if (typeof message.java_multiple_files !== "boolean")
+                        return "java_multiple_files: boolean expected";
+                if (message.java_generate_equals_and_hash != null && message.hasOwnProperty("java_generate_equals_and_hash"))
+                    if (typeof message.java_generate_equals_and_hash !== "boolean")
+                        return "java_generate_equals_and_hash: boolean expected";
+                if (message.java_string_check_utf8 != null && message.hasOwnProperty("java_string_check_utf8"))
+                    if (typeof message.java_string_check_utf8 !== "boolean")
+                        return "java_string_check_utf8: boolean expected";
+                if (message.optimize_for != null && message.hasOwnProperty("optimize_for"))
+                    switch (message.optimize_for) {
+                    default:
+                        return "optimize_for: enum value expected";
+                    case 1:
+                    case 2:
+                    case 3:
+                        break;
+                    }
+                if (message.go_package != null && message.hasOwnProperty("go_package"))
+                    if (!$util.isString(message.go_package))
+                        return "go_package: string expected";
+                if (message.cc_generic_services != null && message.hasOwnProperty("cc_generic_services"))
+                    if (typeof message.cc_generic_services !== "boolean")
+                        return "cc_generic_services: boolean expected";
+                if (message.java_generic_services != null && message.hasOwnProperty("java_generic_services"))
+                    if (typeof message.java_generic_services !== "boolean")
+                        return "java_generic_services: boolean expected";
+                if (message.py_generic_services != null && message.hasOwnProperty("py_generic_services"))
+                    if (typeof message.py_generic_services !== "boolean")
+                        return "py_generic_services: boolean expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.cc_enable_arenas != null && message.hasOwnProperty("cc_enable_arenas"))
+                    if (typeof message.cc_enable_arenas !== "boolean")
+                        return "cc_enable_arenas: boolean expected";
+                if (message.objc_class_prefix != null && message.hasOwnProperty("objc_class_prefix"))
+                    if (!$util.isString(message.objc_class_prefix))
+                        return "objc_class_prefix: string expected";
+                if (message.csharp_namespace != null && message.hasOwnProperty("csharp_namespace"))
+                    if (!$util.isString(message.csharp_namespace))
+                        return "csharp_namespace: string expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.options"] != null && message.hasOwnProperty(".scalapb.options")) {
+                    var error = $root.scalapb.ScalaPbOptions.verify(message[".scalapb.options"]);
+                    if (error)
+                        return ".scalapb.options." + error;
+                }
+                return null;
+            };
+
+            FileOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.FileOptions)
+                    return object;
+                var message = new $root.google.protobuf.FileOptions();
+                if (object.java_package != null)
+                    message.java_package = String(object.java_package);
+                if (object.java_outer_classname != null)
+                    message.java_outer_classname = String(object.java_outer_classname);
+                if (object.java_multiple_files != null)
+                    message.java_multiple_files = Boolean(object.java_multiple_files);
+                if (object.java_generate_equals_and_hash != null)
+                    message.java_generate_equals_and_hash = Boolean(object.java_generate_equals_and_hash);
+                if (object.java_string_check_utf8 != null)
+                    message.java_string_check_utf8 = Boolean(object.java_string_check_utf8);
+                switch (object.optimize_for) {
+                case "SPEED":
+                case 1:
+                    message.optimize_for = 1;
+                    break;
+                case "CODE_SIZE":
+                case 2:
+                    message.optimize_for = 2;
+                    break;
+                case "LITE_RUNTIME":
+                case 3:
+                    message.optimize_for = 3;
+                    break;
+                }
+                if (object.go_package != null)
+                    message.go_package = String(object.go_package);
+                if (object.cc_generic_services != null)
+                    message.cc_generic_services = Boolean(object.cc_generic_services);
+                if (object.java_generic_services != null)
+                    message.java_generic_services = Boolean(object.java_generic_services);
+                if (object.py_generic_services != null)
+                    message.py_generic_services = Boolean(object.py_generic_services);
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.cc_enable_arenas != null)
+                    message.cc_enable_arenas = Boolean(object.cc_enable_arenas);
+                if (object.objc_class_prefix != null)
+                    message.objc_class_prefix = String(object.objc_class_prefix);
+                if (object.csharp_namespace != null)
+                    message.csharp_namespace = String(object.csharp_namespace);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.FileOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.FileOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.options"] != null) {
+                    if (typeof object[".scalapb.options"] !== "object")
+                        throw TypeError(".google.protobuf.FileOptions..scalapb.options: object expected");
+                    message[".scalapb.options"] = $root.scalapb.ScalaPbOptions.fromObject(object[".scalapb.options"]);
+                }
+                return message;
+            };
+
+            FileOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults) {
+                    object.java_package = "";
+                    object.java_outer_classname = "";
+                    object.optimize_for = options.enums === String ? "SPEED" : 1;
+                    object.java_multiple_files = false;
+                    object.go_package = "";
+                    object.cc_generic_services = false;
+                    object.java_generic_services = false;
+                    object.py_generic_services = false;
+                    object.java_generate_equals_and_hash = false;
+                    object.deprecated = false;
+                    object.java_string_check_utf8 = false;
+                    object.cc_enable_arenas = false;
+                    object.objc_class_prefix = "";
+                    object.csharp_namespace = "";
+                    object[".scalapb.options"] = null;
+                }
+                if (message.java_package != null && message.hasOwnProperty("java_package"))
+                    object.java_package = message.java_package;
+                if (message.java_outer_classname != null && message.hasOwnProperty("java_outer_classname"))
+                    object.java_outer_classname = message.java_outer_classname;
+                if (message.optimize_for != null && message.hasOwnProperty("optimize_for"))
+                    object.optimize_for = options.enums === String ? $root.google.protobuf.FileOptions.OptimizeMode[message.optimize_for] : message.optimize_for;
+                if (message.java_multiple_files != null && message.hasOwnProperty("java_multiple_files"))
+                    object.java_multiple_files = message.java_multiple_files;
+                if (message.go_package != null && message.hasOwnProperty("go_package"))
+                    object.go_package = message.go_package;
+                if (message.cc_generic_services != null && message.hasOwnProperty("cc_generic_services"))
+                    object.cc_generic_services = message.cc_generic_services;
+                if (message.java_generic_services != null && message.hasOwnProperty("java_generic_services"))
+                    object.java_generic_services = message.java_generic_services;
+                if (message.py_generic_services != null && message.hasOwnProperty("py_generic_services"))
+                    object.py_generic_services = message.py_generic_services;
+                if (message.java_generate_equals_and_hash != null && message.hasOwnProperty("java_generate_equals_and_hash"))
+                    object.java_generate_equals_and_hash = message.java_generate_equals_and_hash;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.java_string_check_utf8 != null && message.hasOwnProperty("java_string_check_utf8"))
+                    object.java_string_check_utf8 = message.java_string_check_utf8;
+                if (message.cc_enable_arenas != null && message.hasOwnProperty("cc_enable_arenas"))
+                    object.cc_enable_arenas = message.cc_enable_arenas;
+                if (message.objc_class_prefix != null && message.hasOwnProperty("objc_class_prefix"))
+                    object.objc_class_prefix = message.objc_class_prefix;
+                if (message.csharp_namespace != null && message.hasOwnProperty("csharp_namespace"))
+                    object.csharp_namespace = message.csharp_namespace;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.options"] != null && message.hasOwnProperty(".scalapb.options"))
+                    object[".scalapb.options"] = $root.scalapb.ScalaPbOptions.toObject(message[".scalapb.options"], options);
+                return object;
+            };
+
+            FileOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            FileOptions.OptimizeMode = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[1] = "SPEED"] = 1;
+                values[valuesById[2] = "CODE_SIZE"] = 2;
+                values[valuesById[3] = "LITE_RUNTIME"] = 3;
+                return values;
+            })();
+
+            return FileOptions;
+        })();
+
+        protobuf.MessageOptions = (function() {
+
+            function MessageOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            MessageOptions.prototype.message_set_wire_format = false;
+            MessageOptions.prototype.no_standard_descriptor_accessor = false;
+            MessageOptions.prototype.deprecated = false;
+            MessageOptions.prototype.map_entry = false;
+            MessageOptions.prototype.uninterpreted_option = $util.emptyArray;
+            MessageOptions.prototype[".scalapb.message"] = null;
+
+            MessageOptions.create = function create(properties) {
+                return new MessageOptions(properties);
+            };
+
+            MessageOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.message_set_wire_format != null && message.hasOwnProperty("message_set_wire_format"))
+                    writer.uint32(8).bool(message.message_set_wire_format);
+                if (message.no_standard_descriptor_accessor != null && message.hasOwnProperty("no_standard_descriptor_accessor"))
+                    writer.uint32(16).bool(message.no_standard_descriptor_accessor);
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(24).bool(message.deprecated);
+                if (message.map_entry != null && message.hasOwnProperty("map_entry"))
+                    writer.uint32(56).bool(message.map_entry);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.message"] != null && message.hasOwnProperty(".scalapb.message"))
+                    $root.scalapb.MessageOptions.encode(message[".scalapb.message"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            MessageOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            MessageOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.MessageOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.message_set_wire_format = reader.bool();
+                        break;
+                    case 2:
+                        message.no_standard_descriptor_accessor = reader.bool();
+                        break;
+                    case 3:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 7:
+                        message.map_entry = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.message"] = $root.scalapb.MessageOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            MessageOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            MessageOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.message_set_wire_format != null && message.hasOwnProperty("message_set_wire_format"))
+                    if (typeof message.message_set_wire_format !== "boolean")
+                        return "message_set_wire_format: boolean expected";
+                if (message.no_standard_descriptor_accessor != null && message.hasOwnProperty("no_standard_descriptor_accessor"))
+                    if (typeof message.no_standard_descriptor_accessor !== "boolean")
+                        return "no_standard_descriptor_accessor: boolean expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.map_entry != null && message.hasOwnProperty("map_entry"))
+                    if (typeof message.map_entry !== "boolean")
+                        return "map_entry: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.message"] != null && message.hasOwnProperty(".scalapb.message")) {
+                    var error = $root.scalapb.MessageOptions.verify(message[".scalapb.message"]);
+                    if (error)
+                        return ".scalapb.message." + error;
+                }
+                return null;
+            };
+
+            MessageOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.MessageOptions)
+                    return object;
+                var message = new $root.google.protobuf.MessageOptions();
+                if (object.message_set_wire_format != null)
+                    message.message_set_wire_format = Boolean(object.message_set_wire_format);
+                if (object.no_standard_descriptor_accessor != null)
+                    message.no_standard_descriptor_accessor = Boolean(object.no_standard_descriptor_accessor);
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.map_entry != null)
+                    message.map_entry = Boolean(object.map_entry);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.MessageOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.MessageOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.message"] != null) {
+                    if (typeof object[".scalapb.message"] !== "object")
+                        throw TypeError(".google.protobuf.MessageOptions..scalapb.message: object expected");
+                    message[".scalapb.message"] = $root.scalapb.MessageOptions.fromObject(object[".scalapb.message"]);
+                }
+                return message;
+            };
+
+            MessageOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults) {
+                    object.message_set_wire_format = false;
+                    object.no_standard_descriptor_accessor = false;
+                    object.deprecated = false;
+                    object.map_entry = false;
+                    object[".scalapb.message"] = null;
+                }
+                if (message.message_set_wire_format != null && message.hasOwnProperty("message_set_wire_format"))
+                    object.message_set_wire_format = message.message_set_wire_format;
+                if (message.no_standard_descriptor_accessor != null && message.hasOwnProperty("no_standard_descriptor_accessor"))
+                    object.no_standard_descriptor_accessor = message.no_standard_descriptor_accessor;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.map_entry != null && message.hasOwnProperty("map_entry"))
+                    object.map_entry = message.map_entry;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.message"] != null && message.hasOwnProperty(".scalapb.message"))
+                    object[".scalapb.message"] = $root.scalapb.MessageOptions.toObject(message[".scalapb.message"], options);
+                return object;
+            };
+
+            MessageOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return MessageOptions;
+        })();
+
+        protobuf.FieldOptions = (function() {
+
+            function FieldOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            FieldOptions.prototype.ctype = 0;
+            FieldOptions.prototype.packed = false;
+            FieldOptions.prototype.jstype = 0;
+            FieldOptions.prototype.lazy = false;
+            FieldOptions.prototype.deprecated = false;
+            FieldOptions.prototype.weak = false;
+            FieldOptions.prototype.uninterpreted_option = $util.emptyArray;
+            FieldOptions.prototype[".scalapb.field"] = null;
+
+            FieldOptions.create = function create(properties) {
+                return new FieldOptions(properties);
+            };
+
+            FieldOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.ctype != null && message.hasOwnProperty("ctype"))
+                    writer.uint32(8).int32(message.ctype);
+                if (message.packed != null && message.hasOwnProperty("packed"))
+                    writer.uint32(16).bool(message.packed);
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(24).bool(message.deprecated);
+                if (message.lazy != null && message.hasOwnProperty("lazy"))
+                    writer.uint32(40).bool(message.lazy);
+                if (message.jstype != null && message.hasOwnProperty("jstype"))
+                    writer.uint32(48).int32(message.jstype);
+                if (message.weak != null && message.hasOwnProperty("weak"))
+                    writer.uint32(80).bool(message.weak);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.field"] != null && message.hasOwnProperty(".scalapb.field"))
+                    $root.scalapb.FieldOptions.encode(message[".scalapb.field"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            FieldOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            FieldOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.FieldOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.ctype = reader.int32();
+                        break;
+                    case 2:
+                        message.packed = reader.bool();
+                        break;
+                    case 6:
+                        message.jstype = reader.int32();
+                        break;
+                    case 5:
+                        message.lazy = reader.bool();
+                        break;
+                    case 3:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 10:
+                        message.weak = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.field"] = $root.scalapb.FieldOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            FieldOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            FieldOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.ctype != null && message.hasOwnProperty("ctype"))
+                    switch (message.ctype) {
+                    default:
+                        return "ctype: enum value expected";
+                    case 0:
+                    case 1:
+                    case 2:
+                        break;
+                    }
+                if (message.packed != null && message.hasOwnProperty("packed"))
+                    if (typeof message.packed !== "boolean")
+                        return "packed: boolean expected";
+                if (message.jstype != null && message.hasOwnProperty("jstype"))
+                    switch (message.jstype) {
+                    default:
+                        return "jstype: enum value expected";
+                    case 0:
+                    case 1:
+                    case 2:
+                        break;
+                    }
+                if (message.lazy != null && message.hasOwnProperty("lazy"))
+                    if (typeof message.lazy !== "boolean")
+                        return "lazy: boolean expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.weak != null && message.hasOwnProperty("weak"))
+                    if (typeof message.weak !== "boolean")
+                        return "weak: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.field"] != null && message.hasOwnProperty(".scalapb.field")) {
+                    var error = $root.scalapb.FieldOptions.verify(message[".scalapb.field"]);
+                    if (error)
+                        return ".scalapb.field." + error;
+                }
+                return null;
+            };
+
+            FieldOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.FieldOptions)
+                    return object;
+                var message = new $root.google.protobuf.FieldOptions();
+                switch (object.ctype) {
+                case "STRING":
+                case 0:
+                    message.ctype = 0;
+                    break;
+                case "CORD":
+                case 1:
+                    message.ctype = 1;
+                    break;
+                case "STRING_PIECE":
+                case 2:
+                    message.ctype = 2;
+                    break;
+                }
+                if (object.packed != null)
+                    message.packed = Boolean(object.packed);
+                switch (object.jstype) {
+                case "JS_NORMAL":
+                case 0:
+                    message.jstype = 0;
+                    break;
+                case "JS_STRING":
+                case 1:
+                    message.jstype = 1;
+                    break;
+                case "JS_NUMBER":
+                case 2:
+                    message.jstype = 2;
+                    break;
+                }
+                if (object.lazy != null)
+                    message.lazy = Boolean(object.lazy);
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.weak != null)
+                    message.weak = Boolean(object.weak);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.FieldOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.FieldOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.field"] != null) {
+                    if (typeof object[".scalapb.field"] !== "object")
+                        throw TypeError(".google.protobuf.FieldOptions..scalapb.field: object expected");
+                    message[".scalapb.field"] = $root.scalapb.FieldOptions.fromObject(object[".scalapb.field"]);
+                }
+                return message;
+            };
+
+            FieldOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults) {
+                    object.ctype = options.enums === String ? "STRING" : 0;
+                    object.packed = false;
+                    object.deprecated = false;
+                    object.lazy = false;
+                    object.jstype = options.enums === String ? "JS_NORMAL" : 0;
+                    object.weak = false;
+                    object[".scalapb.field"] = null;
+                }
+                if (message.ctype != null && message.hasOwnProperty("ctype"))
+                    object.ctype = options.enums === String ? $root.google.protobuf.FieldOptions.CType[message.ctype] : message.ctype;
+                if (message.packed != null && message.hasOwnProperty("packed"))
+                    object.packed = message.packed;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.lazy != null && message.hasOwnProperty("lazy"))
+                    object.lazy = message.lazy;
+                if (message.jstype != null && message.hasOwnProperty("jstype"))
+                    object.jstype = options.enums === String ? $root.google.protobuf.FieldOptions.JSType[message.jstype] : message.jstype;
+                if (message.weak != null && message.hasOwnProperty("weak"))
+                    object.weak = message.weak;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.field"] != null && message.hasOwnProperty(".scalapb.field"))
+                    object[".scalapb.field"] = $root.scalapb.FieldOptions.toObject(message[".scalapb.field"], options);
+                return object;
+            };
+
+            FieldOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            FieldOptions.CType = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[0] = "STRING"] = 0;
+                values[valuesById[1] = "CORD"] = 1;
+                values[valuesById[2] = "STRING_PIECE"] = 2;
+                return values;
+            })();
+
+            FieldOptions.JSType = (function() {
+                var valuesById = {}, values = Object.create(valuesById);
+                values[valuesById[0] = "JS_NORMAL"] = 0;
+                values[valuesById[1] = "JS_STRING"] = 1;
+                values[valuesById[2] = "JS_NUMBER"] = 2;
+                return values;
+            })();
+
+            return FieldOptions;
+        })();
+
+        protobuf.OneofOptions = (function() {
+
+            function OneofOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            OneofOptions.prototype.uninterpreted_option = $util.emptyArray;
+            OneofOptions.prototype[".scalapb.oneof"] = null;
+
+            OneofOptions.create = function create(properties) {
+                return new OneofOptions(properties);
+            };
+
+            OneofOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.oneof"] != null && message.hasOwnProperty(".scalapb.oneof"))
+                    $root.scalapb.OneofOptions.encode(message[".scalapb.oneof"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            OneofOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            OneofOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.OneofOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.oneof"] = $root.scalapb.OneofOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            OneofOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            OneofOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.oneof"] != null && message.hasOwnProperty(".scalapb.oneof")) {
+                    var error = $root.scalapb.OneofOptions.verify(message[".scalapb.oneof"]);
+                    if (error)
+                        return ".scalapb.oneof." + error;
+                }
+                return null;
+            };
+
+            OneofOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.OneofOptions)
+                    return object;
+                var message = new $root.google.protobuf.OneofOptions();
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.OneofOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.OneofOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.oneof"] != null) {
+                    if (typeof object[".scalapb.oneof"] !== "object")
+                        throw TypeError(".google.protobuf.OneofOptions..scalapb.oneof: object expected");
+                    message[".scalapb.oneof"] = $root.scalapb.OneofOptions.fromObject(object[".scalapb.oneof"]);
+                }
+                return message;
+            };
+
+            OneofOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults)
+                    object[".scalapb.oneof"] = null;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.oneof"] != null && message.hasOwnProperty(".scalapb.oneof"))
+                    object[".scalapb.oneof"] = $root.scalapb.OneofOptions.toObject(message[".scalapb.oneof"], options);
+                return object;
+            };
+
+            OneofOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return OneofOptions;
+        })();
+
+        protobuf.EnumOptions = (function() {
+
+            function EnumOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            EnumOptions.prototype.allow_alias = false;
+            EnumOptions.prototype.deprecated = false;
+            EnumOptions.prototype.uninterpreted_option = $util.emptyArray;
+            EnumOptions.prototype[".scalapb.enum_options"] = null;
+
+            EnumOptions.create = function create(properties) {
+                return new EnumOptions(properties);
+            };
+
+            EnumOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.allow_alias != null && message.hasOwnProperty("allow_alias"))
+                    writer.uint32(16).bool(message.allow_alias);
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(24).bool(message.deprecated);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.enum_options"] != null && message.hasOwnProperty(".scalapb.enum_options"))
+                    $root.scalapb.EnumOptions.encode(message[".scalapb.enum_options"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            EnumOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            EnumOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.EnumOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 2:
+                        message.allow_alias = reader.bool();
+                        break;
+                    case 3:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.enum_options"] = $root.scalapb.EnumOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            EnumOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            EnumOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.allow_alias != null && message.hasOwnProperty("allow_alias"))
+                    if (typeof message.allow_alias !== "boolean")
+                        return "allow_alias: boolean expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.enum_options"] != null && message.hasOwnProperty(".scalapb.enum_options")) {
+                    var error = $root.scalapb.EnumOptions.verify(message[".scalapb.enum_options"]);
+                    if (error)
+                        return ".scalapb.enum_options." + error;
+                }
+                return null;
+            };
+
+            EnumOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.EnumOptions)
+                    return object;
+                var message = new $root.google.protobuf.EnumOptions();
+                if (object.allow_alias != null)
+                    message.allow_alias = Boolean(object.allow_alias);
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.EnumOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.EnumOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.enum_options"] != null) {
+                    if (typeof object[".scalapb.enum_options"] !== "object")
+                        throw TypeError(".google.protobuf.EnumOptions..scalapb.enum_options: object expected");
+                    message[".scalapb.enum_options"] = $root.scalapb.EnumOptions.fromObject(object[".scalapb.enum_options"]);
+                }
+                return message;
+            };
+
+            EnumOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults) {
+                    object.allow_alias = false;
+                    object.deprecated = false;
+                    object[".scalapb.enum_options"] = null;
+                }
+                if (message.allow_alias != null && message.hasOwnProperty("allow_alias"))
+                    object.allow_alias = message.allow_alias;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.enum_options"] != null && message.hasOwnProperty(".scalapb.enum_options"))
+                    object[".scalapb.enum_options"] = $root.scalapb.EnumOptions.toObject(message[".scalapb.enum_options"], options);
+                return object;
+            };
+
+            EnumOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return EnumOptions;
+        })();
+
+        protobuf.EnumValueOptions = (function() {
+
+            function EnumValueOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            EnumValueOptions.prototype.deprecated = false;
+            EnumValueOptions.prototype.uninterpreted_option = $util.emptyArray;
+            EnumValueOptions.prototype[".scalapb.enum_value"] = null;
+
+            EnumValueOptions.create = function create(properties) {
+                return new EnumValueOptions(properties);
+            };
+
+            EnumValueOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(8).bool(message.deprecated);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                if (message[".scalapb.enum_value"] != null && message.hasOwnProperty(".scalapb.enum_value"))
+                    $root.scalapb.EnumValueOptions.encode(message[".scalapb.enum_value"], writer.uint32(8162).fork()).ldelim();
+                return writer;
+            };
+
+            EnumValueOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            EnumValueOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.EnumValueOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    case 1020:
+                        message[".scalapb.enum_value"] = $root.scalapb.EnumValueOptions.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            EnumValueOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            EnumValueOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                if (message[".scalapb.enum_value"] != null && message.hasOwnProperty(".scalapb.enum_value")) {
+                    var error = $root.scalapb.EnumValueOptions.verify(message[".scalapb.enum_value"]);
+                    if (error)
+                        return ".scalapb.enum_value." + error;
+                }
+                return null;
+            };
+
+            EnumValueOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.EnumValueOptions)
+                    return object;
+                var message = new $root.google.protobuf.EnumValueOptions();
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.EnumValueOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.EnumValueOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                if (object[".scalapb.enum_value"] != null) {
+                    if (typeof object[".scalapb.enum_value"] !== "object")
+                        throw TypeError(".google.protobuf.EnumValueOptions..scalapb.enum_value: object expected");
+                    message[".scalapb.enum_value"] = $root.scalapb.EnumValueOptions.fromObject(object[".scalapb.enum_value"]);
+                }
+                return message;
+            };
+
+            EnumValueOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults) {
+                    object.deprecated = false;
+                    object[".scalapb.enum_value"] = null;
+                }
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                if (message[".scalapb.enum_value"] != null && message.hasOwnProperty(".scalapb.enum_value"))
+                    object[".scalapb.enum_value"] = $root.scalapb.EnumValueOptions.toObject(message[".scalapb.enum_value"], options);
+                return object;
+            };
+
+            EnumValueOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return EnumValueOptions;
+        })();
+
+        protobuf.ServiceOptions = (function() {
+
+            function ServiceOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            ServiceOptions.prototype.deprecated = false;
+            ServiceOptions.prototype.uninterpreted_option = $util.emptyArray;
+
+            ServiceOptions.create = function create(properties) {
+                return new ServiceOptions(properties);
+            };
+
+            ServiceOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(264).bool(message.deprecated);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                return writer;
+            };
+
+            ServiceOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            ServiceOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.ServiceOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 33:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            ServiceOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            ServiceOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                return null;
+            };
+
+            ServiceOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.ServiceOptions)
+                    return object;
+                var message = new $root.google.protobuf.ServiceOptions();
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.ServiceOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.ServiceOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                return message;
+            };
+
+            ServiceOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults)
+                    object.deprecated = false;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                return object;
+            };
+
+            ServiceOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return ServiceOptions;
+        })();
+
+        protobuf.MethodOptions = (function() {
+
+            function MethodOptions(properties) {
+                this.uninterpreted_option = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            MethodOptions.prototype.deprecated = false;
+            MethodOptions.prototype.uninterpreted_option = $util.emptyArray;
+
+            MethodOptions.create = function create(properties) {
+                return new MethodOptions(properties);
+            };
+
+            MethodOptions.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    writer.uint32(264).bool(message.deprecated);
+                if (message.uninterpreted_option != null && message.uninterpreted_option.length)
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(7994).fork()).ldelim();
+                return writer;
+            };
+
+            MethodOptions.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            MethodOptions.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.MethodOptions();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 33:
+                        message.deprecated = reader.bool();
+                        break;
+                    case 999:
+                        if (!(message.uninterpreted_option && message.uninterpreted_option.length))
+                            message.uninterpreted_option = [];
+                        message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            MethodOptions.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            MethodOptions.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    if (typeof message.deprecated !== "boolean")
+                        return "deprecated: boolean expected";
+                if (message.uninterpreted_option != null && message.hasOwnProperty("uninterpreted_option")) {
+                    if (!Array.isArray(message.uninterpreted_option))
+                        return "uninterpreted_option: array expected";
+                    for (var i = 0; i < message.uninterpreted_option.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.verify(message.uninterpreted_option[i]);
+                        if (error)
+                            return "uninterpreted_option." + error;
+                    }
+                }
+                return null;
+            };
+
+            MethodOptions.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.MethodOptions)
+                    return object;
+                var message = new $root.google.protobuf.MethodOptions();
+                if (object.deprecated != null)
+                    message.deprecated = Boolean(object.deprecated);
+                if (object.uninterpreted_option) {
+                    if (!Array.isArray(object.uninterpreted_option))
+                        throw TypeError(".google.protobuf.MethodOptions.uninterpreted_option: array expected");
+                    message.uninterpreted_option = [];
+                    for (var i = 0; i < object.uninterpreted_option.length; ++i) {
+                        if (typeof object.uninterpreted_option[i] !== "object")
+                            throw TypeError(".google.protobuf.MethodOptions.uninterpreted_option: object expected");
+                        message.uninterpreted_option[i] = $root.google.protobuf.UninterpretedOption.fromObject(object.uninterpreted_option[i]);
+                    }
+                }
+                return message;
+            };
+
+            MethodOptions.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.uninterpreted_option = [];
+                if (options.defaults)
+                    object.deprecated = false;
+                if (message.deprecated != null && message.hasOwnProperty("deprecated"))
+                    object.deprecated = message.deprecated;
+                if (message.uninterpreted_option && message.uninterpreted_option.length) {
+                    object.uninterpreted_option = [];
+                    for (var j = 0; j < message.uninterpreted_option.length; ++j)
+                        object.uninterpreted_option[j] = $root.google.protobuf.UninterpretedOption.toObject(message.uninterpreted_option[j], options);
+                }
+                return object;
+            };
+
+            MethodOptions.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return MethodOptions;
+        })();
+
+        protobuf.UninterpretedOption = (function() {
+
+            function UninterpretedOption(properties) {
+                this.name = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            UninterpretedOption.prototype.name = $util.emptyArray;
+            UninterpretedOption.prototype.identifier_value = "";
+            UninterpretedOption.prototype.positive_int_value = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+            UninterpretedOption.prototype.negative_int_value = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+            UninterpretedOption.prototype.double_value = 0;
+            UninterpretedOption.prototype.string_value = $util.newBuffer([]);
+            UninterpretedOption.prototype.aggregate_value = "";
+
+            UninterpretedOption.create = function create(properties) {
+                return new UninterpretedOption(properties);
+            };
+
+            UninterpretedOption.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.name != null && message.name.length)
+                    for (var i = 0; i < message.name.length; ++i)
+                        $root.google.protobuf.UninterpretedOption.NamePart.encode(message.name[i], writer.uint32(18).fork()).ldelim();
+                if (message.identifier_value != null && message.hasOwnProperty("identifier_value"))
+                    writer.uint32(26).string(message.identifier_value);
+                if (message.positive_int_value != null && message.hasOwnProperty("positive_int_value"))
+                    writer.uint32(32).uint64(message.positive_int_value);
+                if (message.negative_int_value != null && message.hasOwnProperty("negative_int_value"))
+                    writer.uint32(40).int64(message.negative_int_value);
+                if (message.double_value != null && message.hasOwnProperty("double_value"))
+                    writer.uint32(49).double(message.double_value);
+                if (message.string_value != null && message.hasOwnProperty("string_value"))
+                    writer.uint32(58).bytes(message.string_value);
+                if (message.aggregate_value != null && message.hasOwnProperty("aggregate_value"))
+                    writer.uint32(66).string(message.aggregate_value);
+                return writer;
+            };
+
+            UninterpretedOption.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            UninterpretedOption.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.UninterpretedOption();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 2:
+                        if (!(message.name && message.name.length))
+                            message.name = [];
+                        message.name.push($root.google.protobuf.UninterpretedOption.NamePart.decode(reader, reader.uint32()));
+                        break;
+                    case 3:
+                        message.identifier_value = reader.string();
+                        break;
+                    case 4:
+                        message.positive_int_value = reader.uint64();
+                        break;
+                    case 5:
+                        message.negative_int_value = reader.int64();
+                        break;
+                    case 6:
+                        message.double_value = reader.double();
+                        break;
+                    case 7:
+                        message.string_value = reader.bytes();
+                        break;
+                    case 8:
+                        message.aggregate_value = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            UninterpretedOption.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            UninterpretedOption.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.name != null && message.hasOwnProperty("name")) {
+                    if (!Array.isArray(message.name))
+                        return "name: array expected";
+                    for (var i = 0; i < message.name.length; ++i) {
+                        var error = $root.google.protobuf.UninterpretedOption.NamePart.verify(message.name[i]);
+                        if (error)
+                            return "name." + error;
+                    }
+                }
+                if (message.identifier_value != null && message.hasOwnProperty("identifier_value"))
+                    if (!$util.isString(message.identifier_value))
+                        return "identifier_value: string expected";
+                if (message.positive_int_value != null && message.hasOwnProperty("positive_int_value"))
+                    if (!$util.isInteger(message.positive_int_value) && !(message.positive_int_value && $util.isInteger(message.positive_int_value.low) && $util.isInteger(message.positive_int_value.high)))
+                        return "positive_int_value: integer|Long expected";
+                if (message.negative_int_value != null && message.hasOwnProperty("negative_int_value"))
+                    if (!$util.isInteger(message.negative_int_value) && !(message.negative_int_value && $util.isInteger(message.negative_int_value.low) && $util.isInteger(message.negative_int_value.high)))
+                        return "negative_int_value: integer|Long expected";
+                if (message.double_value != null && message.hasOwnProperty("double_value"))
+                    if (typeof message.double_value !== "number")
+                        return "double_value: number expected";
+                if (message.string_value != null && message.hasOwnProperty("string_value"))
+                    if (!(message.string_value && typeof message.string_value.length === "number" || $util.isString(message.string_value)))
+                        return "string_value: buffer expected";
+                if (message.aggregate_value != null && message.hasOwnProperty("aggregate_value"))
+                    if (!$util.isString(message.aggregate_value))
+                        return "aggregate_value: string expected";
+                return null;
+            };
+
+            UninterpretedOption.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.UninterpretedOption)
+                    return object;
+                var message = new $root.google.protobuf.UninterpretedOption();
+                if (object.name) {
+                    if (!Array.isArray(object.name))
+                        throw TypeError(".google.protobuf.UninterpretedOption.name: array expected");
+                    message.name = [];
+                    for (var i = 0; i < object.name.length; ++i) {
+                        if (typeof object.name[i] !== "object")
+                            throw TypeError(".google.protobuf.UninterpretedOption.name: object expected");
+                        message.name[i] = $root.google.protobuf.UninterpretedOption.NamePart.fromObject(object.name[i]);
+                    }
+                }
+                if (object.identifier_value != null)
+                    message.identifier_value = String(object.identifier_value);
+                if (object.positive_int_value != null)
+                    if ($util.Long)
+                        (message.positive_int_value = $util.Long.fromValue(object.positive_int_value)).unsigned = true;
+                    else if (typeof object.positive_int_value === "string")
+                        message.positive_int_value = parseInt(object.positive_int_value, 10);
+                    else if (typeof object.positive_int_value === "number")
+                        message.positive_int_value = object.positive_int_value;
+                    else if (typeof object.positive_int_value === "object")
+                        message.positive_int_value = new $util.LongBits(object.positive_int_value.low >>> 0, object.positive_int_value.high >>> 0).toNumber(true);
+                if (object.negative_int_value != null)
+                    if ($util.Long)
+                        (message.negative_int_value = $util.Long.fromValue(object.negative_int_value)).unsigned = false;
+                    else if (typeof object.negative_int_value === "string")
+                        message.negative_int_value = parseInt(object.negative_int_value, 10);
+                    else if (typeof object.negative_int_value === "number")
+                        message.negative_int_value = object.negative_int_value;
+                    else if (typeof object.negative_int_value === "object")
+                        message.negative_int_value = new $util.LongBits(object.negative_int_value.low >>> 0, object.negative_int_value.high >>> 0).toNumber();
+                if (object.double_value != null)
+                    message.double_value = Number(object.double_value);
+                if (object.string_value != null)
+                    if (typeof object.string_value === "string")
+                        $util.base64.decode(object.string_value, message.string_value = $util.newBuffer($util.base64.length(object.string_value)), 0);
+                    else if (object.string_value.length)
+                        message.string_value = object.string_value;
+                if (object.aggregate_value != null)
+                    message.aggregate_value = String(object.aggregate_value);
+                return message;
+            };
+
+            UninterpretedOption.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.name = [];
+                if (options.defaults) {
+                    object.identifier_value = "";
+                    if ($util.Long) {
+                        var long = new $util.Long(0, 0, true);
+                        object.positive_int_value = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    } else
+                        object.positive_int_value = options.longs === String ? "0" : 0;
+                    if ($util.Long) {
+                        var long = new $util.Long(0, 0, false);
+                        object.negative_int_value = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    } else
+                        object.negative_int_value = options.longs === String ? "0" : 0;
+                    object.double_value = 0;
+                    if (options.bytes === String)
+                        object.string_value = "";
+                    else {
+                        object.string_value = [];
+                        if (options.bytes !== Array)
+                            object.string_value = $util.newBuffer(object.string_value);
+                    }
+                    object.aggregate_value = "";
+                }
+                if (message.name && message.name.length) {
+                    object.name = [];
+                    for (var j = 0; j < message.name.length; ++j)
+                        object.name[j] = $root.google.protobuf.UninterpretedOption.NamePart.toObject(message.name[j], options);
+                }
+                if (message.identifier_value != null && message.hasOwnProperty("identifier_value"))
+                    object.identifier_value = message.identifier_value;
+                if (message.positive_int_value != null && message.hasOwnProperty("positive_int_value"))
+                    if (typeof message.positive_int_value === "number")
+                        object.positive_int_value = options.longs === String ? String(message.positive_int_value) : message.positive_int_value;
+                    else
+                        object.positive_int_value = options.longs === String ? $util.Long.prototype.toString.call(message.positive_int_value) : options.longs === Number ? new $util.LongBits(message.positive_int_value.low >>> 0, message.positive_int_value.high >>> 0).toNumber(true) : message.positive_int_value;
+                if (message.negative_int_value != null && message.hasOwnProperty("negative_int_value"))
+                    if (typeof message.negative_int_value === "number")
+                        object.negative_int_value = options.longs === String ? String(message.negative_int_value) : message.negative_int_value;
+                    else
+                        object.negative_int_value = options.longs === String ? $util.Long.prototype.toString.call(message.negative_int_value) : options.longs === Number ? new $util.LongBits(message.negative_int_value.low >>> 0, message.negative_int_value.high >>> 0).toNumber() : message.negative_int_value;
+                if (message.double_value != null && message.hasOwnProperty("double_value"))
+                    object.double_value = options.json && !isFinite(message.double_value) ? String(message.double_value) : message.double_value;
+                if (message.string_value != null && message.hasOwnProperty("string_value"))
+                    object.string_value = options.bytes === String ? $util.base64.encode(message.string_value, 0, message.string_value.length) : options.bytes === Array ? Array.prototype.slice.call(message.string_value) : message.string_value;
+                if (message.aggregate_value != null && message.hasOwnProperty("aggregate_value"))
+                    object.aggregate_value = message.aggregate_value;
+                return object;
+            };
+
+            UninterpretedOption.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            UninterpretedOption.NamePart = (function() {
+
+                function NamePart(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                NamePart.prototype.name_part = "";
+                NamePart.prototype.is_extension = false;
+
+                NamePart.create = function create(properties) {
+                    return new NamePart(properties);
+                };
+
+                NamePart.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    writer.uint32(10).string(message.name_part);
+                    writer.uint32(16).bool(message.is_extension);
+                    return writer;
+                };
+
+                NamePart.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                NamePart.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.UninterpretedOption.NamePart();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.name_part = reader.string();
+                            break;
+                        case 2:
+                            message.is_extension = reader.bool();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    if (!message.hasOwnProperty("name_part"))
+                        throw $util.ProtocolError("missing required 'name_part'", { instance: message });
+                    if (!message.hasOwnProperty("is_extension"))
+                        throw $util.ProtocolError("missing required 'is_extension'", { instance: message });
+                    return message;
+                };
+
+                NamePart.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                NamePart.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (!$util.isString(message.name_part))
+                        return "name_part: string expected";
+                    if (typeof message.is_extension !== "boolean")
+                        return "is_extension: boolean expected";
+                    return null;
+                };
+
+                NamePart.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.UninterpretedOption.NamePart)
+                        return object;
+                    var message = new $root.google.protobuf.UninterpretedOption.NamePart();
+                    if (object.name_part != null)
+                        message.name_part = String(object.name_part);
+                    if (object.is_extension != null)
+                        message.is_extension = Boolean(object.is_extension);
+                    return message;
+                };
+
+                NamePart.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.name_part = "";
+                        object.is_extension = false;
+                    }
+                    if (message.name_part != null && message.hasOwnProperty("name_part"))
+                        object.name_part = message.name_part;
+                    if (message.is_extension != null && message.hasOwnProperty("is_extension"))
+                        object.is_extension = message.is_extension;
+                    return object;
+                };
+
+                NamePart.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return NamePart;
+            })();
+
+            return UninterpretedOption;
+        })();
+
+        protobuf.SourceCodeInfo = (function() {
+
+            function SourceCodeInfo(properties) {
+                this.location = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            SourceCodeInfo.prototype.location = $util.emptyArray;
+
+            SourceCodeInfo.create = function create(properties) {
+                return new SourceCodeInfo(properties);
+            };
+
+            SourceCodeInfo.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.location != null && message.location.length)
+                    for (var i = 0; i < message.location.length; ++i)
+                        $root.google.protobuf.SourceCodeInfo.Location.encode(message.location[i], writer.uint32(10).fork()).ldelim();
+                return writer;
+            };
+
+            SourceCodeInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            SourceCodeInfo.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.SourceCodeInfo();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.location && message.location.length))
+                            message.location = [];
+                        message.location.push($root.google.protobuf.SourceCodeInfo.Location.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            SourceCodeInfo.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            SourceCodeInfo.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.location != null && message.hasOwnProperty("location")) {
+                    if (!Array.isArray(message.location))
+                        return "location: array expected";
+                    for (var i = 0; i < message.location.length; ++i) {
+                        var error = $root.google.protobuf.SourceCodeInfo.Location.verify(message.location[i]);
+                        if (error)
+                            return "location." + error;
+                    }
+                }
+                return null;
+            };
+
+            SourceCodeInfo.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.SourceCodeInfo)
+                    return object;
+                var message = new $root.google.protobuf.SourceCodeInfo();
+                if (object.location) {
+                    if (!Array.isArray(object.location))
+                        throw TypeError(".google.protobuf.SourceCodeInfo.location: array expected");
+                    message.location = [];
+                    for (var i = 0; i < object.location.length; ++i) {
+                        if (typeof object.location[i] !== "object")
+                            throw TypeError(".google.protobuf.SourceCodeInfo.location: object expected");
+                        message.location[i] = $root.google.protobuf.SourceCodeInfo.Location.fromObject(object.location[i]);
+                    }
+                }
+                return message;
+            };
+
+            SourceCodeInfo.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.location = [];
+                if (message.location && message.location.length) {
+                    object.location = [];
+                    for (var j = 0; j < message.location.length; ++j)
+                        object.location[j] = $root.google.protobuf.SourceCodeInfo.Location.toObject(message.location[j], options);
+                }
+                return object;
+            };
+
+            SourceCodeInfo.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            SourceCodeInfo.Location = (function() {
+
+                function Location(properties) {
+                    this.path = [];
+                    this.span = [];
+                    this.leading_detached_comments = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                Location.prototype.path = $util.emptyArray;
+                Location.prototype.span = $util.emptyArray;
+                Location.prototype.leading_comments = "";
+                Location.prototype.trailing_comments = "";
+                Location.prototype.leading_detached_comments = $util.emptyArray;
+
+                Location.create = function create(properties) {
+                    return new Location(properties);
+                };
+
+                Location.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.path != null && message.path.length) {
+                        writer.uint32(10).fork();
+                        for (var i = 0; i < message.path.length; ++i)
+                            writer.int32(message.path[i]);
+                        writer.ldelim();
+                    }
+                    if (message.span != null && message.span.length) {
+                        writer.uint32(18).fork();
+                        for (var i = 0; i < message.span.length; ++i)
+                            writer.int32(message.span[i]);
+                        writer.ldelim();
+                    }
+                    if (message.leading_comments != null && message.hasOwnProperty("leading_comments"))
+                        writer.uint32(26).string(message.leading_comments);
+                    if (message.trailing_comments != null && message.hasOwnProperty("trailing_comments"))
+                        writer.uint32(34).string(message.trailing_comments);
+                    if (message.leading_detached_comments != null && message.leading_detached_comments.length)
+                        for (var i = 0; i < message.leading_detached_comments.length; ++i)
+                            writer.uint32(50).string(message.leading_detached_comments[i]);
+                    return writer;
+                };
+
+                Location.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                Location.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.SourceCodeInfo.Location();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            if (!(message.path && message.path.length))
+                                message.path = [];
+                            if ((tag & 7) === 2) {
+                                var end2 = reader.uint32() + reader.pos;
+                                while (reader.pos < end2)
+                                    message.path.push(reader.int32());
+                            } else
+                                message.path.push(reader.int32());
+                            break;
+                        case 2:
+                            if (!(message.span && message.span.length))
+                                message.span = [];
+                            if ((tag & 7) === 2) {
+                                var end2 = reader.uint32() + reader.pos;
+                                while (reader.pos < end2)
+                                    message.span.push(reader.int32());
+                            } else
+                                message.span.push(reader.int32());
+                            break;
+                        case 3:
+                            message.leading_comments = reader.string();
+                            break;
+                        case 4:
+                            message.trailing_comments = reader.string();
+                            break;
+                        case 6:
+                            if (!(message.leading_detached_comments && message.leading_detached_comments.length))
+                                message.leading_detached_comments = [];
+                            message.leading_detached_comments.push(reader.string());
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                Location.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                Location.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.path != null && message.hasOwnProperty("path")) {
+                        if (!Array.isArray(message.path))
+                            return "path: array expected";
+                        for (var i = 0; i < message.path.length; ++i)
+                            if (!$util.isInteger(message.path[i]))
+                                return "path: integer[] expected";
+                    }
+                    if (message.span != null && message.hasOwnProperty("span")) {
+                        if (!Array.isArray(message.span))
+                            return "span: array expected";
+                        for (var i = 0; i < message.span.length; ++i)
+                            if (!$util.isInteger(message.span[i]))
+                                return "span: integer[] expected";
+                    }
+                    if (message.leading_comments != null && message.hasOwnProperty("leading_comments"))
+                        if (!$util.isString(message.leading_comments))
+                            return "leading_comments: string expected";
+                    if (message.trailing_comments != null && message.hasOwnProperty("trailing_comments"))
+                        if (!$util.isString(message.trailing_comments))
+                            return "trailing_comments: string expected";
+                    if (message.leading_detached_comments != null && message.hasOwnProperty("leading_detached_comments")) {
+                        if (!Array.isArray(message.leading_detached_comments))
+                            return "leading_detached_comments: array expected";
+                        for (var i = 0; i < message.leading_detached_comments.length; ++i)
+                            if (!$util.isString(message.leading_detached_comments[i]))
+                                return "leading_detached_comments: string[] expected";
+                    }
+                    return null;
+                };
+
+                Location.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.SourceCodeInfo.Location)
+                        return object;
+                    var message = new $root.google.protobuf.SourceCodeInfo.Location();
+                    if (object.path) {
+                        if (!Array.isArray(object.path))
+                            throw TypeError(".google.protobuf.SourceCodeInfo.Location.path: array expected");
+                        message.path = [];
+                        for (var i = 0; i < object.path.length; ++i)
+                            message.path[i] = object.path[i] | 0;
+                    }
+                    if (object.span) {
+                        if (!Array.isArray(object.span))
+                            throw TypeError(".google.protobuf.SourceCodeInfo.Location.span: array expected");
+                        message.span = [];
+                        for (var i = 0; i < object.span.length; ++i)
+                            message.span[i] = object.span[i] | 0;
+                    }
+                    if (object.leading_comments != null)
+                        message.leading_comments = String(object.leading_comments);
+                    if (object.trailing_comments != null)
+                        message.trailing_comments = String(object.trailing_comments);
+                    if (object.leading_detached_comments) {
+                        if (!Array.isArray(object.leading_detached_comments))
+                            throw TypeError(".google.protobuf.SourceCodeInfo.Location.leading_detached_comments: array expected");
+                        message.leading_detached_comments = [];
+                        for (var i = 0; i < object.leading_detached_comments.length; ++i)
+                            message.leading_detached_comments[i] = String(object.leading_detached_comments[i]);
+                    }
+                    return message;
+                };
+
+                Location.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults) {
+                        object.path = [];
+                        object.span = [];
+                        object.leading_detached_comments = [];
+                    }
+                    if (options.defaults) {
+                        object.leading_comments = "";
+                        object.trailing_comments = "";
+                    }
+                    if (message.path && message.path.length) {
+                        object.path = [];
+                        for (var j = 0; j < message.path.length; ++j)
+                            object.path[j] = message.path[j];
+                    }
+                    if (message.span && message.span.length) {
+                        object.span = [];
+                        for (var j = 0; j < message.span.length; ++j)
+                            object.span[j] = message.span[j];
+                    }
+                    if (message.leading_comments != null && message.hasOwnProperty("leading_comments"))
+                        object.leading_comments = message.leading_comments;
+                    if (message.trailing_comments != null && message.hasOwnProperty("trailing_comments"))
+                        object.trailing_comments = message.trailing_comments;
+                    if (message.leading_detached_comments && message.leading_detached_comments.length) {
+                        object.leading_detached_comments = [];
+                        for (var j = 0; j < message.leading_detached_comments.length; ++j)
+                            object.leading_detached_comments[j] = message.leading_detached_comments[j];
+                    }
+                    return object;
+                };
+
+                Location.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return Location;
+            })();
+
+            return SourceCodeInfo;
+        })();
+
+        protobuf.GeneratedCodeInfo = (function() {
+
+            function GeneratedCodeInfo(properties) {
+                this.annotation = [];
+                if (properties)
+                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            GeneratedCodeInfo.prototype.annotation = $util.emptyArray;
+
+            GeneratedCodeInfo.create = function create(properties) {
+                return new GeneratedCodeInfo(properties);
+            };
+
+            GeneratedCodeInfo.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.annotation != null && message.annotation.length)
+                    for (var i = 0; i < message.annotation.length; ++i)
+                        $root.google.protobuf.GeneratedCodeInfo.Annotation.encode(message.annotation[i], writer.uint32(10).fork()).ldelim();
+                return writer;
+            };
+
+            GeneratedCodeInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim();
+            };
+
+            GeneratedCodeInfo.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.GeneratedCodeInfo();
+                while (reader.pos < end) {
+                    var tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.annotation && message.annotation.length))
+                            message.annotation = [];
+                        message.annotation.push($root.google.protobuf.GeneratedCodeInfo.Annotation.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            GeneratedCodeInfo.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader))
+                    reader = new $Reader(reader);
+                return this.decode(reader, reader.uint32());
+            };
+
+            GeneratedCodeInfo.verify = function verify(message) {
+                if (typeof message !== "object" || message === null)
+                    return "object expected";
+                if (message.annotation != null && message.hasOwnProperty("annotation")) {
+                    if (!Array.isArray(message.annotation))
+                        return "annotation: array expected";
+                    for (var i = 0; i < message.annotation.length; ++i) {
+                        var error = $root.google.protobuf.GeneratedCodeInfo.Annotation.verify(message.annotation[i]);
+                        if (error)
+                            return "annotation." + error;
+                    }
+                }
+                return null;
+            };
+
+            GeneratedCodeInfo.fromObject = function fromObject(object) {
+                if (object instanceof $root.google.protobuf.GeneratedCodeInfo)
+                    return object;
+                var message = new $root.google.protobuf.GeneratedCodeInfo();
+                if (object.annotation) {
+                    if (!Array.isArray(object.annotation))
+                        throw TypeError(".google.protobuf.GeneratedCodeInfo.annotation: array expected");
+                    message.annotation = [];
+                    for (var i = 0; i < object.annotation.length; ++i) {
+                        if (typeof object.annotation[i] !== "object")
+                            throw TypeError(".google.protobuf.GeneratedCodeInfo.annotation: object expected");
+                        message.annotation[i] = $root.google.protobuf.GeneratedCodeInfo.Annotation.fromObject(object.annotation[i]);
+                    }
+                }
+                return message;
+            };
+
+            GeneratedCodeInfo.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                var object = {};
+                if (options.arrays || options.defaults)
+                    object.annotation = [];
+                if (message.annotation && message.annotation.length) {
+                    object.annotation = [];
+                    for (var j = 0; j < message.annotation.length; ++j)
+                        object.annotation[j] = $root.google.protobuf.GeneratedCodeInfo.Annotation.toObject(message.annotation[j], options);
+                }
+                return object;
+            };
+
+            GeneratedCodeInfo.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            GeneratedCodeInfo.Annotation = (function() {
+
+                function Annotation(properties) {
+                    this.path = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+
+                Annotation.prototype.path = $util.emptyArray;
+                Annotation.prototype.source_file = "";
+                Annotation.prototype.begin = 0;
+                Annotation.prototype.end = 0;
+
+                Annotation.create = function create(properties) {
+                    return new Annotation(properties);
+                };
+
+                Annotation.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.path != null && message.path.length) {
+                        writer.uint32(10).fork();
+                        for (var i = 0; i < message.path.length; ++i)
+                            writer.int32(message.path[i]);
+                        writer.ldelim();
+                    }
+                    if (message.source_file != null && message.hasOwnProperty("source_file"))
+                        writer.uint32(18).string(message.source_file);
+                    if (message.begin != null && message.hasOwnProperty("begin"))
+                        writer.uint32(24).int32(message.begin);
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        writer.uint32(32).int32(message.end);
+                    return writer;
+                };
+
+                Annotation.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+
+                Annotation.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.GeneratedCodeInfo.Annotation();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            if (!(message.path && message.path.length))
+                                message.path = [];
+                            if ((tag & 7) === 2) {
+                                var end2 = reader.uint32() + reader.pos;
+                                while (reader.pos < end2)
+                                    message.path.push(reader.int32());
+                            } else
+                                message.path.push(reader.int32());
+                            break;
+                        case 2:
+                            message.source_file = reader.string();
+                            break;
+                        case 3:
+                            message.begin = reader.int32();
+                            break;
+                        case 4:
+                            message.end = reader.int32();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+
+                Annotation.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+
+                Annotation.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.path != null && message.hasOwnProperty("path")) {
+                        if (!Array.isArray(message.path))
+                            return "path: array expected";
+                        for (var i = 0; i < message.path.length; ++i)
+                            if (!$util.isInteger(message.path[i]))
+                                return "path: integer[] expected";
+                    }
+                    if (message.source_file != null && message.hasOwnProperty("source_file"))
+                        if (!$util.isString(message.source_file))
+                            return "source_file: string expected";
+                    if (message.begin != null && message.hasOwnProperty("begin"))
+                        if (!$util.isInteger(message.begin))
+                            return "begin: integer expected";
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        if (!$util.isInteger(message.end))
+                            return "end: integer expected";
+                    return null;
+                };
+
+                Annotation.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.GeneratedCodeInfo.Annotation)
+                        return object;
+                    var message = new $root.google.protobuf.GeneratedCodeInfo.Annotation();
+                    if (object.path) {
+                        if (!Array.isArray(object.path))
+                            throw TypeError(".google.protobuf.GeneratedCodeInfo.Annotation.path: array expected");
+                        message.path = [];
+                        for (var i = 0; i < object.path.length; ++i)
+                            message.path[i] = object.path[i] | 0;
+                    }
+                    if (object.source_file != null)
+                        message.source_file = String(object.source_file);
+                    if (object.begin != null)
+                        message.begin = object.begin | 0;
+                    if (object.end != null)
+                        message.end = object.end | 0;
+                    return message;
+                };
+
+                Annotation.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults)
+                        object.path = [];
+                    if (options.defaults) {
+                        object.source_file = "";
+                        object.begin = 0;
+                        object.end = 0;
+                    }
+                    if (message.path && message.path.length) {
+                        object.path = [];
+                        for (var j = 0; j < message.path.length; ++j)
+                            object.path[j] = message.path[j];
+                    }
+                    if (message.source_file != null && message.hasOwnProperty("source_file"))
+                        object.source_file = message.source_file;
+                    if (message.begin != null && message.hasOwnProperty("begin"))
+                        object.begin = message.begin;
+                    if (message.end != null && message.hasOwnProperty("end"))
+                        object.end = message.end;
+                    return object;
+                };
+
+                Annotation.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+
+                return Annotation;
+            })();
+
+            return GeneratedCodeInfo;
         })();
 
         protobuf.Any = (function() {
