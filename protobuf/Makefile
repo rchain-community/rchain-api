@@ -8,26 +8,37 @@ PBTS=../node_modules/.bin/pbts
 # npm install -g flowgen
 FLOWGEN=flowgen
 
-# REV=v0.6.1
+REV=v0.9.12
 # REV=master
-REV=dev
+# REV=dev
 
 GOOG=google/protobuf/empty.proto google/protobuf/any.proto
-PROTO_SRC=CasperMessage.proto RhoTypes.proto Either.proto $(GOOG)
+PROTO_SRC=DeployService.proto ProposeService.proto \
+	CasperMessage.proto RhoTypes.proto Either.proto \
+	$(GOOG)
 
-STATIC_JS=CasperMessage.js RhoTypes.js Either.js
-STATIC_TS=CasperMessage.d.ts RhoTypes.d.ts Either.d.ts
-STATIC_FLOW=interfaces/CasperMessage.js.flow interfaces/RhoTypes.js.flow interfaces/Either.js.flow \
+STATIC_JS=DeployService.js ProposeService.js RhoTypes.js
+STATIC_TS=DeployService.d.ts ProposeService.d.ts CasperMessage.d.ts RhoTypes.d.ts Either.d.ts
+STATIC_FLOW=interfaces/DeployService.js.flow interfaces/ProposeService.js.flow \
+	interfaces/CasperMessage.js.flow interfaces/RhoTypes.js.flow interfaces/Either.js.flow \
 	interfaces/protobufjs.js.flow
 
 download: $(PROTO_SRC)
 
+protoclean:
+	rm -rf $(PROTO_SRC)
 
 realclean:
-	rm -rf $(PROTO_SRC) $(STATIC_JS) $(STATIC_TS) $(STATIC_FLOW) messages.js messages.json
+	rm -rf $(PROTO_SRC) $(STATIC_JS) $(STATIC_TS) $(STATIC_FLOW)
 
 RAW_GH=https://raw.githubusercontent.com
 R_SRC=$(RAW_GH)/rchain/rchain/$(REV)
+
+DeployService.proto:
+	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/DeployService.proto
+
+ProposeService.proto:
+	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/ProposeService.proto
 
 CasperMessage.proto:
 	$(WGET) -O $@ $(R_SRC)/models/src/main/protobuf/CasperMessage.proto
@@ -50,14 +61,16 @@ google/protobuf/any.proto:
 ## static codegen (WIP)
 static: $(STATIC_JS)
 
-%.js: %.proto
-	$(PBJS) -t static-module -w commonjs --no-comments --keep-case -o $@ $<
+DeployService.js: DeployService.proto CasperMessage.proto Either.proto RhoTypes.proto
+	$(PBJS) -t static-module -w commonjs --no-comments --keep-case -o $@ \
+		DeployService.proto CasperMessage.proto Either.proto RhoTypes.proto
 
-CasperMessage.js: CasperMessage.proto
+ProposeService.js: ProposeService.proto CasperMessage.proto Either.proto RhoTypes.proto
+	$(PBJS) -t static-module -w commonjs --no-comments --keep-case -o $@ \
+		ProposeService.proto CasperMessage.proto Either.proto RhoTypes.proto
 
 RhoTypes.js: RhoTypes.proto
-
-Either.js: Either.proto
+	$(PBJS) -t static-module -w commonjs --no-comments --keep-case -o $@ $<
 
 static-types: definitelytyped flowtyped
 
@@ -91,6 +104,3 @@ interfaces/Either.js.flow: Either.d.ts
 
 interfaces/protobufjs.js.flow: ../node_modules/protobufjs/index.d.ts
 	$(FLOWGEN) -o $@ $<
-
-clean:
-	rm -rf messages.json messages.d.ts
