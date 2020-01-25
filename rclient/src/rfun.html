@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>RChain Node API fun</title>
+  </head>
+  <body>
+    <h1>API Fun</h1>
+    <select id='nodeAddress'>
+      <option value='http://node0.testnet.rchain-dev.tk:40403/api'>node0</option>
+    </select>
+    <pre id='status'>
+      ...?
+    </pre>
+  </body>
+  <script type='module' async>
+    import { main } from './tool.js';
+
+    main({ fetch, getElementById: id => document.getElementById(id) });
+  </script>
+</html>
