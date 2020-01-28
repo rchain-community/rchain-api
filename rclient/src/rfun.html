@@ -11,10 +11,17 @@
     <pre id='status'>
       ...?
     </pre>
+    <h2>RHOC snapshot projection</h2>
+    <fieldset>
+      <div><label>CountdownBlock: <input id="CountdownBlock" type="text" value="9371743" /></label></div>
+      <div><label>apikey: <input id="apikey" type="password" /></label></div>
+      <div><button id="project">Project</button></div>
+      <div>ETA: <span id="ETA"></span> (<span id='delta'></span>)</div>
+    </fieldset>
   </body>
   <script type='module' async>
     import { main } from './tool.js';
 
-    main({ fetch, getElementById: id => document.getElementById(id) });
+    main({ alert, now: () => Date.now(), fetch, getElementById: id => document.getElementById(id) });
   </script>
 </html>
