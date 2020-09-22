@@ -1,28 +1,29 @@
-/**
- * @typedef {{
-    type:
-      | "ExprList"
-      | "ExprPar"
-      | "ExprUri"
-      | "ExprBytes"
-      | "ExprString"
-      | "ExprBool"
-      | "ExprMap"
-      | "ExprUnforg"
-      | "ExprInt"
-      | "ExprTuple";
-  }} RhoExpr
+// @ts-check
 
- * @typedef { RhoExpr & { data: RhoExpr[] } ExprList
- * @typedef { RhoExpr & { data: RhoExpr[] } ExprPar
- * @typedef { RhoExpr & { data: string } } ExprUri
- * @typedef { RhoExpr & { data: string } }   ExprBytes
- * @typedef { RhoExpr & { data: string } }   ExprString
- * @typedef { RhoExpr & { data: boolean } }   ExprBool
- * @typedef { RhoExpr & { data: { [key: string]: ref } } }   ExprMap
- * @typedef { RhoExpr & { data: RhoUnforg } }   ExprUnforg
- * @typedef { RhoExpr & { data: number } }   ExprInt
- * @typedef { RhoExpr & { data: RhoExpr[] } }   ExprTuple
+/**
+ * @typedef {
+ *     | ExprList
+ *     | ExprMap
+ *     | ExprPar
+ *     | ExprTuple
+ *     | ExprUri
+ *     | ExprBytes
+ *     | ExprString
+ *     | ExprBool
+ *     | ExprUnforg
+ *     | ExprInt
+ * } RhoExpr
+ *
+ * @typedef {{ ExprList: { data: RhoExpr[] }} ExprList
+ * @typedef {{ ExprTuple: { data: RhoExpr[] } }}   ExprTuple
+ * @typedef {{ ExprMap: { data: { [key: string]: RhoExpr } } }}   ExprMap
+ * @typedef {{ ExprPar: { data: RhoExpr[] }} ExprPar
+ * @typedef {{ ExprBytes: { data: string } }}   ExprBytes
+ * @typedef {{ ExprString: { data: string } }}   ExprString
+ * @typedef {{ ExprBool: { data: boolean } }}   ExprBool
+ * @typedef {{ ExprUnforg: { data: RhoUnforg } }}   ExprUnforg
+ * @typedef {{ ExprInt: { data: number } }}   ExprInt
+ * @typedef {{ ExprUri: { data: string } }} ExprUri
 
  * @typedef { { type: "UnforgDeploy" | "UnforgDeployer" | "UnforgPrivate" } }   RhoUnforg
 
