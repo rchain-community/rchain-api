@@ -25,7 +25,11 @@ import './rnode-api-schema.js';
 const { freeze } = Object;
 
 function log(...args) {
-  if (process.env.LOG_RNODE) {
+  if (
+    typeof process !== 'undefined' &&
+    typeof process.env !== 'undefined' &&
+    process.env.LOG_RNODE
+  ) {
     console.log(...args);
   }
 }
