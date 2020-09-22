@@ -17,8 +17,6 @@
     "check": "npm run test && npm run build:docs && npm run lint && npm run flow-check",
     "test": "tape test/**/*.js && markdown-doctest",
     "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
-    "flow-check": "flow check --from emacs",
-    "flow-status": "flow status --from emacs",
     "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/ --ignore-pattern '!.markdown-doctest-setup.js'"
   },
   "config": {
@@ -60,7 +58,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "flow-bin": "^0.81.0",
+    "typescript": "^4.0.2",
     "markdown-doctest": "^0.9.1",
     "tape": "^4.10.1"
   },
