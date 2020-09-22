@@ -1,4 +1,26 @@
 // @ts-check
+import './rnode-api-schema.js';
+
+/**
+@typedef { {
+  apiBase(): string,
+  getBlocks(depth: number): Promise<LightBlockInfo[]>,
+  listenForDataAtName(request: DataRequest): Promise<DataResponse>,
+  getBlock(hash: string): Promise<BlockInfo>,
+  findDeploy(deployId: string): Promise<LightBlockInfo>,
+  exploratoryDeploy(string): Promise<ExploratoryDeployResponse>,
+} } Observer
+
+@typedef { {
+  apiBase(): string,
+  deploy(r: DeployRequest): Promise<string>
+} } Validator
+
+@typedef { {
+  adminBase(): string,
+  propose(): Promise<string>
+} } RNodeAdmin
+*/
 
 const { freeze } = Object;
 
