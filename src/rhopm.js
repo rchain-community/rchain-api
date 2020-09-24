@@ -21,6 +21,8 @@ function log(...args) {
 /**
  * @param {{src: string, dataForDeploy: DataForDeploy }} info
  * @typedef {{ data: { expr: RhoExpr }}} DataForDeploy
+ *
+ * @typedef { import('./rnode-openapi-schema').RhoExpr } RhoExpr
  */
 export function depEntry(info) {
   const {
@@ -28,6 +30,7 @@ export function depEntry(info) {
     dataForDeploy: {
       data: {
         expr: {
+          // @ts-ignore WARNING: we assume input data is correctly formatted.
           ExprUri: { data: uri },
         },
       },
@@ -120,6 +123,7 @@ export function PkgManager({ io, shard, signWithKey }) {
      * @param {string} src
      * @param {string[]} deps
      * @returns {Promise<{ src: string, signed: DeployRequest, dataForDeploy: DataForDeploy }>}
+     * @typedef { import('./rnode-openapi-schema').DeployRequest } DeployRequest
      */
     async deploy(src, deps) {
       const depTargets = deps.map(rhoInfoPath);
@@ -189,6 +193,21 @@ function parseEnv(txt) {
   return Object.fromEntries(bindings);
 }
 
+/**
+ *
+ * @param {*} readFileSync
+ * @param {*} http
+ * @param {SchedulerAccess} sched
+ * @param {*} dotEnv
+ * @param {*} period
+ *
+ * @typedef { {
+ *   setTimeout: typeof setTimeout,
+ *   clearTimeout: typeof clearTimeout,
+ *   setInterval: typeof setInterval,
+ *   clearInterval: typeof clearInterval,
+ * } } SchedulerAccess
+ */
 export function shardIO(
   readFileSync,
   http,
