@@ -1,7 +1,13 @@
 // @ts-check
-import './rnode-api-schema.js';
 
 /**
+@typedef { import('./rnode-openapi-schema').LightBlockInfo } LightBlockInfo
+@typedef { import('./rnode-openapi-schema').DataResponse } DataResponse
+@typedef { import('./rnode-openapi-schema').BlockInfo } BlockInfo
+@typedef { import('./rnode-openapi-schema').DataRequest } DataRequest
+@typedef { import('./rnode-openapi-schema').DeployRequest } DeployRequest
+@typedef { import('./rnode-openapi-schema').ExploratoryDeployResponse } ExploratoryDeployResponse
+
 @typedef { {
   apiBase(): string,
   getBlocks(depth: number): Promise<LightBlockInfo[]>,
