@@ -1,49 +1,33 @@
-/* global exports, Buffer */
-// @flow
+// @ts-check
 
-/*::
-// ISSUE: opaque types?
-export type HexStr<T> = string;
-export type Bytes = Uint8Array | Buffer;
-*/
+export const Base16 = Object.freeze({
+  encode(bytes) {
+    /** @type {(x: number) => number } */
+    return (
+      Array.from(bytes)
+        // eslint-disable-next-line no-bitwise
+        .map((x) => (x & 0xff).toString(16).padStart(2, '0'))
+        .join('')
+    );
+  },
 
-/**
- * A byte sequence
- *
- * @typedef { Uint8Array | Buffer } Bytes
- *
- * @memberof Hex
- */
+  /**
+   * Encode bytes as hex string
+   *
+   * ISSUE: uses Buffer API. Require this for browsers?
+   * @param {Uint8Array | Buffer} bytes
+   * @returns { string }
+   */
+  encodeBuf(bytes) {
+    return Buffer.from(bytes).toString('hex');
+  },
 
-/**
- * Hex (base16) encoding of a Bytes type
- *
- * @typedef { string } HexStr<T: Bytes>
- *
- * @memberof Hex
- */
-
-/**
- * Encode bytes as hex string
- *
- * @memberof Hex
- */
-function encode/*:: <T: Bytes>*/(bytes /*: T */) /*: string*/ {
-  return Buffer.from(bytes).toString('hex');
-}
-exports.encode = encode;
-
-exports.fromBytes = fromBytes;
-function fromBytes/*:: <T: Bytes>*/(bytes /*: T */) /*: HexStr<T>*/ {
-  return Buffer.from(bytes).toString('hex');
-}
-
-/**
- * Decode hex string to bytes
- *
- * @memberof Hex
- */
-function decode/*:: <T: Bytes>*/(hex /*: HexStr<T>*/) /*: Bytes*/ {
-  return Buffer.from(hex, 'hex');
-}
-exports.decode = decode;
+  /**
+   * Decode hex string to bytes
+   * @param {string} hex in hex (base16)
+   * @returns { Buffer }
+   */
+  decodeBuf(hex) {
+    return Buffer.from(hex, 'hex');
+  },
+});
