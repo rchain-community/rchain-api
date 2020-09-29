@@ -6,18 +6,18 @@
 /**
  * RhoExpr
  */
-export type RhoExpr = {
-  ExprMap?: ExprMap;
-  ExprList?: ExprList;
-  ExprTuple?: ExprTuple;
-  ExprPar?: ExprPar;
-  ExprUnforg?: ExprUnforg;
-  ExprString?: ExprString;
-  ExprInt?: ExprInt;
-  ExprBool?: ExprBool;
-  ExprUri?: ExprUri;
-  ExprBytes?: ExprBytes;
-};
+export type RhoExpr =
+  | ExprMap
+  | ExprList
+  | ExprTuple
+  | ExprPar
+  | ExprUnforg
+  | ExprString
+  | ExprInt
+  | ExprBool
+  | ExprUri
+  | ExprBytes;
+
 /**
  * ExprList
  */
@@ -29,7 +29,7 @@ export type ExprPar = { ExprPar: { data: RhoExpr[] } };
 /**
  * BondInfo
  */
-export type BondInfo = { validator?: string; stake?: number };
+export type BondInfo = { validator: string; stake: number };
 /**
  * ExprUri
  */
@@ -49,11 +49,8 @@ export type PrepareRequest = {
 /**
  * RhoUnforg
  */
-export type RhoUnforg = {
-  UnforgDeploy?: UnforgDeploy;
-  UnforgDeployer?: UnforgDeployer;
-  UnforgPrivate?: UnforgPrivate;
-};
+export type RhoUnforg = UnforgDeploy | UnforgDeployer | UnforgPrivate;
+
 /**
  * UnforgPrivate
  */
@@ -88,35 +85,35 @@ export type RhoExprWithBlock = {
  * LightBlockInfo
  */
 export type LightBlockInfo = {
-  blockHash?: string;
-  justifications?: JustificationInfo[];
-  timestamp?: number;
+  blockHash: string;
+  justifications: JustificationInfo[];
+  timestamp: number;
   /**
    * com.google.protobuf.ByteString
    */
-  extraBytes?: string;
-  bonds?: BondInfo[];
-  parentsHashList?: string[];
-  shardId?: string;
-  sigAlgorithm?: 'secp256k1';
-  sig?: string;
-  blockSize?: string;
-  postStateHash?: string;
-  version?: number;
-  seqNum?: number;
-  blockNumber?: number;
-  sender?: string;
+  extraBytes: string;
+  bonds: BondInfo[];
+  parentsHashList: string[];
+  shardId: string;
+  sigAlgorithm: 'secp256k1';
+  sig: string;
+  blockSize: string;
+  postStateHash: string;
+  version: number;
+  seqNum: number;
+  blockNumber: number;
+  sender: string;
   /**
    * com.google.protobuf.ByteString
    */
-  headerExtraBytes?: string;
+  headerExtraBytes: string;
   /**
    * com.google.protobuf.ByteString
    */
-  bodyExtraBytes?: string;
-  faultTolerance?: number;
-  preStateHash?: string;
-  deployCount?: number;
+  bodyExtraBytes: string;
+  faultTolerance: number;
+  preStateHash: string;
+  deployCount: number;
 };
 /**
  * ExploreDeployRequest
@@ -152,33 +149,33 @@ export type DeployData = {
  * DeployInfo
  */
 export type DeployInfo = {
-  timestamp?: number;
+  timestamp: number;
   /**
    * empty string indicates lack of error
    */
-  systemDeployError?: string;
-  term?: string;
-  phloLimit?: number;
-  sigAlgorithm?: 'secp256k1' | 'secp256k1:eth';
-  deployer?: string;
-  sig?: string;
-  errored?: boolean;
+  systemDeployError: string;
+  term: string;
+  phloLimit: number;
+  sigAlgorithm: 'secp256k1' | 'secp256k1:eth';
+  deployer: string;
+  sig: string;
+  errored: boolean;
   /**
    * in units of 10^-8 REV
    */
-  cost?: number;
+  cost: number;
   /**
    * in units of 10^-8 REV
    */
-  phloPrice?: number;
-  validAfterBlockNumber?: number;
+  phloPrice: number;
+  validAfterBlockNumber: number;
 };
 /**
  * JustificationInfo
  */
 export type JustificationInfo = {
-  validator?: string;
-  latestBlockHash?: string;
+  validator: string;
+  latestBlockHash: string;
 };
 /**
  * DeployRequest
@@ -201,8 +198,8 @@ export type UnforgDeploy = { UnforgDeploy: { data: string } };
  * BlockInfo
  */
 export type BlockInfo = {
-  blockInfo?: LightBlockInfo;
-  deploys?: DeployInfo[];
+  blockInfo: LightBlockInfo;
+  deploys: DeployInfo[];
 };
 /**
  * ExprMap
