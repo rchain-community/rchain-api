@@ -4,6 +4,7 @@
   "description": "RChain client for node.js",
   "main": "index.js",
   "scripts": {
+    "check": "yarn test && yarn lint",
     "test": "ava --verbose",
     "test:md": "markdown-doctest",
     "lint-fix": "yarn lint --fix",
@@ -14,6 +15,15 @@
     "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md && markdown-doctest",
     "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
     "doc-watch": "documentation serve --watch index.js --config docs/config.yml src/**.js --shallow"
+  },
+  "ava": {
+    "files": [
+      "test/**/test*.js"
+    ],
+    "require": [
+      "esm"
+    ],
+    "timeout": "2m"
   },
   "config": {
     "host": "localhost",
@@ -46,12 +56,14 @@
     "js-sha3": "^0.8.0"
   },
   "devDependencies": {
+    "ava": "^3.13.0",
     "eslint": "^7.9.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "esm": "^3.2.25",
     "prettier": "^2.1.1",
     "typescript": "^4.0.2"
   },
