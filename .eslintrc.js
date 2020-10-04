@@ -1,4 +1,3 @@
-/* global module */
 module.exports = {
   // parser: "babel-eslint",
   extends: ['airbnb-base', 'plugin:prettier/recommended'],
@@ -6,8 +5,8 @@ module.exports = {
     es6: true, // supports new ES6 globals (e.g., new types such as Set)
   },
   globals: {
-    "harden": "readonly",
-    "globalThis": "writeable",
+    harden: 'readonly',
+    globalThis: 'writeable',
   },
   rules: {
     'import/extensions': 'off',  // browser

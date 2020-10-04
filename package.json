@@ -10,7 +10,7 @@
     "lint-fix": "yarn lint --fix",
     "lint-check": "yarn lint",
     "lint": "yarn lint:types && yarn lint:eslint",
-    "lint:eslint": "eslint '**/*.js'",
+    "lint:eslint": "eslint",
     "lint:types": "tsc -p jsconfig.json",
     "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md && markdown-doctest",
     "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
