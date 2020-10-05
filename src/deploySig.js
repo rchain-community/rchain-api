@@ -3,7 +3,7 @@ import blake from 'blakejs';
 import elliptic from 'elliptic';
 import jspb from 'google-protobuf';
 
-import { Base16 } from './hex.js';
+import { Base16 } from './codec.js';
 
 // eslint-disable-next-line new-cap
 const secp256k1 = new elliptic.ec('secp256k1');
