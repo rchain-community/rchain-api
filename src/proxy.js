@@ -1,246 +1,201 @@
-/*global require, exports*/
-// @flow
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-use-before-define */
+// @ts-check
+import { sign as signDeploy } from './deploySig';
+import { RhoExpr } from './rho-expr';
 
-const { GPrivate } = require('../protobuf/RhoTypes.js');
-const { rhol, prettyPrivate } = require('./RHOCore');
-const { Block } = require('./rnodeAPI');
-
-/*::
-import type { IRNode, IDeployData } from './rnodeAPI';
-import { URL } from 'url';
-
-type Message = {
-  target: URL,
-  method: ?string,
-  args: mixed[],
-};
-
-type Receiver = {
-  [string]: (...mixed[]) => Promise<mixed>
-}
-
-interface Opts {
-  predeclare?: string[],
-  unary?: boolean,
-  returnCh?: IPar,
-  insertSigned?: boolean,
-  fixArgs?: (mixed[], IPar[]) => mixed[]
-};
-
-interface SourceOpts extends Opts {
-  chanArgs?: GPrivate[],
-};
-
-interface SendOpts extends Opts {
-  rnode: IRNode,
-  delay?: (number) => Promise<void>,
-};
-
-interface ProxyOpts extends SendOpts {
-  clock: () => Date
-}
-
-type PK = Uint8Array;
-type Sig = Uint8Array;
-
-export type PayFor<T> = T => T & { deployer: PK, sig: Sig };
-
-*/
-
+const { freeze } = Object;
 
 /**
- * Make an object that proxies method calls to registered RChain
- * channels.
+ * Find deploy, fetch its block, and extract relevant DeployInfo
  *
- * For rholang calling conventions, see `callSource`.
+ * @param {Observer} observer
+ * @param {string} deployId
+ * @returns { Promise<?DeployInfo> } null if not (yet) available
+ * @throws { Error } in case of deploy execution error
  *
- * @param target: URI where channel is registered.
- * @param deployData: as in doDeploy (though term is ignored and replaced)
- * @param opts
- * @param opts.rnode: access to RChain node via gRPC
- * @param opts.clock: access to millisecond-resolution clock.
- * @param opts.delay: an optional async function to call between sending
- *                    a call and listening for the response.
- * @param opts.unary: whether to use unary calling conventions.
- * @param opts.predeclare: names to pre-declare after `return`
- *
- * @memberof RegistryProxy
+ * @typedef { import("./rnode-openapi-schema").DeployInfo } DeployInfo
  */
-function makeProxy(
-  target /*: URL */,
-  deployer /*: Uint8Array */,
-  payFor /*: PayFor<IDeployData> */,
-  opts /*: ProxyOpts */,
-) /*: Receiver */{
-  const { clock } = opts;
-  const sendIt = msg => sendCall(msg, clock().valueOf(), deployer, payFor, opts);
-  return new Proxy({}, {
-    get: (_, method) => (...args) => sendIt({ target, method, args }),
-    // override set to make it read-only?
+export async function checkForDeployInfo(observer, deployId) {
+  // Request a block with the deploy
+  const block = await observer.findDeploy(deployId).catch((ex) => {
+    // Handle response code 400 / deploy not found
+    if (ex.status !== 400) throw ex;
+  });
+  if (!block) return null;
+  const { deploys } = await observer.getBlock(block.blockHash);
+  const deploy = deploys.find(({ sig }) => sig === deployId);
+  if (!deploy) {
+    // This should not be possible if block is returned
+    throw Error(`Deploy is not found in the block (${block.blockHash}).`);
+  }
+  return deploy;
+}
+
+/**
+ * Get result of deploy
+ * @param {Observer} observer
+ * @param {DeployInfo} deploy
+ * @returns { Promise<RhoExprWithBlock> }
+ * @throws { Error } in case of execution error or missing data
+ *
+ * @typedef { import("./rnode-openapi-schema").RhoExprWithBlock } RhoExprWithBlock
+ */
+export async function listenAtDeployId(observer, deploy) {
+  // Check deploy errors
+  const { errored, systemDeployError } = deploy;
+  if (errored) {
+    throw Error(`Deploy error when executing Rholang code.`);
+  } else if (systemDeployError) {
+    throw Error(`${systemDeployError} (system error).`);
+  }
+
+  const target = { depth: 1, name: { UnforgDeploy: { data: deploy.sig } } };
+
+  // Request for data at deploy signature (deployId)
+  const { exprs } = await observer.listenForDataAtName(target);
+  // Return data with cost (assumes data in one block)
+  if (!exprs.length) throw new Error('no data at deployId');
+  return exprs[0];
+}
+
+/**
+ *
+ * @param {string} pkHex
+ * @param { Observer } observer
+ * @param {{
+ *   setTimeout: typeof setTimeout,
+ *   clock: () => Promise<number>,
+ *   period?: number
+ * }} sched
+ * @returns { Account }
+ *
+ * @typedef {{
+ *   sign: (term: string) => Promise<DeployRequest>,
+ *   polling: () => Promise<void>, // throws to abort
+ * }} Account
+ */
+export function makeAccount(
+  pkHex,
+  observer,
+  { setTimeout, clock, period = 7500 },
+  { phloPrice = 1, phloLimit = 250000 },
+) {
+  const polling = () =>
+    new Promise((resolve) => {
+      setTimeout(resolve, period);
+    });
+
+  return freeze({
+    polling,
+
+    /**
+     * @param {string} term
+     * @returns { Promise<DeployRequest> }
+     */
+    async sign(term) {
+      const [timestamp, [recent]] = await Promise.all([
+        clock(),
+        observer.getBlocks(1),
+      ]);
+      return signDeploy(pkHex, {
+        term,
+        phloPrice,
+        phloLimit,
+        timestamp,
+        validAfterBlockNumber: recent.blockNumber,
+      });
+    },
   });
 }
-exports.makeProxy = makeProxy;
-
 
 /**
- * Call a method on a registered RChain channel.
- *
- * For rholang calling conventions, see `callSource`.
- *
- * @param target: URI where channel is registered.
- * @param deployData: as in doDeploy (though term is ignored and replaced)
- * @param opts
- * @param opts.rnode: access to RChain node via gRPC
- * @param opts.delay: an optional async function to call between sending
- *                    a call and listening for the response.
- * @param opts.unary: whether to use unary calling conventions.
- *
- * @memberof RegistryProxy
+ * Sign, deploy, get block with deploy
+ * @param {string} term
+ * @param {Validator} validator
+ * @param {Observer} observer
+ * @param {Account} account
+ * @returns {Promise<DeployInfo>}
  */
-async function sendCall(
-  { target, method, args } /*: Message*/,
-  timestamp /*: number*/,
-  deployer /*: Uint8Array */,
-  payFor /*: PayFor<IDeployData>*/,
-  opts /*: SendOpts */,
+export async function startTerm(
+  /** @type {string} */ term,
+  validator,
+  observer,
+  account,
 ) {
-  const { rnode } = opts;
-  let returnChan/*: IPar */;
-  let chanArgs /*: GPrivate[] */= [];
-  if (opts.returnCh) {
-    if (opts.fixArgs) { throw new Error('fixArgs not supported with returnCh'); }
-    returnChan = opts.returnCh;
-  } else {
-    const chans /*: Buffer[] */ = await rnode.previewPrivateNames(
-      { user: deployer, timestamp },
-      1 + (opts.predeclare || []).length,
-    );
-    // console.log({ chans: chans.map(b2h) });
+  const signed = await account.sign(term);
 
-    const [returnId, ..._] = chans;
-    const idToPar = id => ({ ids: [{ id }] });
-    returnChan = idToPar(returnId);
-    // console.log({ returnChan: JSON.stringify(returnChan) });
+  const step1 = await validator.deploy(signed);
+  if (!step1.startsWith('Success')) throw new Error(step1);
 
-    const idToGPrivate = id => GPrivate.create({ id });
-    chanArgs = chans.reverse().map(idToGPrivate);
-  }
-
-  const term = callSource(
-    { target, method, args },
-    { ...opts, chanArgs },
-  );
-  console.log(term);
-  return runRholang(term, timestamp, payFor, returnChan, opts, method || '?');
-}
-exports.sendCall = sendCall;
-
-
-exports.runRholang = runRholang;
-async function runRholang(
-  term /*: string */,
-  timestamp /*: number */,
-  payFor /*: PayFor<IDeployData> */,
-  returnChan /*: IPar */,
-  opts /*: SendOpts */,
-  label /*: string */ = '',
-) /**/ {
-  const { rnode } = opts;
-  const deployData = payFor({ term, timestamp });
-  // console.log('runRholang', { deployData, note: 'placeholder term' });
-  const deployResult = await rnode.doDeploy(deployData, true);
-  console.log({ deployResult }); // ISSUE: return block hash to caller?
-
-  const blockResults = await pollAt(returnChan, label, { delay: opts.delay, rnode });
-  return Block.firstData(blockResults);
-}
-
-
-exports.pollAt = pollAt;
-async function pollAt(
-  returnChan /*: IPar */,
-  doing /*: string*/,
-  { rnode, delay } /*: { rnode: IRNode, delay?: (number) => Promise<void> }*/,
-) {
-  let blockResults = [];
-  const returnPretty = prettyPrivate(returnChan);
-  // eslint-disable-next-line no-restricted-syntax
-  for (const poll of [1, 2, 3, 4]) {
-    console.log(`${doing}: listen #${poll} at return chan ${returnPretty}`);
-    // eslint-disable-next-line no-await-in-loop
-    blockResults = await rnode.listenForDataAtName(returnChan);
-    // console.log({ blockResults });
-    if (blockResults.length > 0) {
-      break;
+  for (;;) {
+    const deploy = await checkForDeployInfo(observer, signed.signature);
+    if (deploy) {
+      return deploy;
     }
-    // eslint-disable-next-line no-await-in-loop
-    if (delay) { await delay(poll); }
+    await account.polling();
   }
-  if (!blockResults.length) { throw new Error(`${doing}: no reply at ${returnPretty}`); }
-  return blockResults;
 }
 
-
 /**
- * Make a rholang term for looking up a target and calling a method.
+ * @param {Validator} validator
+ * @param {Observer} observer
+ * @param {{
+ *   sign: (term: string) => Promise<DeployRequest>,
+ *   polling: () => Promise<void>, // throws to abort
+ * }} account
  *
- * @param msg
- * @param opts
- * @param opts.unary: For better compositionality, JS args are combined into one
- *                    list arg on the rholang side.
+ * TODO: marshalling / unmarshalling of object references
  *
- * @memberof RegistryProxy
+ * @typedef { null | boolean | number | string } Scalar
+ * @typedef {Scalar[] | {[k: string]: Scalar}} Complex
+ *
+ * @typedef {import('./rnode').Validator} Validator
+ * @typedef {import('./rnode').Observer} Observer
+ * @typedef {import('./rnode').DeployRequest} DeployRequest
  */
-exports.callSource = callSource;
-function callSource(
-  { target, method, args } /*: Message*/,
-  opts /*: SourceOpts */,
-) {
-  const args2 = opts.fixArgs ? opts.fixArgs(args, opts.chanArgs || []) : args;
-  return rhoCall({
-    // ISSUE: assume target is injection-safe?
-    target: `\`${String(target)}\``,
-    method: method && method.length > 0 ? [rhol`${method}`] : [],
-    args: (
-      opts.unary
-        ? [rhol`${args2}`]
-        : args2.map(arg => rhol`${arg}`)),
-  }, opts.predeclare || [], opts.insertSigned || false);
-}
+export function makeConnection(validator, observer, account) {
+  const { stringify: lit } = JSON;
+  const spread = (items) => lit(items).slice(1, -1); // strip []
 
+  const start = (/** @type string */ term) =>
+    startTerm(term, validator, observer, account);
 
-/**
- * Caller is responsible for converting pieces to rholang.
- *
- * @private
- * @param m: message
- * @param m.target: a rholang URI expression: `rho:id:...`
- * @param m.method: [] or ["eat"]
- * @param m.args: a list of rholang terms
- * @param predeclare: names to pre-declare in addition to `return`
- *                    They are passed (deref'd to processes) to target
- *                    in reverse order.
- * @param insertSigned: was `insertSigned` used to register the target?
- */
-function rhoCall({ target, method, args }, predeclare, insertSigned) {
-  const newNames = ['return', ...predeclare.reverse()];
-  const pieces = [...method, ...args, [...predeclare, 'return'].map(n => `*${n}`)];
-  /*
-        // ISSUE: what comes back from the registry is
-        // a tuple if insertSigned and just the thing if insertArbitrary.
-        // is that by design?
-        for(@(_nonce, target) <- targetCh) {
-  */
-  const targetPattern = insertSigned ? '@(_, *target)' : 'target';
-  const term = `
-      new ${newNames.join(', ')}, targetCh, lookup(\`rho:registry:lookup\`), trace(\`rho:io:stderr\`) in {
-        trace!({"in remote call to": ${target}, "return": *return}) |
-        lookup!(${target}, *targetCh) |
-        for(${targetPattern} <- targetCh) {
-          trace!({ "target": *target }) |
-          target!(${pieces.join(', ')})
+  /**
+   * @param {Scalar | Complex} tag
+   * @param {string | Symbol | number} method
+   * @param {(Scalar | Complex)[]} args
+   */
+  async function sendMessage(tag, method, args) {
+    const term = `new return(\`rho:rchain:deployId\`), deployerId(\`rho:rchain:deployerId\`) in {
+            match {[deployerId, ${lit(tag)}]} {
+              target => target!(${lit(method)}, ${spread(args)}, *return)
+            }
+          }`;
+    const deploy = await start(term);
+    const expr = listenAtDeployId(observer, deploy);
+    return RhoExpr.parse(expr);
+  }
+
+  function proxy(/** @type {Scalar | Complex} */ tag) {
+    return new Proxy(freeze({}), {
+      get: (_, method) => (...args) => sendMessage(tag, method, args),
+    });
+  }
+
+  return freeze({
+    /**
+     * @param {Scalar | Complex} tag
+     * @param {string} targetProc proc with defining use of `target`
+     */
+    async spawn(tag, targetProc) {
+      const term = `new deployerId(\`rho:rchain:deployerId\`) in {
+        match {[deployerId, ${lit(tag)}]} {
+          target => { ${targetProc} }
         }
-      }
-    `;
-  return term;
+      }`;
+      await start(term);
+      return proxy(tag);
+    },
+  });
 }

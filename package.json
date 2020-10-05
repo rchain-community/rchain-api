@@ -1,25 +1,30 @@
 {
   "name": "rchain-api",
-  "version": "0.9.2-beta.4",
+  "version": "0.9.25-5",
   "description": "RChain client for node.js",
   "main": "index.js",
+  "types": "types/index.d.ts",
   "scripts": {
-    "$note": [
-      "--no-package-lock is to avoid ENOENT in staging",
-      "https://github.com/npm/npm/issues/20119",
-      "https://npm.community/t/issue-npm-install-with-local-packages-and-symlinks-enoent/518/4"
-    ],
-    "postinstall": "cd rclient; npm install --no-package-lock",
-    "testAll": "npm run check && npm run integrationTest",
+    "check": "yarn test && yarn lint",
+    "test": "ava --verbose",
+    "test:md": "markdown-doctest",
+    "lint-fix": "yarn lint --fix",
+    "lint-check": "yarn lint",
+    "lint": "yarn lint:types && yarn lint:eslint",
+    "lint:eslint": "eslint",
+    "lint:types": "tsc -p jsconfig.json",
     "build:docs": "documentation build -f md --github  --sort-order alpha index.js src/**.js --shallow -o docs/index.md && markdown-doctest",
     "build:docs-html": "documentation build -f html --github  --sort-order alpha index.js src/**.js --shallow -o docs/",
-    "doc-watch": "documentation serve --watch index.js --config docs/config.yml src/**.js --shallow",
-    "check": "npm run test && npm run build:docs && npm run lint && npm run flow-check",
-    "test": "tape test/**/*.js && markdown-doctest",
-    "integrationTest": "node test/testRNode.js --net && node test/liveRHOCoreTest.js && node test/liveRNodeTest.js",
-    "flow-check": "flow check --from emacs",
-    "flow-status": "flow status --from emacs",
-    "lint": "eslint *.js **/*.js --format unix --ignore-pattern interfaces/ --ignore-pattern node_modules/ --ignore-pattern protobuf/ --ignore-pattern '!.markdown-doctest-setup.js'"
+    "doc-watch": "documentation serve --watch index.js --config docs/config.yml src/**.js --shallow"
+  },
+  "ava": {
+    "files": [
+      "test/**/test*.js"
+    ],
+    "require": [
+      "esm"
+    ],
+    "timeout": "2m"
   },
   "config": {
     "host": "localhost",
@@ -31,7 +36,6 @@
   },
   "keywords": [
     "rchain",
-    "grpc",
     "blockchain",
     "rholang"
   ],
@@ -46,23 +50,24 @@
   },
   "homepage": "https://github.com/rchain-community/RChain-API#readme",
   "dependencies": {
-    "@grpc/proto-loader": "^0.3.0",
-    "blake2": "^2.0.1",
+    "blakejs": "^1.1.0",
     "bs58": "^4.0.1",
-    "grpc": "^1.13.1",
-    "js-sha3": "^0.8.0",
-    "protobufjs": "^6.8.8",
-    "remote-origin-url": "^1.0.0",
-    "tweetnacl": "^1.0.0"
+    "elliptic": "^6.5.3",
+    "google-protobuf": "^3.13.0",
+    "js-sha3": "^0.8.0"
   },
   "devDependencies": {
-    "documentation": "^8.1.2",
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^13.0.0",
-    "eslint-plugin-import": "^2.13.0",
-    "flow-bin": "^0.81.0",
-    "markdown-doctest": "^0.9.1",
-    "tape": "^4.10.1"
+    "@types/node": "^14.11.2",
+    "ava": "^3.13.0",
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "esm": "^3.2.25",
+    "prettier": "^2.1.1",
+    "typescript": "^4.0.2"
   },
   "TODO": {
     "documentation": "^8.0.2"

@@ -9,35 +9,39 @@ The [RChain Cooperative][1] is developing a decentralized, economically sustaina
 
 ## Quickstart
 
-Install with `npm install rchain-community/rchain-api`. Then, with
-rnode on `localhost`, you can get current block info:
+Install with `npm install rchain-community/rchain-api`. Then,
+to get current block info from testnet:
 
 
 ```js
-const grpc = require('grpc');
-const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
+import { RNode } = from 'rchain-api';
 
-const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
-rnode.showBlocks()
-  .then((blocks) => { assert.ok(blocks[0].blockHash); });
+const obs = RNode(fetch)
+  .observer('https://observer.testnet.rchain.coop');
+(async () => {
+  const blocks = await rnode.getBlocks(1);
+  assert.ok(blocks[0].blockHash);
+})();
 ```
 
 If your node is a validator and you have a key to authorize payment, you can deploy code:
 
 ```js
 const grpc = require('grpc');
-const { RNode, Ed25519keyPair, Hex, REV } = require('rchain-api');
+const { RNode, signDeploy } = require('rchain-api');
 
-const rnode = RNode(grpc, { host: 'localhost', port: 40401 });
+const val = RNode(fetch)
+  .validator('https://node1.testnet.rchain-dev.tk');
 
 const term = '@"world"!("Hello!")';
-const myKey = Ed25519keyPair(Hex.decode('11'.repeat(32)));
+const myKey = '11'.repeat(32);
 const timestamp = new Date('2019-04-12T17:59:29.274Z').valueOf();
-const info = REV.SignDeployment.sign(myKey, { timestamp, term, phloLimit: 10000, phloPrice: 1 });
-rnode.doDeploy(info, true).then((message) => { assert(message.startsWith('Success')); });
+const [recent] = await observer.getBlocks(1);
+const info = signDeploy(myKey, { timestamp, term, phloLimit: 10000, phloPrice: 1, validAfterBlockNumber: recent.blockNumber });
+rnode.deploy(info).then((message) => { assert(message.startsWith('Success')); });
 ```
 
-## API
+## API (OUT OF DATE)
 
 [./docs/](./docs/index.md)
 
@@ -52,13 +56,6 @@ Choices include:
   
 [testnet]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/678756429/RChain+public+testnet+information
 [2]: https://rchain.atlassian.net/wiki/spaces/CORE/pages/428376065/User+guide+for+running+RNode
-
-
-### RChain gRPC protobuf compatibility
-
-[protobuf][proto]: v0.9.1 bf1b2c6 Mar 28, 2019
-
-[proto]: https://github.com/rchain/rchain/tree/bf1b2c6c6662515403c0a429e8c9fa25edd64638/models/src/main/protobuf
 
 
 ## Examples and Related Projects
