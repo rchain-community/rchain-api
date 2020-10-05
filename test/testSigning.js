@@ -3,7 +3,7 @@
 import test from 'ava';
 
 // @flow
-import { signPrep, sign as signDeploy } from '../src/deploySig';
+import { signPrep } from '../src/deploySig';
 import { Base16 } from '../src/hex.js';
 
 export const testVector = [
