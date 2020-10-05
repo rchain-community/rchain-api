@@ -1,15 +1,15 @@
 // This file can contain .js-specific Typescript compiler config.
 {
-    "compilerOptions": {
-      "target": "es2020",
+  "compilerOptions": {
+    "target": "es2020",
 
-      "noEmit": false,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "outDir": "types",
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "types",
 
-      "strictNullChecks": true,
-      "moduleResolution": "node",
-    },
-    "include": ["rclient/**/*.js", "Jakefile.js", "exports.js", "rnode-client/rnode-web.js"],
-  }
+    "strictNullChecks": true,
+    "moduleResolution": "node"
+  },
+  "include": ["exports.js", "index.js", "src/**.js"]
+}
