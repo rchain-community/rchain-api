@@ -186,12 +186,12 @@ export function makeConnection(validator, observer, account) {
   return freeze({
     /**
      * @param {Scalar | Complex} tag
-     * @param {string} targetProc proc with defining use of `target`
+     * @param {string} targetProc proc with defining use of the name `target`
      */
     async spawn(tag, targetProc) {
       const term = `new deployerId(\`rho:rchain:deployerId\`) in {
-        match {[deployerId, ${lit(tag)}]} {
-          target => { ${targetProc} }
+        match {[*deployerId, ${lit(tag)}]} {
+          {*target} => { ${targetProc} }
         }
       }`;
       await start(term);
