@@ -24,6 +24,7 @@ function log(...args) {
 
 /**
  * @param {{src: string, dataForDeploy: RhoExprWithBlock }} info
+ *        WARNING: we assume expr is URI
  *
  * @typedef { import('./rnode-openapi-schema').RhoExpr } RhoExpr
  */
@@ -32,7 +33,7 @@ export function depEntry(info) {
     src: dep,
     dataForDeploy: {
       expr: {
-        // @ts-ignore WARNING: we assume input data is correctly formatted.
+        // @ts-ignore
         ExprUri: { data: uri },
       },
     },
@@ -60,6 +61,9 @@ export function fixupImports(src, term, uriByDep) {
 }
 
 /**
+ * WARNING: we assume format of depTargets files are correct:
+ *   {src: string, dataForDeploy: RhoExprWithBlock }
+ *
  * @param {string} src
  * @param {string[]} depTargets
  * @param {{ readFile: typeof import('fs').promises.readFile }} io
