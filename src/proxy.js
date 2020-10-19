@@ -124,6 +124,8 @@ export async function startTerm(
   account,
 ) {
   const signed = await account.sign(term);
+  console.log('startTerm', { deployRequest: signed });
+  console.log(term);
 
   const step1 = await validator.deploy(signed);
   if (!step1.startsWith('Success')) throw new Error(step1);
@@ -168,18 +170,25 @@ export function makeConnection(validator, observer, account) {
    */
   async function sendMessage(tag, method, args) {
     const term = `new return(\`rho:rchain:deployId\`), deployerId(\`rho:rchain:deployerId\`) in {
-            match {[deployerId, ${lit(tag)}]} {
-              target => target!(${lit(method)}, ${spread(args)}, *return)
+            match {[*deployerId, ${lit(tag)}]} {
+              {*target} => target!(${spread([method, ...args])}, *return)
             }
           }`;
     const deploy = await start(term);
-    const expr = listenAtDeployId(observer, deploy);
+    const { expr } = await listenAtDeployId(observer, deploy);
     return RhoExpr.parse(expr);
   }
 
   function proxy(/** @type {Scalar | Complex} */ tag) {
     return new Proxy(freeze({}), {
-      get: (_, method) => (...args) => sendMessage(tag, method, args),
+      get: (obj, method) => {
+        console.log('proxy get', { obj, tag, method });
+        if (method === 'then') return null; // I'm not a Thenable.
+        return (...args) => {
+          console.log('proxy sendMessage', { tag, method, args });
+          return sendMessage(tag, method, args);
+        };
+      },
     });
   }
 
