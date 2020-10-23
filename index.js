@@ -15,7 +15,7 @@ import * as rhopmAll from './src/rhopm';
 export { RNode } from './src/rnode';
 export { RhoExpr } from './src/rho-expr';
 export { Base16, Base58 } from './src/codec';
-export { sign as signDeploy } from './src/deploySig';
+export { sign as signDeploy, signMetaMask } from './src/deploySig';
 export {
   getAddrFromEth,
   getAddrFromPublicKey,
@@ -24,4 +24,5 @@ export {
   createRevAccount,
 } from './src/rev-address';
 export { makeAccount, makeConnection } from './src/proxy';
+export { getEthProvider, MetaMaskAccount } from './src/ethProvider';
 export const rhopm = rhopmAll;

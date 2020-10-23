@@ -2,8 +2,10 @@
 import blake from 'blakejs';
 import elliptic from 'elliptic';
 import jspb from 'google-protobuf';
+import * as ethUtil from 'ethereumjs-util';
 
 import { Base16 } from './codec.js';
+import { MetaMaskAccount } from './ethProvider.js';
 
 // eslint-disable-next-line new-cap
 const secp256k1 = new elliptic.ec('secp256k1');
@@ -36,7 +38,7 @@ export function signPrep(keyHex, info) {
 /**
  * @param {DeployData} info
  */
-function serialize(info) {
+export function serialize(info) {
   const { term, timestamp, phloPrice, phloLimit, validAfterBlockNumber } = info;
 
   // Serialize payload with protobuf
@@ -76,5 +78,48 @@ export function sign(keyHex, info) {
     sigAlgorithm: 'secp256k1',
     signature: Base16.encode(signature),
     deployer: Base16.encode(deployer),
+  };
+}
+
+/**
+ * @param {Iterable<number>} data
+ * @param {string} sigHex
+ * @returns { string } public key in hex
+ */
+export function recoverPublicKeyEth(data, sigHex) {
+  // Ethereum lib to recover public key from massage and signature
+  const hashed = ethUtil.hashPersonalMessage(ethUtil.toBuffer([...data]));
+  const sigBytes = ethUtil.toBuffer(sigHex);
+  // @ts-ignore fromRpcSig seems ok with a buffer as well as string
+  const { v, r, s } = ethUtil.fromRpcSig(sigBytes);
+  // Public key without prefix
+  const pubkeyRecover = ethUtil.ecrecover(hashed, v, r, s);
+
+  return Base16.encode([4, ...pubkeyRecover]);
+}
+
+/**
+ * Serialize and sign with Metamask extension
+ * - this will open a popup for user to confirm/review
+ *
+ * @param {DeployData} deployData
+ * @param {MetaMaskProvider} ethereum
+ * @returns {Promise<DeployRequest>}
+ *
+ * @typedef { import('./ethProvider').MetaMaskProvider } MetaMaskProvider
+ */
+export async function signMetaMask(deployData, ethereum) {
+  const data = serialize(deployData);
+  const acct = MetaMaskAccount(ethereum);
+  const ethAddr = await acct.ethereumAddress();
+  const sigHex = await acct.ethereumSign(data, ethAddr);
+  // Extract public key from signed message and signature
+  const pubKeyHex = recoverPublicKeyEth(data, sigHex);
+  // Create deploy object for signature verification
+  return {
+    data: deployData,
+    signature: sigHex.replace(/^0x/, ''),
+    deployer: pubKeyHex,
+    sigAlgorithm: 'secp256k1:eth',
   };
 }
