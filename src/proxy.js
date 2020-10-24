@@ -56,6 +56,7 @@ export async function listenAtDeployId(observer, deploy) {
   const { exprs } = await observer.listenForDataAtName(target);
   // Return data with cost (assumes data in one block)
   if (!exprs.length) throw new Error('no data at deployId');
+  // TODO: return all exprs; let caller pick 1st
   return exprs[0];
 }
 

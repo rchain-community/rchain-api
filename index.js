@@ -8,6 +8,9 @@
  * @typedef { import('./src/proxy').Account } Account
  * @typedef { import('./src/rev-address').RevAccount } RevAccount
  * @typedef { import('./src/rnode-openapi-schema').ExploratoryDeployResponse } ExploratoryDeployResponse
+ * @typedef { import('./src/rnode-openapi-schema').DeployData } DeployData
+ * @typedef { import('./src/rnode-openapi-schema').DeployRequest } DeployRequest
+ * @typedef { import('./src/rnode-openapi-schema').DeployInfo } DeployInfo
  */
 
 import * as rhopmAll from './src/rhopm';
@@ -23,6 +26,11 @@ export {
   verifyRevAddr,
   createRevAccount,
 } from './src/rev-address';
-export { makeAccount, makeConnection } from './src/proxy';
+export {
+  makeAccount,
+  startTerm,
+  listenAtDeployId,
+  makeConnection,
+} from './src/proxy';
 export { getEthProvider, MetaMaskAccount } from './src/ethProvider';
 export const rhopm = rhopmAll;
