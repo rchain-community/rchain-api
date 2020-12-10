@@ -27,7 +27,6 @@ const obs = RNode(fetch)
 If your node is a validator and you have a key to authorize payment, you can deploy code:
 
 ```js
-const grpc = require('grpc');
 const { RNode, signDeploy } = require('rchain-api');
 
 const val = RNode(fetch)
