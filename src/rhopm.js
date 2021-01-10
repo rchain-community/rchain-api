@@ -7,10 +7,12 @@ import { startTerm, listenAtDeployId } from './proxy';
 // @ts-ignore
 const { keys, freeze, fromEntries } = Object;
 
-// TODO: vary rhoDir for local, testnet, mainnet
-export const rhoDir = 'rho_modules';
-export const rhoInfoPath = (src) =>
-  `${rhoDir}/${src.replace(/\.rho$/, '.json')}`;
+/* TODO: handle non-posix paths? */
+/** @type {(net: string) => string} */
+export const rhoDir = (net) => `rho_modules/${net}`;
+/** @type {(src: string, net: string) => string} */
+export const rhoInfoPath = (src, net) =>
+  `${rhoDir(net)}/${src.replace(/\.rho$/, '.json')}`;
 export const importPattern = /match\s*\("import",\s*"(?<specifier>[^"]+)",\s*`(?<uri>rho:id:[^`]*)`\)/g;
 
 function log(...args) {
