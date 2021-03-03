@@ -1,5 +1,8 @@
 // @ts-check
 
+import { nodeFetch } from './curl';
+import { RNode } from './rnode';
+
 const { freeze } = Object;
 
 /**
@@ -52,4 +55,28 @@ export function proposer(api, rnode, sched, period = 2 * 1000) {
       pid = undefined;
     },
   });
+}
+
+/**
+ * @param {string[]} args
+ * @param {{ http: typeof import('http') }} io
+ * @param {SchedulerAccess} sched
+ */
+function main(args, { http }, sched) {
+  const [url] = args.length ? args : ['http://localhost:40404'];
+  const fetch = nodeFetch({ http });
+  const rnode = RNode(fetch);
+  const node = proposer({ admin: url, boot: 'N/A', read: 'N/A' }, rnode, sched);
+  node.startProposing();
+}
+
+if (require.main === module) {
+  main(
+    process.argv.slice(2),
+    {
+      // eslint-disable-next-line global-require
+      http: require('http'),
+    },
+    { setInterval, clearInterval },
+  );
 }
