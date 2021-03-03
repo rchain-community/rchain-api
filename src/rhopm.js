@@ -3,6 +3,7 @@
 import { nodeFetch } from './curl';
 import { RNode } from './rnode';
 import { startTerm, listenAtDeployId } from './proxy';
+import { proposer } from './proposer';
 
 // @ts-ignore
 const { keys, freeze, fromEntries } = Object;
@@ -224,57 +225,20 @@ function parseEnv(txt) {
  * @param {SchedulerAccess} sched
  * @param {number=} period
  *
- * @typedef { {
- *   setInterval: typeof setInterval,
- *   clearInterval: typeof clearInterval,
- * } } SchedulerAccess
+ * @typedef {import('./proposer').SchedulerAccess} SchedulerAccess
  */
-
 export function shardAccess(env, api, http, sched, period = 2 * 1000) {
   const fetch = nodeFetch({ http });
 
   const rnode = RNode(fetch);
-
-  let proposing = false;
-  let waiters = 0;
-  let pid;
+  const blockMaker = proposer(api, rnode, sched, period);
 
   return freeze({
     env,
     ...api,
     validator: rnode.validator(api.boot),
     observer: rnode.observer(api.read),
-    startProposing() {
-      if (!api.admin) return;
-      const proposer = rnode.admin(api.admin);
-      waiters += 1;
-      if (typeof pid !== 'undefined') {
-        return;
-      }
-      pid = sched.setInterval(() => {
-        if (!proposing) {
-          proposing = true;
-          proposer
-            .propose()
-            .then(() => {
-              console.log('proposed', { waiters });
-              proposing = false;
-            })
-            .catch((err) => {
-              console.log('propose failed', { waiters, err: err.message });
-              proposing = false;
-            });
-        }
-      }, period);
-    },
-    stopProposing() {
-      if (waiters <= 0) {
-        return;
-      }
-      waiters -= 1;
-      sched.clearInterval(pid);
-      pid = undefined;
-    },
+    ...blockMaker,
   });
 }
 
@@ -284,7 +248,7 @@ export function shardAccess(env, api, http, sched, period = 2 * 1000) {
  * @param {string} envText
  * @param {typeof import('http')} http
  * @param {SchedulerAccess} sched
- * @param {number} period
+ * @param {number=} period
  */
 export function shardIO(envText, http, sched, period = 2 * 1000) {
   const env = parseEnv(envText);
