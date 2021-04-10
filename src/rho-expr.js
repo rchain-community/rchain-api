@@ -11,6 +11,7 @@ export const RhoExpr = freeze({
     // eslint-disable-next-line no-unused-vars
     const [[type, { data }], ..._] = entries(expr);
     switch (type) {
+      case 'ExprSet':
       case 'ExprBool':
       case 'ExprInt':
       case 'ExprString':
