@@ -8,9 +8,9 @@ export const Base16 = freeze({
    * Encode bytes to base 16 string.
    *
    * @param {Uint8Array | number[]} bytes
+   * @returns { string }
    */
   encode(bytes) {
-    /** @type {(x: number) => number } */
     return (
       Array.from(bytes)
         // eslint-disable-next-line no-bitwise
