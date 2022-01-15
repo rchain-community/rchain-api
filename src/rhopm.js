@@ -7,6 +7,7 @@ import { startTerm, listenAtDeployId } from './proxy';
 // @ts-ignore
 const { keys, freeze, fromEntries } = Object;
 
+// TODO: vary rhoDir for local, testnet, mainnet
 export const rhoDir = 'rho_modules';
 export const rhoInfoPath = (src) =>
   `${rhoDir}/${src.replace(/\.rho$/, '.json')}`;
@@ -215,28 +216,23 @@ function parseEnv(txt) {
 }
 
 /**
- *
- * @param {string} envText
+ * @param {Record<string, string | undefined>} env
+ * @param {{ admin?: string, boot: string, read: string }} api
  * @param {typeof import('http')} http
  * @param {SchedulerAccess} sched
- * @param {number} period
+ * @param {number=} period
  *
  * @typedef { {
  *   setInterval: typeof setInterval,
  *   clearInterval: typeof clearInterval,
  * } } SchedulerAccess
  */
-export function shardIO(envText, http, sched, period = 2 * 1000) {
+
+export function shardAccess(env, api, http, sched, period = 2 * 1000) {
   const fetch = nodeFetch({ http });
-  const env = parseEnv(envText);
-  const api = {
-    admin: `http://${env.MY_NET_IP}:40405`,
-    boot: `http://${env.MY_NET_IP}:40403`,
-    read: `http://${env.MY_NET_IP}:40413`,
-  };
+
   const rnode = RNode(fetch);
 
-  const proposer = rnode.admin(api.admin);
   let proposing = false;
   let waiters = 0;
   let pid;
@@ -247,6 +243,8 @@ export function shardIO(envText, http, sched, period = 2 * 1000) {
     validator: rnode.validator(api.boot),
     observer: rnode.observer(api.read),
     startProposing() {
+      if (!api.admin) return;
+      const proposer = rnode.admin(api.admin);
       waiters += 1;
       if (typeof pid !== 'undefined') {
         return;
@@ -276,4 +274,22 @@ export function shardIO(envText, http, sched, period = 2 * 1000) {
       pid = undefined;
     },
   });
+}
+
+/**
+ * Local shard I/O
+ *
+ * @param {string} envText
+ * @param {typeof import('http')} http
+ * @param {SchedulerAccess} sched
+ * @param {number} period
+ */
+export function shardIO(envText, http, sched, period = 2 * 1000) {
+  const env = parseEnv(envText);
+  const api = {
+    admin: `http://${env.MY_NET_IP}:40405`,
+    boot: `http://${env.MY_NET_IP}:40403`,
+    read: `http://${env.MY_NET_IP}:40413`,
+  };
+  return shardAccess(env, api, http, sched, period);
 }
