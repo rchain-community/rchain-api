@@ -1,4 +1,5 @@
 // @ts-check
+
 import blake from 'blakejs';
 import elliptic from 'elliptic';
 import jspb from 'google-protobuf';
@@ -69,7 +70,7 @@ export function sign(keyHex, info) {
 
   return {
     data: {
-      term,
+      Base16.encode(term),
       timestamp,
       phloPrice,
       phloLimit,
