@@ -70,7 +70,7 @@ export function sign(keyHex, info) {
 
   return {
     data: {
-      Base16.encode(term),
+      term,
       timestamp,
       phloPrice,
       phloLimit,
