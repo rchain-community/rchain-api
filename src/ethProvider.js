@@ -95,9 +95,9 @@ export function MetaMaskAccount(ethereum) {
       let data = Base16(bytes);
       const sig = await ethereum.request({
         method: 'personal_sign',
-        params: [[...data], ethAddr],
+        params: [data ethAddr],
       });
-      // if (typeof sig !== 'string') throw new TypeError(typeof sig);
+      if (typeof sig !== 'string') throw new TypeError(typeof sig);
       return sig;
     },
   });
