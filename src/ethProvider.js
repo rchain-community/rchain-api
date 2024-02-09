@@ -1,6 +1,6 @@
 // @ts-check
 // adapted from https://github.com/tgrospic/rnode-client-js/blob/e4d97ee436a9a35ed2fe7b6c3307d03e4e2e9612/src/eth/eth-wrapper.js
-
+import { Base16 } from './codec.js';
 const { freeze } = Object;
 
 /**
@@ -92,9 +92,10 @@ export function MetaMaskAccount(ethereum) {
      * @returns { Promise<string> } signature in hex format
      */
     async ethereumSign(bytes, ethAddr) {
+      let data = Base16(bytes);
       const sig = await ethereum.request({
         method: 'personal_sign',
-        params: [[...bytes], ethAddr],
+        params: [[...data], ethAddr],
       });
       if (typeof sig !== 'string') throw new TypeError(typeof sig);
       return sig;
