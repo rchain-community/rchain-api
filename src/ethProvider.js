@@ -97,7 +97,7 @@ export function MetaMaskAccount(ethereum) {
         method: 'personal_sign',
         params: [[...data], ethAddr],
       });
-      if (typeof sig !== 'string') throw new TypeError(typeof sig);
+      // if (typeof sig !== 'string') throw new TypeError(typeof sig);
       return sig;
     },
   });
