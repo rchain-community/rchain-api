@@ -78,7 +78,7 @@ import type { ModuleInfo } from '../../src/loading'; // ISSUE: path?
 
 import type { HexStr, PublicKey } from 'rchain-api';
  */
-
+import { Base16 } from './codec.js';
 function ExitStatus(message) {
   this.message = message;
 }
@@ -336,7 +336,7 @@ async function signMessage(keyStore, label, input, { getpass }) {
 
   try {
     const privKey = await loadKey(keyStore, label, notice, { getpass });
-    const sigObj = secp256k1.sign(message, privKey);
+    const sigObj = secp256k1.sign(Base16(message), privKey);
     console.log(b2h(sigObj.signature));
   } catch (oops) {
     console.error('cannot load key');
